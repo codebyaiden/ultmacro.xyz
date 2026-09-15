@@ -40,7 +40,7 @@
 		var out = [];
 		if (isLatest) out.push('<span class="tag live">Latest</span>');
 		if (release.prerelease) out.push('<span class="tag warn">Prerelease</span>');
-		else out.push('<span class="tag blue">Stable</span>');
+		else if (isLatest) out.push('<span class="tag blue">Stable</span>');
 		if (!release.asset) out.push('<span class="tag quiet">No download</span>');
 		return out.join('');
 	}
@@ -134,10 +134,6 @@
 				: '<p class="no-asset mt">This build does not publish a public ZIP. ' +
 				'Open it on GitHub for details.</p>') +
 
-			'<div class="ver-notes">' +
-			'<h2 class="ver-notes-head">Release notes</h2>' +
-			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
-			'</div>' +
 			'</div>' +
 
 			'<div class="latest-side">' +
@@ -174,6 +170,11 @@
 			'</div>' +
 			'</div>' +
 			'</div>' +
+
+			'<section class="ver-notes panel">' +
+			'<h2 class="ver-notes-head">Release notes</h2>' +
+			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
+			'</section>' +
 			neighbourNav(list, index);
 
 		var stamp = qs('[data-source-stamp]');

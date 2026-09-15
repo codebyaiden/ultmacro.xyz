@@ -266,10 +266,6 @@ var UM = (function () {
 		return mdBlocks(lines, 0);
 	}
 
-	/* Holds releases already normalized by UMContract, so this key MUST be bumped
-	   whenever that contract changes what it accepts. Otherwise a browser keeps
-	   serving a list built by the old rules for the whole TTL — and because a
-	   cache hit counts as live, nothing re-fetches to correct it. */
 	var CACHE_KEY = 'um.releases.v3';
 	var TTL = 30 * 60 * 1000;
 	var livePromise = null;

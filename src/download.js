@@ -45,7 +45,7 @@
 		var out = [];
 		if (isLatest) out.push('<span class="tag live">Latest</span>');
 		if (release.prerelease) out.push('<span class="tag warn">Prerelease</span>');
-		else out.push('<span class="tag blue">Stable</span>');
+		else if (isLatest) out.push('<span class="tag blue">Stable</span>');
 		if (!release.asset) out.push('<span class="tag quiet">No download</span>');
 		return out.join('');
 	}

@@ -621,9 +621,14 @@
 }
 
 .ver-notes {
-	margin-top: 1.9rem;
-	padding-top: 1.5rem;
-	border-top: 1px solid var(--line);
+	margin-top: 1.5rem;
+	padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.ver-notes .rel-body p,
+.ver-notes .rel-body li,
+.ver-notes .rel-body blockquote {
+	max-width: none;
 }
 
 .ver-notes-head {
