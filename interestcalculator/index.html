@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Ultimate Shards Interest Calculator</title>
+	<meta name="description" content="Estimate daily Ultimate Shards bank payouts with the UltBot interest formula.">
+	<meta name="theme-color" content="#100e1b">
+	<meta name="robots" content="noindex, nofollow">
+	<link rel="icon" href="../assets/icon.png" type="image/png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../styles/base.css?v=25">
+	<link rel="stylesheet" href="../styles/interest-calculator.css?v=25">
+</head>
+<body class="shard-page">
+	<a class="sr-only" href="#main">Skip to calculator</a>
+	<header class="shard-head">
+		<div class="wrap">
+			<a class="brand" href="../" aria-label="Back to Ultimate Macro"><img class="brand-mark"
+					src="../assets/icon.png" alt="" width="28" height="28"><span
+					class="brand-text">Ultimate<i>Macro</i></span></a>
+			<a class="back-link" href="../">← Back to Ultimate Macro</a>
+		</div>
+	</header>
+	<main id="main">
+		<section class="shard-hero">
+			<div class="shard-grid" aria-hidden="true"></div>
+			<div class="wrap">
+				<div class="shard-title" data-reveal>
+					<span class="shard-orb shard-orb-hero" aria-hidden="true"><img src="../assets/ultimate-shard.png"
+							alt=""></span>
+					<p class="kicker">UltBot <b>/</b> bank calculator</p>
+					<h1>Ultimate Shards<br><em>Interest Calculator</em></h1>
+					<p>Estimate your daily Ultimate Shards bank payout.</p>
+				</div>
+			</div>
+		</section>
+		<section class="calculator-section">
+			<div class="wrap calculator-layout">
+				<form class="calculator-panel panel bracket" id="interestCalculator" novalidate>
+					<div class="panel-intro">
+						<p class="kicker">Your bank</p>
+						<h2>Set the balance.</h2>
+					</div>
+					<label class="balance-label" for="startingBalance">Starting bank balance</label>
+					<div class="balance-input-wrap">
+						<span class="shard-orb shard-orb-input" aria-hidden="true"><img
+								src="../assets/ultimate-shard.png" alt=""></span>
+						<input id="startingBalance" name="startingBalance" type="number" min="0" step="1"
+							inputmode="numeric" autocomplete="off" value="10000" aria-describedby="balanceHelp">
+						<span class="balance-name">Shards</span>
+					</div>
+					<p class="field-help" id="balanceHelp">Whole Shards only. Your bank balance is never changed by this
+						calculator.</p>
+					<div class="fixed-stats" aria-label="Fixed interest rules">
+						<div><span>Daily interest rate</span><strong>0.25%</strong><small>Fixed</small></div>
+						<div><span>Daily cap</span><strong><span class="shard-mini" aria-hidden="true"><img
+										src="../assets/ultimate-shard.png" alt=""></span>75</strong><small>Ultimate
+								Shards</small></div>
+					</div>
+					<fieldset class="duration-fieldset">
+						<legend>How long should we estimate?</legend>
+						<div class="duration-options" role="group" aria-label="Duration in days">
+							<button type="button" class="duration-btn" data-days="7">7 <span>days</span></button>
+							<button type="button" class="duration-btn active" data-days="30" aria-pressed="true">30
+								<span>days</span></button>
+							<button type="button" class="duration-btn" data-days="60">60 <span>days</span></button>
+							<button type="button" class="duration-btn" data-days="90">90 <span>days</span></button>
+							<button type="button" class="duration-btn" data-days="180">180 <span>days</span></button>
+							<button type="button" class="duration-btn" data-days="365">365 <span>days</span></button>
+						</div>
+					</fieldset>
+				</form>
+				<aside class="results-card panel" aria-labelledby="resultsTitle" aria-live="polite">
+					<div class="results-top">
+						<div>
+							<p class="kicker">Estimate</p>
+							<h2 id="resultsTitle">Your payout.</h2>
+						</div><span class="shard-orb shard-orb-result" aria-hidden="true"><img
+								src="../assets/ultimate-shard.png" alt=""></span>
+					</div>
+					<dl class="results-list">
+						<div>
+							<dt>Starting bank balance</dt>
+							<dd><span id="resultStarting">10,000</span> <span class="unit">Shards</span></dd>
+						</div>
+						<div class="payout-row">
+							<dt>Daily interest payout</dt>
+							<dd><span class="shard-mini" aria-hidden="true"><img src="../assets/ultimate-shard.png"
+										alt=""></span><span id="resultDaily">25</span> <span class="unit">Shards</span>
+							</dd>
+						</div>
+						<div>
+							<dt>Total interest over <span id="resultDays">30</span> days</dt>
+							<dd><span class="shard-mini" aria-hidden="true"><img src="../assets/ultimate-shard.png"
+										alt=""></span><span id="resultEarned">750</span> <span
+									class="unit">Shards</span></dd>
+						</div>
+						<div class="final-row">
+							<dt>Account total after <span id="resultFinalDays">30</span> days</dt>
+							<dd><span class="shard-mini" aria-hidden="true"><img src="../assets/ultimate-shard.png"
+										alt=""></span><span id="resultFinal">10,750</span> <span
+									class="unit">Shards</span></dd>
+						</div>
+					</dl>
+					<p class="utc-note"><span class="utc-dot" aria-hidden="true"></span>Interest is paid once per UTC
+						day.</p>
+				</aside>
+			</div>
+		</section>
+		<section class="formula-section">
+			<div class="wrap formula-grid">
+				<div>
+					<p class="kicker">How UltBot calculates it</p>
+					<h2>No automatic<br><b>compounding.</b></h2>
+					<p class="formula-copy">Interest is paid to your wallet, not automatically added back into the bank.
+					</p>
+				</div>
+				<code
+					class="formula-code">dailyPayout = min(floor(startingBalance × 0.0025), 75)<br>totalEarned = dailyPayout × selectedDays<br>finalTotal = startingBalance + totalEarned</code>
+			</div>
+		</section>
+		<section class="deposit-note">
+			<div class="wrap"><span class="note-icon" aria-hidden="true"><img src="../assets/ultimate-shard.png"
+						alt=""></span>
+				<p>Deposit earned Shards again manually if you want them included in future daily bank calculations.</p>
+			</div>
+		</section>
+		<section class="shard-actions">
+			<div class="wrap"><a class="btn primary lg" href="https://discord.gg/ultmacro" target="_blank"
+					rel="noopener noreferrer">Open Ultimate Macro Discord <span aria-hidden="true">↗</span></a><a
+					class="btn lg" href="../">Back to Ultimate Macro</a></div>
+		</section>
+	</main>
+	<footer class="shard-foot">
+		<div class="wrap"><span>Ultimate Shards Interest Calculator</span><span>Free public tool · No login, payment,
+				tracking, or API required.</span></div>
+	</footer>
+	<script src="../src/interest-calculator.js?v=25"></script>
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-R80TVJT9LV"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'G-R80TVJT9LV');
+	</script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2006821288023174"
+		crossorigin="anonymous"></script>
+	<title>Strategy Network — Ultimate Macro</title>
+	<meta name="description"
+		content="Browse, inspect and publish community strategies for Ultimate Macro and Tower Defense Simulator.">
+	<link rel="canonical" href="https://ultmacro.xyz/strategies/">
+	<meta name="theme-color" content="#0e0e10">
+	<link rel="icon" href="../assets/icon.png" type="image/png">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+		rel="stylesheet">
+	<link rel="stylesheet" href="../styles/base.css?v=25">
+	<link rel="stylesheet" href="../styles/strategy-network.css?v=25">
+	<script>document.documentElement.className = 'js';</script>
+</head>
+<body class="network-page">
+	<a class="sr-only" href="#main">Skip to content</a>
+	<header class="site-head">
+		<div class="wrap">
+			<a class="brand" href="../" aria-label="Ultimate Macro home"><img class="brand-mark"
+					src="../assets/icon.png" alt="" width="28" height="28"><span
+					class="brand-text">Ultimate<i>Macro</i></span></a>
+			<nav class="site-nav" aria-label="Primary"><a href="../#capabilities">Features</a><a
+					href="../#requirements">Requirements</a><a href="../guide/">Guide</a><a href="./"
+					aria-current="page">Strategy Network</a><a href="../early-access/">Early Access</a><a
+					href="../download/">Download</a><a href="../#faq">FAQ</a></nav>
+			<div class="head-actions"><a class="ver-chip" href="../download/" title="Latest release"><span
+						class="led on" aria-hidden="true"></span><span>v1.3.4b</span></a><a
+					class="btn primary sm head-cta" href="../download/">Download</a><button class="burger" type="button"
+					aria-expanded="false" aria-controls="mobileNav"
+					aria-label="Toggle navigation"><span></span></button></div>
+		</div>
+	</header>
+	<nav class="mobile-nav" id="mobileNav" aria-label="Mobile"><a href="../#capabilities">Features</a><a
+			href="../#requirements">Requirements</a><a href="../guide/">Setup guide</a><a href="./"
+			class="current">Strategy Network</a><a href="../early-access/">Early Access</a><a
+			href="../download/">Download</a><a href="../#faq">FAQ</a><a class="btn primary block"
+			href="../download/">Get Ultimate Macro</a></nav>
+	<main id="main">
+		<section class="network-browse" aria-labelledby="browse-title">
+			<div class="wrap">
+				<div class="network-toolbar">
+					<div>
+						<h1 id="browse-title">Strategies</h1>
+					</div>
+					<div class="toolbar-actions"><button class="icon-button" id="admin-open" type="button"
+							aria-label="Admin access" title="Admin access"><svg class="key-icon" viewBox="0 0 24 24"
+								aria-hidden="true">
+								<circle cx="8" cy="8" r="3.5"></circle>
+								<path d="m10.5 10.5 9 9m-3.5-3.5 2.2-2.2m-5.5 0 2.2-2.2"></path>
+							</svg></button><button class="btn primary" id="publish-open" type="button">Publish</button>
+					</div>
+				</div>
+				<div class="network-search-row"><label class="network-search"><span class="search-icon"
+							aria-hidden="true"></span><input id="strategy-search" type="search"
+							placeholder="Search by strategy, map, or tower…" autocomplete="off"
+							aria-label="Search strategies"></label>
+					<div class="library-controls"><button class="filter-trigger" id="filters-toggle" type="button"
+							aria-expanded="false" aria-controls="filters-panel"><span>Filter</span><span
+								class="control-chevron" aria-hidden="true">⌄</span></button>
+						<div class="sort-control"><span>Sort by</span>
+							<div class="select-wrap"><button class="select-trigger" id="strategy-sort-trigger"
+									type="button" aria-haspopup="listbox" aria-expanded="false"
+									aria-controls="strategy-sort-menu"><span data-sort-label>Relevance</span><span
+										class="select-chevron" aria-hidden="true">⌄</span></button>
+								<div class="select-menu" id="strategy-sort-menu" role="listbox"
+									aria-label="Sort strategies" hidden><button type="button" role="option"
+										data-sort-option="featured" aria-selected="true">Relevance</button><button
+										type="button" role="option" data-sort-option="popular"
+										aria-selected="false">Most popular</button><button type="button" role="option"
+										data-sort-option="trending" aria-selected="false">Trending</button><button
+										type="button" role="option" data-sort-option="newest"
+										aria-selected="false">Newest</button><button type="button" role="option"
+										data-sort-option="rating" aria-selected="false">Top rated</button></div>
+							</div><select id="strategy-sort" class="sr-only" tabindex="-1" aria-hidden="true">
+								<option value="featured">Relevance</option>
+								<option value="popular">Most popular</option>
+								<option value="trending">Trending</option>
+								<option value="newest">Newest</option>
+								<option value="rating">Top rated</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="filters-panel" id="filters-panel" hidden>
+					<div class="filter-heading">
+						<div>
+							<p class="kicker">Narrow it down</p>
+							<h3>Run requirements</h3>
+						</div><button class="text-button" id="clear-filters" type="button">Clear all</button>
+					</div>
+					<div class="filter-grid">
+						<label class="filter-field">Map<select id="filter-map">
+								<option value="">Any map</option>
+							</select></label><label class="filter-field">Mode<select id="filter-mode">
+								<option value="">Any mode</option>
+								<option>Easy</option>
+								<option>Casual</option>
+								<option>Intermediate</option>
+								<option>Molten</option>
+								<option>Fallen</option>
+								<option>Frost</option>
+								<option>Hardcore</option>
+								<option>Voidcore</option>
+								<option>Arcade</option>
+							</select></label>
+						<fieldset class="filter-field filter-options">
+							<legend>Grind type</legend>
+							<div class="segmented" id="grind-filter"><button type="button"
+									data-value="Coins">Coins</button><button type="button"
+									data-value="Gems">Gems</button><button type="button" data-value="XP">XP</button>
+							</div>
+						</fieldset>
+						<fieldset class="filter-field filter-options">
+							<legend>Timescale</legend>
+							<div class="segmented" id="timescale-filter"><button type="button"
+									data-value="1x">1x</button><button type="button"
+									data-value="1.5x">1.5x</button><button type="button" data-value="2x">2x</button>
+							</div>
+						</fieldset>
+						<label class="filter-field">Required tower<select id="filter-tower">
+								<option value="">Any tower</option>
+							</select></label><label class="toggle-field"><input id="filter-no-skill-tree"
+								type="checkbox"><span><b>No Skill Tree</b><small>Only show runs with no Skill Tree
+									requirement</small></span></label>
+					</div>
+				</div>
+				<div class="active-filters" id="active-filters" aria-live="polite"></div>
+				<div class="network-status"><span id="result-count">Unavailable</span><span id="backend-status"
+						role="status"></span></div>
+			</div>
+		</section>
+		<div id="browse-view" class="network-results wrap" aria-live="polite">
+			<section class="network-unavailable" aria-labelledby="network-unavailable-title"><button
+					class="network-unavailable-icon" id="network-signal" type="button"
+					aria-label="A small surprise">×</button>
+				<h2 id="network-unavailable-title">Unavailable</h2>
+				<p>We’re sorry, the Strategy Network is still being finished. We’ll announce when it’s available for
+					everyone to use in Discord.</p><a class="network-unavailable-discord"
+					href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Join the Discord <span
+						aria-hidden="true">↗</span></a>
+				<p class="network-easter-egg" id="network-easter-egg" hidden>You found the hidden signal. We’ll see you
+					when the network is ready.</p>
+			</section>
+		</div>
+		<section id="detail-view" class="network-detail wrap" hidden aria-live="polite"></section>
+		<section id="publish-view" class="publish-view wrap" hidden aria-live="polite"></section>
+	</main>
+	<div class="network-modal" id="network-modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+		<div class="modal-backdrop" data-modal-close></div>
+		<div class="modal-card"><button class="modal-close" type="button" data-modal-close aria-label="Close">×</button>
+			<div id="modal-content"></div>
+		</div>
+	</div>
+	<footer class="site-foot">
+		<div class="wrap">
+			<div class="foot-grid">
+				<div class="foot-about"><a class="brand" href="../"><img class="brand-mark" src="../assets/icon.png"
+							alt="" width="28" height="28"><span class="brand-text">Ultimate<i>Macro</i></span></a>
+					<p>Free, open-source automation for Roblox Tower Defense Simulator. Originally created by Darksen,
+						continued by the New Era team.</p>
+				</div>
+				<div class="foot-col">
+					<h3>Product</h3>
+					<ul>
+						<li><a href="../#capabilities">Features</a></li>
+						<li><a href="../guide/">Setup guide</a></li>
+						<li><a href="../download/">Download</a></li>
+						<li><a href="../early-access/">Early Access</a></li>
+					</ul>
+				</div>
+				<div class="foot-col">
+					<h3>Community</h3>
+					<ul>
+						<li><a href="./">Strategy Network</a></li>
+						<li><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a>
+						</li>
+						<li><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank"
+								rel="noopener noreferrer">GitHub</a></li>
+					</ul>
+				</div>
+				<div class="foot-col">
+					<h3>Trust</h3>
+					<ul>
+						<li><a href="../guide/#safety">Safety &amp; licence</a></li>
+						<li><a href="../download/">Official releases</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="foot-bar"><span>© <span data-year>2026</span> Ultimate Macro · The New Era</span><span>Not
+					affiliated with Roblox Corporation or Paradoxum Games.</span></div>
+		</div>
+	</footer>
+	<script src="../src/core.js?v=25"></script>
+	<script>UM.initChrome();</script>
+	<script src="../data/tds-catalog.js?v=25"></script>
+	<script src="../src/strategy-validation.js?v=25"></script>
+	<script src="../src/strategy-network-api.js?v=25"></script>
+	<script src="../src/strategy-network.js?v=25"></script>
+	<script>
+		(function () {
+			var signal = document.getElementById('network-signal');
+			var surprise = document.getElementById('network-easter-egg');
+			if (!signal || !surprise) return;
+			var clicks = 0;
+			var timer;
+			signal.addEventListener('click', function () {
+				clicks += 1;
+				clearTimeout(timer);
+				timer = setTimeout(function () { clicks = 0; }, 1200);
+				if (clicks < 3) return;
+				clicks = 0;
+				surprise.hidden = false;
+				signal.classList.add('is-found');
+				surprise.classList.remove('is-found');
+				void surprise.offsetWidth;
+				surprise.classList.add('is-found');
+			});
+		}());
+	</script>
+</body>
+</html>

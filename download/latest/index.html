@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Latest Ultimate Macro release</title>
+	<meta name="robots" content="noindex, follow">
+	<link rel="canonical" href="https://ultmacro.xyz/download/v1.3.5">
+	<meta http-equiv="refresh" content="0; url=/download/v1.3.5">
+	<link rel="icon" href="/assets/icon.png" type="image/png">
+	<link rel="stylesheet" href="/styles/base.css?v=25">
+	<script src="/data/releases.js?v=25"></script>
+	<script src="/src/releases-data.js?v=25"></script>
+	<script>
+		(function () {
+			var tag = "v1.3.5";
+			try {
+				var data = window.UM_RELEASES;
+				var picked = window.UMContract && data && UMContract.pickLatestStable(data.releases || []);
+				if (picked && picked.tag) tag = picked.tag;
+			} catch (err) { }
+			location.replace('/download/' + encodeURIComponent(tag));
+		})();
+	</script>
+</head>
+<body>
+	<main class="wrap" style="padding:4rem 0">
+		<p>Redirecting to the latest Ultimate Macro release…</p>
+		<p><a href="/download/v1.3.5">Continue to v1.3.5</a> · <a href="/download/">All versions</a></p>
+	</main>
+</body>
+</html>
