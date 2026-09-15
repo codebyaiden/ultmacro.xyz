@@ -17,7 +17,7 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const contract = require('./src/releases-data.js');
-const { writeVersionPages } = require('./src/version-page.cjs');
+const { writeVersionPages, writeVersionChips } = require('./src/version-page.cjs');
 
 const OUT = path.join(__dirname, 'data', 'releases.js');
 
@@ -64,6 +64,12 @@ async function main() {
 	for (const tag of pages.written) console.log(`  /download/${tag}`);
 	if (pages.latest) console.log(`  /download/latest → ${pages.latest}`);
 	for (const tag of pages.removed) console.log(`  removed stale /download/${tag}`);
+
+	if (pages.latest) {
+		const chips = await writeVersionChips(pages.latest);
+		console.log(`\nStamped ${pages.latest} into ${chips.length} version chips`);
+		for (const file of chips) console.log(`  ${file}`);
+	}
 }
 
 main();

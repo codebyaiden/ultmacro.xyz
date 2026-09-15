@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const contract = require('./releases-data.js');
 
-const ASSET_VERSION = 28;
+const ASSET_VERSION = 29;
 const SITE = 'https://ultmacro.xyz';
 
 const SAFE_TAG = /^[A-Za-z0-9][A-Za-z0-9._-]{0,60}$/;
@@ -51,7 +51,7 @@ const NAV = [
 	['/#faq', 'FAQ']
 ];
 
-function page(release, isLatest) {
+function page(release, isLatest, latestTag) {
 	const tag = release.tag;
 	const url = `${SITE}${versionUrl(tag)}`;
 	const name = (release.name || '').trim() || tag;
@@ -142,7 +142,7 @@ ${JSON.stringify(
 			<div class="head-actions">
 				<a class="ver-chip" href="/download/latest" title="Latest release">
 					<span class="led on" aria-hidden="true"></span>
-					<span data-latest-version class="is-loading">${esc(tag)}</span>
+					<span data-latest-version>${esc(latestTag)}</span>
 				</a>
 				<a class="btn sm head-cta" href="/download/">All versions</a>
 				<button class="burger" type="button" aria-expanded="false" aria-controls="mobileNav"
@@ -318,7 +318,7 @@ async function writeVersionPages(releases) {
 		await fs.mkdir(dir, { recursive: true });
 		await fs.writeFile(
 			path.join(dir, 'index.html'),
-			page(release, !!latest && latest.tag === release.tag),
+			page(release, !!latest && latest.tag === release.tag, latest ? latest.tag : release.tag),
 			'utf8'
 		);
 		written.push(release.tag);
@@ -348,4 +348,41 @@ async function writeVersionPages(releases) {
 	return { written, removed, latest: latest ? latest.tag : null };
 }
 
-module.exports = { writeVersionPages };
+async function writeVersionChips(latestTag) {
+	const root = path.join(__dirname, '..');
+	const pages = [];
+
+	async function walk(dir) {
+		for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+			if (entry.name === 'node_modules' || entry.name === '.git') continue;
+			const full = path.join(dir, entry.name);
+			if (entry.isDirectory()) await walk(full);
+			else if (entry.name.endsWith('.html')) pages.push(full);
+		}
+	}
+
+	await walk(root);
+
+	const updated = [];
+	for (const file of pages) {
+		const source = await fs.readFile(file, 'utf8');
+		const next = source.replace(
+			/(<([a-zA-Z][\w-]*)\b[^>]*\bdata-latest-version\b[^>]*>)([^<]*)(<\/\2>)/g,
+			(match, open, tagName, text, close) => {
+				const cleaned = open.replace(/\s*class="([^"]*)"/, (full, classes) => {
+					const kept = classes.split(/\s+/).filter((name) => name && name !== 'is-loading');
+					return kept.length ? ` class="${kept.join(' ')}"` : '';
+				});
+				return cleaned + esc(latestTag) + close;
+			}
+		);
+		if (next !== source) {
+			await fs.writeFile(file, next, 'utf8');
+			updated.push(path.relative(root, file).replace(/\\/g, '/'));
+		}
+	}
+
+	return updated;
+}
+
+module.exports = { writeVersionPages, writeVersionChips };
