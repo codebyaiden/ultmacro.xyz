@@ -469,13 +469,15 @@ var UM = (function () {
 		return path === currentFile() || path === './' + currentFile();
 	}
 
-	function scrollToId(id) {
+	function scrollToId(id, focusTarget) {
 		var target = id && document.getElementById(id);
 		if (!target) return false;
 		var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
-		if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-		target.focus({ preventScroll: true });
+		if (focusTarget) {
+			if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+			target.focus({ preventScroll: true });
+		}
 		return true;
 	}
 
@@ -494,7 +496,7 @@ var UM = (function () {
 
 		if (initialHash) {
 			setTimeout(function () {
-				if (document.getElementById(initialHash)) scrollToId(initialHash);
+				if (document.getElementById(initialHash)) scrollToId(initialHash, !keepsHash());
 				cleanUrl();
 			}, 0);
 		}
@@ -512,7 +514,7 @@ var UM = (function () {
 			var id = href.slice(href.indexOf('#') + 1);
 			if (!id) return;
 			if (keepsHash()) return;
-			if (scrollToId(id)) e.preventDefault();
+			if (scrollToId(id, true)) e.preventDefault();
 		});
 	}
 
