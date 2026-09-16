@@ -479,9 +479,13 @@ var UM = (function () {
 		return true;
 	}
 
+	function keepsHash() {
+		return document.documentElement.hasAttribute('data-keep-hash');
+	}
+
 	function cleanUrl() {
 		if (!location.hash || !history.replaceState) return;
-		if (document.documentElement.hasAttribute('data-keep-hash')) return;
+		if (keepsHash()) return;
 		history.replaceState(null, '', location.pathname + location.search);
 	}
 
@@ -507,6 +511,7 @@ var UM = (function () {
 
 			var id = href.slice(href.indexOf('#') + 1);
 			if (!id) return;
+			if (keepsHash()) return;
 			if (scrollToId(id)) e.preventDefault();
 		});
 	}
