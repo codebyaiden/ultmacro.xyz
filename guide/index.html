@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-keep-hash>
 <head>
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-R80TVJT9LV"></script>
 	<script>
@@ -33,8 +33,8 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
 		rel="stylesheet">
-	<link rel="stylesheet" href="../styles/base.css?v=29">
-	<link rel="stylesheet" href="../styles/guide.css?v=29">
+	<link rel="stylesheet" href="../styles/base.css?v=30">
+	<link rel="stylesheet" href="../styles/guide.css?v=30">
 	<script>
 		document.documentElement.className = 'js';
 		setTimeout(function () {
@@ -63,7 +63,7 @@
 			<div class="head-actions">
 				<a class="ver-chip" href="../download/" title="Latest release">
 					<span class="led on" aria-hidden="true"></span>
-					<span data-latest-version>v1.3.5</span>
+					<span data-latest-version>v1.3.4b</span>
 				</a>
 				<a class="btn primary sm head-cta" href="../download/">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -115,6 +115,7 @@
 				<ol>
 					<li><a href="#requirements">Requirements</a></li>
 					<li><a href="#install">Install</a></li>
+					<li><a href="#antivirus">Antivirus warnings</a></li>
 					<li><a href="#display">Display settings</a></li>
 					<li><a href="#first-run">Your first run</a></li>
 					<li><a href="#recording">Recording a strategy</a></li>
@@ -155,10 +156,15 @@
 					<ol class="proc">
 						<li>
 							<h4>Download the release</h4>
-							<p>Get <code>TDS_Macro.zip</code> from the download page. Every build is also on the
+							<p>Grab the <code>.zip</code> for the latest version from the download page. Every build
+								is also on the
 								<a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases"
 									target="_blank" rel="noopener noreferrer">official GitHub releases page</a> —
 								download from nowhere else.
+							</p>
+							<p>If your antivirus deletes the file as it arrives, or Windows warns you about it, that
+								is a known false positive. Sort it out with
+								<a href="#antivirus">step 03</a> before carrying on.
 							</p>
 							<a class="btn sm mt" href="../download/">Download page</a>
 						</li>
@@ -168,6 +174,10 @@
 								<code>Main.ahk</code> from inside the ZIP will not work — the macro detects this and
 								refuses to start, because it needs its <code>lib</code>, <code>Resources</code> and
 								<code>submacros</code> folders next to it.
+							</p>
+							<p>Keep that folder somewhere permanent. Moving it later breaks any antivirus exclusion
+								you add, and the macro keeps its settings, logs and recordings alongside
+								<code>Main.ahk</code>.
 							</p>
 						</li>
 						<li>
@@ -188,8 +198,102 @@
 						</li>
 					</ol>
 				</section>
-				<section id="display" data-toc-label="Display settings">
+				<section id="antivirus" data-toc-label="Antivirus warnings">
 					<p class="kicker">03</p>
+					<h2>Antivirus warnings</h2>
+					<p>
+						Windows Defender, SmartScreen or another antivirus may warn about Ultimate Macro, or
+						quarantine it the moment the download finishes. <strong>Ultimate Macro is not a virus or a
+						trojan.</strong> Strategy Lab ships as a <code>.exe</code>, and that executable is not
+						signed with a trusted code-signing certificate — those cost roughly <strong>$699 USD a
+						year</strong>, which the project cannot justify. Windows treats any unsigned executable as
+						an unknown application, so it warns about it on sight.
+					</p>
+					<div class="notice">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+							stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path
+								d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+						</svg>
+						<span>Only ever do this for a copy downloaded from
+							<a class="notice-link" href="../download/">this site</a> or the
+							<a class="notice-link"
+								href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases"
+								target="_blank" rel="noopener noreferrer">official GitHub releases</a>. An exclusion
+							tells your antivirus to stop checking that folder, so never point one at a reupload or a
+							modified copy.</span>
+					</div>
+					<h3>Add an exclusion</h3>
+					<p>
+						In most cases you do <em>not</em> need to turn anything off. Adding the Ultimate Macro folder
+						as an exclusion is enough, and your protection stays on the whole time.
+					</p>
+					<ol class="proc">
+						<li>
+							<h4>Put the macro in its own permanent folder</h4>
+							<p>Something like <code>C:\Users\You\Documents\UltimateMacro</code>. Pick a folder you
+								will not move later — the exclusion follows the path, not the files.</p>
+						</li>
+						<li>
+							<h4>Open your antivirus exclusion settings</h4>
+							<p>On Windows Defender that is <strong>Windows Security → Virus &amp; threat
+								protection → Manage settings → Add or remove exclusions → Add an exclusion →
+								Folder</strong>. Other antivirus products call it an exclusion, exception or
+								allow list.</p>
+						</li>
+						<li>
+							<h4>Select that folder</h4>
+							<p>Choose the folder itself, not a single file. The macro writes logs, settings and
+								recordings next to <code>Main.ahk</code>, so a file-level exclusion will not
+								cover everything it creates.</p>
+						</li>
+					</ol>
+					<h3>If the download is deleted before you can do that</h3>
+					<p>
+						Some setups quarantine the archive while it is still downloading, which leaves you nothing to
+						exclude. In that case turn protection off just long enough to get the file into its folder,
+						then put it straight back on.
+					</p>
+					<ol class="proc">
+						<li>
+							<h4>Turn off real-time protection</h4>
+							<p>In Windows Security, open <strong>Virus &amp; threat protection → Manage
+								settings</strong> and switch off <strong>Real-time protection</strong>. Windows turns
+								it back on by itself after a short while, so work through the next steps without
+								stopping.</p>
+						</li>
+						<li>
+							<h4>Move the ZIP into the folder you picked</h4>
+							<p>Download it again if it was already removed, then move the <code>.zip</code> into the
+								permanent folder from above.</p>
+						</li>
+						<li>
+							<h4>Add that folder as an exclusion</h4>
+							<p>Use the same exclusion steps as above, while protection is still off.</p>
+						</li>
+						<li>
+							<h4>Turn real-time protection back on</h4>
+							<p>Do this before you extract anything. The exclusion keeps the folder from being
+								scanned, so protection being on no longer removes the macro — and the rest of your
+								machine is covered again.</p>
+						</li>
+						<li>
+							<h4>Extract, then delete the ZIP</h4>
+							<p>Extract the archive into that same folder and delete the <code>.zip</code> once you
+								have the files. You are done — carry on with the display settings below.</p>
+						</li>
+					</ol>
+					<h3>Still being removed?</h3>
+					<p>
+						Check the exclusion points at the folder you actually extracted into, and that your antivirus
+						has not quarantined files already — restore them from its quarantine list, or delete the
+						folder and start again from the exclusion step. If a specific file keeps getting flagged,
+						report it in the <a href="https://discord.gg/ultmacro" target="_blank"
+							rel="noopener noreferrer">Discord</a> so it can be submitted as a false positive.
+					</p>
+				</section>
+				<section id="display" data-toc-label="Display settings">
+					<p class="kicker">04</p>
 					<h2>Display settings</h2>
 					<p>
 						These are the settings the macro asks you for on first launch. Three different things
@@ -286,7 +390,7 @@
 					</div>
 				</section>
 				<section id="first-run" data-toc-label="Your first run">
-					<p class="kicker">04</p>
+					<p class="kicker">05</p>
 					<h2>Your first run</h2>
 					<p>
 						The quickest way to see the macro work is to start from one of the strategies that ship
@@ -332,7 +436,7 @@
 					</ol>
 				</section>
 				<section id="recording" data-toc-label="Recording a strategy">
-					<p class="kicker">05</p>
+					<p class="kicker">06</p>
 					<h2>Recording a strategy</h2>
 					<p>
 						You never have to write a strategy file by hand. Fill in the <strong>Record</strong> tab,
@@ -418,7 +522,7 @@
 					</ul>
 				</section>
 				<section id="sessions" data-toc-label="Longer sessions">
-					<p class="kicker">06</p>
+					<p class="kicker">07</p>
 					<h2>Longer sessions</h2>
 					<h3>Strategy Rotation</h3>
 					<p>
@@ -482,7 +586,7 @@
 					</div>
 				</section>
 				<section id="discord" data-toc-label="Discord &amp; profiles">
-					<p class="kicker">07</p>
+					<p class="kicker">08</p>
 					<h2>Discord &amp; profiles</h2>
 					<p>
 						The <strong>Discord</strong> tab sends real-time logs, screenshots and currency stats to
@@ -523,7 +627,7 @@
 					</p>
 				</section>
 				<section id="tools" data-toc-label="Tools">
-					<p class="kicker">08</p>
+					<p class="kicker">09</p>
 					<h2>Tools</h2>
 					<p>
 						The <strong>Tools</strong> tab holds three small utilities that run separately from a
@@ -541,7 +645,7 @@
 					</ul>
 				</section>
 				<section id="troubleshooting" data-toc-label="Troubleshooting">
-					<p class="kicker">09</p>
+					<p class="kicker">10</p>
 					<h2>Troubleshooting</h2>
 					<p>Work down this list before reporting a bug — most problems are one of these.</p>
 					<div class="trouble">
@@ -618,7 +722,7 @@
 					</div>
 				</section>
 				<section id="safety" data-toc-label="Safety &amp; licence">
-					<p class="kicker">10</p>
+					<p class="kicker">11</p>
 					<h2>Safety &amp; licence</h2>
 					<ul class="bullets">
 						<li><strong>Official sources only.</strong> Ultimate Macro is distributed through this
@@ -703,9 +807,9 @@
 			</div>
 		</div>
 	</footer>
-	<script src="../data/releases.js?v=29"></script>
-	<script src="../src/releases-data.js?v=29"></script>
-	<script src="../src/core.js?v=29"></script>
-	<script src="../src/guide.js?v=29"></script>
+	<script src="../data/releases.js?v=30"></script>
+	<script src="../src/releases-data.js?v=30"></script>
+	<script src="../src/core.js?v=30"></script>
+	<script src="../src/guide.js?v=30"></script>
 </body>
 </html>
