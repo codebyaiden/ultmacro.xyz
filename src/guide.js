@@ -24,8 +24,7 @@
 				})
 				.join('');
 		on(jump, 'change', function () {
-			var target = document.getElementById(jump.value);
-			if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (jump.value && document.getElementById(jump.value)) location.hash = jump.value;
 		});
 	}
 
