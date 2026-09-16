@@ -481,6 +481,7 @@ var UM = (function () {
 
 	function cleanUrl() {
 		if (!location.hash || !history.replaceState) return;
+		if (document.documentElement.hasAttribute('data-keep-hash')) return;
 		history.replaceState(null, '', location.pathname + location.search);
 	}
 
