@@ -1876,6 +1876,56 @@ html.light-mode:not(.compact-mode) .site-head.scrolled {
 	box-shadow: 0 12px 32px rgba(48, 79, 109, .14);
 }
 
+/* keep the shared desktop chrome on one compact row above the mobile menu */
+@media (min-width: 701px) {
+	.site-head,
+	.site-head.scrolled {
+		height: 68px;
+		min-height: 0;
+	}
+
+	.site-head .wrap {
+		display: flex;
+		flex-wrap: nowrap;
+		align-content: initial;
+		min-height: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+		gap: 12px;
+	}
+
+	.site-head .site-nav {
+		order: initial;
+		width: auto;
+		margin: 0 0 0 auto;
+		padding: 3px;
+		border-top: 0;
+		flex: 0 1 auto;
+		overflow: hidden;
+	}
+
+	.site-head .site-nav a {
+		padding: 7px 8px;
+		font-size: .68rem;
+		white-space: nowrap;
+	}
+
+	.site-head .head-actions {
+		flex: 0 0 auto;
+		margin-left: 6px;
+		gap: 6px;
+	}
+
+	.site-head .head-actions .ver-chip,
+	.site-head .head-actions .head-cta {
+		display: inline-flex;
+	}
+
+	.site-head .head-actions .burger {
+		display: none;
+	}
+}
+
 html.light-mode:not(.compact-mode) .site-nav,
 html.light-mode:not(.compact-mode) .head-actions {
 	background: rgba(255, 255, 255, .72);
