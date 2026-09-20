@@ -305,6 +305,16 @@ var UM = (function () {
 		brand.after(context);
 	}
 
+	function initBrandAsset() {
+		var asset = new URL('/icon.ico', window.location.origin).href;
+		qsa('.brand-mark').forEach(function (image) {
+			image.setAttribute('src', asset);
+		});
+		qsa('link[rel~="icon"]').forEach(function (link) {
+			link.setAttribute('href', asset);
+		});
+	}
+
 	function humanizeLabels() {
 		qsa('.kicker, #main h1, #main h2, #main h3, #main h4, .site-nav a, .mobile-nav a:not(.btn), .btn, .foot-col h3').forEach(function (element) {
 			element.style.textTransform = 'none';
@@ -513,6 +523,7 @@ var UM = (function () {
 		initAtmosphere();
 		initAnchors();
 		initHeader();
+		initBrandAsset();
 		initPageContext();
 		initPreferences();
 		humanizeLabels();
