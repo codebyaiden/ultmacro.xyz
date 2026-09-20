@@ -123,7 +123,7 @@
 			'<ul class="req-list">' +
 			'<li class="tag">Windows 10 / 11</li>' +
 			'<li class="tag">AutoHotkey v2.0</li>' +
-			'<li class="tag">1920×1080 display</li>' +
+			'<li class="tag">Adaptive 16:9 display</li>' +
 			'<li class="tag">100% display scale</li>' +
 			'</ul>' +
 			'</div>' +
