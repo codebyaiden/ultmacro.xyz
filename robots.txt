@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+# Current website build is published from the production repository.
 Sitemap: https://ultmacro.xyz/sitemap.xml
