@@ -113,6 +113,7 @@
 			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
 			'</div>' +
 			'</details>' +
+			UMReleaseGallery.render(release) +
 			'</div>' +
 
 			'<div class="latest-side">' +
@@ -178,7 +179,9 @@
 					'</button>' +
 					'<div class="vrow-body" id="notes-' + esc(r.tag) + '"><div>' +
 					'<div class="vrow-inner">' +
-					'<div class="rel-body">' + UM.renderMarkdown(r.body) + '</div>' +
+					'<div class="vrow-content"><div class="rel-body">' + UM.renderMarkdown(r.body) + '</div>' +
+					UMReleaseGallery.render(r) +
+					'</div>' +
 					'<div class="vrow-actions">' +
 					(r.asset
 						? '<a class="btn primary block" href="' + esc(r.asset.url) + '" download>' +

@@ -175,6 +175,7 @@
 			'<h2 class="ver-notes-head">Release notes</h2>' +
 			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
 			'</section>' +
+			UMReleaseGallery.render(release) +
 			neighbourNav(list, index);
 
 		var stamp = qs('[data-source-stamp]');

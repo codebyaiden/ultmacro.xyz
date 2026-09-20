@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const contract = require('./releases-data.js');
 
-const ASSET_VERSION = 32;
+const ASSET_VERSION = 33;
 const SITE = 'https://ultmacro.xyz';
 
 const SAFE_TAG = /^[A-Za-z0-9][A-Za-z0-9._-]{0,60}$/;
@@ -262,6 +262,7 @@ ${JSON.stringify(
 	<script src="/data/releases.js?v=${ASSET_VERSION}"></script>
 	<script src="/src/releases-data.js?v=${ASSET_VERSION}"></script>
 	<script src="/src/core.js?v=${ASSET_VERSION}"></script>
+	<script src="/src/release-gallery.js?v=${ASSET_VERSION}"></script>
 	<script src="/src/version.js?v=${ASSET_VERSION}"></script>
 </body>
 </html>
