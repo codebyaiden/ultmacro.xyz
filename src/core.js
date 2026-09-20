@@ -266,7 +266,7 @@ var UM = (function () {
 		return mdBlocks(lines, 0);
 	}
 
-	var CACHE_KEY = 'um.releases.v3';
+	var CACHE_KEY = 'um.releases.v4';
 	var TTL = 30 * 60 * 1000;
 	var livePromise = null;
 

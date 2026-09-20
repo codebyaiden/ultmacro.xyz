@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const contract = require('./releases-data.js');
 
-const ASSET_VERSION = 33;
+const ASSET_VERSION = 34;
 const SITE = 'https://ultmacro.xyz';
 
 const SAFE_TAG = /^[A-Za-z0-9][A-Za-z0-9._-]{0,60}$/;
