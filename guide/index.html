@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-keep-hash>
+<html lang="en">
 <head>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-R80TVJT9LV"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag() { dataLayer.push(arguments); }
-		gtag('js', new Date());
-		gtag('config', 'G-R80TVJT9LV');
-	</script>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2006821288023174"
-		crossorigin="anonymous"></script>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2006821288023174" crossorigin="anonymous"></script>
 	<title>Setup guide — Ultimate Macro</title>
 	<meta name="description"
 		content="Install Ultimate Macro, configure the required Windows, Roblox and Tower Defense Simulator settings, record your first strategy and fix common problems.">
@@ -33,8 +25,8 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
 		rel="stylesheet">
-	<link rel="stylesheet" href="../styles/base.css?v=32">
-	<link rel="stylesheet" href="../styles/guide.css?v=32">
+	<link rel="stylesheet" href="../styles/base.css?v=26">
+	<link rel="stylesheet" href="../styles/guide.css?v=21">
 	<script>
 		document.documentElement.className = 'js';
 		setTimeout(function () {
@@ -52,7 +44,7 @@
 				<span class="brand-text">Ultimate<i>Macro</i></span>
 			</a>
 			<nav class="site-nav" aria-label="Primary">
-				<a href="../#capabilities">Features</a>
+				<a href="../#features">Features</a>
 				<a href="../#requirements">Requirements</a>
 				<a href="./" aria-current="page">Guide</a>
 				<a href="../strategies/">Strategy Network</a>
@@ -61,9 +53,9 @@
 				<a href="../#faq">FAQ</a>
 			</nav>
 			<div class="head-actions">
-				<a class="ver-chip" href="../download/" title="Latest release">
+				<a class="ver-chip" href="../download/latest/" title="Latest release">
 					<span class="led on" aria-hidden="true"></span>
-					<span data-latest-version>v1.3.5</span>
+					<span data-latest-version class="is-loading">v1.3.5</span>
 				</a>
 				<a class="btn primary sm head-cta" href="../download/">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -78,7 +70,7 @@
 		</div>
 	</header>
 	<nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
-		<a href="../#capabilities">Features</a>
+		<a href="../#features">Features</a>
 		<a href="../#requirements">Requirements</a>
 		<a href="./" class="current">Setup guide</a>
 		<a href="../strategies/">Strategy Network</a>
@@ -91,7 +83,7 @@
 	<main id="main">
 		<section class="guide-hero">
 			<div class="wrap">
-				<p class="kicker">Documentation <b>/</b> Setup</p>
+				<p class="kicker">Setup guide</p>
 				<h1>Setup guide</h1>
 				<p>
 					Ultimate Macro reads Tower Defense Simulator the same way you do — through image detection
@@ -113,17 +105,16 @@
 			<aside class="toc" aria-label="Table of contents">
 				<h2>Contents</h2>
 				<ol>
-					<li><a href="#requirements">Requirements</a></li>
-					<li><a href="#install">Install</a></li>
-					<li><a href="#antivirus">Antivirus warnings</a></li>
-					<li><a href="#display">Display settings</a></li>
-					<li><a href="#first-run">Your first run</a></li>
-					<li><a href="#recording">Recording a strategy</a></li>
-					<li><a href="#sessions">Longer sessions</a></li>
-					<li><a href="#discord">Discord &amp; profiles</a></li>
-					<li><a href="#tools">Tools</a></li>
-					<li><a href="#troubleshooting">Troubleshooting</a></li>
-					<li><a href="#safety">Safety &amp; licence</a></li>
+					<li><a href="requirements/" data-section="requirements">Requirements</a></li>
+					<li><a href="install/" data-section="install">Install</a></li>
+					<li><a href="display/" data-section="display">Display settings</a></li>
+					<li><a href="first-run/" data-section="first-run">Your first run</a></li>
+					<li><a href="recording/" data-section="recording">Recording a strategy</a></li>
+					<li><a href="sessions/" data-section="sessions">Longer sessions</a></li>
+					<li><a href="discord/" data-section="discord">Discord &amp; profiles</a></li>
+					<li><a href="tools/" data-section="tools">Tools</a></li>
+					<li><a href="troubleshooting/" data-section="troubleshooting">Troubleshooting</a></li>
+					<li><a href="safety/" data-section="safety">Safety &amp; licence</a></li>
 				</ol>
 			</aside>
 			<div class="doc">
@@ -155,40 +146,31 @@
 					<h2>Install</h2>
 					<ol class="proc">
 						<li>
-							<h4>Download the release</h4>
-							<p>Grab the <code>.zip</code> for the latest version from the download page. Every build
-								is also on the
+							<h3>Download the release</h3>
+							<p>Get the latest ZIP from the download page. Every build is also on the
 								<a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases"
 									target="_blank" rel="noopener noreferrer">official GitHub releases page</a> —
 								download from nowhere else.
 							</p>
-							<p>If your antivirus deletes the file as it arrives, or Windows warns you about it, that
-								is a known false positive. Sort it out with
-								<a href="#antivirus">step 03</a> before carrying on.
-							</p>
 							<a class="btn sm mt" href="../download/">Download page</a>
 						</li>
 						<li>
-							<h4>Extract the whole archive</h4>
+							<h3>Extract the whole archive</h3>
 							<p>Right-click the ZIP and extract <em>everything</em> into its own folder. Running
 								<code>Main.ahk</code> from inside the ZIP will not work — the macro detects this and
 								refuses to start, because it needs its <code>lib</code>, <code>Resources</code> and
 								<code>submacros</code> folders next to it.
 							</p>
-							<p>Keep that folder somewhere permanent. Moving it later breaks any antivirus exclusion
-								you add, and the macro keeps its settings, logs and recordings alongside
-								<code>Main.ahk</code>.
-							</p>
 						</li>
 						<li>
-							<h4>Install AutoHotkey v2.0</h4>
+							<h3>Install AutoHotkey v2.0</h3>
 							<p>Download it from <a href="https://www.autohotkey.com/v2/" target="_blank"
 									rel="noopener noreferrer">autohotkey.com/v2</a>. If you already have AutoHotkey
 								1.1 installed, v2 can sit alongside it — just make sure <code>.ahk</code> files open
 								with the v2 launcher.</p>
 						</li>
 						<li>
-							<h4>Run <code>Main.ahk</code></h4>
+							<h3>Run <code>Main.ahk</code></h3>
 							<p>The Ultimate Macro window opens: a dark 700×565 window with
 								<strong>Main</strong>, <strong>Record</strong>, <strong>Party</strong>,
 								<strong>Discord</strong>, <strong>Settings</strong>, <strong>Tools</strong> and
@@ -198,102 +180,8 @@
 						</li>
 					</ol>
 				</section>
-				<section id="antivirus" data-toc-label="Antivirus warnings">
-					<p class="kicker">03</p>
-					<h2>Antivirus warnings</h2>
-					<p>
-						Windows Defender, SmartScreen or another antivirus may warn about Ultimate Macro, or
-						quarantine it the moment the download finishes. <strong>Ultimate Macro is not a virus or a
-						trojan.</strong> Strategy Lab ships as a <code>.exe</code>, and that executable is not
-						signed with a trusted code-signing certificate — those cost roughly <strong>$700 USD a
-						year</strong>, which the project cannot justify. Windows treats any unsigned executable as
-						an unknown application, so it warns about it on sight.
-					</p>
-					<div class="notice">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-							stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path
-								d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
-						</svg>
-						<span>Only ever do this for a copy downloaded from
-							<a class="notice-link" href="../download/">this site</a> or the
-							<a class="notice-link"
-								href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases"
-								target="_blank" rel="noopener noreferrer">official GitHub releases</a>. An exclusion
-							tells your antivirus to stop checking that folder, so never point one at a reupload or a
-							modified copy.</span>
-					</div>
-					<h3>Add an exclusion</h3>
-					<p>
-						In most cases you do <em>not</em> need to turn anything off. Adding the Ultimate Macro folder
-						as an exclusion is enough, and your protection stays on the whole time.
-					</p>
-					<ol class="proc">
-						<li>
-							<h4>Put the macro in its own permanent folder</h4>
-							<p>Something like <code>C:\Users\You\Documents\UltimateMacro</code>. Pick a folder you
-								will not move later — the exclusion follows the path, not the files.</p>
-						</li>
-						<li>
-							<h4>Open your antivirus exclusion settings</h4>
-							<p>On Windows Defender that is <strong>Windows Security → Virus &amp; threat
-								protection → Manage settings → Add or remove exclusions → Add an exclusion →
-								Folder</strong>. Other antivirus products call it an exclusion, exception or
-								allow list.</p>
-						</li>
-						<li>
-							<h4>Select that folder</h4>
-							<p>Choose the folder itself, not a single file. The macro writes logs, settings and
-								recordings next to <code>Main.ahk</code>, so a file-level exclusion will not
-								cover everything it creates.</p>
-						</li>
-					</ol>
-					<h3>If the download is deleted before you can do that</h3>
-					<p>
-						Some setups quarantine the archive while it is still downloading, which leaves you nothing to
-						exclude. In that case turn protection off just long enough to get the file into its folder,
-						then put it straight back on.
-					</p>
-					<ol class="proc">
-						<li>
-							<h4>Turn off real-time protection</h4>
-							<p>In Windows Security, open <strong>Virus &amp; threat protection → Manage
-								settings</strong> and switch off <strong>Real-time protection</strong>. Windows turns
-								it back on by itself after a short while, so work through the next steps without
-								stopping.</p>
-						</li>
-						<li>
-							<h4>Move the ZIP into the folder you picked</h4>
-							<p>Download it again if it was already removed, then move the <code>.zip</code> into the
-								permanent folder from above.</p>
-						</li>
-						<li>
-							<h4>Add that folder as an exclusion</h4>
-							<p>Use the same exclusion steps as above, while protection is still off.</p>
-						</li>
-						<li>
-							<h4>Turn real-time protection back on</h4>
-							<p>Do this before you extract anything. The exclusion keeps the folder from being
-								scanned, so protection being on no longer removes the macro — and the rest of your
-								machine is covered again.</p>
-						</li>
-						<li>
-							<h4>Extract, then delete the ZIP</h4>
-							<p>Extract the archive into that same folder and delete the <code>.zip</code> once you
-								have the files. You are done — carry on with the display settings below.</p>
-						</li>
-					</ol>
-					<h3>Still being removed?</h3>
-					<p>
-						Check the exclusion points at the folder you actually extracted into, and that your antivirus
-						has not quarantined files already — restore them from its quarantine list, or delete the
-						folder and start again from the exclusion step. If a specific file keeps getting flagged,
-						report it in the <a href="https://discord.gg/ultmacro" target="_blank"
-							rel="noopener noreferrer">Discord</a> so it can be submitted as a false positive.
-					</p>
-				</section>
 				<section id="display" data-toc-label="Display settings">
-					<p class="kicker">04</p>
+					<p class="kicker">03</p>
 					<h2>Display settings</h2>
 					<p>
 						These are the settings the macro asks you for on first launch. Three different things
@@ -390,7 +278,7 @@
 					</div>
 				</section>
 				<section id="first-run" data-toc-label="Your first run">
-					<p class="kicker">05</p>
+					<p class="kicker">04</p>
 					<h2>Your first run</h2>
 					<p>
 						The quickest way to see the macro work is to start from one of the strategies that ship
@@ -398,7 +286,7 @@
 					</p>
 					<ol class="proc">
 						<li>
-							<h4>Pick a strategy on the Main tab</h4>
+							<h3>Pick a strategy on the Main tab</h3>
 							<p>The <strong>Community Strategies</strong> browser lists strategies shared through
 								the Discord, each with its map, mode, run time and income. Press
 								<strong>Load</strong> to download one that matches a map and mode you can actually
@@ -406,13 +294,13 @@
 							</p>
 						</li>
 						<li>
-							<h4>Check your loadout</h4>
+							<h3>Check your loadout</h3>
 							<p>A strategy expects specific towers in specific slots. Tick <strong>Auto Equip
 									Towers</strong> and the macro equips what the strategy needs before the match
 								starts. If a strategy asks for a golden tower, you need to own it.</p>
 						</li>
 						<li>
-							<h4>Confirm your keybinds</h4>
+							<h3>Confirm your keybinds</h3>
 							<p>Settings &rarr; <strong>TDS Keybinds</strong> must match your in-game binds. The
 								defaults are Call of Arms <span class="kbd">C</span>, Drop The Beat
 								<span class="kbd">B</span>, Support Caravan <span class="kbd">J</span>, Raise the
@@ -423,20 +311,20 @@
 							</p>
 						</li>
 						<li>
-							<h4>Start with <span class="kbd">F1</span> and watch the first match</h4>
+							<h3>Start with <span class="kbd">F1</span> and watch the first match</h3>
 							<p>Press <strong>Start</strong> on the Main tab or hit <span class="kbd">F1</span>,
 								then leave the Roblox window where it is. Watch one full match before walking away
 								— that is when a wrong setting shows itself.</p>
 						</li>
 						<li>
-							<h4>Stop with <span class="kbd">F2</span></h4>
+							<h3>Stop with <span class="kbd">F2</span></h3>
 							<p><span class="kbd">F2</span> stops the macro and releases any held input. Use it
 								rather than killing the window, so cleanup runs properly.</p>
 						</li>
 					</ol>
 				</section>
 				<section id="recording" data-toc-label="Recording a strategy">
-					<p class="kicker">06</p>
+					<p class="kicker">05</p>
 					<h2>Recording a strategy</h2>
 					<p>
 						You never have to write a strategy file by hand. Fill in the <strong>Record</strong> tab,
@@ -522,7 +410,7 @@
 					</ul>
 				</section>
 				<section id="sessions" data-toc-label="Longer sessions">
-					<p class="kicker">07</p>
+					<p class="kicker">06</p>
 					<h2>Longer sessions</h2>
 					<h3>Strategy Rotation</h3>
 					<p>
@@ -586,7 +474,7 @@
 					</div>
 				</section>
 				<section id="discord" data-toc-label="Discord &amp; profiles">
-					<p class="kicker">08</p>
+					<p class="kicker">07</p>
 					<h2>Discord &amp; profiles</h2>
 					<p>
 						The <strong>Discord</strong> tab sends real-time logs, screenshots and currency stats to
@@ -627,7 +515,7 @@
 					</p>
 				</section>
 				<section id="tools" data-toc-label="Tools">
-					<p class="kicker">09</p>
+					<p class="kicker">08</p>
 					<h2>Tools</h2>
 					<p>
 						The <strong>Tools</strong> tab holds three small utilities that run separately from a
@@ -645,7 +533,7 @@
 					</ul>
 				</section>
 				<section id="troubleshooting" data-toc-label="Troubleshooting">
-					<p class="kicker">10</p>
+					<p class="kicker">09</p>
 					<h2>Troubleshooting</h2>
 					<p>Work down this list before reporting a bug — most problems are one of these.</p>
 					<div class="trouble">
@@ -722,7 +610,7 @@
 					</div>
 				</section>
 				<section id="safety" data-toc-label="Safety &amp; licence">
-					<p class="kicker">11</p>
+					<p class="kicker">10</p>
 					<h2>Safety &amp; licence</h2>
 					<ul class="bullets">
 						<li><strong>Official sources only.</strong> Ultimate Macro is distributed through this
@@ -773,7 +661,7 @@
 				<div class="foot-col">
 					<h3>Product</h3>
 					<ul>
-						<li><a href="../#capabilities">Features</a></li>
+						<li><a href="../#features">Features</a></li>
 						<li><a href="../#requirements">Requirements</a></li>
 						<li><a href="../#faq">FAQ</a></li>
 					</ul>
@@ -790,8 +678,8 @@
 				<div class="foot-col">
 					<h3>Community</h3>
 					<ul>
-						<li><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a>
-						</li>
+						<li><a href="https://discord.gg/ultmacro" target="_blank"
+								rel="noopener noreferrer">Discord</a></li>
 						<li><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank"
 								rel="noopener noreferrer">GitHub</a></li>
 						<li><a href="https://www.youtube.com/@UltimateMacro" target="_blank"
@@ -807,9 +695,10 @@
 			</div>
 		</div>
 	</footer>
-	<script src="../data/releases.js?v=33"></script>
-	<script src="../src/releases-data.js?v=33"></script>
-	<script src="../src/core.js?v=34"></script>
-	<script src="../src/guide.js?v=32"></script>
+	<script src="../data/releases.js?v=27"></script>
+	<script src="../src/releases-data.js?v=27"></script>
+	<script src="../src/core.js?v=27"></script>
+	<script src="../src/guide.js?v=21"></script>
+	<script src="../src/guide-routes.js?v=2"></script>
 </body>
 </html>

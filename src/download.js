@@ -18,7 +18,6 @@
 
 	var openRows = {};
 	var historyOpen = false;
-	var notesOpen = false;
 
 	var downloadIcon =
 		'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
@@ -27,10 +26,6 @@
 	var chevIcon =
 		'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
 		'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-
-	function versionPath(tag) {
-		return esc('/download/' + encodeURIComponent(tag));
-	}
 
 	function releaseTitle(release) {
 		var name = (release.name || '').trim();
@@ -45,7 +40,7 @@
 		var out = [];
 		if (isLatest) out.push('<span class="tag live">Latest</span>');
 		if (release.prerelease) out.push('<span class="tag warn">Prerelease</span>');
-		else if (isLatest) out.push('<span class="tag blue">Stable</span>');
+		else out.push('<span class="tag blue">Stable</span>');
 		if (!release.asset) out.push('<span class="tag quiet">No download</span>');
 		return out.join('');
 	}
@@ -84,7 +79,7 @@
 
 			'<div class="dl-row">' +
 			(asset
-				? '<a class="btn signal lg" href="' + esc(asset.url) + '" download>' +
+				? '<a class="btn signal lg" href="' + asset.url + '" download>' +
 				downloadIcon + ' Download ' + esc(release.tag) + '</a>'
 				: '<a class="btn primary lg" href="' + esc(release.url) +
 				'" target="_blank" rel="noopener noreferrer">' + downloadIcon +
@@ -97,8 +92,6 @@
 				? '<dl class="asset">' +
 				'<div class="asset-row"><dt>File</dt><dd>' + esc(asset.name) + '</dd></div>' +
 				'<div class="asset-row"><dt>SHA-256</dt><dd>' + esc(digest) + '</dd></div>' +
-				'<div class="asset-row"><dt>Page</dt><dd><a href="' + versionPath(release.tag) + '">' +
-				esc('ultmacro.xyz/download/' + release.tag) + '</a></dd></div>' +
 				extras.map(function (x) {
 					return '<div class="asset-row"><dt>Also</dt><dd><a href="' + esc(x.url) + '">' +
 						esc(x.name) + '</a> · ' + esc(UM.fileSize(x.size)) + '</dd></div>';
@@ -107,13 +100,12 @@
 				: '<p class="no-asset mt">This build does not publish a public ZIP. ' +
 				'Open it on GitHub for details.</p>') +
 
-			'<details class="notes"' + (notesOpen ? ' open' : '') + '>' +
+			'<details class="notes">' +
 			'<summary class="notes-toggle"><span>Release notes</span>' + chevIcon + '</summary>' +
 			'<div class="notes-body">' +
 			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
 			'</div>' +
 			'</details>' +
-			UMReleaseGallery.render(release) +
 			'</div>' +
 
 			'<div class="latest-side">' +
@@ -138,10 +130,6 @@
 			'</div>' +
 			'</div>';
 
-		var notes = qs('.notes', latestHost);
-		on(notes, 'toggle', function () {
-			notesOpen = notes.open;
-		});
 	}
 
 	function renderHistory(releases, latestTag) {
@@ -179,15 +167,12 @@
 					'</button>' +
 					'<div class="vrow-body" id="notes-' + esc(r.tag) + '"><div>' +
 					'<div class="vrow-inner">' +
-					'<div class="vrow-content"><div class="rel-body">' + UM.renderMarkdown(r.body) + '</div>' +
-					UMReleaseGallery.render(r) +
-					'</div>' +
+					'<div class="rel-body">' + UM.renderMarkdown(r.body) + '</div>' +
 					'<div class="vrow-actions">' +
 					(r.asset
-						? '<a class="btn primary block" href="' + esc(r.asset.url) + '" download>' +
+						? '<a class="btn primary block" href="' + r.asset.url + '" download>' +
 						downloadIcon + ' Download</a>'
 						: '<p class="no-asset">This build publishes no public download.</p>') +
-					'<a class="btn block sm" href="' + versionPath(r.tag) + '">Open version page</a>' +
 					'<a class="btn ghost block sm" href="' + esc(r.url) +
 					'" target="_blank" rel="noopener noreferrer">View on GitHub</a>' +
 					'<dl>' +

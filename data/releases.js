@@ -65,13 +65,7 @@ window.UM_RELEASES = {
 				"digest": "sha256:67d6d6099af7cccd1415cd450e37a8b8b1ca52bbe1421b31959e1af406d851a6",
 				"downloads": 115
 			},
-			"extras": [
-				{
-					"name": "SHA256SUMS.txt",
-					"url": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/v1.3.4/SHA256SUMS.txt",
-					"size": 80
-				}
-			]
+			"extras": [{"name": "SHA256SUMS.txt", "url": "https://github.com/UltimateMacro/ultmacro.xyz/releases/download/v1.3.4/SHA256SUMS.txt", "size": 80}]
 		},
 		{
 			"tag": "v1.3.3",

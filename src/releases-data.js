@@ -9,7 +9,6 @@ var UMContract = (function () {
 	var TAG = /^v?([0-9]+(?:\.[0-9]+){1,3}[a-z]?)(-[0-9a-z.]+)?$/i;
 	var DIGEST = /^sha256:[0-9a-f]{64}$/i;
 	var ZIP = /^(?:TDS_Macro|Ultimate-Macro)(?:[_-][\w.-]+)?\.zip$|^TDS\.Macro\.v[\w.-]+\.zip$/i;
-	var CANONICAL_ZIP = /^(?:TDS_Macro|Ultimate-Macro)\.zip$/i;
 
 	function isRecord(v) {
 		return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -27,7 +26,7 @@ var UMContract = (function () {
 			return typeof a.name === 'string' && ZIP.test(a.name);
 		});
 		var stable = zips.filter(function (a) {
-			return CANONICAL_ZIP.test(a.name);
+			return a.name === 'TDS_Macro.zip';
 		});
 		var candidates = stable.length ? stable : zips;
 		if (candidates.length !== 1) return null;

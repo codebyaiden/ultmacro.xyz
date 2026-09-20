@@ -1,0 +1,20 @@
+.release-detail-main{padding:118px 0 120px;background:linear-gradient(180deg,#0b121d,#0e1723 55%,#0a1019)}
+.release-detail-head{max-width:780px;padding:30px 0 70px}
+.release-detail-head h1,.release-detail-empty h1{margin:0;font-size:clamp(48px,8vw,92px);line-height:.94;letter-spacing:-.06em}
+.release-detail-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;color:#9aa8b9;font-size:13px}
+.release-detail-meta span{padding:8px 11px;border:1px solid #8da8c42e;border-radius:999px;background:#111e2c}
+.release-detail-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:28px;align-items:start}
+.release-detail-card,.release-detail-side{border:1px solid #8da8c438;border-radius:18px;background:#111b28cc;box-shadow:0 22px 60px #0000003b;padding:30px}
+.release-detail-card-head{display:flex;justify-content:space-between;gap:18px;align-items:start}
+.release-detail-card h2,.release-detail-side h2,.release-notes h2{margin:0;color:#eef4fb;font-size:clamp(24px,3vw,38px);letter-spacing:-.04em}
+.release-detail-status{color:#9ee2ba;font-size:12px;padding-top:5px}
+.release-detail-size{color:#9aaec3;line-height:1.6}
+.release-detail-asset{margin:28px 0 0;border-top:1px solid #8da8c426}
+.release-detail-asset div{display:grid;grid-template-columns:90px minmax(0,1fr);gap:20px;padding:13px 0;border-bottom:1px solid #8da8c426}
+.release-detail-asset dt{color:#8fa4ba;font-size:12px}.release-detail-asset dd{margin:0;color:#d4e1ef;font:12px/1.55 "JetBrains Mono",monospace;overflow-wrap:anywhere}
+.release-detail-side p{color:#9aaec3;line-height:1.7}
+.release-notes{max-width:840px;margin-top:70px;padding-top:38px;border-top:1px solid #8da8c426}
+.release-notes .rel-body{color:#b9c8d8;line-height:1.75;margin-top:24px}.release-notes .rel-body h4,.release-notes .rel-body h5{color:#eef4fb}.release-notes .rel-body li{margin:8px 0}
+.release-detail-empty{padding:40px 0 80px;max-width:700px}.release-detail-empty p{color:#9aaec3;line-height:1.7}
+.release-detail-loading{padding:80px 0}.release-detail-loading h1{color:#eef4fb}
+@media(max-width:760px){.release-detail-main{padding:90px 20px}.release-detail-grid{grid-template-columns:1fr}.release-detail-card,.release-detail-side{padding:22px}.release-detail-head{padding-bottom:50px}}

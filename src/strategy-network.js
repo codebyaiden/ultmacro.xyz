@@ -9,17 +9,17 @@
 	const catalogMaps = tdsCatalog.maps || [];
 	const catalogTowers = tdsCatalog.towers || [];
 	const mapArtwork = {
-		'Dead Ahead': '../assets/strategy-maps/dead-ahead.png',
-		'Wretched Front': '../assets/strategy-maps/wretched-front.png',
-		'Crossroads': '../assets/strategy-maps/crossroads.png',
-		'Retro Crossroads': '../assets/strategy-maps/retro-crossroads.png',
-		'Cataclysm': '../assets/strategy-maps/cataclysm.png',
-		'Badlands II': '../assets/strategy-maps/badlands-ii.png',
-		'Dusty Bridges': '../assets/strategy-maps/dusty-bridges.png',
-		'Construction Crazy': '../assets/strategy-maps/construction-crazy.png',
-		'Polluted Wasteland II': '../assets/strategy-maps/polluted-wasteland-ii.png',
-		'Space City': '../assets/strategy-maps/space-city.png',
-		'Infernal Abyss': '../assets/strategy-maps/infernal-abyss.png'
+		'Dead Ahead': '../assets/strategy-maps/dead-ahead.webp',
+		'Wretched Front': '../assets/strategy-maps/wretched-front.webp',
+		'Crossroads': '../assets/strategy-maps/crossroads.webp',
+		'Retro Crossroads': '../assets/strategy-maps/retro-crossroads.webp',
+		'Cataclysm': '../assets/strategy-maps/cataclysm.webp',
+		'Badlands II': '../assets/strategy-maps/badlands-ii.webp',
+		'Dusty Bridges': '../assets/strategy-maps/dusty-bridges.webp',
+		'Construction Crazy': '../assets/strategy-maps/construction-crazy.webp',
+		'Polluted Wasteland II': '../assets/strategy-maps/polluted-wasteland-ii.webp',
+		'Space City': '../assets/strategy-maps/space-city.webp',
+		'Infernal Abyss': '../assets/strategy-maps/infernal-abyss.webp'
 	};
 	const validation = window.StrategyValidation;
 	const api = window.StrategyNetworkApi;
@@ -186,19 +186,9 @@
 			}
 		});
 	}
-	function optionMarkup(select) {
-		return [...select.options].map((option) => `<button type="button" role="option" data-picker-value="${esc(option.value)}" aria-selected="false">${esc(option.textContent)}</button>`).join('');
-	}
-	function optionSignature(select) { return JSON.stringify([...select.options].map((option) => [option.value, option.textContent])); }
 	function syncCustomSelect(select) {
 		const picker = select?._customPicker;
 		if (!picker) return;
-		const signature = optionSignature(select);
-		if (signature !== picker.signature) {
-			picker.signature = signature;
-			picker.menu.querySelectorAll('[role="option"]').forEach((option) => option.remove());
-			picker.menu.insertAdjacentHTML('beforeend', optionMarkup(select));
-		}
 		const selected = [...select.options].find((option) => option.value === select.value) || select.options[0];
 		swapLabel(picker.label, selected?.textContent || 'Choose an option');
 		picker.menu.querySelectorAll('[role="option"]').forEach((option) => {
@@ -207,15 +197,9 @@
 			option.hidden = false;
 		});
 	}
-	function selectLabelText(select) {
-		const label = select.closest('label');
-		const first = label?.firstChild;
-		return first?.nodeType === 3 ? first.textContent.trim() : '';
-	}
 	function decorateSelect(select) {
 		if (!select) return;
 		if (select._customPicker) { syncCustomSelect(select); return; }
-		const accessibleName = select.getAttribute('aria-label') || select.name || selectLabelText(select) || 'Choose an option';
 		const wrapper = document.createElement('div');
 		wrapper.className = 'custom-select';
 		select.parentNode.insertBefore(wrapper, select);
@@ -230,13 +214,13 @@
 		trigger.setAttribute('aria-haspopup', 'listbox');
 		trigger.setAttribute('aria-expanded', 'false');
 		trigger.setAttribute('aria-controls', id);
-		trigger.innerHTML = `<span class="sr-only">${esc(accessibleName)}</span><span data-picker-label></span><span class="select-chevron" aria-hidden="true">⌄</span>`;
+		trigger.innerHTML = '<span data-picker-label></span><span class="select-chevron" aria-hidden="true">⌄</span>';
 		const menu = document.createElement('div');
 		menu.id = id;
 		menu.className = 'custom-select-menu';
 		menu.setAttribute('role', 'listbox');
 		menu.hidden = true;
-		menu.setAttribute('aria-label', accessibleName);
+		menu.setAttribute('aria-label', select.getAttribute('aria-label') || select.name || 'Choose an option');
 		if (select.dataset.searchable === 'true') {
 			const search = document.createElement('input');
 			search.className = 'custom-select-search';
@@ -261,7 +245,7 @@
 			trigger.setAttribute('aria-expanded', 'true');
 			const search = menu.querySelector('.custom-select-search');
 			if (search) { search.value = ''; search.dispatchEvent(new Event('input')); search.focus(); }
-			else[...menu.querySelectorAll('[role="option"]')].find((option) => option.dataset.pickerValue === select.value)?.focus();
+			else [...menu.querySelectorAll('[role="option"]')].find((option) => option.dataset.pickerValue === select.value)?.focus();
 		};
 		const close = (focus = false) => closeAnimatedMenu(menu, trigger, wrapper, focus);
 		trigger.addEventListener('click', () => wrapper.classList.contains('is-open') ? close() : open());
@@ -301,17 +285,16 @@
 		els.sortMenu.querySelectorAll('[data-sort-option]').forEach((item) => item.setAttribute('aria-selected', String(item.dataset.sortOption === state.sort)));
 		els.grind.querySelectorAll('button').forEach((item) => item.classList.toggle('selected', item.dataset.value === state.grind));
 		els.timescale.querySelectorAll('button').forEach((item) => item.classList.toggle('selected', item.dataset.value === state.timescale));
-		const chips = activeFilters();
-		els.active.innerHTML = chips.map(([label, value]) => `<button class="filter-chip" type="button" data-clear-filter="${esc(label)}">${esc(value)} <span aria-hidden="true">×</span></button>`).join('') + (chips.length ? '<button class="text-button clear-inline" type="button" data-clear-all>Clear all</button>' : '');
+		els.active.innerHTML = activeFilters().map(([label, value]) => `<button class="filter-chip" type="button" data-clear-filter="${esc(label)}">${esc(value)} <span aria-hidden="true">×</span></button>`).join('') + (activeFilters().length ? '<button class="text-button clear-inline" type="button" data-clear-all>Clear all</button>' : '');
 	}
 
-	function showView(view) { state.view = view; els.browse.hidden = view !== 'browse'; els.detail.hidden = view !== 'detail'; els.publish.hidden = view !== 'publish'; document.querySelector('.network-browse').hidden = view !== 'browse'; window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+	function showView(view) { state.view = view; els.browse.hidden = view !== 'browse'; els.detail.hidden = view !== 'detail'; els.publish.hidden = view !== 'publish'; document.querySelector('.network-browse').hidden = view !== 'browse'; document.title = view === 'publish' ? 'Publish a strategy | Ultimate Macro' : 'Strategy Network | Ultimate Macro'; window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
 	function showBrowse(push = true) { state.detail = null; showView('browse'); if (push) syncUrl(true); renderBrowse(); }
 	function creatorMarkup(strategy) { return `<span class="creator"><b>${esc(strategy.creator?.display || 'Community creator')}</b> <small>@${esc(strategy.creator?.username || 'community')}</small>${strategy.creator?.verified ? '<span class="creator-trust">Verified creator</span>' : '<span class="creator-trust unverified">Unverified creator</span>'}</span>`; }
 	function trustMarkup(strategy) { const labels = []; if (strategy.validated) labels.push(['validated', 'Validated']); if (strategy.communityTested) labels.push(['community-tested', 'Community Tested']); if (strategy.manuallyVerified || strategy.verified) labels.push(['admin-verified', 'Admin verified']); return labels.map(([kind, label]) => `<span class="trust trust-${kind}">${label}</span>`).join(''); }
 	function coverHue(strategy) { return [...`${strategy.map || 'Map not selected'}/${strategy.mode || 'Mode not selected'}`].reduce((total, character) => (total * 31 + character.charCodeAt(0)) % 360, 0); }
 	function previewImage(strategy) { const remote = safeUrl(strategy.thumbnailUrl); const local = typeof strategy.thumbnailPreviewUrl === 'string' && strategy.thumbnailPreviewUrl.startsWith('blob:') ? strategy.thumbnailPreviewUrl : ''; const fallback = mapArtwork[String(strategy.map || '').trim()] || ''; return remote || local || fallback; }
-	function thumb(strategy, large = false) { const image = previewImage(strategy); const generated = !image && (!strategy.thumb || strategy.thumb === 'community' || strategy.thumb === 'default'); const coverClass = generated ? 'generated-cover' : (strategy.thumb || 'default'); const coverStyle = generated ? ` style="--cover-hue:${coverHue(strategy)}"` : ''; return `<div class="strategy-thumb ${esc(coverClass)} ${large ? 'large' : ''} ${image ? 'has-image' : ''}"${coverStyle} role="img" aria-label="${esc(strategy.map || 'Map not selected')} map artwork">${image ? `<img src="${esc(image)}" alt="" loading="lazy" data-thumb-image>` : ''}<span>${esc(strategy.map || 'Map not selected')}</span><i aria-hidden="true"></i></div>`; }
+	function thumb(strategy, large = false) { const image = previewImage(strategy); const generated = !image && (!strategy.thumb || strategy.thumb === 'community' || strategy.thumb === 'default'); const coverClass = generated ? 'generated-cover' : (strategy.thumb || 'default'); const coverStyle = generated ? ` style="--cover-hue:${coverHue(strategy)}"` : ''; return `<div class="strategy-thumb ${esc(coverClass)} ${large ? 'large' : ''} ${image ? 'has-image' : ''}"${coverStyle} role="img" aria-label="${esc(strategy.map || 'Map not selected')} map artwork">${image ? `<img src="${esc(image)}" alt="" loading="lazy" decoding="async" data-thumb-image>` : ''}<span>${esc(strategy.map || 'Map not selected')}</span><i aria-hidden="true"></i></div>`; }
 	function installState(strategy) { const installed = state.installed[strategy.id]; if (!installed) return ''; return versionCompare(installed, latest(strategy)) < 0 ? '<span class="install-state update">Update available</span>' : '<span class="install-state">Installed</span>'; }
 	function communityNotesMarkup(strategy) { const notes = [strategy.credits, strategy.performanceNotes].filter(Boolean); const source = safeUrl(strategy.sourceUrl); if (!notes.length && !source) return ''; return `<div class="detail-community-notes"><span class="detail-notes-label">Notes from the creator</span>${notes.map((note) => `<p>${esc(note)}</p>`).join('')}${source ? `<p><a class="text-button" href="${esc(source)}" target="_blank" rel="noopener noreferrer">Open source reference ↗</a></p>` : ''}</div>`; }
 	function adminMarkup(strategy) { if (!state.admin) return ''; const featureAction = strategy.featured ? 'unfeature' : 'feature'; const verifyAction = strategy.verified ? 'unverify' : 'verify'; return `<div class="admin-tools"><span>Admin</span><button type="button" data-admin-action="${featureAction}" data-admin-id="${esc(strategy.id)}">${strategy.featured ? 'Remove feature' : 'Feature'}</button><button type="button" data-admin-action="${verifyAction}" data-admin-id="${esc(strategy.id)}">${strategy.verified ? 'Remove verification' : 'Verify'}</button><button type="button" data-admin-action="hide" data-admin-id="${esc(strategy.id)}">Hide</button><button type="button" data-admin-ownership="${esc(strategy.id)}">Reset creator key</button></div>`; }
@@ -320,7 +303,7 @@
 	function card(strategy) { return `<article class="strategy-card"><a class="strategy-card-link" href="?strategy=${encodeURIComponent(strategy.slug)}" data-open-strategy="${esc(strategy.slug)}">${cardBody(strategy)}</a>${adminMarkup(strategy)}</article>`; }
 	function previewCard(strategy) { return `<article class="strategy-card strategy-card-preview" aria-label="Live strategy card preview">${cardBody(strategy)}</article>`; }
 	function previewStrategy(data) { return { title: data.title || 'Untitled strategy', summary: data.description || 'Your short description will appear here.', map: data.map || 'Map not selected', mode: data.mode || 'Mode not selected', grind: data.grind ? [data.grind] : [], timescale: data.timescale || '1x', towers: String(data.towers || '').split(',').map((item) => item.trim()).filter(Boolean), noSkillTree: data.noSkillTree === true || data.noSkillTree === 'true', metric: data.expected || 'Not provided', metricType: 'Creator reported', rating: 0, ratingCount: 0, installs: 0, creator: { display: data.display || 'Your name', username: username(data.username) || 'username' }, thumbnailPreviewUrl: state.thumbnailPreviewUrl }; }
-	function enhancePublishComposer(data) {
+	function enhancePublishComposer() {
 		const card = els.publish.querySelector('.publish-card:not(.publish-card-short)');
 		if (!card) return;
 		card.classList.add('publish-card-wide');
@@ -384,11 +367,12 @@
 		if (!strategy) { showBrowse(false); syncUrl(); return; }
 		strategy = familyDetail(strategy); showView('detail'); state.detail = strategy; if (push) syncUrl(true); renderDetail(strategy);
 		if (state.backend === 'live') {
-			try { const detailed = await api.detail(strategy.id); if (detailed) { const enriched = familyDetail({ ...detailed, family: strategy.family }); state.detail = enriched; strategies = strategies.map((item) => item.id === detailed.id ? { ...item, ...enriched } : item); renderDetail(enriched); } } catch (_) { }
+			try { const detailed = await api.detail(strategy.id); if (detailed) { const enriched = familyDetail({ ...detailed, family: strategy.family }); state.detail = enriched; strategies = strategies.map((item) => item.id === detailed.id ? { ...item, ...enriched } : item); renderDetail(enriched); } } catch (_) { /* list data remains usable */ }
 		}
 	}
 
 	function renderDetailBase(strategy) {
+		document.title = `${strategy.title} | Strategy Network | Ultimate Macro`;
 		const versions = strategy.versions || [];
 		const rated = state.ratings[strategy.id] || 0;
 		els.detail.innerHTML = `<button class="back-link" type="button" data-back>← Back to strategies</button><div class="detail-head"><div class="detail-visual">${thumb(strategy, true)}</div><div class="detail-head-copy"><div class="detail-flags">${strategy.featured ? '<span class="featured-mark">Featured by Ultimate Macro</span>' : ''}${trustMarkup(strategy)}</div><p class="kicker">${esc(strategy.map)} <b>/</b> ${esc(strategy.mode)}</p><h1>${esc(strategy.title)}</h1>${creatorMarkup(strategy)}<p class="detail-summary">${esc(strategy.summary)}</p><div class="detail-stats"><span><b>★ ${Number(strategy.rating || 0).toFixed(1)}</b><small>${number(strategy.ratingCount)} ratings</small></span><span><b>${number(strategy.installs)}</b><small>installs</small></span><span><b>${esc(strategy.metric || 'Not provided')}</b><small>${esc(strategy.metricType || 'Creator reported')}</small></span></div><div class="detail-actions"><button class="btn primary" type="button" data-install="${esc(strategy.id)}">Add to Ultimate Macro <span aria-hidden="true">↗</span></button><button class="btn" type="button" data-report="${esc(strategy.id)}">Report</button></div>${installState(strategy) ? `<p class="detail-install-note">${installState(strategy)} · status supplied by the Ultimate Macro desktop integration.</p>` : ''}${state.admin ? adminMarkup(strategy) : ''}</div></div><div class="detail-layout"><article class="detail-main"><section><p class="kicker">Overview</p><h2>What this run does</h2><p>${esc(strategy.description)}</p></section><section><p class="kicker">Requirements</p><h2>Before you start</h2><dl class="detail-specs"><div><dt>Map</dt><dd>${esc(strategy.map)}</dd></div><div><dt>Mode</dt><dd>${esc(strategy.mode)}</dd></div><div><dt>Grind</dt><dd>${(strategy.grind || []).map(esc).join(', ')}</dd></div><div><dt>Timescale</dt><dd>${esc(strategy.timescale)}</dd></div><div><dt>Skill Tree</dt><dd>${strategy.noSkillTree ? 'Not required' : 'Required or recommended'}</dd></div><div><dt>Towers</dt><dd>${(strategy.towers || []).map(esc).join(', ')}</dd></div><div><dt>Modifiers</dt><dd>${(strategy.modifiers || []).map(esc).join(', ') || 'None listed'}</dd></div></dl></section>${communityNotesMarkup(strategy)}<section><div class="section-row"><div><p class="kicker">Versions</p><h2>Release history</h2></div><button class="text-button" type="button" data-new-version="${esc(strategy.slug)}">Publish new version</button></div><div class="version-list">${versions.length ? versions.map((version, index) => `<div class="version-row"><div><b>v${esc(version.version)}</b>${index === 0 ? '<span class="latest-label">latest</span>' : ''}<small>${esc(version.compatible)} · ${date(version.date)}</small></div><p>${esc(version.notes || 'No release notes.')}</p><div class="version-actions"><button class="btn sm" type="button" data-install-version="${esc(strategy.id)}" data-version="${esc(version.version)}">Add version</button>${state.admin ? `<button class="text-button" type="button" data-admin-version-action="hide" data-admin-strategy="${esc(strategy.id)}" data-admin-version="${esc(version.id)}">Hide version</button>` : ''}</div></div>`).join('') : '<p class="muted">Release metadata is being prepared.</p>'}</div></section></article><aside class="detail-side"><div class="side-card"><p class="kicker">Rate this strategy</p><h3>How was your run?</h3><div class="rating-control" role="group" aria-label="Rate ${esc(strategy.title)}">${[1, 2, 3, 4, 5].map((value) => `<button type="button" data-rate="${value}" aria-label="${value} out of 5 stars" class="${rated === value ? 'selected' : ''}">${value <= rated ? '★' : '☆'}</button>`).join('')}</div><small class="side-note">${state.backend === 'live' ? 'One rating per strategy from this browser. You can change it later.' : 'Preview data only. Ratings are enabled after the server is connected.'}</small></div><div class="side-card"><p class="kicker">Strategy health</p><div class="health-row"><span class="health-dot"></span><b>${esc(strategy.manuallyVerified || strategy.verified ? 'Admin verified' : strategy.communityTested ? 'Community Tested' : strategy.validated ? 'Validated' : 'Not reviewed')}</b></div><p>Validated, community-tested, and admin verification are separate signals. Featured is curated independently.</p><small>Updated ${date(strategy.updated)}</small></div></aside></div>`;
@@ -441,7 +425,7 @@
 			content = `<div class="publish-card review-card"><div class="form-heading"><h2>Here’s what will be shared</h2><p>We’ll check the file, confirm its requirements, and send one immutable release to the Strategy Network.</p></div><div class="post-summary-card"><div class="post-summary-top"><span class="health-dot"></span><span>Community strategy</span><small>First release · immutable</small></div><strong>${inputValue(d, 'title') || 'Untitled strategy'}</strong><p>${inputValue(d, 'description') || 'No description added yet.'}</p><div class="post-summary-meta"><span>${inputValue(d, 'map') || 'Map not selected'}</span><span>${inputValue(d, 'mode') || 'Mode not selected'}</span><span>${inputValue(d, 'timescale') || '1x'}</span></div><div class="post-summary-includes"><span>Includes</span><span>Validated .strat file</span><span>Requirements</span><span>Creator credit</span></div></div><div class="verification-checklist"><div class="checklist-heading"><b>Before we publish</b><small>These checks protect the library from broken uploads.</small></div>${renderCheck('File structure', parsed?.ok ? 'complete' : 'failed', parsed?.ok ? `${number(parsed.commands.length)} supported steps found` : 'Fix the file issues before continuing')}${renderCheck(towerStatus[1], towerStatus[0] === 'review' ? 'review' : 'complete', towerStatus[2])}${renderCheck('Publish service', serverStatus[0], serverStatus[1])}${renderCheck('Community post', parsed?.ok && state.serverReady ? 'complete' : 'review', parsed?.ok && state.serverReady ? 'Ready after the checks above' : 'Waiting for the final checks')}</div><p class="review-footnote">Publishing makes this version immutable. Later changes become a new version. Metrics stay labelled as creator reported.</p><div class="publish-actions"><button class="btn" type="button" data-publish-back>← Back</button><button class="btn primary" type="submit" ${parsed?.ok && state.serverReady ? '' : 'disabled'}>${state.serverReady ? 'Check and publish' : 'Publish unavailable'} <span aria-hidden="true">↗</span></button></div></div>`;
 		}
 		els.publish.innerHTML = `<button class="back-link" type="button" data-back>← Back to strategies</button><div class="publisher-head"><p class="kicker">Community publishing</p><h1>${esc(publisherLabel())}</h1><p>Share a strategy with the community. Upload the file first, then add the few details it cannot know.</p></div>${progress}<form id="publisher-form" novalidate>${content}</form>`;
-		decorateSelects(els.publish); if (step === 2) { enhancePublishComposer(d); polishDetailsStep(existing); }
+		decorateSelects(els.publish); if (step === 2) { enhancePublishComposer(); polishDetailsStep(existing); }
 		const file = document.querySelector('#strategy-file'); file?.addEventListener('change', async () => { collectDraft(); state.file = file.files?.[0] || null; await validateUpload(); });
 		const thumbnail = document.querySelector('#thumbnail-file'); thumbnail?.addEventListener('change', () => { collectDraft(); replaceThumbnail(thumbnail.files?.[0] || null); renderPublisher(); });
 		document.querySelector('#advanced-options')?.addEventListener('toggle', (event) => { state.advancedOpen = event.target.open; });
@@ -638,20 +622,16 @@
 	els.sort.addEventListener('change', (event) => { state.sort = event.target.value; syncUrl(); renderFilters(); state.backend === 'live' ? loadStrategies() : renderBrowse(); });
 	[[els.map, 'map'], [els.mode, 'mode'], [els.tower, 'tower']].forEach(([select, key]) => select.addEventListener('change', () => { state[key] = select.value; syncUrl(); renderFilters(); state.backend === 'live' ? loadStrategies() : renderBrowse(); }));
 	els.noSkillTree.addEventListener('change', () => { state.noSkillTree = els.noSkillTree.checked; syncUrl(); renderFilters(); state.backend === 'live' ? loadStrategies() : renderBrowse(); });
-	[[els.grind, 'grind'], [els.timescale, 'timescale']].forEach(([group, key]) => group.addEventListener('click', (event) => { const button = event.target.closest('button'); if (!button) return; state[key] = state[key] === button.dataset.value ? '' : button.dataset.value; syncUrl(); renderFilters(); state.backend === 'live' ? loadStrategies() : renderBrowse(); }));
+	[ [els.grind, 'grind'], [els.timescale, 'timescale'] ].forEach(([group, key]) => group.addEventListener('click', (event) => { const button = event.target.closest('button'); if (!button) return; state[key] = state[key] === button.dataset.value ? '' : button.dataset.value; syncUrl(); renderFilters(); state.backend === 'live' ? loadStrategies() : renderBrowse(); }));
 	els.filterToggle.addEventListener('click', () => { const open = els.filters.hidden; setFiltersOpen(open); els.filterToggle.innerHTML = `<span>${open ? 'Hide filters' : 'Filter'}</span><span class="control-chevron" aria-hidden="true"></span>`; });
 	document.querySelector('#clear-filters')?.addEventListener('click', clearAll);
 	document.querySelector('#publish-open')?.addEventListener('click', () => openPublisher());
 	els.admin?.addEventListener('click', () => state.admin ? adminPanel() : adminLoginModal());
 	document.querySelector('.modal-backdrop')?.addEventListener('click', closeModal);
-	window.addEventListener('message', (event) => {
-		if (event.source !== window || event.origin !== window.location.origin) return;
-		if (!event.data || event.data.source !== 'ultimatemacro') return;
-		if (event.data.type === 'strategy-state' && event.data.installed && typeof event.data.installed === 'object') { state.installed = event.data.installed; renderBrowse(); if (state.detail) renderDetail(state.detail); }
-	});
+	window.addEventListener('message', (event) => { if (!event.data || event.data.source !== 'ultimatemacro') return; if (event.data.type === 'strategy-state' && event.data.installed && typeof event.data.installed === 'object') { state.installed = event.data.installed; renderBrowse(); if (state.detail) renderDetail(state.detail); } });
 	window.addEventListener('popstate', () => { readUrlState(); renderFilters(); if (state.view === 'publish') { renderPublisher(); } else if (state.view === 'detail') { openDetail(new URLSearchParams(window.location.search).get('strategy'), false); } else { showBrowse(false); state.backend === 'live' ? loadStrategies() : renderBrowse(); } });
 	function updateAdminButton() { if (els.admin) { els.admin.setAttribute('aria-label', state.admin ? 'Admin controls' : 'Admin access'); els.admin.title = state.admin ? 'Admin controls' : 'Admin access'; els.admin.classList.toggle('active', state.admin); } }
-	async function checkAdmin() { if (state.backend !== 'live') return; try { const result = await api.adminRequest('/session'); state.admin = Boolean(result?.authenticated); updateAdminButton(); } catch (_) { } }
+	async function checkAdmin() { if (state.backend !== 'live') return; try { const result = await api.adminRequest('/session'); state.admin = Boolean(result?.authenticated); updateAdminButton(); } catch (_) {} }
 	async function boot() { readUrlState(); if (!STRATEGY_NETWORK_ENABLED) { renderUnavailable(); return; } renderFilters(); setBackendStatus(); renderLoading(); await loadStrategies(); await checkServerReady(); await checkAdmin(); if (state.view === 'publish') { showView('publish'); renderPublisher(); } else if (state.view === 'detail') await openDetail(new URLSearchParams(window.location.search).get('strategy'), false); else showBrowse(false); window.postMessage({ source: 'strategy-network', type: 'request-strategy-state', protocol: 'ultimatemacro://install-strategy' }, '*'); }
 	boot();
 })();

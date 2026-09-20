@@ -7,10 +7,12 @@
 
 	UM.initChrome();
 
-	var links = qsa('.toc a[href^="#"]');
+	var links = qsa('.toc a');
 	var sections = links
 		.map(function (a) {
-			return document.getElementById(a.getAttribute('href').slice(1));
+			var href = a.getAttribute('href') || '';
+			var id = a.dataset.section || (href.charAt(0) === '#' ? href.slice(1) : '');
+			return id ? document.getElementById(id) : null;
 		})
 		.filter(Boolean);
 
@@ -20,11 +22,17 @@
 			'<option value="">Jump to a section…</option>' +
 			sections
 				.map(function (s) {
-					return '<option value="' + UM.esc(s.id) + '">' + UM.esc(s.dataset.tocLabel || s.id) + '</option>';
+					return '<option value="' + s.id + '">' + (s.dataset.tocLabel || s.id) + '</option>';
 				})
 				.join('');
 		on(jump, 'change', function () {
-			if (jump.value && document.getElementById(jump.value)) location.hash = jump.value;
+			var link = links.find(function (a) { return (a.dataset.section || (a.getAttribute('href') || '').slice(1)) === jump.value; });
+			if (link && (link.getAttribute('href') || '').charAt(0) !== '#') {
+				location.href = link.href;
+				return;
+			}
+			var target = document.getElementById(jump.value);
+			if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		});
 	}
 
@@ -40,7 +48,9 @@
 						return visible[s.id];
 					}) || sections[0];
 				links.forEach(function (a) {
-					a.classList.toggle('current', a.getAttribute('href') === '#' + active.id);
+					var href = a.getAttribute('href') || '';
+					var id = a.dataset.section || (href.charAt(0) === '#' ? href.slice(1) : '');
+					a.classList.toggle('current', id === active.id);
 				});
 				if (jump && jump.value !== active.id) jump.value = active.id;
 			},
