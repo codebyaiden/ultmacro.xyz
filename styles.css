@@ -702,3 +702,24 @@ html.light-mode .menu-backdrop { background: rgba(31,55,80,.18); }
 	.nav-shell > .brand { font-size: 12px; }
 	.nav-shell .menu-button { width: 36px; height: 36px; }
 }
+
+/* prevent injected settings/version controls from creating a second header row */
+@media (min-width: 981px) {
+	.nav-shell {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: 0;
+	}
+	.nav-shell > .brand,
+	.nav-shell > .home-context,
+	.nav-shell > nav,
+	.nav-shell > .nav-actions {
+		min-width: 0;
+		flex: 0 0 auto;
+	}
+	.nav-shell > .home-context { margin-right: auto; }
+	.nav-shell > nav { margin-left: auto; }
+	.nav-shell > .nav-actions { margin-left: 18px; }
+	.nav-shell > nav a { white-space: nowrap; }
+}
