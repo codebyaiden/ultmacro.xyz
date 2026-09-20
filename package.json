@@ -1,0 +1,19 @@
+{
+  "name": "ultmacro-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint app.js site.js src/*.js",
+    "build": "node scripts/build.mjs",
+    "verify-routes": "node scripts/verify-routes.mjs",
+    "check": "npm run typecheck && npm run lint && npm run build && npm run verify-routes"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0",
+    "typescript": "^5.9.3"
+  }
+}

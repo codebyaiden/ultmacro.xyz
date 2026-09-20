@@ -1,0 +1,93 @@
+[Settings]
+map=Wretched Front
+difficulty=Hardcore
+requiredTowers=Crook Boss, Farm, Electroshocker, Scout, Minigunner
+modifiers=
+autoChain=OFF
+autoCaravan=OFF
+autoDropTheBeat=OFF
+autoSkip=ON
+abilitySpam=OFF
+moveEnabled=0
+moveDirection=W
+moveDuration=5000
+
+[DO NOT EDIT]
+width=2560
+height=1369
+
+[Steps]
+SpawnTower(764, 588, 2, Farm1)
+SpawnTower(788, 657, 2, Farm2)
+SpawnTower(814, 727, 2, Farm3)
+UpgradeTower(Farm1)
+UpgradeTower(Farm2)
+UpgradeTower(Farm3)
+SpawnTower(851, 797, 2, Farm4)
+UpgradeTower(Farm4)
+SpawnTower(881, 873, 2, Farm5)
+UpgradeTower(Farm5)
+SpawnTower(703, 675, 2, Farm6)
+UpgradeTower(Farm6)
+SpawnTower(1536, 1236, 3, Electroshocker1)
+UpgradeTower(Electroshocker1)
+SpawnTower(721, 749, 2, Farm7)
+SpawnTower(755, 824, 2, Farm8)
+UpgradeTower(Farm8)
+UpgradeTower(Farm7)
+SpawnTower(781, 906, 2, Farm9)
+UpgradeTower(Farm9)
+SpawnTower(699, 905, 2, Farm10)
+UpgradeTower(Farm10)
+UpgradeTower(Farm1)
+UpgradeTower(Farm2)
+UpgradeTower(Farm3)
+UpgradeTower(Farm4)
+UpgradeTower(Farm5)
+UpgradeTower(Farm6)
+UpgradeTower(Farm7)
+UpgradeTower(Farm8)
+UpgradeTower(Farm9)
+UpgradeTower(Farm10)
+UpgradeTower(Electroshocker1)
+UpgradeTower(Electroshocker1)
+UpgradeTower(Farm1)
+UpgradeTower(Farm2)
+UpgradeTower(Farm3)
+UpgradeTower(Farm4)
+UpgradeTower(Farm5)
+UpgradeTower(Farm6)
+UpgradeTower(Farm7)
+UpgradeTower(Farm8)
+UpgradeTower(Farm9)
+UpgradeTower(Farm10)
+SpawnTower(1459, 1235, 1, CrookBoss1)
+UpgradeTower(CrookBoss1)
+UpgradeTower(CrookBoss1)
+UpgradeTower(CrookBoss1)
+SpawnTower(1612, 1227, 3, Electroshocker2)
+UpgradeTower(Electroshocker2)
+UpgradeTower(Electroshocker2)
+UpgradeTower(Electroshocker2)
+SpawnTower(1535, 1152, 3, Electroshocker3)
+UpgradeTower(Electroshocker3)
+UpgradeTower(Electroshocker3)
+UpgradeTower(Electroshocker3)
+SpawnTower(1614, 1144, 3, Electroshocker4)
+UpgradeTower(Electroshocker4)
+UpgradeTower(Electroshocker4)
+UpgradeTower(Electroshocker4)
+SpawnTower(1382, 1237, 1, CrookBoss2)
+UpgradeTower(CrookBoss2)
+UpgradeTower(CrookBoss2)
+UpgradeTower(CrookBoss2)
+SpawnTower(1306, 1236, 1, CrookBoss3)
+UpgradeTower(CrookBoss3)
+UpgradeTower(CrookBoss3)
+UpgradeTower(CrookBoss3)
+SpawnTower(1344, 1164, 1, CrookBoss4)
+UpgradeTower(CrookBoss4)
+UpgradeTower(CrookBoss4)
+UpgradeTower(CrookBoss4)
+SpawnTower(1800, 881, 4, Scout1)
+SpawnTower(1708, 851, 5, Minigunner1)
