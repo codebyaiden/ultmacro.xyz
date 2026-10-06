@@ -5,6 +5,7 @@ import health from './api/health.mjs';
 import strategies from './api/strategy-network.mjs';
 import admin from './api/admin.mjs';
 import poll, { MAX_POLL_BYTES } from './api/poll.mjs';
+import pollTeam from './api/poll-team.mjs';
 
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 3000);
@@ -65,6 +66,7 @@ async function handleApi(req, res, body) {
   let response;
   if (pathname === '/api/health') response = await health(request);
   else if (pathname === '/api/strategies' || pathname.startsWith('/api/strategies/')) response = await strategies(request);
+  else if (pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/')) response = await pollTeam(request);
   else if (pathname === '/api/poll' || pathname.startsWith('/api/poll/')) response = await poll(request);
   else if (pathname === '/api/admin' || pathname.startsWith('/api/admin/')) response = await admin(request);
   else return send(res, 404, 'not found\n', { 'content-type': 'text/plain; charset=utf-8' });
@@ -73,9 +75,16 @@ async function handleApi(req, res, body) {
   return send(res, response.status, responseBody, headers);
 }
 
-async function serveStatic(req, res) {
+async function serveStatic(req, res, body = Buffer.alloc(0)) {
   let requestPath;
   try { requestPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); } catch { return send(res, 400, 'bad path\n'); }
+  requestPath = requestPath.replaceAll('\\', '/').replace(/^\/+/, '/');
+  if (requestPath === '/poll/team' || requestPath.startsWith('/poll/team/')) {
+    const request = toRequest(req, body);
+    const canonical = new URL(request.url); canonical.pathname = requestPath;
+    const response = await pollTeam(new Request(canonical, request));
+    return send(res, response.status, req.method === 'HEAD' ? null : Buffer.from(await response.arrayBuffer()), Object.fromEntries(response.headers));
+  }
   if (requestPath.startsWith('/api/')) return send(res, 404, 'not found\n');
   let target = safePath(siteRoot, requestPath === '/' ? 'index.html' : requestPath.slice(1));
   if (!target) return send(res, 400, 'bad path\n');
@@ -94,9 +103,9 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!['GET', 'HEAD', 'POST', 'OPTIONS'].includes(req.method)) return send(res, 405, 'method not allowed\n', { allow: 'GET, HEAD, POST, OPTIONS' });
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const body = req.method === 'POST' ? await requestBody(req, pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
+    const body = req.method === 'POST' ? await requestBody(req, pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/') || pathname.startsWith('/poll/team/') ? 1024 : pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
     if (pathname.startsWith('/api/')) await handleApi(req, res, body);
-    else await serveStatic(req, res);
+    else await serveStatic(req, res, body);
   } catch (caught) { send(res, Number(caught.status || 500), Number(caught.status) === 413 ? 'request too large\n' : 'internal server error\n'); }
 });
 

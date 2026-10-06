@@ -39,6 +39,23 @@ test("standalone server serves /poll and existing pages, routes API, and caps po
       assert.equal((await fetch(url + pathname)).status, 200, pathname);
     assert.match(await (await fetch(url + "/poll")).text(), /help shape/);
     assert.equal((await fetch(url + "/api/poll")).status, 503);
+    for (const pathname of [
+      "/poll/team",
+      "/poll/team/",
+      "/poll/team/index.html",
+      "/poll%5Cteam%5Cindex.html",
+      "/poll/%74eam/index.html",
+      "/api/poll-team",
+      "/poll/team/access/" + "a".repeat(43),
+    ]) {
+      const response = await fetch(url + pathname);
+      assert.equal(
+        response.status,
+        503,
+        pathname + " must be routed through staff authorization",
+      );
+      assert.equal(response.headers.get("cache-control"), "no-store");
+    }
     assert.equal((await fetch(url + "/api/poll/team")).status, 404);
     assert.equal(
       (
