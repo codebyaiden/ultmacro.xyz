@@ -86,7 +86,9 @@ for (const [name, width, height] of [
     questions = 0;
   for (let limit = 0; limit < 50; limit++) {
     assert.equal(
-      await page.locator(".question .eyebrow,.art-caption,.art-label").count(),
+      await page
+        .locator(".question .eyebrow,.art-caption,.art-label,.branch-context")
+        .count(),
       0,
     );
     assert.ok(
@@ -104,6 +106,23 @@ for (const [name, width, height] of [
         "These are possibilities, not promises.",
       ),
     );
+    assert.ok(
+      !(await page.locator("main").innerText()).includes(
+        "Choose the answer that fits best.",
+      ),
+    );
+    if (await page.locator('.choices input[type="radio"]').count())
+      assert.equal(await page.locator(".question .description").count(), 0);
+    if (await page.locator(".ranking").count())
+      assert.equal(
+        await page.locator(".description").textContent(),
+        "Most important first.",
+      );
+    if (await page.locator(".text-answer").count()) {
+      assert.ok(
+        !(await page.locator("main").innerText()).includes("Optional."),
+      );
+    }
     const heading = await page.locator("main h1").textContent();
     if (heading === "Ready to send your feedback?") break;
     if (
@@ -341,6 +360,99 @@ console.log(
   console.log(
     "in-flight draft recovery, navigation lock, and keyboard focus passed",
   );
+}
+// Render every definition, including legacy resumes, with stale helper copy.
+{
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+    reducedMotion: "reduce",
+  });
+  const page = await context.newPage();
+  let fixture;
+  await page.route("**/api/poll", (route) => route.fulfill({ json: fixture }));
+  let checked = 0;
+  for (const definition of [
+    await import("../api/_lib/poll-definition-v1.mjs"),
+    await import("../api/_lib/poll-definition.mjs"),
+  ]) {
+    for (const question of definition.questions) {
+      const q = {
+        ...question,
+        description:
+          question.description || "Choose the answer that fits best.",
+        options:
+          question.type === "ranking"
+            ? definition.questions
+                .find((item) => item.id === "features")
+                .options.slice(0, 2)
+            : question.options,
+      };
+      fixture = {
+        version: definition.surveyVersion,
+        revision: 0,
+        completed: false,
+        current: q.id,
+        answers: {},
+        path: [q],
+        progress: 0.5,
+        remainingSeconds: 180,
+      };
+      await page.goto(baseURL + "/poll");
+      await page.getByRole("heading", { name: q.title, exact: true }).waitFor();
+      assert.equal(
+        await page
+          .locator(".eyebrow,.branch-context,.art-caption,.art-label")
+          .count(),
+        0,
+      );
+      const description = await page
+        .locator(".question .description")
+        .allTextContents();
+      const expected =
+        q.type === "multiple"
+          ? q.id === "features"
+            ? `Choose up to ${q.maxChoices}.`
+            : "Select all that apply."
+          : q.type === "ranking"
+            ? "Most important first."
+            : q.id === "final"
+              ? "Don’t include personal information."
+              : "";
+      assert.deepEqual(description, expected ? [expected] : [], q.id);
+      if (q.type === "rating") {
+        assert.equal(
+          await page.locator('.rating input[type="radio"]').count(),
+          5,
+        );
+        assert.ok(
+          (await page.locator(".rating-labels").innerText()).includes(q.low),
+        );
+        assert.ok(
+          (await page.locator(".rating-labels").innerText()).includes(q.high),
+        );
+      }
+      assert.equal(
+        await page.evaluate(() => document.documentElement.scrollWidth),
+        390,
+        q.id,
+      );
+      if (
+        definition.surveyVersion === "um-feedback-v2" &&
+        ["cloud_use", "features"].includes(q.id)
+      )
+        await page.screenshot({
+          path: `/tmp/poll-minimal-${q.id}.png`,
+          fullPage: true,
+        });
+      checked++;
+    }
+  }
+  console.log(
+    `${checked} question definitions render with only necessary helper copy`,
+  );
+  await context.close();
 }
 await browser.close();
 if (process.env.POLL_BROWSER_HARNESS) process.exit(0);
