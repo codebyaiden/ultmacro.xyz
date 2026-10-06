@@ -7,6 +7,7 @@ import { createStaffStore, tokenHash } from "../api/_lib/poll-staff.mjs";
 import { createAnalytics, parseFilters } from "../api/_lib/poll-analytics.mjs";
 import { createPollStore } from "../api/_lib/poll-store.mjs";
 import { createTeamHandler } from "../api/poll-team.mjs";
+import { questions } from "../api/_lib/poll-definition.mjs";
 import { calculate } from "../api/_lib/poll-engine.mjs";
 const enabled = Boolean(
   process.env.POLL_TEST_PGLITE_MODULE || process.env.TEST_POLL_DATABASE_URL,
@@ -435,7 +436,10 @@ test(
           const data = await analytics.overview(f(""));
           assert.equal(data.total, 2004);
           assert.equal(data.satisfaction.answered, 2003);
-          assert.ok(data.features.counts.length <= 10);
+          assert.ok(
+            data.features.counts.length <=
+              questions.find((q) => q.id === "features").options.length,
+          );
           const responses = await analytics.responses(f(""));
           assert.equal(responses.rows.length, 25);
           assert.equal(responses.hasMore, true);

@@ -82,17 +82,22 @@ test(
       );
       while (r.current !== "navigation") {
         const q = calculate(r.answers).path.find((q) => q.id === r.current);
-        const value = q.optional
-          ? null
-          : q.id === "lab_use"
-            ? "often"
-            : q.id === "focus"
-              ? "both"
-              : q.type === "rating"
-                ? 1
-                : q.type === "short"
-                  ? "some feedback"
-                  : q.options[0].value;
+        const value =
+          q.type === "rating"
+            ? 1
+            : q.type === "short"
+              ? "some feedback"
+              : q.optional
+                ? null
+                : q.id === "lab_use"
+                  ? "often"
+                  : q.id === "focus"
+                    ? "both"
+                    : q.type === "rating"
+                      ? 1
+                      : q.type === "short"
+                        ? "some feedback"
+                        : q.options[0].value;
         r = await store.update("a".repeat(64), r.revision, {
           action: "answer",
           questionId: q.id,
@@ -119,17 +124,22 @@ test(
       assert.equal(stale.rows.length, 0);
       while (r.current) {
         const q = calculate(r.answers).path.find((q) => q.id === r.current);
-        const value = q.optional
-          ? null
-          : q.type === "rating"
-            ? 4
-            : q.type === "short" || q.type === "long"
-              ? "feedback"
-              : q.type === "multiple"
-                ? [q.options[0].value]
-                : q.type === "ranking"
-                  ? q.options.map((o) => o.value)
-                  : q.options[0].value;
+        const value =
+          q.type === "rating"
+            ? 1
+            : q.type === "short"
+              ? "some feedback"
+              : q.optional
+                ? null
+                : q.type === "rating"
+                  ? 4
+                  : q.type === "short" || q.type === "long"
+                    ? "feedback"
+                    : q.type === "multiple"
+                      ? [q.options[0].value]
+                      : q.type === "ranking"
+                        ? q.options.map((o) => o.value)
+                        : q.options[0].value;
         r = await store.update("a".repeat(64), r.revision, {
           action: "answer",
           questionId: q.id,

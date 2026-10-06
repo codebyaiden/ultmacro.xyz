@@ -26,7 +26,9 @@ for (const [name, width, height] of [
   ["iphone", 390, 844],
   ["small-phone", 320, 640],
   ["ipad", 820, 1180],
+  ["landscape", 844, 390],
   ["desktop", 1440, 900],
+  ["wide", 1920, 1080],
 ]) {
   const context = await browser.newContext({
       viewport: { width, height },
@@ -40,6 +42,12 @@ for (const [name, width, height] of [
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(baseURL + "/poll");
   await page.getByRole("button", { name: "Start survey" }).waitFor();
+  assert.equal(
+    await page.evaluate(() =>
+      document.querySelector("header").contains(document.querySelector("main")),
+    ),
+    false,
+  );
   if (process.env.POLL_TEST_MOTION !== "on")
     assert.equal(
       await page.evaluate(() => document.getAnimations().length),
@@ -48,7 +56,9 @@ for (const [name, width, height] of [
     );
   assert.ok(
     await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
     ),
     name + " landing overflow",
   );
@@ -94,7 +104,9 @@ for (const [name, width, height] of [
     assert.equal(await page.locator("main h1").count(), 1);
     assert.ok(
       await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
       ),
       name + " question overflow: " + heading,
     );
@@ -132,7 +144,7 @@ for (const [name, width, height] of [
       [
         "How easy is it to find your way around?",
         "Put your selected ideas in priority order.",
-        "Why do you prefer that we focus on both?",
+        "What would focusing on only one leave unresolved?",
       ].includes(heading)
     ) {
       await page.waitForTimeout(600);
@@ -303,14 +315,6 @@ console.log(
     (await page.evaluate(() => fetch("/api/poll").then((r) => r.json())))
       .current,
     "lab_use",
-  );
-  await page.getByRole("button", { name: "A little spark" }).click();
-  await page.getByRole("button", { name: "A little spark" }).click();
-  await page.getByRole("button", { name: "A little spark" }).click();
-  assert.ok(
-    (await page.locator("#motion-note").textContent()).includes(
-      "understatement",
-    ),
   );
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.waitForFunction(() => document.getAnimations().length === 0);

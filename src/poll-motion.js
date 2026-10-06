@@ -15,27 +15,6 @@
     Updates: "updates",
     "One last thing": "final",
   };
-  const labels = {
-    you: ["01", "first, a little about you.", "every setup has a story."],
-    experience: ["02", "the whole picture.", "what’s working. what isn’t."],
-    reliability: [
-      "03",
-      "built to keep going.",
-      "good runs should be the rule.",
-    ],
-    priorities: [
-      "04",
-      "pick our next direction.",
-      "your trade-offs shape ours.",
-    ],
-    interface: ["05", "room to breathe.", "less searching. more doing."],
-    lab: ["06", "from idea to action.", "make the tools work for you."],
-    features: ["07", "what deserves to exist?", "possibilities, not promises."],
-    cloud: ["08", "everything, connected.", "one setup. wherever you are."],
-    community: ["09", "better, together.", "a good community goes both ways."],
-    updates: ["10", "keep you in the loop.", "clear words. fewer surprises."],
-    final: ["11", "make it count.", "we’re listening."],
-  };
   function node(tag, cls, text) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -69,17 +48,10 @@
     });
   }
   function art(section) {
-    const scene = sceneNames[section] || "you",
-      info = labels[scene];
+    const scene = sceneNames[section] || "you";
     const aside = node("aside", "section-art");
     aside.setAttribute("aria-hidden", "true");
     aside.dataset.scene = scene;
-    const caption = node("div", "art-caption");
-    caption.append(
-      node("span", "art-index", info[0]),
-      node("span", "art-label", info[1]),
-    );
-    aside.append(caption);
     const stage = node("div", "art-stage");
     if (
       scene === "reliability" ||
@@ -92,11 +64,7 @@
         bar.style.setProperty("--i", i);
         signal.append(bar);
       }
-      stage.append(
-        signal,
-        node("div", "signal-baseline"),
-        node("span", "art-code", "RUN → RECOVER → REPEAT"),
-      );
+      stage.append(signal, node("div", "signal-baseline"));
     } else if (scene === "interface") {
       const mocks = node("div", "layout-studies");
       for (const [index, title] of ["compact", "detailed"].entries()) {
@@ -117,10 +85,7 @@
         else card.append(node("span", "mock-run", "↗"));
         mocks.append(card);
       }
-      stage.append(
-        mocks,
-        node("span", "art-code", "LAYOUT STUDIES · NOT SCREENSHOTS"),
-      );
+      stage.append(mocks);
     } else if (scene === "lab") {
       const blocks = node("div", "lab-timeline");
       ["place tower", "upgrade", "wait", "run it back"].forEach(
@@ -135,7 +100,7 @@
           blocks.append(row);
         },
       );
-      stage.append(blocks, node("span", "art-code", "IDEA → RECORD → REFINE"));
+      stage.append(blocks);
     } else if (scene === "cloud" || scene === "community") {
       const network = node(
         "div",
@@ -150,35 +115,17 @@
         node("i", "network-link link-b"),
         node("i", "data-dot"),
       );
-      stage.append(
-        network,
-        node(
-          "span",
-          "art-code",
-          scene === "cloud"
-            ? "SYNC / EVERY LITTLE DETAIL"
-            : "A PLACE TO FIGURE IT OUT",
-        ),
-      );
+      stage.append(network);
     } else {
       const prism = node("div", "idea-prism");
       for (let i = 0; i < 3; i++) {
         const plane = node("div", "prism-plane plane-" + i);
-        plane.append(node("span", "", "✳"));
+
         prism.append(plane);
       }
-      stage.append(
-        prism,
-        node(
-          "span",
-          "art-code",
-          scene === "features"
-            ? "YOUR PRIORITIES → OUR NEXT MOVE"
-            : "ONE ANSWER. NEW POSSIBILITIES.",
-        ),
-      );
+      stage.append(prism);
     }
-    aside.append(stage, node("p", "art-footnote", info[2]));
+    aside.append(stage);
     return aside;
   }
   function scene(section) {
@@ -494,34 +441,16 @@
       }
     }
   });
-  const secret = document.querySelector(".orbit-secret");
-  let sparks = 0;
-  secret?.addEventListener("click", () => {
-    sparks++;
-    pulse(secret);
-    if (sparks % 3 === 0) {
-      cue(
-        "a lot is an understatement. — someone in a very familiar turtleneck",
-      );
-      animate(
-        document.querySelector(".brand-mark"),
-        [{ transform: "rotate(0)" }, { transform: "rotate(360deg)" }],
-        { duration: 700 },
-      );
-    } else
-      cue(sparks === 1 ? "you found the little spark." : "okay, one more.");
-  });
-  document.querySelector("#save-status") &&
-    new MutationObserver(() => {
-      const text = document.querySelector("#save-status").textContent;
-      document.body.dataset.save = text.includes("Saving")
-        ? "saving"
-        : text.includes("Not saved")
-          ? "offline"
-          : text.includes("Saved")
-            ? "saved"
-            : "waiting";
-    }).observe(document.querySelector("#save-status"), { childList: true });
+  new MutationObserver(() => {
+    const text = document.querySelector("#save-status").textContent;
+    document.body.dataset.save = text.includes("Saving")
+      ? "saving"
+      : text.includes("Not saved")
+        ? "offline"
+        : text.includes("Saved")
+          ? "saved"
+          : "waiting";
+  }).observe(document.querySelector("#save-status"), { childList: true });
   const landing = document.querySelector(".landing");
   landing
     ?.querySelectorAll(

@@ -14,7 +14,11 @@
 * {
   box-sizing: border-box;
 }
+html {
+  overflow-x: clip;
+}
 body {
+  overflow-x: clip;
   margin: 0;
   min-height: 100svh;
   display: flex;
@@ -428,8 +432,12 @@ h1 {
 }
 @keyframes mascot-float {
   0%,
-  100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-5px) rotate(1deg); }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1deg);
+  }
 }
 .core-symbol {
   font-size: 56px;
@@ -2121,4 +2129,48 @@ body[data-save="offline"] .save-orb {
   .gradient {
     background-position: 30% 50%;
   }
+}
+
+/* Keep rating numerals centered instead of stretching with the choice label. */
+.rating .choice-label {
+  flex: 0 0 auto;
+  line-height: 1;
+}
+.rating-labels {
+  gap: 20px;
+}
+.rating-labels span {
+  max-width: 48%;
+}
+.rating-labels span:last-child {
+  text-align: right;
+}
+.option-description {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+  font-weight: 400;
+}
+.progress-meta {
+  justify-content: flex-end;
+}
+.controls {
+  flex-wrap: wrap;
+}
+.rating-skip {
+  white-space: normal;
+}
+@media (max-width: 700px) {
+  .section-art {
+    display: none;
+  }
+}
+
+svg.card-glyph {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  padding: 0;
 }

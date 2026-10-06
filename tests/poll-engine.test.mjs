@@ -92,7 +92,7 @@ test("ranking uses only selected features and neutral wording", () => {
 test("validates all answer types without coercing untrusted values", () => {
   for (const q of questions) {
     if (q.type === "rating")
-      for (const bad of [0, 6, "3", null, {}, NaN])
+      for (const bad of [0, 6, "3", {}, NaN, ...(q.optional ? [] : [null])])
         assert.throws(() => validateAnswer(q, bad));
     if (q.type === "single")
       for (const bad of ["__invalid", {}, [], ...(q.optional ? [] : [null])])
@@ -160,4 +160,72 @@ test("ETA reserves likely follow-ups until answers rule them out", () => {
     calculate({ navigation: 1 }).path.find((q) => q.id === "clutter").title,
     "What makes navigating Ultimate Macro difficult?",
   );
+});
+
+test("inexperienced users can skip ratings without retaining satisfaction follow-ups", () => {
+  for (const q of questions.filter((q) => q.type === "rating")) {
+    assert.equal(validateAnswer(q, null), null);
+    assert.ok(q.low && q.high && q.skipLabel);
+  }
+  const clean = pruneAnswers({
+    satisfaction: null,
+    satisfaction_low: "old",
+    satisfaction_high: "old",
+  });
+  assert.equal(clean.satisfaction_low, undefined);
+  assert.equal(clean.satisfaction_high, undefined);
+  assert.ok(!ids(clean).some((id) => id.startsWith("satisfaction_")));
+});
+test("written follow-ups are optional and unsure feature interest skips ranking", () => {
+  for (const id of [
+    "satisfaction_low",
+    "satisfaction_middle",
+    "satisfaction_high",
+    "missing_features",
+    "final",
+  ])
+    assert.equal(
+      validateAnswer(
+        questions.find((q) => q.id === id),
+        null,
+      ),
+      null,
+    );
+  assert.ok(!ids({ features: ["unsure"] }).includes("feature_rank"));
+  assert.throws(() =>
+    validateAnswer(
+      questions.find((q) => q.id === "features"),
+      ["unsure", "goals"],
+    ),
+  );
+  assert.equal(
+    pruneAnswers({ features: ["unsure"], feature_rank: ["goals", "themes"] })
+      .feature_rank,
+    undefined,
+  );
+});
+
+test("skipping navigation does not imply difficulty", () => {
+  assert.equal(
+    calculate({ navigation: null }).path.find((q) => q.id === "clutter").title,
+    "What feels cluttered or difficult?",
+  );
+});
+
+test("unknown usage skips irrelevant Lab, Cloud, and reliability details", () => {
+  const path = ids({
+    lab_use: "unknown",
+    cloud_use: "unknown",
+    success: "unknown",
+    discord: ["none"],
+  });
+  for (const id of [
+    "lab_ease",
+    "lab_improve",
+    "lab_stopped",
+    "cloud_reliability",
+    "failure",
+    "support",
+  ])
+    assert.ok(!path.includes(id));
 });

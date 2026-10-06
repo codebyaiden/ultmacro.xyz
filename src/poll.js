@@ -69,24 +69,6 @@
     });
     previousSection = q?.section || null;
   }
-  function branchMessage(q) {
-    const notes = {
-      satisfaction_low:
-        "Your experience comes first. Let’s understand what went wrong.",
-      satisfaction_middle: "You gave it a 3. What would move the needle?",
-      satisfaction_high: "Let’s keep the good parts good.",
-      reliability_priority: "Reliability first. Let’s get specific.",
-      missing_features: "New possibilities. What’s the missing piece?",
-      both_reason: "Both equally. We hear you — tell us why.",
-      tie_breaker: "One release. One tough call.",
-      lab_stopped: "Tried it, left it. That’s useful feedback.",
-      lab_ease: "You’ve used the tools. You know the friction.",
-      lab_improve: "Let’s make the Lab work better for you.",
-      feature_rank: "Your shortlist. Now, your priorities.",
-      cloud_reliability: "You use Cloud. Let’s talk about the connection.",
-    };
-    return notes[q.id] && transitionFrom ? notes[q.id] : null;
-  }
 
   let state = null,
     draft = null,
@@ -228,22 +210,13 @@
       });
     return queue;
   }
-  const discoveries = new Set();
   function changed(value) {
-    const q = currentQuestion();
-    const wink =
-      q?.id === "features" && Array.isArray(value) && value.includes("none")
-        ? "sometimes the best new feature is fewer new features."
-        : q?.id === "satisfaction" && value === 5
-          ? "we’ll try not to get smug."
-          : null;
-    if (wink && !discoveries.has(q.id)) {
-      discoveries.add(q.id);
-      motion.cue(wink);
-    }
     draft = value;
     dirty = true;
     remember();
+    const next = main.querySelector("button[type=submit]");
+    if (next)
+      next.disabled = draft === null || (Array.isArray(draft) && !draft.length);
     clearError();
     status.textContent = "Waiting to save…";
     clearTimeout(timer);
@@ -308,17 +281,11 @@
       }
       const section = el("section", "completion");
       section.append(
-        el("p", "eyebrow", "YOUR INPUT. ALREADY PART OF WHAT’S NEXT."),
         el("h1", "", "that’s everything."),
         el(
           "p",
           "completion-copy",
           "Thanks for helping us build a better Ultimate Macro.",
-        ),
-        el(
-          "p",
-          "intro",
-          "Your feedback will help us decide what deserves attention next.",
         ),
       );
       const active = storedTime();
@@ -331,7 +298,7 @@
           el(
             "p",
             "adapt-note",
-            `about ${Math.max(1, Math.round(active.milliseconds / 60000))} active min · breaks don’t count.`,
+            `about ${Math.max(1, Math.round(active.milliseconds / 60000))} active min`,
           ),
         );
       const home = el("a", "primary", "Back to Ultimate Macro");
@@ -342,12 +309,7 @@
       return;
     }
     const meta = el("div", "progress-meta");
-    const identity = el("span", "progress-identity");
-    identity.append(
-      el("i", "progress-dot"),
-      el("span", "", "your feedback / your direction"),
-    );
-    meta.append(identity, el("span", "", ""));
+    meta.append(el("span", "", ""));
     meta.lastChild.id = "eta";
     const progress = el("progress", "progress");
     progress.max = 1;
@@ -361,7 +323,6 @@
     if (!state.current) {
       const section = el("section", "review");
       section.append(
-        el("p", "eyebrow", "ALL SET"),
         el("h1", "", "Ready to send your feedback?"),
         el(
           "p",
@@ -420,24 +381,17 @@
       }
     }
     const section = el("section", "question");
-    const branch = branchMessage(q);
-    if (branch) section.append(el("p", "branch-note", branch));
     section.append(el("p", "eyebrow", q.section.toUpperCase()));
     const heading = el("h1", "", q.title);
     heading.id = "question-title";
     section.append(heading);
-    const description = el(
-      "p",
-      "description",
-      q.description ||
-        (q.optional
-          ? "Optional — skip if you prefer."
-          : q.type === "multiple"
-            ? "Choose all that apply."
-            : "Choose the answer that fits best."),
-    );
-    description.id = "question-description";
-    section.append(description);
+    const descriptionText =
+      q.description || (q.optional && q.type !== "rating" ? "Optional" : "");
+    if (descriptionText) {
+      const description = el("p", "description", descriptionText);
+      description.id = "question-description";
+      section.append(description);
+    }
     const form = el("form");
     form.setAttribute("aria-labelledby", "question-title");
     if (["single", "multiple", "rating"].includes(q.type)) {
@@ -445,7 +399,8 @@
         "fieldset",
         q.type === "rating" ? "choices rating" : "choices",
       );
-      fieldset.setAttribute("aria-describedby", "question-description");
+      if (descriptionText)
+        fieldset.setAttribute("aria-describedby", "question-description");
       const legend = el("legend", "sr-only", q.title);
       fieldset.append(legend);
       const options =
@@ -464,7 +419,9 @@
             : draft === option.value;
         input.setAttribute(
           "aria-label",
-          q.type === "rating" ? `${option.value} out of 5` : option.label,
+          q.type === "rating"
+            ? `${option.value} out of 5${option.value === 1 ? ": " + q.low : option.value === 5 ? ": " + q.high : ""}`
+            : option.label,
         );
         input.addEventListener("change", () => {
           if (q.type === "multiple") {
@@ -497,7 +454,12 @@
         key.setAttribute("aria-hidden", "true");
         const mark = el("span", "choice-mark", "✓");
         mark.setAttribute("aria-hidden", "true");
-        label.append(input, key, el("span", "choice-label", option.label));
+        const optionText = el("span", "choice-label", option.label);
+        if (option.description)
+          optionText.append(
+            el("small", "option-description", option.description),
+          );
+        label.append(input, key, optionText);
         if (q.id === "clutter") {
           const illustration = motion.choiceArt(option.value);
           if (illustration) label.append(illustration);
@@ -508,7 +470,10 @@
       form.append(fieldset);
       if (q.type === "rating") {
         const labels = el("div", "rating-labels");
-        labels.append(el("span", "", q.low), el("span", "", q.high));
+        labels.append(
+          el("span", "", `1 · ${q.low}`),
+          el("span", "", `5 · ${q.high}`),
+        );
         form.append(labels);
       }
     } else if (q.type === "short" || q.type === "long") {
@@ -519,7 +484,8 @@
       input.maxLength = q.maxLength;
       input.required = !q.optional;
       input.setAttribute("aria-labelledby", "question-title");
-      input.setAttribute("aria-describedby", "question-description");
+      if (descriptionText)
+        input.setAttribute("aria-describedby", "question-description");
       input.placeholder = q.optional
         ? "Your thoughts, if you’d like…"
         : "Tell us a little more…";
@@ -602,7 +568,7 @@
     controls.append(back);
     if (q.optional)
       controls.append(
-        button("Skip", "quiet", () => {
+        button(q.skipLabel || "Skip", "quiet rating-skip", () => {
           draft = null;
           dirty = false;
           clearTimeout(timer);
@@ -615,6 +581,7 @@
       state.path.at(-1).id === q.id ? "Review & submit" : "Continue →",
     );
     next.type = "submit";
+    next.disabled = draft === null || (Array.isArray(draft) && !draft.length);
     controls.append(next);
     form.append(controls);
     form.addEventListener("submit", (event) => {
@@ -632,10 +599,6 @@
       });
     });
     section.append(form);
-    if (["single", "multiple", "rating"].includes(q.type))
-      section.append(
-        el("p", "controls-note", "1–9 to choose · Enter to continue"),
-      );
     const stage = el("div", "question-stage");
     stage.append(section, motion.art(q.section));
     main.append(stage);
@@ -660,7 +623,6 @@
       beginTiming();
       if (!discard && !state.completed) {
         transitionDirection = "resume";
-        motion.cue("right where you left off.");
       }
       render(discard);
     } catch (caught) {

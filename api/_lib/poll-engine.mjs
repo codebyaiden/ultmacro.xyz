@@ -29,7 +29,11 @@ function resolve(q, answers) {
       answers[optionsFrom]?.includes(o.value),
     );
   }
-  if (q.id === "clutter" && answers.navigation <= 2)
+  if (
+    q.id === "clutter" &&
+    Number.isInteger(answers.navigation) &&
+    answers.navigation <= 2
+  )
     publicQuestion.title = "What makes navigating Ultimate Macro difficult?";
   return { ...publicQuestion, seconds: q.seconds || durations[q.type] };
 }
