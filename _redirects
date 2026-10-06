@@ -1,6 +1,7 @@
-/poll/team /api/poll-team-page 200
-/poll/team/ /api/poll-team-page/ 200
-/poll/team/* /api/poll-team-page/:splat 200
+/poll/team https://api-origin.ultmacro.xyz/poll/team 302
+/poll/team/ https://api-origin.ultmacro.xyz/poll/team/ 302
+/poll/team/index.html https://api-origin.ultmacro.xyz/poll/team/index.html 302
+/poll/team/* https://api-origin.ultmacro.xyz/poll/team/:splat 302
 
 /tester https://docs.google.com/forms/d/e/1FAIpQLSeNoZxCkF8e2uPs_HZO0BCEDTJKOdytK_AZSq5qvJxs4VQJUA/viewform?usp=sharing&ouid=116799218342718280639 302
 /tester/ https://docs.google.com/forms/d/e/1FAIpQLSeNoZxCkF8e2uPs_HZO0BCEDTJKOdytK_AZSq5qvJxs4VQJUA/viewform?usp=sharing&ouid=116799218342718280639 302
