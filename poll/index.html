@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0e0e10" />
+    <meta
+      name="description"
+      content="Help shape Ultimate Macro. A short, adaptive survey about what matters to you."
+    />
+    <title>Help shape Ultimate Macro</title>
+    <link rel="icon" href="/icon.ico" />
+    <link rel="stylesheet" href="/styles/poll.css" />
+    <script src="/src/poll.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Ultimate Macro home"
+        ><span class="brand-mark" aria-hidden="true">U</span>Ultimate Macro</a
+      ><span class="header-note">a little feedback. a better macro.</span>
+    </header>
+    <main id="survey" class="survey" aria-busy="true">
+      <section class="landing" aria-labelledby="landing-title">
+        <p class="eyebrow">YOUR EXPERIENCE MATTERS</p>
+        <h1 id="landing-title">
+          help shape<br /><span class="gradient">Ultimate Macro.</span>
+        </h1>
+        <p class="intro">
+          Tell us what works, what gets in your way, and what deserves our
+          attention next.
+        </p>
+        <div class="survey-facts">
+          <span>about 5–7 min</span><span>roughly 17–24 questions</span>
+        </div>
+        <p class="adapt-note">
+          One question at a time. Your answers shape what comes next.
+        </p>
+        <button id="start" class="primary" disabled>
+          Loading your survey…
+        </button>
+        <p class="privacy">
+          No account needed. Progress saves in this browser.<br />This survey
+          exists purely to improve Ultimate Macro.
+        </p>
+      </section>
+    </main>
+    <div class="status-area">
+      <p id="save-status" role="status" aria-live="polite"></p>
+      <p id="error" role="alert"></p>
+      <button id="retry" class="quiet" hidden>Try again</button>
+    </div>
+    <footer class="footer">
+      <span>built around your experience</span><a href="/">ultmacro.xyz ↗</a>
+    </footer>
+    <noscript
+      ><p class="noscript">
+        Please enable JavaScript to answer this adaptive survey.
+      </p></noscript
+    >
+  </body>
+</html>
