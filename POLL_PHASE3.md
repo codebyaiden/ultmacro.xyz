@@ -8,7 +8,7 @@ The server generates a 256-bit individual invite and stores only its SHA-256 has
 
 The `um_poll_staff` cookie is HttpOnly, SameSite=Strict, has a 30-day absolute expiration and is Secure on HTTPS/in production. Staff and public cookies are independent. Sessions are stored as hashes and linked to their invite; revoking a consumed invite also blocks its session. Tokens never appear in management listings or dashboard JSON. Sign out revokes the session and clears its cookie.
 
-Use the existing server environment and PostgreSQL connection after `npm run migrate`:
+Use the existing server environment and PostgreSQL connection after the required poll migrations have been applied through the VPS-specific deployment procedure. **Do not run the generic migration runner on this VPS:** its migration directory includes server-only migrations. Apply only missing `005_poll.sql` and `006_poll_staff.sql` as required; the PR #17 origin fix needs no migrations:
 
 ```sh
 node scripts/poll-staff.mjs create "Pizza laptop"
@@ -55,7 +55,7 @@ Private responses are no-store, vary by cookie, deny framing, and use a restrict
 
 Migration `006_poll_staff.sql` adds `poll_staff_invites`, `poll_staff_sessions`, an identity response number plus unique index, a question/response answer index and a version/activity response index. It is additive and idempotent; analytics reuse the existing responses/answers, and aggregate in SQL. Only one response path and bounded 25-item lists are loaded into application memory.
 
-Run migrations and restart the existing Node service through the existing VPS procedure. Ensure nginx proxies **all** `/poll/team*` and `/api/poll-team*` paths to Node, including `/poll/team/index.html`; do not serve that HTML directly from nginx. Preserve Host/HTTPS forwarding and overwrite client IP headers through the trusted proxy. Private endpoints must not be cached. Suppress/redact invite URL paths in proxy/ingress logs, since links contain credentials. The Node app does not log request URLs or tokens. No new secret or database service is needed.
+Apply only missing poll migrations (`005_poll.sql` and `006_poll_staff.sql`, as required) through the existing VPS-specific procedure; do not use the generic migration runner. Restart the existing Node service. Ensure nginx proxies **all** `/poll/team*` and `/api/poll-team*` paths to Node, including `/poll/team/index.html`; do not serve that HTML directly from nginx. Preserve Host/HTTPS forwarding and overwrite client IP headers through the trusted proxy. Private endpoints must not be cached. Suppress/redact invite URL paths in proxy/ingress logs, since links contain credentials. The Node app does not log request URLs or tokens. No new secret or database service is needed.
 
 PRs remain stacked: Phase 1 #12, then Phase 2 #13, then Phase 3. Retarget each successor after merging its parent. GitHub changes are not assumed to deploy automatically. No production invite was generated or deployment performed.
 
