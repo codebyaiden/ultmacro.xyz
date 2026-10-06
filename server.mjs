@@ -12,6 +12,13 @@ const port = Number(process.env.PORT || 3000);
 const siteRoot = path.resolve(process.env.SITE_ROOT || import.meta.dirname);
 const storageRoot = process.env.STRATEGY_STORAGE_ROOT ? path.resolve(process.env.STRATEGY_STORAGE_ROOT) : null;
 const maxRequestBytes = 8 * 1024 * 1024;
+// The static host and Node server consume the same generated download redirects.
+const downloadRedirects = new Map((await readFile(path.join(siteRoot, '_redirects'), 'utf8').catch(error => {
+  if (error.code === 'ENOENT') return '';
+  throw error;
+})).split('\n').map(line => line.trim().split(/\s+/)).filter(([from, to, status]) =>
+  from.startsWith('/download') && to?.startsWith('/download/') && /^(301|302)$/.test(status)
+).map(([from, to, status]) => [from, { to, status: Number(status) }]));
 
 function safePath(root, relative) {
   const clean = relative.replaceAll('\\', '/').replace(/^\/+|\/+$/g, '');
@@ -79,6 +86,11 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
   let requestPath;
   try { requestPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); } catch { return send(res, 400, 'bad path\n'); }
   requestPath = requestPath.replaceAll('\\', '/').replace(/^\/+/, '/');
+  const downloadRedirect = downloadRedirects.get(requestPath);
+  if (downloadRedirect) {
+    const query = new URL(req.url, 'http://localhost').search;
+    return send(res, downloadRedirect.status, null, { location: downloadRedirect.to + query, 'cache-control': 'no-cache' });
+  }
   if (requestPath === '/poll/team' || requestPath.startsWith('/poll/team/')) {
     const request = toRequest(req, body);
     const canonical = new URL(request.url); canonical.pathname = requestPath;

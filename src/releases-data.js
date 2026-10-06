@@ -25,10 +25,7 @@ var UMContract = (function () {
 		var zips = release.assets.filter(function (a) {
 			return typeof a.name === 'string' && ZIP.test(a.name);
 		});
-		var stable = zips.filter(function (a) {
-			return a.name === 'TDS_Macro.zip';
-		});
-		var candidates = stable.length ? stable : zips;
+		var candidates = zips;
 		if (candidates.length !== 1) return null;
 
 		var asset = candidates[0];
@@ -43,7 +40,7 @@ var UMContract = (function () {
 			url: expected,
 			size: asset.size,
 			digest: asset.digest,
-			downloads: Number.isSafeInteger(asset.download_count) ? asset.download_count : 0
+			downloads: Number.isSafeInteger(asset.download_count) && asset.download_count >= 0 ? asset.download_count : null
 		};
 	}
 
@@ -121,6 +118,16 @@ var UMContract = (function () {
 		);
 	}
 
+	function mergeHistory(existing, incoming) {
+		var byTag = new Map(existing.map(function (r) { return [r.tag, r]; }));
+		incoming.forEach(function (r) {
+			var previous = byTag.get(r.tag);
+			if (previous && previous.asset && !r.asset) throw new Error(r.tag + ' lost its validated download asset.');
+			byTag.set(r.tag, r);
+		});
+		return sortReleases(Array.from(byTag.values()));
+	}
+
 	return {
 		REPO: REPO,
 		RELEASE_BASE: RELEASE_BASE,
@@ -130,7 +137,8 @@ var UMContract = (function () {
 		normalizeRelease: normalizeRelease,
 		normalizePayload: normalizePayload,
 		sortReleases: sortReleases,
-		pickLatestStable: pickLatestStable
+		pickLatestStable: pickLatestStable,
+		mergeHistory: mergeHistory
 	};
 })();
 

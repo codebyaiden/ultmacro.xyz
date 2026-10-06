@@ -6,3 +6,21 @@
 
 /tester https://docs.google.com/forms/d/e/1FAIpQLSeNoZxCkF8e2uPs_HZO0BCEDTJKOdytK_AZSq5qvJxs4VQJUA/viewform?usp=sharing&ouid=116799218342718280639 302
 /tester/ https://docs.google.com/forms/d/e/1FAIpQLSeNoZxCkF8e2uPs_HZO0BCEDTJKOdytK_AZSq5qvJxs4VQJUA/viewform?usp=sharing&ouid=116799218342718280639 302
+
+# BEGIN DOWNLOAD REDIRECTS
+/download /download/ 301
+/download/index.html /download/ 301
+/download/latest /download/v1.3.5/ 302
+/download/latest/ /download/v1.3.5/ 302
+/download/latest/index.html /download/v1.3.5/ 302
+/download/v1.3.3 /download/v1.3.3/ 301
+/download/v1.3.3/index.html /download/v1.3.3/ 301
+/download/v1.3.4 /download/v1.3.4/ 301
+/download/v1.3.4/index.html /download/v1.3.4/ 301
+/download/v1.3.4a /download/v1.3.4a/ 301
+/download/v1.3.4a/index.html /download/v1.3.4a/ 301
+/download/v1.3.4b /download/v1.3.4b/ 301
+/download/v1.3.4b/index.html /download/v1.3.4b/ 301
+/download/v1.3.5 /download/v1.3.5/ 301
+/download/v1.3.5/index.html /download/v1.3.5/ 301
+# END DOWNLOAD REDIRECTS

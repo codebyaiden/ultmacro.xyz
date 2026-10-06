@@ -4,9 +4,9 @@
  *
  *   node sync-releases.cjs
  *
- * The site fetches GitHub live at runtime too, but ships this snapshot so the
- * download page renders instantly, works offline, works when the visitor's IP
- * is rate limited, and works when the HTML is opened straight from disk.
+ * Download HTML is generated from this snapshot: every page shares the same
+ * version metadata, works without JavaScript, and needs no visitor API call.
+ * Other site components may still refresh release metadata at runtime.
  * Re-run it after publishing a release and commit the result.
  *
  * Set GITHUB_TOKEN to raise the anonymous rate limit (optional).
@@ -16,6 +16,7 @@
  */
 const fs = require('node:fs/promises');
 const path = require('node:path');
+const vm = require('node:vm');
 const contract = require('./src/releases-data.js');
 const { writeVersionPages, writeVersionChips } = require('./src/version-page.cjs');
 
@@ -34,11 +35,20 @@ async function main() {
 		process.exit(1);
 	}
 
-	const releases = contract.normalizePayload(await response.json());
-	if (!releases.length) {
+	const incoming = contract.normalizePayload(await response.json());
+	if (!incoming.length) {
 		console.error('No releases passed the release contract — refusing to write an empty snapshot.');
 		process.exit(1);
 	}
+	let existing = [];
+	try {
+		const context = { window: {} };
+		vm.runInNewContext(await fs.readFile(OUT, 'utf8'), context, { timeout: 1000 });
+		existing = context.window.UM_RELEASES.releases;
+	} catch (error) {
+		if (error.code !== 'ENOENT') throw error;
+	}
+	const releases = contract.mergeHistory(existing, incoming);
 
 	const snapshot = { repo: contract.REPO, generated: new Date().toISOString(), releases };
 	const file =
