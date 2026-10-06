@@ -6,55 +6,111 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#0e0e10" />
+    <meta name="theme-color" content="#090b10" />
     <meta
       name="description"
-      content="Help shape Ultimate Macro. A short, adaptive survey about what matters to you."
+      content="One answer changes what comes next. Help shape Ultimate Macro."
     />
     <title>Help shape Ultimate Macro</title>
     <link rel="icon" href="/icon.ico" />
     <link rel="stylesheet" href="/styles/poll.css" />
+    <script src="/src/poll-clock.js" defer></script>
+    <script src="/src/poll-motion.js" defer></script>
     <script src="/src/poll.js" defer></script>
   </head>
-  <body>
+  <body data-scene="landing">
+    <div class="atmosphere" aria-hidden="true">
+      <div class="halo halo-a"></div>
+      <div class="halo halo-b"></div>
+      <div class="halo halo-c"></div>
+      <div class="grain"></div>
+      <div class="grid-horizon"></div>
+    </div>
     <header class="topbar">
       <a class="brand" href="/" aria-label="Ultimate Macro home"
-        ><span class="brand-mark" aria-hidden="true">U</span>Ultimate Macro</a
-      ><span class="header-note">a little feedback. a better macro.</span>
+        ><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span
+        >Ultimate Macro<span class="brand-divider">/</span
+        ><span class="brand-sub">feedback</span></a
+      ><span class="header-note"
+        ><span class="live-dot"></span>YOUR INPUT. OUR NEXT MOVE.</span
+      >
     </header>
     <main id="survey" class="survey" aria-busy="true">
       <section class="landing" aria-labelledby="landing-title">
-        <p class="eyebrow">YOUR EXPERIENCE MATTERS</p>
-        <h1 id="landing-title">
-          help shape<br /><span class="gradient">Ultimate Macro.</span>
-        </h1>
-        <p class="intro">
-          Tell us what works, what gets in your way, and what deserves our
-          attention next.
-        </p>
-        <div class="survey-facts">
-          <span>about 5–7 min</span><span>roughly 17–24 questions</span>
+        <div class="landing-copy">
+          <p class="eyebrow">
+            <span class="small-star" aria-hidden="true">✳</span> MADE BETTER, BY
+            YOU
+          </p>
+          <h1 id="landing-title">
+            help shape<br /><span class="gradient">Ultimate<br />Macro.</span>
+          </h1>
+          <p class="intro">
+            The good. The frustrating.<br />The <em>“what if?”</em><br />Let’s
+            make what comes next count.
+          </p>
+          <div class="landing-action">
+            <button id="start" class="primary" disabled>
+              Loading your survey…</button
+            ><span class="time-note"
+              ><b>5–7 ish min(s)</b><br />17–24 adaptive questions</span
+            >
+          </div>
+          <p class="adapt-note">
+            One answer changes what comes next.<br />No account. Your place is
+            saved.
+          </p>
         </div>
-        <p class="adapt-note">
-          One question at a time. Your answers shape what comes next.
-        </p>
-        <button id="start" class="primary" disabled>
-          Loading your survey…
-        </button>
+        <div class="landing-art" aria-hidden="true">
+          <div class="signal-orbit">
+            <div class="orbit-ring ring-outer"></div>
+            <div class="orbit-ring ring-middle"></div>
+            <div class="orbit-ring ring-inner"></div>
+            <div class="signal-core">
+              <span class="core-symbol">u<span>m</span></span
+              ><span class="core-caption">a better next</span>
+            </div>
+            <div class="orbit-spark spark-a"></div>
+            <div class="orbit-spark spark-b"></div>
+          </div>
+          <div class="floating-card card-reliability">
+            <span class="card-glyph">↗</span>
+            <div>
+              <b>reliability</b><small>less friction. more trust.</small>
+            </div>
+            <span class="mini-wave"><i></i><i></i><i></i><i></i><i></i></span>
+          </div>
+          <div class="floating-card card-ideas">
+            <span class="card-glyph">✳</span>
+            <div>
+              <b>your next big idea</b
+              ><small>it starts with a little feedback.</small>
+            </div>
+          </div>
+          <div class="orbit-label orbit-label-a">01 / YOU TELL US</div>
+          <div class="orbit-label orbit-label-b">02 / WE LISTEN</div>
+          <div class="orbit-footnote">
+            not just a form.<br /><span>a conversation with what’s next.</span>
+          </div>
+        </div>
         <p class="privacy">
-          No account needed. Progress saves in this browser.<br />This survey
-          exists purely to improve Ultimate Macro.
+          This survey exists purely to improve Ultimate Macro.
         </p>
       </section>
     </main>
     <div class="status-area">
+      <span class="save-orb" aria-hidden="true"></span>
       <p id="save-status" role="status" aria-live="polite"></p>
       <p id="error" role="alert"></p>
       <button id="retry" class="quiet" hidden>Try again</button>
     </div>
     <footer class="footer">
-      <span>built around your experience</span><a href="/">ultmacro.xyz ↗</a>
+      <span>small answers. real direction.</span
+      ><button class="orbit-secret" type="button" aria-label="A little spark">
+        ✳</button
+      ><a href="/">ultmacro.xyz ↗</a>
     </footer>
+    <div id="motion-note" role="status" aria-live="polite"></div>
     <noscript
       ><p class="noscript">
         Please enable JavaScript to answer this adaptive survey.

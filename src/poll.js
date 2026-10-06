@@ -5,6 +5,89 @@
     error = document.querySelector("#error"),
     retry = document.querySelector("#retry");
   const draftKey = "um-poll-draft-v1";
+  const motion = window.PollMotion,
+    clock = window.PollClock.create();
+  const timeKey = "um-poll-active-v1";
+  let tracking = false,
+    transitionDirection = "forward",
+    previousSection = null,
+    transitionFrom = null;
+  function storedTime() {
+    try {
+      return JSON.parse(localStorage.getItem(timeKey));
+    } catch {
+      return null;
+    }
+  }
+  function persistTime(complete = false) {
+    try {
+      localStorage.setItem(
+        timeKey,
+        JSON.stringify({
+          version: state?.version,
+          milliseconds: clock.read(),
+          complete,
+        }),
+      );
+    } catch {}
+  }
+  function beginTiming(reset = false) {
+    if (tracking || state?.completed) return;
+    const stored = reset ? null : storedTime();
+    clock.start(
+      stored?.version === state.version && !stored.complete
+        ? stored.milliseconds
+        : 0,
+    );
+    clock.visibility(!document.hidden);
+    tracking = true;
+    persistTime();
+  }
+  document.addEventListener("visibilitychange", () => {
+    clock.visibility(!document.hidden);
+    if (tracking) persistTime();
+  });
+  ["pointerdown", "keydown", "input"].forEach((type) =>
+    document.addEventListener(
+      type,
+      () => {
+        if (tracking) clock.activity();
+      },
+      { passive: true },
+    ),
+  );
+  setInterval(() => {
+    if (tracking) persistTime();
+  }, 10000);
+  function finishRender(focus) {
+    if (focus) focusHeading();
+    const q = currentQuestion();
+    motion.scene(state.completed ? "complete" : q?.section || "final");
+    motion.enter(main, {
+      direction: transitionDirection,
+      sectionChanged: q?.section !== previousSection,
+    });
+    previousSection = q?.section || null;
+  }
+  function branchMessage(q) {
+    const notes = {
+      satisfaction_low:
+        "Your experience comes first. Let’s understand what went wrong.",
+      satisfaction_middle: "You gave it a 3. What would move the needle?",
+      satisfaction_high: "Let’s keep the good parts good.",
+      reliability_priority: "Reliability first. Let’s get specific.",
+      missing_features: "New possibilities. What’s the missing piece?",
+      both_reason: "Both equally. We hear you — tell us why.",
+      tie_breaker: "One release. One tough call.",
+      lab_stopped: "Tried it, left it. That’s useful feedback.",
+      lab_ease: "You’ve used the tools. You know the friction.",
+      lab_improve: "Let’s make the Lab work better for you.",
+      feature_rank: "Your shortlist. Now, your priorities.",
+      cloud_reliability: "You use Cloud. Let’s talk about the connection.",
+    };
+    return notes[q.id] && transitionFrom ? notes[q.id] : null;
+  }
+
   let state = null,
     draft = null,
     timer = null,
@@ -54,6 +137,7 @@
     lastFailure = null;
   }
   async function api(path = "", body) {
+    if (tracking) persistTime();
     let response;
     try {
       response = await fetch("/api/poll" + path, {
@@ -144,7 +228,19 @@
       });
     return queue;
   }
+  const discoveries = new Set();
   function changed(value) {
+    const q = currentQuestion();
+    const wink =
+      q?.id === "features" && Array.isArray(value) && value.includes("none")
+        ? "sometimes the best new feature is fewer new features."
+        : q?.id === "satisfaction" && value === 5
+          ? "we’ll try not to get smug."
+          : null;
+    if (wink && !discoveries.has(q.id)) {
+      discoveries.add(q.id);
+      motion.cue(wink);
+    }
     draft = value;
     dirty = true;
     remember();
@@ -164,6 +260,7 @@
           : state.remainingSeconds
             ? "less than a minute left"
             : "ready to submit";
+    motion.progress(main, state.progress);
   }
   async function act(path, body = {}) {
     if (busy) return;
@@ -172,7 +269,12 @@
     clearError();
     try {
       await pendingSave();
-      state = await api(path, { revision: state.revision, ...body });
+      const from = currentQuestion();
+      const nextState = await api(path, { revision: state.revision, ...body });
+      transitionDirection = body.direction === "back" ? "back" : "forward";
+      transitionFrom = from;
+      await motion.leave(main, transitionDirection);
+      state = nextState;
       dirty = false;
       local.clear();
       status.textContent = state.completed
@@ -199,42 +301,65 @@
     if (state.completed) {
       local.clear();
       dirty = false;
-      const section = el("section", "landing completion");
+      if (tracking) {
+        clock.stop();
+        persistTime(true);
+        tracking = false;
+      }
+      const section = el("section", "completion");
       section.append(
-        el("div", "success-mark", "✓"),
-        el("p", "eyebrow", "FEEDBACK RECEIVED"),
-        el("h1", "", "Thanks for helping us build a better Ultimate Macro."),
+        el("p", "eyebrow", "YOUR INPUT. ALREADY PART OF WHAT’S NEXT."),
+        el("h1", "", "that’s everything."),
+        el(
+          "p",
+          "completion-copy",
+          "Thanks for helping us build a better Ultimate Macro.",
+        ),
         el(
           "p",
           "intro",
           "Your feedback will help us decide what deserves attention next.",
         ),
       );
-      if (state.elapsedSeconds > 0)
+      const active = storedTime();
+      if (
+        active?.version === state.version &&
+        active.complete &&
+        active.milliseconds > 0
+      )
         section.append(
           el(
             "p",
             "adapt-note",
-            `Completed in about ${Math.max(1, Math.round(state.elapsedSeconds / 60))} min, including breaks.`,
+            `about ${Math.max(1, Math.round(active.milliseconds / 60000))} active min · breaks don’t count.`,
           ),
         );
       const home = el("a", "primary", "Back to Ultimate Macro");
       home.href = "/";
       section.append(home);
       main.append(section);
-      if (focus) focusHeading();
+      finishRender(focus);
       return;
     }
     const meta = el("div", "progress-meta");
-    meta.append(el("span", "", "your feedback"), el("span", "", ""));
+    const identity = el("span", "progress-identity");
+    identity.append(
+      el("i", "progress-dot"),
+      el("span", "", "your feedback / your direction"),
+    );
+    meta.append(identity, el("span", "", ""));
     meta.lastChild.id = "eta";
     const progress = el("progress", "progress");
     progress.max = 1;
     progress.setAttribute("aria-label", "Estimated survey progress");
-    main.append(meta, progress);
+    progress.className = "sr-only";
+    const progressWrap = el("div", "progress-wrap");
+    progressWrap.setAttribute("aria-hidden", "true");
+    progressWrap.append(el("div", "progress-fill"));
+    main.append(meta, progress, progressWrap);
     updateProgress();
     if (!state.current) {
-      const section = el("section", "landing");
+      const section = el("section", "review");
       section.append(
         el("p", "eyebrow", "ALL SET"),
         el("h1", "", "Ready to send your feedback?"),
@@ -251,7 +376,7 @@
       );
       section.append(controls);
       main.append(section);
-      if (focus) focusHeading();
+      finishRender(focus);
       return;
     }
     const q = currentQuestion();
@@ -295,6 +420,8 @@
       }
     }
     const section = el("section", "question");
+    const branch = branchMessage(q);
+    if (branch) section.append(el("p", "branch-note", branch));
     section.append(el("p", "eyebrow", q.section.toUpperCase()));
     const heading = el("h1", "", q.title);
     heading.id = "question-title";
@@ -325,7 +452,7 @@
         q.type === "rating"
           ? [1, 2, 3, 4, 5].map((v) => ({ value: v, label: String(v) }))
           : q.options;
-      options.forEach((option) => {
+      options.forEach((option, optionIndex) => {
         const label = el("label", "choice"),
           input = el("input");
         input.type = q.type === "multiple" ? "checkbox" : "radio";
@@ -366,7 +493,16 @@
             changed(next);
           } else changed(option.value);
         });
-        label.append(input, el("span", "", option.label));
+        const key = el("span", "answer-key", String(optionIndex + 1));
+        key.setAttribute("aria-hidden", "true");
+        const mark = el("span", "choice-mark", "✓");
+        mark.setAttribute("aria-hidden", "true");
+        label.append(input, key, el("span", "choice-label", option.label));
+        if (q.id === "clutter") {
+          const illustration = motion.choiceArt(option.value);
+          if (illustration) label.append(illustration);
+        }
+        label.append(mark);
         fieldset.append(label);
       });
       form.append(fieldset);
@@ -402,10 +538,17 @@
       const list = el("ol", "ranking");
       list.setAttribute("aria-labelledby", "question-title");
       const draw = (focusValue, direction) => {
+        const before = new Map(
+          [...list.querySelectorAll(".rank-row")].map((row) => [
+            row.dataset.value,
+            row.getBoundingClientRect().top,
+          ]),
+        );
         list.replaceChildren();
         draft.forEach((value, index) => {
           const option = q.options.find((o) => o.value === value);
           const row = el("li", "rank-row");
+          row.dataset.value = value;
           row.append(
             el("span", "rank-number", String(index + 1)),
             el("span", "rank-label", option.label),
@@ -433,6 +576,7 @@
           row.append(controls);
           list.append(row);
         });
+        motion.ranks(list, before);
         if (focusValue) {
           const nodes = [...list.querySelectorAll("button")];
           const target =
@@ -488,8 +632,14 @@
       });
     });
     section.append(form);
-    main.append(section);
-    if (focus) focusHeading();
+    if (["single", "multiple", "rating"].includes(q.type))
+      section.append(
+        el("p", "controls-note", "1–9 to choose · Enter to continue"),
+      );
+    const stage = el("div", "question-stage");
+    stage.append(section, motion.art(q.section));
+    main.append(stage);
+    finishRender(focus);
   }
   function focusHeading() {
     const heading = main.querySelector("h1");
@@ -507,6 +657,11 @@
         dirty = false;
       }
       clearError();
+      beginTiming();
+      if (!discard && !state.completed) {
+        transitionDirection = "resume";
+        motion.cue("right where you left off.");
+      }
       render(discard);
     } catch (caught) {
       main.setAttribute("aria-busy", "false");
@@ -520,6 +675,8 @@
             clearError();
             try {
               state = await api("/start", {});
+              beginTiming(true);
+              await motion.leave(main, "forward");
               render(true);
             } catch (error) {
               showError(error, () => start.click());
@@ -550,9 +707,35 @@
   });
   window.addEventListener("pagehide", () => {
     if (dirty) remember();
+    if (tracking) persistTime();
   });
   window.addEventListener("online", () => {
     if (dirty) pendingSave().catch(() => {});
+  });
+  document.addEventListener("keydown", (event) => {
+    if (
+      busy ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.isComposing
+    )
+      return;
+    const target = event.target;
+    if (target.closest("textarea,input[type=text]")) return;
+    if (/^[1-9]$/.test(event.key) && target.closest(".choices")) {
+      const input =
+        main.querySelectorAll(".choices input")[Number(event.key) - 1];
+      if (input && !input.disabled) {
+        event.preventDefault();
+        input.focus();
+        input.click();
+      }
+    }
+    if (event.key === "Enter" && target.matches(".choices input")) {
+      event.preventDefault();
+      main.querySelector("form")?.requestSubmit();
+    }
   });
   load();
 })();
