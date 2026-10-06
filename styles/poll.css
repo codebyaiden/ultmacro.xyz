@@ -2174,3 +2174,25 @@ svg.card-glyph {
   flex: 0 0 24px;
   padding: 0;
 }
+
+.completion-count {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 12px 0 0;
+  overflow-wrap: anywhere;
+}
+.branch-context {
+  display: table;
+  max-width: 100%;
+  padding: 8px 12px;
+  margin: 0 0 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tone) 10%, transparent);
+  color: var(--tone);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  transform-origin: left center;
+}

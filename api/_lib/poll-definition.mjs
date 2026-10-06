@@ -1,4 +1,4 @@
-export const surveyVersion = "um-feedback-v1";
+export const surveyVersion = "um-feedback-v2";
 export const durations = {
   single: 15,
   multiple: 25,
@@ -53,7 +53,7 @@ const features = options([
 const featureDescriptions = {
   goals: "Set targets for your runs",
   themes: "Change colors and appearance",
-  plus: "Details aren’t defined yet",
+  plus: "An optional supporter tier with advanced remote controls, cloud features, customization, smarter strategy tools, early access, and community perks. Ultimate Macro itself stays free.",
   web: "Control runs from a browser",
   personalization: "Customize defaults and your workflow",
 };

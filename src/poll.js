@@ -66,8 +66,11 @@
     motion.enter(main, {
       direction: transitionDirection,
       sectionChanged: q?.section !== previousSection,
+      branch:
+        transitionDirection === "forward" && transitionFrom === q?.branchParent,
     });
     previousSection = q?.section || null;
+    transitionFrom = null;
   }
 
   let state = null,
@@ -245,8 +248,15 @@
       const from = currentQuestion();
       const nextState = await api(path, { revision: state.revision, ...body });
       transitionDirection = body.direction === "back" ? "back" : "forward";
-      transitionFrom = from;
-      await motion.leave(main, transitionDirection);
+      const destination = nextState.path.find(
+        (q) => q.id === nextState.current,
+      );
+      transitionFrom =
+        from && destination?.branchParent === from.id ? from.id : null;
+      // Saving finishes before motion; a cancelled effect cannot roll back navigation.
+      await motion
+        .leave(main, transitionDirection, Boolean(transitionFrom))
+        .catch(() => {});
       state = nextState;
       dirty = false;
       local.clear();
@@ -384,6 +394,27 @@
     section.append(el("p", "eyebrow", q.section.toUpperCase()));
     const heading = el("h1", "", q.title);
     heading.id = "question-title";
+    if (q.branchParent) {
+      const parent = state.path.find(
+        (question) => question.id === q.branchParent,
+      );
+      const value = state.answers[q.branchParent];
+      const values = Array.isArray(value) ? value : [value];
+      const selected =
+        parent?.type === "rating"
+          ? [`${value} / 5`]
+          : values
+              .map((v) => parent?.options?.find((o) => o.value === v)?.label)
+              .filter(Boolean);
+      if (selected.length && value !== null) {
+        const context = el("p", "branch-context", selected.join(" · "));
+        context.setAttribute(
+          "aria-label",
+          "Previous answer: " + selected.join(", "),
+        );
+        section.append(context);
+      }
+    }
     section.append(heading);
     const descriptionText =
       q.description || (q.optional && q.type !== "rating" ? "Optional" : "");
@@ -699,5 +730,33 @@
       main.querySelector("form")?.requestSubmit();
     }
   });
+  async function loadCompletionCount() {
+    const line = document.querySelector("#completion-count");
+    if (!line) return;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    try {
+      const response = await fetch("/api/poll/completions", {
+        credentials: "omit",
+        signal: controller.signal,
+      });
+      if (!response.ok) return;
+      const { completedCount } = await response.json();
+      if (
+        !line.isConnected ||
+        !Number.isSafeInteger(completedCount) ||
+        completedCount <= 0
+      )
+        return;
+      const count = new Intl.NumberFormat().format(completedCount);
+      line.textContent = `${count} ${completedCount === 1 ? "person" : "people"} completed this poll`;
+      line.hidden = false;
+    } catch {
+      /* Optional aggregate must never block starting or resuming. */
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+  loadCompletionCount();
   load();
 })();

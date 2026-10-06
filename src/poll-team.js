@@ -84,6 +84,10 @@
   }
   function setupFilters() {
     const host = document.querySelector("#filter-fields");
+    host.replaceChildren();
+    const version = select(meta.versions, filters.version, "Current survey");
+    version.name = "version";
+    host.append(field("Survey version", version));
     const titles = {
       frequency: "Usage frequency",
       experience: "Experience",
@@ -122,7 +126,7 @@
         [1, 2, 3, 4, 5].map((v) => ({ value: v, label: v + " / 5" })),
       ],
     ]) {
-      const e = select(options);
+      const e = select(options, filters[id]);
       e.name = id;
       host.append(field(title, e));
     }
@@ -133,6 +137,7 @@
       const e = node("input");
       e.type = "date";
       e.name = id;
+      e.value = filters[id] || "";
       host.append(field(title, e));
     }
   }
@@ -167,17 +172,20 @@
           );
       else
         labels = [
-          key === "satisfactionMin"
-            ? "Satisfaction ≥ " + value
-            : key === "satisfactionMax"
-              ? "Satisfaction ≤ " + value
-              : key === "from"
-                ? "Completed from " + value
-                : key === "to"
-                  ? "Completed through " + value
-                  : value === "completed"
-                    ? "Completed responses"
-                    : "In-progress responses",
+          key === "version"
+            ? "Survey: " +
+              (meta.versions.find((v) => v.value === value)?.label || value)
+            : key === "satisfactionMin"
+              ? "Satisfaction ≥ " + value
+              : key === "satisfactionMax"
+                ? "Satisfaction ≤ " + value
+                : key === "from"
+                  ? "Completed from " + value
+                  : key === "to"
+                    ? "Completed through " + value
+                    : value === "completed"
+                      ? "Completed responses"
+                      : "In-progress responses",
         ];
       for (const label of labels)
         chips.append(node("span", "segment-chip", label));
@@ -730,6 +738,13 @@
     status.textContent = "Updating this segment…";
     loading();
     try {
+      if (meta.version !== (filters.version || meta.currentVersion)) {
+        const nextMeta = await api("/questions");
+        if (generation !== requestId) return;
+        meta = nextMeta;
+        document.querySelector("#survey-version").textContent = meta.version;
+        setupFilters();
+      }
       let data, result;
       if (view === "overview") {
         const [data, sat] = await Promise.all([
@@ -738,7 +753,7 @@
         ]);
         if (generation !== requestId) return;
         result = overview(data, sat);
-        status.textContent = `${data.total} responses · ${data.completed} completed · current survey`;
+        status.textContent = `${data.total} responses · ${data.completed} completed · ${meta.version}`;
       } else if (view === "questions") {
         data = await api("/question", { question });
         if (generation !== requestId) return;
@@ -799,6 +814,7 @@
   });
   document.querySelector("#filters").addEventListener("submit", (e) => {
     e.preventDefault();
+    const previousVersion = filters.version;
     const branch = filters.branchQuestion
       ? {
           branchQuestion: filters.branchQuestion,
@@ -812,6 +828,8 @@
       .getAll("features")
       .filter(Boolean);
     if (interests.length) filters.features = interests.join(",");
+    if (previousVersion !== filters.version)
+      filters = filters.version ? { version: filters.version } : {};
     document.querySelector("#filters").hidden = true;
     document
       .querySelector("#toggle-filters")

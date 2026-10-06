@@ -426,10 +426,38 @@ test(
         },
       );
       await t.test(
+        "legacy analytics use original labels and remain separate from updated responses",
+        async () => {
+          const id = randomUUID();
+          await pool.query(
+            "insert into poll_responses(id,session_hash,survey_version,current_question,completed_at) values($1,$2,'um-feedback-v1',null,now())",
+            [id, randomBytes(32).toString("hex")],
+          );
+          await pool.query(
+            "insert into poll_answers(response_id,question_id,value) values($1,'focus','\"both\"'::jsonb),($1,'both_reason','\"balance\"'::jsonb)",
+            [id],
+          );
+          const old = f("version=um-feedback-v1");
+          const distribution = await analytics.question(old, "both_reason");
+          assert.equal(
+            distribution.counts[0].label,
+            "Both matter to my experience",
+          );
+          assert.equal(distribution.counts[0].count, 1);
+          const response = await analytics.response(old, id);
+          assert.equal(
+            response.path.find((q) => q.id === "both_reason").options[0].label,
+            "Both matter to my experience",
+          );
+          assert.equal(await analytics.response(f(""), id), null);
+          assert.equal((await analytics.overview(old)).total, 1);
+        },
+      );
+      await t.test(
         "SQL aggregates and pagination stay bounded with thousands of responses",
         async () => {
           await pool.query(`insert into poll_responses(id,session_hash,survey_version,current_question,completed_at)
-          select md5('load-response-'||n)::uuid,repeat(md5('load-session-'||n),2),'um-feedback-v1',null,now() from generate_series(1,2000) n`);
+          select md5('load-response-'||n)::uuid,repeat(md5('load-session-'||n),2),'um-feedback-v2',null,now() from generate_series(1,2000) n`);
           await pool.query(`insert into poll_answers(response_id,question_id,value)
           select md5('load-response-'||n)::uuid,'satisfaction','4'::jsonb from generate_series(1,2000) n`);
           const start = performance.now();

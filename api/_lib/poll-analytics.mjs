@@ -1,11 +1,13 @@
 import { sql } from "./db.mjs";
-import { questions, surveyVersion } from "./poll-definition.mjs";
+import { surveyVersion } from "./poll-definition.mjs";
+import { questionsFor, surveyVersions } from "./poll-definitions.mjs";
 import { calculate } from "./poll-engine.mjs";
 import { validId } from "./poll-staff.mjs";
 const fail = () => {
   throw Object.assign(new Error("Invalid dashboard filters."), { status: 400 });
 };
-const byId = new Map(questions.map((q) => [q.id, q]));
+const questionMap = (version) =>
+  new Map(questionsFor(version).map((q) => [q.id, q]));
 export const filterQuestions = [
   "frequency",
   "experience",
@@ -18,6 +20,7 @@ export const filterQuestions = [
 const segmentKeys = [
   ...filterQuestions,
   "status",
+  "version",
   "satisfactionMin",
   "satisfactionMax",
   "from",
@@ -39,6 +42,8 @@ export function parseFilters(
       fail();
     f[key] = value;
   }
+  if (f.version !== undefined && !surveyVersions.includes(f.version)) fail();
+  const byId = questionMap(f.version);
   f.status ||= "all";
   if (!["all", "completed", "partial"].includes(f.status)) fail();
   for (const key of filterQuestions)
@@ -98,7 +103,8 @@ export function parseFilters(
   return f;
 }
 function segment(f) {
-  const params = [surveyVersion],
+  const byId = questionMap(f.version);
+  const params = [f.version || surveyVersion],
     clauses = ["r.survey_version=$1"];
   const bind = (v) => {
     params.push(v);
@@ -140,9 +146,19 @@ function segment(f) {
     bind,
   };
 }
-export function metadata() {
+export function metadata(version = surveyVersion) {
+  const questions = questionsFor(version),
+    byId = questionMap(version);
   return {
-    version: surveyVersion,
+    version,
+    currentVersion: surveyVersion,
+    versions: surveyVersions.map((value) => ({
+      value,
+      label:
+        value === surveyVersion
+          ? "Updated questions (v2)"
+          : "Original questions (v1)",
+    })),
     questions: questions.map((q) => ({
       id: q.id,
       title: q.title,
@@ -184,6 +200,8 @@ export function createAnalytics(pool = sql) {
   }
   // Extra query parameters start at $1; shift them after the segment's bindings.
   async function distribution(f, id) {
+    const questions = questionsFor(f.version),
+      byId = questionMap(f.version);
     const q = byId.get(id);
     if (!q) fail();
     const total = (
@@ -306,6 +324,7 @@ export function createAnalytics(pool = sql) {
       };
     },
     async response(f, id) {
+      const byId = questionMap(f.version);
       if (!validId(id)) fail();
       const row = (
         await run(
@@ -322,7 +341,7 @@ export function createAnalytics(pool = sql) {
       const answers = Object.fromEntries(
         rows.map((a) => [a.question_id, a.value]),
       );
-      const path = calculate(answers)
+      const path = calculate(answers, f.version)
         .path.filter(
           (q) => Object.hasOwn(answers, q.id) || q.id === row.current_question,
         )
@@ -344,6 +363,8 @@ export function createAnalytics(pool = sql) {
       };
     },
     async feedback(f) {
+      const questions = questionsFor(f.version),
+        byId = questionMap(f.version);
       const q = f.question ? byId.get(f.question) : null;
       if (q && !["short", "long"].includes(q.type)) fail();
       const ids = q

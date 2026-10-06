@@ -61,6 +61,7 @@ test(
         r = await store.start("a".repeat(64));
       assert.equal(r.current, "frequency");
       assert.equal(await store.read("b".repeat(64)), null);
+      assert.equal(await store.completedCount(), 0);
       const originalId = r.id;
       r = await store.update("a".repeat(64), 0, {
         action: "answer",
@@ -166,6 +167,55 @@ test(
       await assert.rejects(
         store.update("a".repeat(64), r.revision, { action: "back" }),
         (e) => e.status === 409,
+      );
+      assert.equal(await store.completedCount(), 1);
+      await store.start("c".repeat(64));
+      assert.equal(
+        await store.completedCount(),
+        1,
+        "unfinished responses are excluded",
+      );
+      await pool.query(
+        "insert into poll_responses(id,session_hash,survey_version,current_question,completed_at) values($1,$2,$3,null,now())",
+        [
+          "12345678-1234-4234-8234-123456789012",
+          "d".repeat(64),
+          "different-survey",
+        ],
+      );
+      assert.equal(
+        await store.completedCount(),
+        1,
+        "other survey versions are excluded",
+      );
+      const legacyId = "22345678-1234-4234-8234-123456789012";
+      await pool.query(
+        "insert into poll_responses(id,session_hash,survey_version,current_question) values($1,$2,$3,$4)",
+        [legacyId, "e".repeat(64), "um-feedback-v1", "both_reason"],
+      );
+      await pool.query(
+        "insert into poll_answers(response_id,question_id,value) values($1,'focus','\"both\"'::jsonb)",
+        [legacyId],
+      );
+      const legacy = await store.read("e".repeat(64));
+      assert.equal(legacy.survey_version, "um-feedback-v1");
+      const edited = await store.update("e".repeat(64), legacy.revision, {
+        action: "answer",
+        questionId: "both_reason",
+        value: "balance",
+        advance: true,
+      });
+      assert.equal(edited.current, "tie_breaker");
+      assert.equal(edited.answers.both_reason, "balance");
+      assert.equal(await store.completedCount(), 1);
+      await pool.query(
+        "update poll_responses set completed_at=now() where id=$1",
+        [legacyId],
+      );
+      assert.equal(
+        await store.completedCount(),
+        2,
+        "completed count includes both published versions",
       );
       const stored = await pool.query(
         "select session_hash from poll_responses where id=$1",

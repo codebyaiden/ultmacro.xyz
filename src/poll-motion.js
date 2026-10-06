@@ -146,7 +146,29 @@
       { delay, duration },
     );
   }
-  function enter(root, { direction = "forward", sectionChanged = false } = {}) {
+  function enter(
+    root,
+    { direction = "forward", sectionChanged = false, branch = false } = {},
+  ) {
+    if (branch) {
+      animate(
+        root.querySelector(".question"),
+        [
+          { opacity: 0, transform: "translateY(10px)" },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
+        { duration: 240 },
+      );
+      animate(
+        root.querySelector(".branch-context"),
+        [
+          { transform: "scale(.88)", opacity: 0.5 },
+          { transform: "scale(1)", opacity: 1 },
+        ],
+        { duration: 240 },
+      );
+      return;
+    }
     const heading = root.querySelector("h1");
     if (heading && !heading.closest(".landing-copy")) split(heading);
     const page = root.querySelector(".question,.review,.completion");
@@ -205,39 +227,39 @@
     if (root.querySelector(".completion"))
       celebrate(root.querySelector(".completion"));
   }
-  async function leave(root, direction = "forward") {
+  async function leave(root, direction = "forward", branch = false) {
     if (reduced.matches) return;
     const section = root.querySelector(
       ".question,.review,.completion,.landing",
     );
     if (!section) return;
-    const selected = root.querySelector(".choice:has(input:checked)");
-    if (selected && direction !== "back") {
-      const rect = selected.getBoundingClientRect(),
-        ghost = selected.cloneNode(true);
-      ghost
-        .querySelectorAll("input,.answer-key,.choice-mark,.mock-choice")
-        .forEach((n) => n.remove());
-      ghost.className = "answer-flight";
-      ghost.setAttribute("aria-hidden", "true");
-      ghost.style.cssText = `left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px`;
-      document.body.append(ghost);
-      const flight = animate(
-        ghost,
-        [
-          { opacity: 0.85, transform: "translate(0,0) scale(1)" },
-          {
-            opacity: 0.5,
-            transform: `translate(${innerWidth * 0.5 - rect.left - rect.width * 0.5}px,${90 - rect.top}px) scale(.32)`,
-          },
-          {
-            opacity: 0,
-            transform: `translate(${innerWidth * 0.5 - rect.left - rect.width * 0.5}px,${80 - rect.top}px) scale(.1)`,
-          },
-        ],
-        { duration: 370 },
-      );
-      flight?.finished.catch(() => {}).finally(() => ghost.remove());
+    if (branch && direction !== "back") {
+      const cards = [...root.querySelectorAll(".choice")];
+      const animations = cards.map((card) => {
+        const selected = card.querySelector("input")?.checked;
+        return animate(
+          card,
+          [
+            { opacity: 1, transform: "translateY(0) scale(1)" },
+            {
+              opacity: selected ? 1 : 0,
+              transform: selected
+                ? "translateY(-8px) scale(.86)"
+                : "scale(.94)",
+            },
+          ],
+          { duration: 160 },
+        );
+      });
+      root.dataset.branchTransition = "leaving";
+      try {
+        await Promise.all(
+          animations.map((animation) => animation?.finished.catch(() => {})),
+        );
+      } finally {
+        delete root.dataset.branchTransition;
+      }
+      return;
     }
     const animation = animate(
       section,

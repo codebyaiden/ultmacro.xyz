@@ -274,3 +274,110 @@ test("missing database configuration returns a clear unavailable response", asyn
     503,
   );
 });
+
+test("public completions returns only a cached aggregate without a session", async () => {
+  let calls = 0,
+    clock = 0;
+  const handler = createPollHandler({
+    configured: () => true,
+    limit: async () => ({ allowed: true }),
+    now: () => clock,
+    store: {
+      completedCount: async () => {
+        calls++;
+        return 37;
+      },
+    },
+  });
+  const request = () =>
+    handler(new Request("https://ultmacro.xyz/api/poll/completions"));
+  const responses = await Promise.all([request(), request(), request()]);
+  for (const response of responses) {
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { completedCount: 37 });
+    assert.equal(response.headers.get("set-cookie"), null);
+    assert.equal(response.headers.get("cache-control"), "public, max-age=60");
+  }
+  assert.equal(calls, 1);
+  clock = 60001;
+  await request();
+  assert.equal(calls, 2);
+  assert.equal(
+    (await handler(new Request("https://ultmacro.xyz/api/poll"))).status,
+    401,
+  );
+  assert.equal(
+    (
+      await handler(
+        new Request("https://ultmacro.xyz/api/poll/completions", {
+          method: "POST",
+        }),
+      )
+    ).status,
+    405,
+  );
+  assert.equal(
+    (
+      await handler(
+        new Request("https://ultmacro.xyz/api/poll/completions?id=private"),
+      )
+    ).status,
+    400,
+  );
+});
+test("completion count failures recover without caching errors or changing survey start", async () => {
+  const f = fixture();
+  let calls = 0;
+  const handler = createPollHandler({
+    configured: () => true,
+    limit: async () => ({ allowed: true }),
+    store: {
+      completedCount: async () => {
+        if (!calls++)
+          throw Object.assign(new Error("unavailable"), { status: 503 });
+        return 0;
+      },
+    },
+  });
+  assert.equal(
+    (await handler(new Request("https://ultmacro.xyz/api/poll/completions")))
+      .status,
+    503,
+  );
+  assert.deepEqual(
+    await (
+      await handler(new Request("https://ultmacro.xyz/api/poll/completions"))
+    ).json(),
+    { completedCount: 0 },
+  );
+  assert.equal((await f.call("/start", {})).status, 201);
+});
+
+test("existing anonymous sessions resume and edit using their original survey version", async () => {
+  const f = fixture(),
+    { cookie } = await start(f);
+  const row = [...f.records.values()][0];
+  row.survey_version = "um-feedback-v1";
+  row.current = "both_reason";
+  row.answers = { focus: "both", both_reason: "balance" };
+  const resumed = await (await f.call("", undefined, cookie)).json();
+  assert.equal(resumed.version, "um-feedback-v1");
+  assert.equal(
+    resumed.path.find((q) => q.id === "both_reason").options[0].label,
+    "Both matter to my experience",
+  );
+  const updated = await f.call(
+    "/answer",
+    {
+      revision: 0,
+      questionId: "both_reason",
+      value: "progress",
+      advance: true,
+    },
+    cookie,
+  );
+  assert.equal(updated.status, 200);
+  const state = await updated.json();
+  assert.equal(state.version, "um-feedback-v1");
+  assert.equal(state.current, "tie_breaker");
+});

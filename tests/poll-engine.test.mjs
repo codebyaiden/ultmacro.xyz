@@ -6,6 +6,7 @@ import {
   validateAnswer,
   pruneAnswers,
   transition,
+  publicState,
 } from "../api/_lib/poll-engine.mjs";
 const ids = (a) => calculate(a).path.map((q) => q.id);
 
@@ -228,4 +229,76 @@ test("unknown usage skips irrelevant Lab, Cloud, and reliability details", () =>
     "support",
   ])
     assert.ok(!path.includes(id));
+});
+
+test("branch context exposes only the parent question, preserving server-owned rules", () => {
+  const path = calculate({
+    focus: "features",
+    lab_use: "often",
+    cloud_use: "regular",
+    satisfaction: 5,
+    discord: ["support"],
+  }).path;
+  for (const [id, parent] of [
+    ["missing_features", "focus"],
+    ["lab_ease", "lab_use"],
+    ["cloud_reliability", "cloud_use"],
+    ["satisfaction_high", "satisfaction"],
+    ["support", "discord"],
+  ]) {
+    const question = path.find((q) => q.id === id);
+    assert.equal(question.branchParent, parent);
+    assert.equal(question.when, undefined);
+  }
+  assert.equal(path.find((q) => q.id === "frequency").branchParent, undefined);
+});
+
+test("legacy responses retain their original prompts and option meanings", () => {
+  const old = publicState({
+    survey_version: "um-feedback-v1",
+    answers: {
+      focus: "both",
+      both_reason: "balance",
+      satisfaction: 3,
+      satisfaction_middle: "old explanation",
+    },
+    current: "both_reason",
+    revision: 0,
+    created_at: new Date(),
+  });
+  const current = calculate({ focus: "both", satisfaction: 3 });
+  assert.equal(old.version, "um-feedback-v1");
+  assert.equal(
+    old.path.find((q) => q.id === "both_reason").options[0].label,
+    "Both matter to my experience",
+  );
+  assert.equal(
+    old.path.find((q) => q.id === "satisfaction_middle").title,
+    "What prevents Ultimate Macro from being a 4 out of 5?",
+  );
+  assert.equal(
+    current.path.find((q) => q.id === "both_reason").options[0].label,
+    "New features need reliable runs to be useful",
+  );
+  assert.equal(old.answers.both_reason, "balance");
+  const updated = transition(
+    {
+      survey_version: "um-feedback-v1",
+      answers: old.answers,
+      current: "both_reason",
+      revision: 0,
+    },
+    {
+      action: "answer",
+      questionId: "both_reason",
+      value: "progress",
+      advance: true,
+    },
+  );
+  assert.equal(updated.survey_version, "um-feedback-v1");
+  assert.equal(updated.current, "tie_breaker");
+  assert.throws(
+    () => calculate({}, "unknown-version"),
+    (e) => e.status === 409,
+  );
 });
