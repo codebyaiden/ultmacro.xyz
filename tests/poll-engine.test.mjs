@@ -302,3 +302,180 @@ test("legacy responses retain their original prompts and option meanings", () =>
     (e) => e.status === 409,
   );
 });
+
+test("three representative v2 paths cover every question, save/Back, required guards and completion", () => {
+  const plans = [
+    {
+      frequency: "new",
+      experience: "new",
+      lab_use: "never",
+      satisfaction: 1,
+      success: "unknown",
+      focus: "features",
+      cloud_use: "never",
+      discord: ["none"],
+      communication: null,
+      features: ["none"],
+    },
+    {
+      frequency: "daily",
+      experience: "experienced",
+      lab_use: "stopped",
+      satisfaction: 3,
+      success: "rarely",
+      focus: "reliability",
+      cloud_use: "regular",
+      discord: ["support"],
+      features: ["goals", "plus"],
+    },
+    {
+      frequency: "daily",
+      experience: "creator",
+      lab_use: "often",
+      satisfaction: 5,
+      success: "always",
+      focus: "both",
+      cloud_use: "regular",
+      discord: ["updates"],
+      features: ["goals", "plus", "themes"],
+    },
+  ];
+  const seen = new Set();
+  for (const plan of plans) {
+    let row = {
+      survey_version: "um-feedback-v2",
+      answers: {},
+      current: "frequency",
+      completed_at: null,
+    };
+    const answers = {};
+    let guard = 0;
+    while (row.current) {
+      assert.ok(++guard <= questions.length, "path must terminate");
+      const q = calculate(row.answers).path.find((q) => q.id === row.current);
+      seen.add(q.id);
+      assert.throws(
+        () => transition(row, { action: "next" }),
+        /Answer this question/,
+      );
+      const value = Object.hasOwn(plan, q.id)
+        ? plan[q.id]
+        : q.type === "ranking"
+          ? q.options.map((o) => o.value).reverse()
+          : q.optional
+            ? null
+            : q.type === "multiple"
+              ? [q.options[0].value]
+              : q.options[0].value;
+      row = transition(row, {
+        action: "answer",
+        questionId: q.id,
+        value,
+        advance: true,
+      });
+      answers[q.id] = value;
+      assert.deepEqual(row.answers[q.id], value);
+      const next = row.current;
+      row = transition(row, { action: "back" });
+      assert.equal(row.current, q.id);
+      assert.deepEqual(row.answers[q.id], value);
+      row = transition(row, { action: "next" });
+      assert.equal(row.current, next);
+    }
+    assert.deepEqual(row.answers, answers);
+    assert.equal(transition(row, { action: "submit" }).complete, true);
+  }
+  assert.deepEqual(
+    [...seen].sort(),
+    questions.map((q) => q.id).sort(),
+    "no orphan/unreachable questions",
+  );
+  for (const [i, q] of questions.entries()) {
+    assert.ok(q.title.trim());
+    if (q.options) {
+      assert.equal(
+        new Set(q.options.map((o) => o.value)).size,
+        q.options.length,
+      );
+      assert.equal(
+        new Set(q.options.map((o) => o.label)).size,
+        q.options.length,
+      );
+    }
+    if (q.when)
+      assert.ok(
+        questions.findIndex((parent) => parent.id === q.when.question) < i,
+      );
+  }
+});
+test("all five rating scales accept and restore 1–5 and optional skip", () => {
+  for (const q of questions.filter((q) => q.type === "rating")) {
+    assert.ok(q.low && q.high && q.low !== q.high);
+    for (const value of [1, 2, 3, 4, 5, null]) {
+      const prerequisites = { lab_use: "often", cloud_use: "regular" };
+      const row = { answers: prerequisites, current: q.id };
+      const saved = transition(row, {
+        action: "answer",
+        questionId: q.id,
+        value,
+      });
+      assert.equal(saved.current, q.id);
+      assert.equal(saved.answers[q.id], value);
+      assert.equal(pruneAnswers(saved.answers)[q.id], value);
+    }
+  }
+});
+test("changing each branch driver prunes every now-irrelevant answer", () => {
+  const full = {
+    lab_use: "often",
+    satisfaction: 1,
+    success: "rarely",
+    focus: "both",
+    features: ["goals", "plus"],
+    cloud_use: "regular",
+    discord: ["support"],
+  };
+  for (const q of calculate(full).path) {
+    if (Object.hasOwn(full, q.id)) continue;
+    full[q.id] =
+      q.type === "ranking"
+        ? q.options.map((o) => o.value)
+        : q.optional
+          ? null
+          : q.type === "multiple"
+            ? [q.options[0].value]
+            : q.options[0].value;
+  }
+  for (const driver of [
+    "lab_use",
+    "satisfaction",
+    "success",
+    "focus",
+    "features",
+    "cloud_use",
+    "discord",
+  ]) {
+    const q = questions.find((q) => q.id === driver);
+    const values =
+      q.type === "rating"
+        ? [1, 2, 3, 4, 5, null]
+        : q.type === "multiple"
+          ? q.options.map((o) => [o.value])
+          : q.options.map((o) => o.value);
+    for (const value of values) {
+      const edited = transition(
+        { answers: full, current: driver },
+        { action: "answer", questionId: driver, value },
+      );
+      const path = new Set(calculate(edited.answers).path.map((q) => q.id));
+      for (const answered of Object.keys(edited.answers))
+        assert.ok(path.has(answered), `${driver}/${value}: stale ${answered}`);
+      for (const follow of questions.filter(
+        (q) => q.when?.question === driver,
+      )) {
+        if (!path.has(follow.id))
+          assert.ok(!Object.hasOwn(edited.answers, follow.id));
+      }
+    }
+  }
+});

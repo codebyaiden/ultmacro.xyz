@@ -4,6 +4,7 @@ import { error, json, methodNotAllowed, clientIp } from "./_lib/http.mjs";
 import { rateLimit } from "./_lib/security.mjs";
 import { createPollStore } from "./_lib/poll-store.mjs";
 import { publicState, invalid } from "./_lib/poll-engine.mjs";
+import { pollOriginAllowed } from "./_lib/poll-origin.mjs";
 export const MAX_POLL_BYTES = 16 * 1024;
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 function session(request) {
@@ -110,10 +111,7 @@ export function createPollHandler({
       if (request.method === "POST") {
         if (request.headers.get("x-poll-request") !== "1")
           return error("Invalid request.", 403);
-        const origin = request.headers.get("origin");
-        if (origin && origin !== url.origin)
-          return error("Invalid request origin.", 403);
-        if (request.headers.get("sec-fetch-site") === "cross-site")
+        if (!pollOriginAllowed(request))
           return error("Invalid request origin.", 403);
       }
       const ip = clientIp(request);
@@ -144,7 +142,9 @@ export function createPollHandler({
         const token = randomBytes(32).toString("base64url");
         const row = await store.start(hash(token));
         const secure =
-          url.protocol === "https:" || process.env.NODE_ENV === "production"
+          url.protocol === "https:" ||
+          process.env.NODE_ENV === "production" ||
+          request.headers.get("origin")?.startsWith("https://")
             ? "; Secure"
             : "";
         return json(publicState(row), 201, {

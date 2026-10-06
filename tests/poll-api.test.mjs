@@ -381,3 +381,126 @@ test("existing anonymous sessions resume and edit using their original survey ve
   assert.equal(state.version, "um-feedback-v1");
   assert.equal(state.current, "tie_breaker");
 });
+
+test("public origin accepts same-origin and internal proxy URLs and sets Secure cookie", async () => {
+  for (const url of [
+    "https://ultmacro.xyz",
+    "http://127.0.0.1:3000",
+    "http://internal:3000",
+  ]) {
+    const f = fixture();
+    const response = await f.handler(
+      new Request(url + "/api/poll/start", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-poll-request": "1",
+          origin: "https://ultmacro.xyz",
+          "sec-fetch-site": "same-origin",
+        },
+        body: "{}",
+      }),
+    );
+    assert.equal(response.status, 201);
+    assert.match(
+      response.headers.get("set-cookie"),
+      /HttpOnly; SameSite=Lax; Secure/,
+    );
+    assert.equal((await response.json()).current, "frequency");
+  }
+});
+test("external, null, www and forged forwarded origins cannot authorize poll mutations", async () => {
+  const f = fixture();
+  for (const origin of [
+    "https://evil.example",
+    "null",
+    "https://www.ultmacro.xyz",
+    "https://ultmacro.xyz.evil.example",
+    "http://ultmacro.xyz",
+    "https://ultmacro.xyz:444",
+  ]) {
+    for (const path of ["/start", "/answer", "/navigate", "/submit"]) {
+      const response = await f.handler(
+        new Request("http://127.0.0.1:3000/api/poll" + path, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-poll-request": "1",
+            origin,
+            "x-forwarded-host": "evil.example",
+            "x-forwarded-proto": "https",
+            forwarded: "host=evil.example;proto=https",
+          },
+          body: "{}",
+        }),
+      );
+      assert.equal(response.status, 403, origin + path);
+    }
+  }
+});
+test("cross-site metadata is rejected with a valid or missing Origin; absent Origin still requires custom header", async () => {
+  const f = fixture();
+  for (const extra of [
+    { origin: "https://ultmacro.xyz", "sec-fetch-site": "cross-site" },
+    { "sec-fetch-site": "cross-site" },
+    { "x-poll-request": "" },
+  ])
+    assert.equal((await f.call("/start", {}, "", extra)).status, 403);
+  assert.equal((await f.call("/start", {})).status, 201);
+});
+test("local development same-origin works without widening the public origin allowlist", async () => {
+  const f = fixture();
+  for (const host of ["localhost:3000", "127.0.0.1:3127", "[::1]:3000"]) {
+    const url = "http://" + host;
+    const response = await f.handler(
+      new Request(url + "/api/poll/start", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-poll-request": "1",
+          origin: url,
+        },
+        body: "{}",
+      }),
+    );
+    assert.equal(response.status, 201);
+    assert.ok(!response.headers.get("set-cookie").includes("Secure"));
+  }
+});
+test("explicit public origin is strict and production never accepts loopback origins", async () => {
+  const { pollOriginAllowed } = await import("../api/_lib/poll-origin.mjs");
+  const request = (origin) =>
+    new Request("http://localhost:3000/api/poll/start", {
+      headers: { origin },
+    });
+  assert.equal(
+    pollOriginAllowed(request("http://localhost:3000"), { production: true }),
+    false,
+  );
+  assert.equal(
+    pollOriginAllowed(request("https://www.ultmacro.xyz"), {
+      publicOrigin: "https://www.ultmacro.xyz",
+      production: true,
+    }),
+    true,
+  );
+  assert.equal(
+    pollOriginAllowed(request("https://ultmacro.xyz"), {
+      publicOrigin: "https://www.ultmacro.xyz",
+      production: true,
+    }),
+    false,
+  );
+  for (const publicOrigin of [
+    "https://ultmacro.xyz/path",
+    "https://user:pass@ultmacro.xyz",
+    "http://ultmacro.xyz",
+    "https://ultmacro.xyz/",
+  ])
+    assert.throws(() =>
+      pollOriginAllowed(request("https://ultmacro.xyz"), {
+        publicOrigin,
+        production: true,
+      }),
+    );
+});
