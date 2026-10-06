@@ -62,17 +62,46 @@ export function createPollHandler({
   configured = () =>
     databaseConfigured() && Boolean(process.env.STRATEGY_HASH_SECRET),
   limit = rateLimit,
+  now = Date.now,
 } = {}) {
+  let countCache = null,
+    countRequest = null;
+  async function completedCount() {
+    if (countCache && countCache.expires > now()) return countCache.value;
+    if (!countRequest) {
+      countRequest = Promise.resolve()
+        .then(() => store.completedCount())
+        .then((value) => {
+          if (!Number.isSafeInteger(value) || value < 0)
+            throw new Error("Invalid completed count");
+          countCache = { value, expires: now() + 60000 };
+          return value;
+        })
+        .finally(() => {
+          countRequest = null;
+        });
+    }
+    return countRequest;
+  }
   return async function poll(request) {
     try {
       const url = new URL(request.url),
         path = url.pathname.slice("/api/poll".length) || "/";
       if (url.search) return error("Query parameters are not supported.", 400);
       const route = path === "/" ? "state" : path.slice(1);
-      if (!["state", "start", "answer", "navigate", "submit"].includes(route))
+      if (
+        ![
+          "state",
+          "start",
+          "answer",
+          "navigate",
+          "submit",
+          "completions",
+        ].includes(route)
+      )
         return error("Not found.", 404);
-      if (request.method !== (route === "state" ? "GET" : "POST"))
-        return methodNotAllowed([route === "state" ? "GET" : "POST"]);
+      const method = ["state", "completions"].includes(route) ? "GET" : "POST";
+      if (request.method !== method) return methodNotAllowed([method]);
       if (!configured())
         return error(
           "The survey is temporarily unavailable. Please try again later.",
@@ -89,7 +118,7 @@ export function createPollHandler({
       }
       const ip = clientIp(request);
       const allowance = await limit(
-        `poll:${route === "start" ? "start" : "requests"}:${ip}`,
+        `poll:${route === "start" ? "start" : route === "completions" ? "completions" : "requests"}:${ip}`,
         route === "start" ? 10 : 240,
         60 * 10,
       );
@@ -99,6 +128,10 @@ export function createPollHandler({
           429,
           { "retry-after": String(allowance.retryAfter || 60) },
         );
+      if (route === "completions")
+        return json({ completedCount: await completedCount() }, 200, {
+          "cache-control": "public, max-age=60",
+        });
       let body = {};
       if (request.method === "POST") body = await payload(request);
       if (route === "start") {

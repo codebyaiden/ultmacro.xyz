@@ -6,6 +6,7 @@ import {
   validateAnswer,
   pruneAnswers,
   transition,
+  publicState,
 } from "../api/_lib/poll-engine.mjs";
 const ids = (a) => calculate(a).path.map((q) => q.id);
 
@@ -92,7 +93,7 @@ test("ranking uses only selected features and neutral wording", () => {
 test("validates all answer types without coercing untrusted values", () => {
   for (const q of questions) {
     if (q.type === "rating")
-      for (const bad of [0, 6, "3", null, {}, NaN])
+      for (const bad of [0, 6, "3", {}, NaN, ...(q.optional ? [] : [null])])
         assert.throws(() => validateAnswer(q, bad));
     if (q.type === "single")
       for (const bad of ["__invalid", {}, [], ...(q.optional ? [] : [null])])
@@ -159,5 +160,145 @@ test("ETA reserves likely follow-ups until answers rule them out", () => {
   assert.equal(
     calculate({ navigation: 1 }).path.find((q) => q.id === "clutter").title,
     "What makes navigating Ultimate Macro difficult?",
+  );
+});
+
+test("inexperienced users can skip ratings without retaining satisfaction follow-ups", () => {
+  for (const q of questions.filter((q) => q.type === "rating")) {
+    assert.equal(validateAnswer(q, null), null);
+    assert.ok(q.low && q.high && q.skipLabel);
+  }
+  const clean = pruneAnswers({
+    satisfaction: null,
+    satisfaction_low: "old",
+    satisfaction_high: "old",
+  });
+  assert.equal(clean.satisfaction_low, undefined);
+  assert.equal(clean.satisfaction_high, undefined);
+  assert.ok(!ids(clean).some((id) => id.startsWith("satisfaction_")));
+});
+test("written follow-ups are optional and unsure feature interest skips ranking", () => {
+  for (const id of [
+    "satisfaction_low",
+    "satisfaction_middle",
+    "satisfaction_high",
+    "missing_features",
+    "final",
+  ])
+    assert.equal(
+      validateAnswer(
+        questions.find((q) => q.id === id),
+        null,
+      ),
+      null,
+    );
+  assert.ok(!ids({ features: ["unsure"] }).includes("feature_rank"));
+  assert.throws(() =>
+    validateAnswer(
+      questions.find((q) => q.id === "features"),
+      ["unsure", "goals"],
+    ),
+  );
+  assert.equal(
+    pruneAnswers({ features: ["unsure"], feature_rank: ["goals", "themes"] })
+      .feature_rank,
+    undefined,
+  );
+});
+
+test("skipping navigation does not imply difficulty", () => {
+  assert.equal(
+    calculate({ navigation: null }).path.find((q) => q.id === "clutter").title,
+    "What feels cluttered or difficult?",
+  );
+});
+
+test("unknown usage skips irrelevant Lab, Cloud, and reliability details", () => {
+  const path = ids({
+    lab_use: "unknown",
+    cloud_use: "unknown",
+    success: "unknown",
+    discord: ["none"],
+  });
+  for (const id of [
+    "lab_ease",
+    "lab_improve",
+    "lab_stopped",
+    "cloud_reliability",
+    "failure",
+    "support",
+  ])
+    assert.ok(!path.includes(id));
+});
+
+test("branch context exposes only the parent question, preserving server-owned rules", () => {
+  const path = calculate({
+    focus: "features",
+    lab_use: "often",
+    cloud_use: "regular",
+    satisfaction: 5,
+    discord: ["support"],
+  }).path;
+  for (const [id, parent] of [
+    ["missing_features", "focus"],
+    ["lab_ease", "lab_use"],
+    ["cloud_reliability", "cloud_use"],
+    ["satisfaction_high", "satisfaction"],
+    ["support", "discord"],
+  ]) {
+    const question = path.find((q) => q.id === id);
+    assert.equal(question.branchParent, parent);
+    assert.equal(question.when, undefined);
+  }
+  assert.equal(path.find((q) => q.id === "frequency").branchParent, undefined);
+});
+
+test("legacy responses retain their original prompts and option meanings", () => {
+  const old = publicState({
+    survey_version: "um-feedback-v1",
+    answers: {
+      focus: "both",
+      both_reason: "balance",
+      satisfaction: 3,
+      satisfaction_middle: "old explanation",
+    },
+    current: "both_reason",
+    revision: 0,
+    created_at: new Date(),
+  });
+  const current = calculate({ focus: "both", satisfaction: 3 });
+  assert.equal(old.version, "um-feedback-v1");
+  assert.equal(
+    old.path.find((q) => q.id === "both_reason").options[0].label,
+    "Both matter to my experience",
+  );
+  assert.equal(
+    old.path.find((q) => q.id === "satisfaction_middle").title,
+    "What prevents Ultimate Macro from being a 4 out of 5?",
+  );
+  assert.equal(
+    current.path.find((q) => q.id === "both_reason").options[0].label,
+    "New features need reliable runs to be useful",
+  );
+  assert.equal(old.answers.both_reason, "balance");
+  const updated = transition(
+    {
+      survey_version: "um-feedback-v1",
+      answers: old.answers,
+      current: "both_reason",
+      revision: 0,
+    },
+    {
+      action: "answer",
+      questionId: "both_reason",
+      value: "progress",
+      advance: true,
+    },
+  );
+  assert.equal(updated.survey_version, "um-feedback-v1");
+  assert.equal(updated.current, "tie_breaker");
+  assert.throws(
+    () => calculate({}, "unknown-version"),
+    (e) => e.status === 409,
   );
 });

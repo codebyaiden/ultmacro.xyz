@@ -44,7 +44,7 @@ for (const [name, width, height] of [
   await page.getByRole("button", { name: "Open staff dashboard" }).click();
   await page.waitForURL(base + "/poll/team");
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   const cookie = (await context.cookies()).find(
     (c) => c.name === "um_poll_staff",
@@ -70,6 +70,29 @@ for (const [name, width, height] of [
       });
     }
   }
+  await page.getByRole("button", { name: "Refine segment" }).click();
+  await page
+    .getByLabel("Survey version", { exact: true })
+    .selectOption("um-feedback-v1");
+  await page.getByRole("button", { name: "Apply segment" }).click();
+  await page
+    .getByText("0 responses · 0 completed · um-feedback-v1", { exact: true })
+    .waitFor();
+  const original = await page.evaluate(() =>
+    fetch("/api/poll-team/questions?version=um-feedback-v1").then((r) =>
+      r.json(),
+    ),
+  );
+  assert.equal(
+    original.questions.find((q) => q.id === "both_reason").options[0].label,
+    "Both matter to my experience",
+  );
+  await page.getByRole("button", { name: "Refine segment" }).click();
+  await page.getByLabel("Survey version", { exact: true }).selectOption("");
+  await page.getByRole("button", { name: "Apply segment" }).click();
+  await page
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
+    .waitFor();
   await shot("overview");
   await page.getByRole("button", { name: "Refine segment" }).click();
   await page
@@ -93,13 +116,13 @@ for (const [name, width, height] of [
     .waitFor();
   await page
     .getByRole("button", {
-      name: "Why do you prefer that we focus on both? →",
+      name: "What would focusing on only one leave unresolved? →",
       exact: true,
     })
     .click();
   await page
     .getByRole("heading", {
-      name: "Why do you prefer that we focus on both?",
+      name: "What would focusing on only one leave unresolved?",
       exact: true,
     })
     .waitFor();
@@ -160,7 +183,7 @@ for (const [name, width, height] of [
   await shot("empty");
   await page.getByRole("button", { name: "Overview", exact: true }).click();
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   await context.setOffline(true);
   await page.getByRole("button", { name: "Refresh ↻" }).click();
@@ -170,18 +193,18 @@ for (const [name, width, height] of [
   await context.setOffline(false);
   await page.getByRole("button", { name: "Refresh ↻" }).click();
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   await page.getByRole("button", { name: "Questions", exact: true }).click();
   await page.getByRole("button", { name: "Responses", exact: true }).click();
   await page.getByRole("button", { name: "Overview", exact: true }).click();
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   assert.equal(await page.locator(".metric").count(), 4);
   await page.reload();
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   await auth.revoke("invite", invite.id);
   await page.getByRole("button", { name: "Refresh ↻" }).click();
@@ -193,7 +216,7 @@ for (const [name, width, height] of [
   await page.goto(base + "/poll/team/access/" + fresh.token);
   await page.getByRole("button", { name: "Open staff dashboard" }).click();
   await page
-    .getByText("34 responses · 28 completed · current survey", { exact: true })
+    .getByText("34 responses · 28 completed · um-feedback-v2", { exact: true })
     .waitFor();
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await page

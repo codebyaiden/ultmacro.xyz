@@ -14,6 +14,8 @@ test("staff filters strictly validate values, dates and combined segments", () =
   );
   for (const query of [
     "unknown=x",
+    "version=unknown",
+    "version=um-feedback-v1&features=unsure",
     "satisfactionMax=6",
     "frequency=invalid",
     "from=2026-02-30",

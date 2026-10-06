@@ -1,4 +1,4 @@
-export const surveyVersion = "um-feedback-v1";
+export const surveyVersion = "um-feedback-v2";
 export const durations = {
   single: 15,
   multiple: 25,
@@ -24,6 +24,8 @@ const rating = (id, section, title, low, high, extra = {}) => ({
   type: "rating",
   low,
   high,
+  optional: true,
+  skipLabel: "Haven’t used it enough",
   ...extra,
 });
 const text = (id, section, title, extra = {}) => ({
@@ -46,7 +48,18 @@ const features = options([
   ["history", "Better statistics / history"],
   ["personalization", "Personalization"],
   ["none", "None of these"],
+  ["unsure", "Not sure yet"],
 ]);
+const featureDescriptions = {
+  goals: "Set targets for your runs",
+  themes: "Change colors and appearance",
+  plus: "An optional supporter tier with advanced remote controls, cloud features, customization, smarter strategy tools, early access, and community perks. Ultimate Macro itself stays free.",
+  web: "Control runs from a browser",
+  personalization: "Customize defaults and your workflow",
+};
+for (const option of features)
+  if (featureDescriptions[option.value])
+    option.description = featureDescriptions[option.value];
 export const questions = [
   choice("frequency", "About you", "How often do you use Ultimate Macro?", [
     ["daily", "Almost every day"],
@@ -62,6 +75,7 @@ export const questions = [
     ["wins", "Completing modes / getting wins"],
     ["creating", "Creating or testing strategies"],
     ["other", "Something else"],
+    ["unknown", "I’m still exploring"],
   ]),
   choice(
     "experience",
@@ -79,6 +93,7 @@ export const questions = [
     ["stopped", "I tried it, but stopped"],
     ["sometimes", "Sometimes"],
     ["often", "Often"],
+    ["unknown", "I’m not sure what it does"],
   ]),
   rating(
     "satisfaction",
@@ -91,19 +106,19 @@ export const questions = [
     "satisfaction_low",
     "Your experience",
     "What is causing the low rating?",
-    { when: when("satisfaction", 1, 2) },
+    { when: when("satisfaction", 1, 2), optional: true },
   ),
   text(
     "satisfaction_middle",
     "Your experience",
-    "What prevents Ultimate Macro from being a 4 out of 5?",
-    { when: when("satisfaction", 3) },
+    "What would improve your experience most?",
+    { when: when("satisfaction", 3), optional: true },
   ),
   text(
     "satisfaction_high",
     "Your experience",
     "What should Ultimate Macro avoid changing?",
-    { when: when("satisfaction", 4, 5) },
+    { when: when("satisfaction", 4, 5), optional: true },
   ),
   choice(
     "problem",
@@ -143,6 +158,7 @@ export const questions = [
       ["strategy", "Strategy timing or actions"],
       ["stuck", "The macro gets stuck"],
       ["other", "Something else"],
+      ["unknown", "I haven’t seen enough to tell"],
     ],
     { when: when("success", "usually", "half", "rarely") },
   ),
@@ -160,21 +176,23 @@ export const questions = [
       ["recovery", "Poor recovery after something goes wrong"],
       ["inconsistent", "Results are inconsistent"],
       ["setup", "I need to keep checking or adjusting it"],
+      ["none", "No specific issue"],
     ],
     { when: when("focus", "reliability") },
   ),
   text("missing_features", "Priorities", "What currently feels missing?", {
     when: when("focus", "features"),
+    optional: true,
   }),
   choice(
     "both_reason",
     "Priorities",
-    "Why do you prefer that we focus on both?",
+    "What would focusing on only one leave unresolved?",
     [
-      ["balance", "Both matter to my experience"],
-      ["blocked", "Bugs and missing features both hold me back"],
-      ["progress", "I want improvements without development slowing down"],
-      ["unsure", "I’m not sure which matters more"],
+      ["balance", "New features need reliable runs to be useful"],
+      ["blocked", "Bugs and missing tools both block what I want to do"],
+      ["progress", "I need fixes and tools that save me time"],
+      ["unsure", "I haven’t decided on a specific priority"],
     ],
     { when: when("focus", "both") },
   ),
@@ -237,6 +255,7 @@ export const questions = [
       ["guidance", "Examples and clearer guidance"],
       ["sharing", "Easier sharing"],
       ["none", "It already does what I need"],
+      ["unknown", "Haven’t used it enough"],
     ],
     { when: when("lab_use", "often") },
   ),
@@ -245,10 +264,10 @@ export const questions = [
     section: "What comes next",
     type: "multiple",
     title: "Which ideas would matter most to you?",
-    description: "Choose up to 4. These are possibilities, not promises.",
+    description: "Choose up to 4.",
     options: features,
     maxChoices: 4,
-    exclusive: ["none"],
+    exclusive: ["none", "unsure"],
   },
   {
     id: "feature_rank",
@@ -257,7 +276,11 @@ export const questions = [
     title: "Put your selected ideas in priority order.",
     description: "Most important first. Use the up and down buttons.",
     optionsFrom: "features",
-    when: { question: "features", minSelections: 2, exclude: ["none"] },
+    when: {
+      question: "features",
+      minSelections: 2,
+      exclude: ["none", "unsure"],
+    },
   },
   choice("cloud_use", "Ultimate Cloud", "How do you use Ultimate Cloud?", [
     ["regular", "I use it regularly"],
@@ -272,7 +295,10 @@ export const questions = [
     "How reliable is Ultimate Cloud sync for you?",
     "Very unreliable",
     "Very reliable",
-    { when: when("cloud_use", "regular", "sometimes") },
+    {
+      when: when("cloud_use", "regular", "sometimes"),
+      skipLabel: "Haven’t synced enough",
+    },
   ),
   {
     id: "discord",
@@ -309,6 +335,7 @@ export const questions = [
     "How clear are announcements and update communication?",
     "Very unclear",
     "Very clear",
+    { skipLabel: "I don’t follow announcements" },
   ),
   {
     id: "final",

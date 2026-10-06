@@ -1,4 +1,5 @@
-import { questions, durations, surveyVersion } from "./poll-definition.mjs";
+import { durations, surveyVersion } from "./poll-definition.mjs";
+import { questionsFor } from "./poll-definitions.mjs";
 const own = (object, key) => Object.hasOwn(object, key);
 export const invalid = (message) =>
   Object.assign(new Error(message), { status: 400 });
@@ -21,7 +22,7 @@ function visible(q, answers) {
     );
   return false;
 }
-function resolve(q, answers) {
+function resolve(q, answers, questions) {
   const { when, optionsFrom, ...publicQuestion } = q;
   if (optionsFrom) {
     const source = questions.find((item) => item.id === optionsFrom);
@@ -29,9 +30,17 @@ function resolve(q, answers) {
       answers[optionsFrom]?.includes(o.value),
     );
   }
-  if (q.id === "clutter" && answers.navigation <= 2)
+  if (
+    q.id === "clutter" &&
+    Number.isInteger(answers.navigation) &&
+    answers.navigation <= 2
+  )
     publicQuestion.title = "What makes navigating Ultimate Macro difficult?";
-  return { ...publicQuestion, seconds: q.seconds || durations[q.type] };
+  return {
+    ...publicQuestion,
+    ...(q.when ? { branchParent: q.when.question } : {}),
+    seconds: q.seconds || durations[q.type],
+  };
 }
 export function validateAnswer(q, value) {
   if (value === null && q.optional) return null;
@@ -75,23 +84,25 @@ export function validateAnswer(q, value) {
   }
   throw invalid("Unsupported question type.");
 }
-export function pruneAnswers(answers) {
+export function pruneAnswers(answers, version = surveyVersion) {
+  const questions = questionsFor(version);
   const clean = {};
   for (const q of questions) {
     if (!visible(q, clean) || !own(answers, q.id)) continue;
     try {
-      clean[q.id] = validateAnswer(resolve(q, clean), answers[q.id]);
+      clean[q.id] = validateAnswer(resolve(q, clean, questions), answers[q.id]);
     } catch {
       /* Dependent options may have changed. */
     }
   }
   return clean;
 }
-export function calculate(answers = {}) {
-  const clean = pruneAnswers(answers);
+export function calculate(answers = {}, version = surveyVersion) {
+  const questions = questionsFor(version);
+  const clean = pruneAnswers(answers, version);
   const path = questions
     .filter((q) => visible(q, clean))
-    .map((q) => resolve(q, clean));
+    .map((q) => resolve(q, clean, questions));
   // Reserve likely follow-ups while their controlling answers are still unknown.
   const estimated = {
     lab_use: "often",
@@ -125,7 +136,8 @@ export function transition(response, input) {
     throw Object.assign(new Error("This survey has already been submitted."), {
       status: 409,
     });
-  let { answers, path, firstUnanswered } = calculate(response.answers);
+  const version = response.survey_version || surveyVersion;
+  let { answers, path, firstUnanswered } = calculate(response.answers, version);
   let current = path.some((q) => q.id === response.current)
     ? response.current
     : firstUnanswered;
@@ -135,8 +147,8 @@ export function transition(response, input) {
     if (!q || input.questionId !== q.id)
       throw invalid("Answer the current question.");
     answers[q.id] = validateAnswer(q, input.value);
-    answers = pruneAnswers(answers);
-    path = calculate(answers).path;
+    answers = pruneAnswers(answers, version);
+    path = calculate(answers, version).path;
     current = input.advance
       ? path[path.findIndex((item) => item.id === q.id) + 1]?.id || null
       : q.id;
@@ -154,9 +166,10 @@ export function transition(response, input) {
   return { ...response, answers, current };
 }
 export function publicState(response) {
-  const state = calculate(response.answers);
+  const version = response.survey_version || surveyVersion;
+  const state = calculate(response.answers, version);
   return {
-    version: surveyVersion,
+    version,
     revision: response.revision,
     completed: Boolean(response.completed_at),
     current: response.current,

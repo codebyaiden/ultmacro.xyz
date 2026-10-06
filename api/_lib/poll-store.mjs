@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { sql } from "./db.mjs";
 import { surveyVersion } from "./poll-definition.mjs";
+import { surveyVersions } from "./poll-definitions.mjs";
 import { transition } from "./poll-engine.mjs";
 const conflict = () =>
   Object.assign(
@@ -16,7 +17,7 @@ export function createPollStore(pool = sql) {
     );
     if (!rows[0]) return null;
     const row = rows[0];
-    if (row.survey_version !== surveyVersion)
+    if (!surveyVersions.includes(row.survey_version))
       throw Object.assign(
         new Error("This survey version is no longer available."),
         { status: 409 },
@@ -51,6 +52,13 @@ export function createPollStore(pool = sql) {
     }
   }
   return {
+    async completedCount() {
+      const { rows } = await pool().query(
+        "select count(*)::text as count from poll_responses where survey_version = any($1::text[]) and completed_at is not null",
+        [surveyVersions],
+      );
+      return Number(rows[0].count);
+    },
     async start(hash) {
       const { rows } = await pool().query(
         "insert into poll_responses (id, session_hash, survey_version, current_question) values ($1,$2,$3,$4) returning *",

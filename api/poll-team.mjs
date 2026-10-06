@@ -189,7 +189,7 @@ export function createTeamHandler({
                 : [];
       const f = parseFilters(url.searchParams, extras);
       if (route === "/") result = await analytics.overview(f);
-      else if (route === "/questions") result = metadata();
+      else if (route === "/questions") result = metadata(f.version);
       else if (route === "/question" && f.question)
         result = await analytics.question(f, f.question);
       else if (route === "/responses") result = await analytics.responses(f);
