@@ -1641,7 +1641,7 @@ body[data-save="offline"] .save-orb {
     padding: 24px 40px 25px;
   }
   .landing {
-    grid-template-columns: 1.15fr 0.85fr;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
     gap: 5px;
   }
   .landing h1 {
@@ -1649,15 +1649,14 @@ body[data-save="offline"] .save-orb {
   }
   .landing-art {
     min-height: 420px;
-    margin-left: -40px;
-    margin-right: -10px;
-    transform: scale(0.83);
+    margin: 0;
+    transform: none;
   }
   .card-reliability {
-    left: -12px;
+    left: 12px;
   }
   .card-ideas {
-    right: -25px;
+    right: 12px;
   }
   .orbit-footnote {
     right: 0;
@@ -1748,12 +1747,13 @@ body[data-save="offline"] .save-orb {
     justify-content: flex-start;
   }
   .landing {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0;
     padding-top: 20px;
   }
   .landing h1 {
-    font-size: clamp(66px, 17.5vw, 100px);
+    font-size: clamp(56px, 17.5vw, 100px);
+    max-width: 100%;
     line-height: 0.97;
     letter-spacing: -0.065em;
     margin-bottom: 20px;
@@ -1771,7 +1771,8 @@ body[data-save="offline"] .save-orb {
     display: none;
   }
   .landing-action {
-    gap: 19px;
+    gap: 16px;
+    flex-wrap: wrap;
   }
   .primary {
     padding: 16px 23px;
@@ -1779,7 +1780,8 @@ body[data-save="offline"] .save-orb {
     font-size: 13px;
   }
   .time-note {
-    font-size: 9px;
+    font-size: 12px;
+    white-space: nowrap;
   }
   .time-note b {
     font-size: 10px;
@@ -1789,33 +1791,34 @@ body[data-save="offline"] .save-orb {
     margin-top: 20px;
   }
   .landing-art {
-    min-height: 255px;
+    min-height: 300px;
     margin-top: 12px;
     width: 100%;
     transform: none !important;
     overflow: visible;
   }
   .signal-orbit {
-    transform: scale(0.66) !important;
-    top: 50%;
-    left: 49%;
-    margin-top: -190px;
+    width: min(84%, 320px);
+    height: auto;
+    aspect-ratio: 1;
+    inset: 0;
+    margin: auto;
   }
   .card-reliability {
     top: 31px;
-    left: 1px;
+    left: 12px;
     padding: 11px 13px;
     gap: 9px;
     border-radius: 12px;
-    transform: rotate(-7deg) scale(0.85);
+    transform: rotate(-7deg);
   }
   .card-ideas {
     bottom: 22px;
-    right: 0;
+    right: 12px;
     padding: 12px 14px;
     gap: 10px;
     border-radius: 12px;
-    transform: rotate(5deg) scale(0.84);
+    transform: rotate(5deg);
   }
   .floating-card b {
     font-size: 11px;
@@ -2058,15 +2061,12 @@ body[data-save="offline"] .save-orb {
 }
 @media (max-width: 360px) {
   .topbar {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
   }
   .survey {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-  .landing h1 {
-    font-size: 61px;
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
   }
   .landing-action {
     gap: 13px;
@@ -2076,7 +2076,7 @@ body[data-save="offline"] .save-orb {
     padding-right: 18px;
   }
   .time-note {
-    font-size: 8px;
+    font-size: 12px;
   }
   .question h1 {
     font-size: 29px;
@@ -2195,4 +2195,82 @@ svg.card-glyph {
   overflow-wrap: anywhere;
   pointer-events: none;
   transform-origin: left center;
+}
+
+@media (max-width: 1050px) {
+  .landing,
+  .landing-copy,
+  .landing-art {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .landing-art .ring-outer {
+    inset: 6%;
+  }
+  .landing-art .ring-middle {
+    inset: 10%;
+  }
+  .landing-art .ring-inner {
+    inset: 20.26%;
+  }
+  .landing-art .signal-core {
+    inset: 27.63%;
+    border-radius: 28px;
+  }
+  .landing-art .core-icon {
+    width: 87%;
+    height: 87%;
+  }
+  .landing-art .spark-a {
+    left: 6.84%;
+    top: 39.47%;
+  }
+  .landing-art .spark-b {
+    right: 12.63%;
+    bottom: 14.21%;
+  }
+}
+@media (min-width: 701px) and (max-width: 1050px) {
+  .topbar,
+  .survey,
+  .footer {
+    padding-left: max(40px, env(safe-area-inset-left));
+    padding-right: max(40px, env(safe-area-inset-right));
+  }
+  .landing-art .signal-orbit {
+    width: min(84%, 320px);
+    height: auto;
+    aspect-ratio: 1;
+    inset: 0;
+    margin: auto;
+  }
+  .landing-art .floating-card {
+    padding: 12px;
+    gap: 9px;
+  }
+  .landing-art .floating-card b {
+    font-size: 12px;
+  }
+}
+@media (max-width: 700px) {
+  .topbar,
+  .survey,
+  .footer {
+    padding-left: max(22px, env(safe-area-inset-left));
+    padding-right: max(22px, env(safe-area-inset-right));
+  }
+  .topbar {
+    padding-top: max(22px, env(safe-area-inset-top));
+  }
+  .footer {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+@media (max-width: 360px) {
+  .topbar,
+  .survey,
+  .footer {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
 }
