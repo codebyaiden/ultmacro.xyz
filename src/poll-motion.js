@@ -159,14 +159,6 @@
         ],
         { duration: 240 },
       );
-      animate(
-        root.querySelector(".branch-context"),
-        [
-          { transform: "scale(.88)", opacity: 0.5 },
-          { transform: "scale(1)", opacity: 1 },
-        ],
-        { duration: 240 },
-      );
       return;
     }
     const heading = root.querySelector("h1");

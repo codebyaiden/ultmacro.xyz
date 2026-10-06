@@ -332,14 +332,7 @@
     updateProgress();
     if (!state.current) {
       const section = el("section", "review");
-      section.append(
-        el("h1", "", "Ready to send your feedback?"),
-        el(
-          "p",
-          "intro",
-          "You can go back to change an answer, or submit when you’re ready.",
-        ),
-      );
+      section.append(el("h1", "", "Ready to send your feedback?"));
       const controls = el("div", "controls");
       controls.append(
         button("Back", "quiet", () => act("/navigate", { direction: "back" })),
@@ -393,33 +386,17 @@
     const section = el("section", "question");
     const heading = el("h1", "", q.title);
     heading.id = "question-title";
-    if (q.branchParent) {
-      const parent = state.path.find(
-        (question) => question.id === q.branchParent,
-      );
-      const value = state.answers[q.branchParent];
-      const values = Array.isArray(value) ? value : [value];
-      const selected =
-        parent?.type === "rating"
-          ? [`${value} / 5`]
-          : values
-              .map((v) => parent?.options?.find((o) => o.value === v)?.label)
-              .filter(Boolean);
-      if (selected.length && value !== null) {
-        const context = el("p", "branch-context", selected.join(" · "));
-        context.setAttribute(
-          "aria-label",
-          "Previous answer: " + selected.join(", "),
-        );
-        section.append(context);
-      }
-    }
     section.append(heading);
     const descriptionText =
-      q.id === "features"
-        ? `Choose up to ${q.maxChoices}.`
-        : q.description ||
-          (q.optional && q.type !== "rating" ? "Optional" : "");
+      q.type === "multiple"
+        ? q.id === "features"
+          ? `Choose up to ${q.maxChoices}.`
+          : "Select all that apply."
+        : q.type === "ranking"
+          ? "Most important first."
+          : q.id === "final"
+            ? "Don’t include personal information."
+            : "";
     if (descriptionText) {
       const description = el("p", "description", descriptionText);
       description.id = "question-description";
@@ -490,7 +467,13 @@
         const optionText = el("span", "choice-label", option.label);
         if (option.description)
           optionText.append(
-            el("small", "option-description", option.description),
+            el(
+              "small",
+              "option-description",
+              option.value === "plus"
+                ? "Optional supporter tier for advanced tools and perks. Ultimate Macro stays free."
+                : option.description,
+            ),
           );
         label.append(input, key, optionText);
         if (q.id === "clutter") {
@@ -519,9 +502,7 @@
       input.setAttribute("aria-labelledby", "question-title");
       if (descriptionText)
         input.setAttribute("aria-describedby", "question-description");
-      input.placeholder = q.optional
-        ? "Your thoughts, if you’d like…"
-        : "Tell us a little more…";
+      input.placeholder = q.optional ? "Optional" : "";
       const count = el(
         "p",
         "char-count",
