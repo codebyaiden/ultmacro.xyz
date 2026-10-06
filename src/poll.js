@@ -391,7 +391,6 @@
       }
     }
     const section = el("section", "question");
-    section.append(el("p", "eyebrow", q.section.toUpperCase()));
     const heading = el("h1", "", q.title);
     heading.id = "question-title";
     if (q.branchParent) {
@@ -417,7 +416,10 @@
     }
     section.append(heading);
     const descriptionText =
-      q.description || (q.optional && q.type !== "rating" ? "Optional" : "");
+      q.id === "features"
+        ? `Choose up to ${q.maxChoices}.`
+        : q.description ||
+          (q.optional && q.type !== "rating" ? "Optional" : "");
     if (descriptionText) {
       const description = el("p", "description", descriptionText);
       description.id = "question-description";
