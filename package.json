@@ -6,7 +6,7 @@
   },
   "scripts": {
     "start": "node server.mjs",
-    "test": "node --test tests/strategy-network.test.js tests/strategy-backend.test.mjs",
+    "test": "node --test tests/*.test.mjs tests/strategy-network.test.js",
     "migrate": "node scripts/migrate.mjs",
     "seed": "node scripts/seed-strategies.mjs",
     "hash-admin-password": "node scripts/hash-admin-password.mjs"
