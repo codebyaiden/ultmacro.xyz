@@ -419,6 +419,18 @@ h1 {
   transform: rotate(-9deg);
   backdrop-filter: blur(8px);
 }
+.core-icon {
+  width: 148px;
+  height: 148px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 26px #7960ff35);
+  animation: mascot-float 5.5s ease-in-out infinite;
+}
+@keyframes mascot-float {
+  0%,
+  100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(1deg); }
+}
 .core-symbol {
   font-size: 56px;
   letter-spacing: -0.08em;
