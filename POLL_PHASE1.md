@@ -47,7 +47,7 @@ The existing rate limiter allows 10 start/resume requests per IP per 10 minutes,
 - Discord non-users skip support questions.
 - Optional final feedback can be skipped.
 
-Each completed path contains roughly 17–24 questions. Durations are estimates by question type. ETA reserves likely follow-ups while controlling answers are unknown, then shrinks/expands with the actual path. Progress uses estimated answered time, without a fixed question count. Completion time measures elapsed time since starting, including breaks.
+Each completed path contains roughly 17–24 questions. Durations are estimates by question type. ETA reserves likely follow-ups while controlling answers are unknown, then shrinks/expands with the actual path. Progress uses estimated answered time, without a fixed question count. Phase 2 replaces the displayed wall-clock duration with locally preserved active time, excluding hidden and idle periods; see `POLL_PHASE2.md`.
 
 Answers autosave after a short debounce; Continue also waits for pending saves. Inputs lock during navigation to prevent a later edit being overwritten. An unsaved draft stays locally when offline or closed before saving. In-flight save metadata reconciles a newer draft after an older save commits; divergent cross-tab drafts offer an explicit restore choice. Clearing cookies/browser storage, switching browsers, or private browsing can prevent resume. This is anonymous browser persistence, not cross-device identity.
 

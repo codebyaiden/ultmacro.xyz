@@ -32,19 +32,27 @@ for (const [name, width, height] of [
       viewport: { width, height },
       hasTouch: width < 1000,
       isMobile: width < 600,
-      reducedMotion: "reduce",
+      reducedMotion:
+        process.env.POLL_TEST_MOTION === "on" ? "no-preference" : "reduce",
     }),
     page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(baseURL + "/poll");
   await page.getByRole("button", { name: "Start survey" }).waitFor();
+  if (process.env.POLL_TEST_MOTION !== "on")
+    assert.equal(
+      await page.evaluate(() => document.getAnimations().length),
+      0,
+      name + " reduced motion must disable animated effects",
+    );
   assert.ok(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
     name + " landing overflow",
   );
+  if (process.env.POLL_SCREENSHOTS) await page.waitForTimeout(1500);
   if (process.env.POLL_SCREENSHOTS)
     await page.screenshot({
       path: `${process.env.POLL_SCREENSHOTS}/${name}-landing.png`,
@@ -119,6 +127,20 @@ for (const [name, width, height] of [
         .fill("Keep it simple and improve failed run recovery.");
     }
 
+    if (
+      process.env.POLL_SCREENSHOTS &&
+      [
+        "How easy is it to find your way around?",
+        "Put your selected ideas in priority order.",
+        "Why do you prefer that we focus on both?",
+      ].includes(heading)
+    ) {
+      await page.waitForTimeout(600);
+      await page.screenshot({
+        path: `${process.env.POLL_SCREENSHOTS}/${name}-${heading.startsWith("How") ? "ui" : heading.startsWith("Put") ? "ranking" : "branch"}.png`,
+        fullPage: true,
+      });
+    }
     const continueButton = page.getByRole("button", {
       name: /Continue|Review & submit/,
     });
@@ -131,11 +153,20 @@ for (const [name, width, height] of [
   await page
     .getByRole("button", { name: "Submit feedback", exact: true })
     .click();
-  await page.getByRole("heading", { name: "Thanks for helping us" }).waitFor();
+  await page.getByRole("heading", { name: "that’s everything." }).waitFor();
   await page.reload();
-  await page.getByRole("heading", { name: "Thanks for helping us" }).waitFor();
+  await page.getByRole("heading", { name: "that’s everything." }).waitFor();
   assert.equal(errors.length, 0, errors.join("\n"));
   assert.equal(rankings, 1);
+  assert.ok(
+    !(await page.locator("main").textContent()).includes("including breaks"),
+  );
+  if (process.env.POLL_SCREENSHOTS) await page.waitForTimeout(1300);
+  if (process.env.POLL_SCREENSHOTS)
+    await page.screenshot({
+      path: `${process.env.POLL_SCREENSHOTS}/${name}-completion.png`,
+      fullPage: true,
+    });
   results.push({ name, questions, rankings, overflow: false, errors });
   await context.close();
 }
@@ -243,12 +274,46 @@ console.log(
   release();
   await page.getByRole("heading", { name: "What do you mainly" }).waitFor();
   await page.unroute("**/api/poll/answer");
-  // Keyboard choice focus and reduced motion are also functional.
+  // Single-character shortcuts must never change an answer outside its group.
+  await page.getByRole("link", { name: "Ultimate Macro home" }).focus();
+  await page.keyboard.press("2");
+  assert.equal(await page.locator(".choices input:checked").count(), 0);
+  await page.locator("main h1").focus();
   await page.keyboard.press("Tab");
   assert.ok(
     await page.evaluate(() => document.activeElement.tagName === "INPUT"),
   );
   await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("3");
+  assert.equal(await page.locator(".choices input").nth(2).isChecked(), true);
+  await page.keyboard.press("Enter");
+  await page.getByRole("heading", { name: "How familiar are you" }).waitFor();
+  await page.locator(".choices input").first().focus();
+  await page.keyboard.press("1");
+  await page.evaluate(() => {
+    const form = document.querySelector("form");
+    form.requestSubmit();
+    form.requestSubmit();
+    form.requestSubmit();
+  });
+  await page
+    .getByRole("heading", { name: "Do you use Strategy Lab?" })
+    .waitFor();
+  assert.equal(
+    (await page.evaluate(() => fetch("/api/poll").then((r) => r.json())))
+      .current,
+    "lab_use",
+  );
+  await page.getByRole("button", { name: "A little spark" }).click();
+  await page.getByRole("button", { name: "A little spark" }).click();
+  await page.getByRole("button", { name: "A little spark" }).click();
+  assert.ok(
+    (await page.locator("#motion-note").textContent()).includes(
+      "understatement",
+    ),
+  );
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.waitForFunction(() => document.getAnimations().length === 0);
   await context.close();
   console.log(
     "in-flight draft recovery, navigation lock, and keyboard focus passed",
