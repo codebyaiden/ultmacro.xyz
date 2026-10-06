@@ -85,6 +85,25 @@ for (const [name, width, height] of [
   let rankings = 0,
     questions = 0;
   for (let limit = 0; limit < 50; limit++) {
+    assert.equal(
+      await page.locator(".question .eyebrow,.art-caption,.art-label").count(),
+      0,
+    );
+    assert.ok(
+      !(await page.locator("main").innerText()).includes(
+        "your feedback / your direction",
+      ),
+    );
+    assert.ok(
+      !(await page.locator("main").innerText()).includes(
+        "what deserves to exist?",
+      ),
+    );
+    assert.ok(
+      !(await page.locator("main").innerText()).includes(
+        "These are possibilities, not promises.",
+      ),
+    );
     const heading = await page.locator("main h1").textContent();
     if (heading === "Ready to send your feedback?") break;
     if (
