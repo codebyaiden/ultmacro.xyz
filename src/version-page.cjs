@@ -2,7 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const contract = require('./releases-data.js');
 const view = require('./release-detail.js');
-const ASSET_VERSION = 36;
+const ASSET_VERSION = 37;
 const SITE = 'https://ultmacro.xyz';
 const ROOT = path.join(__dirname, '..');
 const SAFE_TAG = /^[A-Za-z0-9][A-Za-z0-9._-]{0,60}$/;
@@ -43,6 +43,7 @@ function documentPage({ tag, latest, content, release }) {
   <script src="/src/download.js?v=${ASSET_VERSION}" defer></script>
 </head>
 <body class="download-page">
+  <div class="download-atmosphere" aria-hidden="true"><div class="ambient-light ambient-primary"></div><div class="ambient-light ambient-secondary"></div><div class="ambient-grid"></div></div>
   <a class="download-skip" href="#main">Skip to content</a>
   <header class="download-header"><div class="download-header-inner">
     <a class="download-brand" href="/" aria-label="Ultimate Macro home"><img src="/assets/icon.png" alt="" width="28" height="28"><span>Ultimate Macro</span></a>

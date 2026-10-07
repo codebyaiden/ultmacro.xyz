@@ -141,8 +141,10 @@ try {
         await page.route('https://github.com/**/releases/download/**', route => route.fulfill({ status: 200, headers: { 'content-disposition': 'attachment; filename="fixture.zip"' }, body: 'test attachment' }));
         const download = page.waitForEvent('download');
         await cta.click(); await download;
-        assert.equal(await cta.locator('[data-download-label]').innerText(), 'Starting download…');
-        await page.waitForTimeout(1300);
+        assert.equal(await cta.locator('[data-download-label]').innerText(), 'Starting…');
+        await page.waitForTimeout(230);
+        assert.equal(await cta.locator('[data-download-label]').innerText(), 'Started');
+        await page.waitForTimeout(300);
         assert.equal(await cta.locator('[data-download-label]').innerText(), main ? 'Download for Windows' : 'Download ' + v[0]);
         assert.deepEqual(await page.evaluate(() => [...new Set(window.overflows.map(JSON.stringify))]), [], `${path} ${width} ${reducedMotion}`);
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
@@ -152,7 +154,11 @@ try {
           const href = await link.getAttribute('href');
           assert.equal((await context.request.get(base + href)).status(), 200, href);
         }
-        if (reducedMotion === 'reduce') assert.equal(await page.locator('.download-hero').evaluate(e => getComputedStyle(e).animationName), 'none');
+        assert.equal(await page.locator('.release-visual').getAttribute('aria-hidden'), 'true');
+        if (reducedMotion === 'reduce') {
+          assert.ok(await page.locator('.hero-copy > *, .package-enter, .package-float, .ambient-light').evaluateAll(elements => elements.every(e => getComputedStyle(e).animationName === 'none')));
+          assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0);
+        }
         if (main) await page.locator('.checksum-disclosure summary').click();
         if (shots && reducedMotion === 'no-preference' && [390,1440].includes(width)) {
           await page.evaluate(() => { document.activeElement.blur(); scrollTo(0, 0); });
@@ -173,4 +179,37 @@ try {
     if (path === '/download') { await page.locator('.changelog summary').click(); assert.equal(await page.locator('.changelog').getAttribute('open'), ''); }
   }
   console.log(`${checks} page/viewport/motion checks + 7 no-JS routes PASS`);
+  const motionContext = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await motionContext.route('https://fonts.googleapis.com/**', route => route.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+  const motionPage = await motionContext.newPage();
+  await motionPage.goto(base + '/download/');
+  await motionPage.waitForTimeout(600);
+  const hero = await motionPage.locator('.download-hero').boundingBox();
+  await motionPage.mouse.move(hero.x + hero.width - 80, hero.y + 80);
+  await motionPage.waitForTimeout(240);
+  assert.notEqual(await motionPage.locator('.package-tilt').evaluate(e => e.style.getPropertyValue('--tilt-y')), '');
+  const primary = motionPage.locator('.primary-download');
+  const resting = await primary.boundingBox();
+  await primary.hover(); await motionPage.waitForTimeout(220);
+  assert.ok((await primary.boundingBox()).y < resting.y, 'CTA lift still works after entry animation');
+  assert.equal(await primary.locator('.download-arrow').evaluate(e => new DOMMatrix(getComputedStyle(e).transform).m42), 3);
+  const disclosure = motionPage.locator('.changelog');
+  await disclosure.locator('summary').click(); await motionPage.waitForTimeout(60);
+  await disclosure.locator('summary').click(); await motionPage.waitForTimeout(60);
+  await disclosure.locator('summary').click(); await motionPage.waitForTimeout(260);
+  assert.equal(await disclosure.getAttribute('open'), '');
+  await disclosure.locator('summary').click(); await motionPage.waitForTimeout(60);
+  await motionPage.emulateMedia({ reducedMotion: 'reduce' });
+  await motionPage.waitForTimeout(50);
+  assert.equal(await disclosure.getAttribute('open'), null, 'motion preference changes finish a closing disclosure');
+  assert.equal(await motionPage.locator('.package-tilt').evaluate(e => e.style.getPropertyValue('--tilt-y')), '');
+  assert.equal(await motionPage.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0);
+  await motionPage.emulateMedia({ reducedMotion: 'no-preference' });
+  await motionPage.goto(base + '/download/'); await motionPage.waitForTimeout(600);
+  await motionPage.evaluate(() => document.querySelector('.history-section').scrollIntoView({ block: 'center' }));
+  await motionPage.waitForFunction(() => document.querySelector('.history-section').getAnimations().some(animation => animation.playState === 'running'));
+  await motionPage.waitForTimeout(280);
+  assert.equal(await motionPage.locator('.history-section').evaluate(e => getComputedStyle(e).opacity), '1');
+  await motionContext.close();
+  console.log('desktop pointer, CTA, rapid disclosure, live reduced-motion and scroll reveal PASS');
 } finally { await browser.close(); server?.kill('SIGTERM'); }
