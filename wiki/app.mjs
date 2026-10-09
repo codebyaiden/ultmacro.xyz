@@ -1,6 +1,6 @@
-import { articles, categories } from './content.mjs?v=9';
+import { articles, categories } from './content.mjs?v=10';
 import { proposedTopics, topicCategories } from './catalog.mjs?v=6';
-import { resolveTopicGuidance } from './topic-support.mjs?v=9';
+import { resolveTopicGuidance } from './topic-support.mjs?v=10';
 
 const $ = id => document.getElementById(id);
 const docs = new Map(articles.map(a => [a.slug, a]));
@@ -349,6 +349,14 @@ function topicView(topic) {
     if(guidance.guide.version)body.append(node('p','article-version','Documented for '+guidance.guide.version));
   } else {
     body.append(node('p','topic-note',guidance.note));
+    if (guidance.guide) {
+      const related = articleLink(guidance.guide,'topic-guide');
+      related.textContent = '';
+      related.append(node('strong','','Related reading: '+guidance.guide.title),
+        node('span','','This guide may provide context, not a verified fix for this exact topic.'),
+        node('span','','Open guide →'));
+      body.append(related);
+    }
   }
   if(guidance.kind==='related')body.append(node('p','topic-note',guidance.note));
   const actions=node('div','topic-actions');

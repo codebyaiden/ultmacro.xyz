@@ -1,4 +1,4 @@
-import { expandedArticles } from './content-expanded.mjs';
+import { expandedArticles } from './content-expanded.mjs?v=10';
 import { sourceVerifiedArticles } from './content-v135-source.mjs';
 import { releaseVerifiedArticles } from './content-release-v135.mjs';
 import { stratReferenceArticles } from './content-strat-reference.mjs';
@@ -272,8 +272,10 @@ const baseArticles = [
     "summary": "Match the interface layout expected by tower placement and upgrades.",
     "sections": [
       {
-        "title": "Set these values",
-        "paragraphs": [],
+        "title": "Configure TDS in-game",
+        "paragraphs": [
+          "Open Tower Defense Simulator's settings before running the macro. These are in-game settings, not Windows display options."
+        ],
         "steps": [],
         "checks": [],
         "rows": [
@@ -298,6 +300,17 @@ const baseArticles = [
             "Enabled"
           ]
         ]
+      },
+      {
+        "title": "Confirm the settings",
+        "paragraphs": [],
+        "steps": [
+          "Set UI Scale to Large and disable Screen Shake.",
+          "Enable Prefer Vertical Upgrades and Show Tower Options; set Dialog to Disabled.",
+          "Return to a supervised test match and confirm that the tower upgrade panel and placement controls remain usable."
+        ],
+        "checks": [],
+        "rows": []
       }
     ],
     "source": "/guide/display/",
@@ -307,7 +320,11 @@ const baseArticles = [
       "ui scale",
       "shake",
       "vertical upgrade",
-      "dialog"
+      "dialog",
+      "large ui",
+      "screen shake",
+      "vertical upgrades",
+      "tower options"
     ],
     "version": "v1.3.x"
   },
@@ -724,17 +741,36 @@ const baseArticles = [
         "steps": [],
         "checks": [],
         "rows": []
+      },
+      {
+        "title": "Reinstall without losing strategies",
+        "paragraphs": [
+          "In the public v1.3.5 macro, recordings, profiles, and bundled strategy files are stored in different locations. Copy your files before replacing a release folder; a reinstall alone is not a backup."
+        ],
+        "steps": [
+          "Export the working setup through Profile Manager and save the exported file outside the macro folder.",
+          "Press Win + R and open %APPDATA%\\Ultimate_Macro. Copy the Recordings and Profiles folders to a separate backup location if present.",
+          "If you edited a bundled strategy, copy it from the extracted macro folder's Resources\\Strats directory.",
+          "Verify your backups before removing or replacing anything. Keep bot credentials and webhook URLs private.",
+          "After reinstalling, restore only the intended files or import the saved profile, then test one strategy under supervision."
+        ],
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/discord/",
+    "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/Main.ahk",
     "keywords": [
       "profile manager",
       "backup",
       "import",
       "export",
-      "settings"
+      "settings",
+      "reinstall",
+      "preserve recordings",
+      "backup strategies",
+      "restore profile"
     ],
-    "version": "v1.3.x"
+    "version": "v1.3.5"
   },
   {
     "slug": "tools",
@@ -928,6 +964,21 @@ const baseArticles = [
           "If the macro clicked the wrong button, check UI settings. If it clicked before the panel appeared, increase the delay. These are different problems."
         ],
         "steps": [],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Distinguish why an upgrade was skipped",
+        "paragraphs": [
+          "Insufficient cash, a delayed tower panel, a misplaced click, and the wrong upgrade path require different checks. Identify the symptom before changing settings."
+        ],
+        "steps": [
+          "Note the tower, wave, intended path, and whether enough cash was visible.",
+          "If the wrong path upgraded, check Prefer Vertical Upgrades and your upgrade and bottom-path keybinds.",
+          "If the panel appeared late, increase Upgrade Delay conservatively and retry the same step.",
+          "If the panel never opened or the click landed elsewhere, check display settings and Roblox focus instead.",
+          "If it persists, share redacted debug logs with the version and expected versus actual action."
+        ],
         "checks": [],
         "rows": []
       }

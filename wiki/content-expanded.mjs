@@ -1182,6 +1182,20 @@ export const expandedArticles = [
         ],
         "checks": [],
         "rows": []
+      },
+      {
+        "title": "Check what was actually protected",
+        "paragraphs": [
+          "A profile export alone is not proof that every file in the installation folder is backed up. User recordings and bundled strategies have separate locations in v1.3.5."
+        ],
+        "steps": [
+          "Keep the exported profile outside the release folder you may replace.",
+          "Copy saved recordings from %APPDATA%\\Ultimate_Macro\\Recordings if that folder exists.",
+          "Back up any edited strategy files from Resources\\Strats in the release folder.",
+          "Check that the exported profile and separate copies exist before changing versions or importing."
+        ],
+        "checks": [],
+        "rows": []
       }
     ],
     "keywords": [

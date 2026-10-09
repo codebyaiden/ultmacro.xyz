@@ -3,6 +3,12 @@
 // Unreleased/conditional items stay gated until code or a reproducible test exists.
 
 const specificGuides = [
+  [/reinstall.*(?:strateg|profil)|(?:recording|strateg).*(?:missing|deleted|lost|backup)|(?:backup|back.?up).*(?:strateg|recording)/i, 'profiles'],
+  [/record.*(?:tower placement|tower placements|top-path upgrade|bottom-path upgrade|first tower)|(?:record|recording).*(?:placement|upgrade)/i, 'record-strategy'],
+  [/roblox.*(?:classic camera|ui navigation toggle|setting|font|fps|graphics)/i, 'roblox-settings'],
+  [/upgrade.*(?:skipped|missed|fail|panel|wrong path|cash)|(?:verify|investigate|fix).*upgrade/i, 'upgrade-not-working'],
+  [/tds.*(?:ui scale|screen shake|vertical upgrades|tower options|dialog)/i, 'tds-settings'],
+  [/profile.*(?:import|overwrite)|(?:import|overwrite).*profile/i, 'profile-import'],
   [/updater.*(?:latest|asset|filename|cannot find|new release)|release zip.*(?:wrong|mismatch)/i, 'updater-filename-mismatch'],
   [/sha.?256|checksum|verify.*release.*zip|zip.*integrity/i, 'release-asset-integrity'],
   [/auto.?configure.*(?:restore|fail)|roblox settings.*(?:refus|restore)/i, 'auto-roblox-restore-refused'],
@@ -112,6 +118,22 @@ export function resolveTopicGuidance(topic, docs) {
     return { kind:'unverified',headline:'Needs a reproducible test',
       note:'There is no matching published guide with a verified procedure. File an issue with the installed version, expected outcome, actual outcome and sanitized logs.',
       guide:null,section:null };
+  }
+  const section = chosen.sections[0]?.section || chosen.article.sections[0];
+  const evidence = new Set(terms([
+    chosen.article.title, chosen.article.summary, section.title,
+    ...(section.paragraphs || []), ...(section.steps || []),
+    ...(section.checks || []), ...(section.rows || []).flat()
+  ].join(' ')));
+  const queryTerms = [...new Set(terms(topic.title))];
+  const overlap = queryTerms.filter(word => evidence.has(word)).length;
+  const lossRisk = /reinstall|without losing|backup|back up|restore|recover|delet|remov|reset|overwrite|missing|lost|migrat|quarantin|credential|token/i.test(topic.title);
+  if ((queryTerms.length >= 3 && overlap === 0) || (lossRisk && overlap < 2)) {
+    return {
+      kind:'unverified', headline:'No verified instructions for this exact topic',
+      note:'The related guide does not establish a fix for this exact situation. Check it for general context, and request a version-specific procedure or reproducible test before changing files or settings.',
+      guide:chosen.article, section:null
+    };
   }
   return {
     kind:'related',

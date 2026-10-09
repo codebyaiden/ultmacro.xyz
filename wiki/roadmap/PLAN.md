@@ -1,6 +1,6 @@
 # Ultimate Macro Wiki: long-term documentation plan
 
-This is a **planning inventory**, not 778 completed pages or evidence that all 778 problems exist. The currently written wiki has **90 source-backed articles**. The `topics.json` file proposes **778 additional distinct topics**, each with a category, priority, content type, verification requirement and visual-evidence hint.
+This is a **planning inventory**, not 778 completed pages or evidence that all 778 problems exist. The currently written wiki has **127 source-linked published guides**. The `topics.json` file proposes **778 additional distinct topics**, each with a category, priority, content type, verification requirement and visual-evidence hint.
 
 Never automatically publish these topics or generate 778 filler pages. One clear, verified page with screenshots is better than ten thin pages. If two planned topics need exactly the same answer, merge them into one article with clear headings and searchable aliases.
 

@@ -206,7 +206,34 @@ test('all 778 topic pages have useful published evidence or clear release gates'
   }
   assert.equal(grounded+gated,proposedTopics.length);
   assert.ok(gated>0,'future release candidates remain gated');
-  assert.ok(grounded>700,'most catalog pages show real related instructions');
+  assert.ok(grounded>300,'useful verified excerpts remain accessible without forcing weak matches');
+});
+
+test('topic mappings prefer relevant guides and gate unsupported fixes', () => {
+  const docs = new Map(articles.map(a=>[a.slug,a]));
+  const get = slug => {
+    const topic = proposedTopics.find(t=>t.slug===slug);
+    assert.ok(topic,slug);
+    return resolveTopicGuidance(topic,docs);
+  };
+  const reinstall = get('prepare-for-a-reinstall-without-losing-strategies');
+  assert.equal(reinstall.guide.slug,'profiles');
+  assert.equal(reinstall.kind,'related');
+  assert.match(JSON.stringify(reinstall.section),/Recordings/);
+  assert.equal(get('record-first-tower-placement').guide.slug,'record-strategy');
+  assert.equal(get('choose-roblox-classic-camera-mode').guide.slug,'roblox-settings');
+  assert.equal(get('an-upgrade-is-skipped-without-an-error').guide.slug,'upgrade-not-working');
+  const unsupported = get('collect-useful-information-before-reinstalling');
+  assert.equal(unsupported.kind,'unverified');
+  assert.equal(unsupported.section,null);
+});
+
+test('backup and TDS pages include specific checks', () => {
+  const profiles = articles.find(x=>x.slug==='profiles');
+  assert.match(JSON.stringify(profiles.sections),/APPDATA/);
+  assert.match(JSON.stringify(profiles.sections),/Recordings/);
+  assert.match(JSON.stringify(profiles.sections),/Resources/);
+  assert.ok(articles.find(x=>x.slug==='tds-settings').sections.some(x=>x.steps?.length>=3));
 });
 
 test('wiki topic pages display real source-linked steps instead of a placeholder alone', async () => {
