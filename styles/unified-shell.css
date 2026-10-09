@@ -52,3 +52,58 @@ body.um-unified-page > main .guide-hero .btn{border-radius:8px}
 .um-wiki-search:hover{background:#284d6f;color:#fff!important}
 @media(max-width:1130px){.um-wiki-search{padding-inline:9px}}
 @media(max-width:600px){.um-wiki-search{font-size:11px;padding-inline:8px}}
+
+/* Interaction polish: one motion language, consistent hit areas, no ornamental movement. */
+:root{--um-motion-quick:150ms;--um-motion-menu:180ms;--um-motion-ease:cubic-bezier(.22,.65,.22,1)}
+.um-site-header .um-primary a,.um-site-header .um-cta,.um-site-header .um-wiki-search,.um-site-header .um-wiki-browse,.um-site-header .um-menu-toggle{transition:color var(--um-motion-quick) ease,background-color var(--um-motion-quick) ease,border-color var(--um-motion-quick) ease,box-shadow var(--um-motion-quick) ease}
+.um-primary a:focus-visible,.um-menu-panel a:focus-visible{box-shadow:inset 0 0 0 1px #b7dbff}
+.um-menu-panel{z-index:2;transform-origin:top right;will-change:transform,opacity}
+.um-menu-panel[data-state="opening"]{animation:um-nav-in var(--um-motion-menu) var(--um-motion-ease) both}
+.um-menu-panel[data-state="closing"]{animation:um-nav-out var(--um-motion-menu) ease-in both;pointer-events:none}
+.um-menu-backdrop[data-state="opening"]{animation:um-scrim-in var(--um-motion-menu) ease-out both}
+.um-menu-backdrop[data-state="closing"]{animation:um-scrim-out var(--um-motion-menu) ease-in both;pointer-events:none}
+@keyframes um-nav-in{from{opacity:0;transform:translateY(-8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes um-nav-out{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+@keyframes um-scrim-in{from{opacity:0}to{opacity:1}}
+@keyframes um-scrim-out{from{opacity:1}to{opacity:0}}
+.um-menu-toggle{gap:6px}
+.um-menu-toggle::after{content:"";display:inline-block;width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform var(--um-motion-quick)}
+.um-menu-toggle[aria-expanded="true"]::after{transform:translateY(2px) rotate(225deg)}
+.um-menu-panel a{transition:background-color var(--um-motion-quick),color var(--um-motion-quick)}
+.um-wiki-browse{display:none;align-items:center;justify-content:center;min-height:42px;padding:8px 12px;border:1px solid rgba(177,205,235,.3);border-radius:8px;background:#122d48;color:#d9ebff!important;font-size:12px;font-weight:690;cursor:pointer;white-space:nowrap}
+.um-wiki-browse:hover,.um-wiki-browse[aria-expanded="true"]{background:#285071;border-color:#6b99c7}
+.um-header-actions button{touch-action:manipulation}
+body.um-unified-page .wiki-header{display:none!important}
+@media(max-width:1110px){
+  .um-header-inner{grid-template-columns:minmax(0,1fr) auto}
+  .um-primary{display:none}
+  .um-menu-toggle,.um-wiki-browse{display:inline-flex}
+  .um-header-actions .um-discord{display:none}
+  body.um-unified-page .sidebar{--um-wiki-header-height:68px}
+  body.um-unified-page .sidebar.open{z-index:152}
+  body.um-unified-page .mobile-scrim:not([hidden]){z-index:151}
+  body.um-unified-page .search-overlay:not([hidden]){z-index:180}
+  body.um-unified-page .helper-panel{z-index:165}
+}
+@media(max-width:600px){
+  .um-context{display:none}
+  .um-header-inner{gap:8px}
+  .um-header-actions{gap:6px}
+  .um-menu-panel{top:calc(100% + 5px)}
+  body.um-unified-page .sidebar{--um-wiki-header-height:64px}
+}
+@media(max-width:470px){
+  .um-header-actions .um-cta{display:none}
+  .um-menu-panel a{min-height:45px}
+}
+@media(max-width:380px){
+  .um-wiki-search{font-size:0;min-width:42px;padding:8px}
+  button.um-wiki-search::before{content:"⌕";font-size:22px;line-height:1}
+  .um-wiki-browse{font-size:0;min-width:42px;padding:8px}
+  .um-wiki-browse::before{content:"☷";font-size:22px;line-height:1}
+}
+@media(prefers-reduced-motion:reduce){
+  .um-menu-panel[data-state],.um-menu-backdrop[data-state]{animation:none!important}
+  .um-menu-toggle::after{transition:none!important}
+  .um-site-header *{transition:none!important}
+}

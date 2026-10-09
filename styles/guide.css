@@ -518,3 +518,17 @@
 		margin-top: 1.15rem;
 	}
 }
+
+/* Guide contents are navigation, not decoration. Align with the Wiki's reading UI. */
+body.um-unified-page .toc{top:88px;max-height:calc(100dvh - 110px);scrollbar-width:thin;scrollbar-color:#45627e transparent}
+body.um-unified-page .toc a{border-radius:0 8px 8px 0;min-height:39px;transition:color 150ms ease,background-color 150ms ease,border-color 150ms ease}
+body.um-unified-page .toc a:hover,body.um-unified-page .toc a:focus-visible{background:rgba(100,161,227,.11);color:#f4f9ff}
+body.um-unified-page .toc a.current{background:rgba(104,166,233,.12);border-left:2px solid #9bc9ff;color:#eef5ff;font-weight:650}
+body.um-unified-page .toc a:focus-visible{outline:2px solid #b5d8ff;outline-offset:2px}
+body.um-unified-page .toc-mobile select{min-height:44px;border-radius:9px;border-color:#385978;background:#11253b;color:#e2f1ff;transition:border-color 150ms ease,background-color 150ms ease}
+body.um-unified-page .toc-mobile select:focus-visible{outline:2px solid #a9d1ff;outline-offset:2px}
+body.um-unified-page .trouble summary{cursor:pointer;transition:color 150ms ease,background-color 150ms ease}
+body.um-unified-page .trouble summary:hover{color:#f4f9ff;background:rgba(111,168,225,.06)}
+body.um-unified-page .trouble[open] .body{animation:um-guide-reveal 180ms cubic-bezier(.2,.7,.2,1) both}
+@keyframes um-guide-reveal{from{opacity:.5;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){body.um-unified-page .trouble[open] .body{animation:none}}

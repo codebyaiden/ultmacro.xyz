@@ -70,7 +70,9 @@ function closeMenu({ restoreFocus = false } = {}) {
   scrim.hidden = true;
   document.body.classList.remove('wiki-menu-open');
   syncSidebarAccessibility();
-  if (restoreFocus && wasOpen && mobileNavigation.matches) navToggle.focus();
+  if (restoreFocus && wasOpen && mobileNavigation.matches) {
+    (document.querySelector('.um-wiki-browse') || navToggle).focus();
+  }
 }
 function openMenu() {
   closeSearch(false);
@@ -615,17 +617,32 @@ function showResults(q) {
     searchResults.append(item);
   }
 }
+let searchCloseTimer = 0;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 function openSearch(query=''){
   closeMenu();
-  overlay.hidden=false;document.body.style.overflow='hidden';
+  window.clearTimeout(searchCloseTimer);
+  overlay.classList.remove('is-closing');
+  overlay.hidden=false;
+  overlay.inert=false;
+  overlay.removeAttribute('aria-hidden');
+  document.body.style.overflow='hidden';
   searchInput.value=query;showResults(query);searchInput.focus();searchInput.select();
 }
 function closeSearch(focus=true){
   if(overlay.hidden)return;
-  overlay.hidden=true;document.body.style.overflow='';
-  if(focus)$('search-trigger').focus();
+  window.clearTimeout(searchCloseTimer);
+  overlay.inert=true;
+  overlay.setAttribute('aria-hidden','true');
+  overlay.classList.add('is-closing');
+  document.body.style.overflow='';
+  if(focus)(document.querySelector('button.um-wiki-search') || $('search-trigger')).focus();
+  const finish = () => { overlay.hidden=true;overlay.classList.remove('is-closing'); };
+  if(prefersReducedMotion.matches) finish();
+  else searchCloseTimer=window.setTimeout(finish,150);
 }
 function toggleHelper(open){
+  if (open && sidebar.classList.contains('open')) closeMenu();
   helper.hidden=!open;
   helperToggle.setAttribute('aria-expanded',String(open));
   helperToggle.setAttribute('aria-label',open?'Close wiki help':'Open wiki help');

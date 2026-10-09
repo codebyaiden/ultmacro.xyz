@@ -362,3 +362,40 @@ body{background:#081625;font-size:15px;line-height:1.65}
   .search-dialog{animation:none}
   .mobile-toc summary::after{transition:none}
 }
+
+/* Interaction refinements: fast feedback, stable content, keyboard-first navigation. */
+:root{--wiki-interact-fast:150ms;--wiki-interact-ease:cubic-bezier(.2,.72,.2,1)}
+.nav-group summary{cursor:pointer;transition:background-color var(--wiki-interact-fast),color var(--wiki-interact-fast)}
+.nav-group summary:hover,.nav-group summary:focus-visible{background:#193a59;color:#f5f9ff}
+.nav-group[open] .nav-items{animation:wiki-nav-reveal 170ms var(--wiki-interact-ease) both}
+@keyframes wiki-nav-reveal{from{opacity:.2;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.nav-items a:focus-visible,.sidebar-home:focus-visible,.sidebar-library:focus-visible,.sidebar-more:focus-visible{outline:2px solid #aad2ff;outline-offset:2px}
+.nav-items a.active{background:#1b3c5c;box-shadow:inset 3px 0 #99c8ff;color:#f0f7ff}
+.mobile-toc summary{transition:background-color var(--wiki-interact-fast);touch-action:manipulation}
+.mobile-toc summary:hover{background:#1c3b58}
+.mobile-toc[open] .mobile-toc-links{animation:wiki-nav-reveal 170ms var(--wiki-interact-ease) both}
+.search-overlay{z-index:190;overscroll-behavior:contain;animation:wiki-search-backdrop 160ms ease-out both}
+.search-overlay.is-closing{animation:wiki-search-backdrop-out 150ms ease-in both;pointer-events:none}
+.search-overlay.is-closing .search-dialog{animation:wiki-search-out 150ms ease-in both}
+@keyframes wiki-search-backdrop{from{opacity:0}to{opacity:1}}
+@keyframes wiki-search-backdrop-out{from{opacity:1}to{opacity:0}}
+@keyframes wiki-search-out{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+.helper{z-index:125}
+.helper-panel:not([hidden]){animation:wiki-helper-in 190ms var(--wiki-interact-ease) both;transform-origin:bottom right}
+@keyframes wiki-helper-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:1110px){
+  body.um-unified-page .sidebar{top:68px;z-index:152}
+  body.um-unified-page .sidebar-scroll{top:0;height:calc(100dvh - 68px);max-height:calc(100dvh - 68px)}
+  body.um-unified-page .mobile-scrim{inset:68px 0 0;z-index:151}
+  body.um-unified-page .mobile-scrim:not([hidden]){animation:wiki-search-backdrop 170ms ease both}
+  body.um-unified-page .mobile-sidebar-top{color:#d2e7fc}
+}
+@media(max-width:600px){
+  body.um-unified-page .sidebar{top:64px}
+  body.um-unified-page .sidebar-scroll{height:calc(100dvh - 64px);max-height:calc(100dvh - 64px)}
+  body.um-unified-page .mobile-scrim{inset:64px 0 0}
+  body.um-unified-page .helper-panel{max-height:calc(100dvh - 83px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .nav-group[open] .nav-items,.mobile-toc[open] .mobile-toc-links,.search-overlay,.search-overlay.is-closing,.search-overlay.is-closing .search-dialog,.helper-panel:not([hidden]),body.um-unified-page .mobile-scrim:not([hidden]){animation:none!important}
+}

@@ -779,3 +779,14 @@ html.light-mode .network-page .network-results {
 @media (prefers-reduced-motion: reduce) {
 	html.light-mode .network-page .network-toolbar h1 { animation: none; }
 }
+
+
+/* Strategy Network controls use the same restrained motion and focus language as the Wiki. */
+.network-page .custom-select-trigger,.network-page .select-trigger,.network-page .filter-toggle,.network-page .sort-trigger{transition:background-color 150ms ease,border-color 150ms ease,color 150ms ease}
+.network-page .custom-select-trigger:focus-visible,.network-page .select-trigger:focus-visible,.network-page .filter-toggle:focus-visible,.network-page .sort-trigger:focus-visible,.network-page .modal-close:focus-visible{outline:2px solid #b6d8ff;outline-offset:2px}
+.network-page .custom-select-menu button[role="option"],.network-page .select-menu button{transition:background-color 130ms ease,color 130ms ease}
+.network-page .custom-select-menu button[role="option"]:focus-visible,.network-page .select-menu button:focus-visible{outline:2px solid #a7d0ff;outline-offset:-2px}
+.network-page .custom-select-menu,.network-page .select-menu{scrollbar-width:thin;scrollbar-color:#51677d transparent}
+.network-page .network-modal:not([hidden]) .modal-card{animation:um-modal-in 180ms cubic-bezier(.2,.7,.2,1) both}
+@keyframes um-modal-in{from{opacity:.6;transform:translateY(7px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.network-page .network-modal:not([hidden]) .modal-card{animation:none}.network-page .custom-select-menu button[role="option"],.network-page .select-menu button{transition:none}}

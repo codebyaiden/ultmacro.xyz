@@ -62,11 +62,34 @@
   if (pathname === '/wiki/' || pathname === '/wiki') {
     const search = el('button','um-wiki-search','Search');
     search.type='button';search.setAttribute('aria-label','Search wiki articles');
-    search.addEventListener('click',()=>document.getElementById('search-trigger')?.click());
+    search.addEventListener('click',()=>{
+      if (menuOpen) setOpen(false);
+      document.getElementById('search-trigger')?.click();
+    });
     actions.append(search);
   } else if (pathname.startsWith('/wiki/api/')) {
     const search=el('a','um-wiki-search','Search guides');
-    search.href='#search-guides';actions.append(search);
+    search.href='#search-guides';
+    search.addEventListener('click',()=>{ if (menuOpen) setOpen(false); });
+    actions.append(search);
+  }
+  // Wiki navigation belongs to the shared header when the original header is hidden.
+  if (pathname === '/wiki/' || pathname === '/wiki') {
+    const browse = el('button','um-wiki-browse','Guides');
+    browse.type='button';
+    browse.setAttribute('aria-label','Browse Wiki guides');
+    browse.setAttribute('aria-controls','sidebar');
+    browse.setAttribute('aria-expanded','false');
+    browse.addEventListener('click',()=>{
+      if (toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
+      document.getElementById('nav-toggle')?.click();
+    });
+    actions.append(browse);
+    const legacyBrowse = document.getElementById('nav-toggle');
+    if (legacyBrowse && 'MutationObserver' in window) {
+      new MutationObserver(()=>browse.setAttribute('aria-expanded',legacyBrowse.getAttribute('aria-expanded') || 'false'))
+        .observe(legacyBrowse,{attributes:true,attributeFilter:['aria-expanded']});
+    }
   }
   const cta = el('a','um-cta','Get the macro ↗');
   cta.href='/download/';
@@ -89,23 +112,46 @@
   sky.setAttribute('aria-hidden','true');
   sky.innerHTML = '<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true"><defs><linearGradient id="um-crescent-fill" x1="18" y1="12" x2="82" y2="88" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#b8c8e8"/></linearGradient><mask id="um-crescent-mask"><rect width="100" height="100" fill="black"/><circle cx="45" cy="50" r="40" fill="white"/><circle cx="66" cy="42" r="40" fill="black"/></mask></defs><rect width="100" height="100" fill="url(#um-crescent-fill)" mask="url(#um-crescent-mask)"/></svg>';
 
+  let closeTimer = 0;
+  let menuOpen = false;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const setOpen = (open, restoreFocus=false) => {
-    mobile.hidden = !open;
-    mobile.inert = !open;
-    scrim.hidden = !open;
+    window.clearTimeout(closeTimer);
+    menuOpen = open;
+    if (open && document.getElementById('nav-toggle')?.getAttribute('aria-expanded') === 'true') {
+      document.getElementById('nav-toggle').click();
+    }
     toggle.setAttribute('aria-expanded',String(open));
     toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+    mobile.inert = !open;
+    mobile.setAttribute('aria-hidden',String(!open));
     document.body.classList.toggle('um-nav-open',open);
-    if (open) mobile.querySelector('a')?.focus();
-    else if (restoreFocus) toggle.focus();
+    if (open) {
+      mobile.hidden = false;
+      scrim.hidden = false;
+      mobile.dataset.state = 'opening';
+      scrim.dataset.state = 'opening';
+      mobile.querySelector('a')?.focus();
+    } else {
+      mobile.dataset.state = 'closing';
+      scrim.dataset.state = 'closing';
+      if (restoreFocus) toggle.focus();
+      const finish = () => {
+        if (menuOpen) return;
+        mobile.hidden = true;
+        scrim.hidden = true;
+      };
+      if (reduceMotion.matches || mobile.hidden) finish();
+      else closeTimer = window.setTimeout(finish, 180);
+    }
   };
-  mobile.hidden = true;mobile.inert=true;
-  scrim.hidden = true;
-  toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true',true));
+  mobile.hidden=true;mobile.inert=true;mobile.setAttribute('aria-hidden','true');
+  scrim.hidden=true;
+  toggle.addEventListener('click',()=>setOpen(!menuOpen,true));
   scrim.addEventListener('click',()=>setOpen(false,true));
   mobile.addEventListener('click',e=>{if(e.target.closest('a'))setOpen(false)});
   document.addEventListener('keydown',e=>{
-    if (mobile.hidden) return;
+    if (!menuOpen) return;
     if(e.key==='Escape'){e.preventDefault();setOpen(false,true);return;}
     if(e.key!=='Tab')return;
     const links=[...mobile.querySelectorAll('a')];
@@ -113,8 +159,9 @@
     if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
     else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
   });
-  const desktopMatch=window.matchMedia('(min-width:981px)');
+  const desktopMatch=window.matchMedia('(min-width:1111px)');
   desktopMatch.addEventListener('change',e=>{if(e.matches)setOpen(false)});
+
   document.body.insertBefore(header,legacyHeader);
   document.body.insertBefore(scrim,legacyHeader);
   document.body.insertBefore(sky,legacyHeader);

@@ -32,11 +32,11 @@ const publicPages = [
 test('every supported public content route loads the same site header and sky', async () => {
   for (const path of publicPages) {
     const html = await read(path);
-    assert.match(html, /\/styles\/unified-shell\.css\?v=1/, path);
-    assert.match(html, /\/src\/unified-shell\.js\?v=1/, path);
+    assert.match(html, /\/styles\/unified-shell\.css\?v=2/, path);
+    assert.match(html, /\/src\/unified-shell\.js\?v=2/, path);
     assert.match(html, /<header\b/, 'fallback header missing: ' + path);
     assert.match(html, /<main\b/, 'content missing: ' + path);
-    assert.equal((html.match(/\/src\/unified-shell\.js\?v=1/g) || []).length, 1, path);
+    assert.equal((html.match(/\/src\/unified-shell\.js\?v=2/g) || []).length, 1, path);
   }
 });
 

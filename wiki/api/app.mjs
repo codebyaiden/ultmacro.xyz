@@ -13,7 +13,16 @@ function setPlatform(id, { focus = false, updateURL = true } = {}) {
     tab.tabIndex = selected ? 0 : -1;
     if (selected && focus) tab.focus();
   }
-  byId('platform-panel').setAttribute('aria-labelledby', 'tab-' + entry.id);
+  const panel = byId('platform-panel');
+  panel.setAttribute('aria-labelledby', 'tab-' + entry.id);
+  if (updateURL && typeof panel.animate === 'function' &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    panel.getAnimations().forEach(animation => animation.cancel());
+    panel.animate([
+      { opacity: .7, transform: 'translateY(4px)' },
+      { opacity: 1, transform: 'translateY(0)' }
+    ], { duration: 160, easing: 'cubic-bezier(.2,.7,.2,1)' });
+  }
   byId('platform-eyebrow').textContent = entry.eyebrow;
   byId('platform-title').textContent = entry.title;
   byId('platform-description').textContent = entry.intro;

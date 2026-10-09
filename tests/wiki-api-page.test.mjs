@@ -19,8 +19,8 @@ test('Wiki API developer page prioritizes direct Ask and platform setup', async 
   assert.match(html, /id="fallback-code"/);
   assert.match(html, /role="search"/);
   assert.match(html, /class="mobile-index"/);
-  assert.match(html, /site\.css\?v=1/);
-  assert.match(html, /app\.mjs\?v=1/);
+  assert.match(html, /site\.css\?v=2/);
+  assert.match(html, /app\.mjs\?v=2/);
   assert.doesNotMatch(html, /<script>(?!\s*<\/script>)/);
   const sections = ['overview','quickstart','integrations','response','fallback','search-guides','resources'];
   for (const id of sections) {
