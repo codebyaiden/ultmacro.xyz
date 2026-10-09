@@ -56,3 +56,11 @@ See [`verification/v1.3.5-source-review.md`](verification/v1.3.5-source-review.m
 The Wiki now combines the original 76 guides, 14 source-reviewed public-release guides, 19 additional source-pinned settings/updater/diagnostic guides and **18 precise Strategy Lab command reference pages**. The latter are derived from Strategy Lab's COMMAND_REFERENCE at the official v1.3.5 tag and include parameters and code examples. They document syntax, not a claim that every example has been replay-tested in TDS.
 
 Run `npm run wiki:release-audit` on a network-enabled Node 22+ machine to download the latest stable official ZIP, check its GitHub SHA-256, and inspect the archive's expected file inventory, without executing binaries. The ZIP could not be transferred into the working environment for this change. Before publishing Windows screenshots or GIFs, inspect the actual package and capture the installed version on a real Windows/TDS session. Do not fabricate gameplay screenshots.
+
+## Fast AI and bot retrieval
+
+Preferred public, proxy-independent integration: read the compact JSON index at /wiki/api/v1/index.json (metadata only), choose relevant published guides by title/keywords, and fetch individual /wiki/api/v1/docs/{slug}.md files. /wiki/llms.txt is a short curated guide map. The old /wiki/api/v1/articles.json remains available for bulk exports.
+
+The Node API at /api/wiki/v1 provides ranked search excerpts, pagination (page or offset, with next/previous links), short citation-ready context and Markdown responses. Production edge/nginx forwarding still has to be verified and activated before advertising this dynamic API as live. See wiki/api/DEPLOYMENT.md.
+
+After editing articles, run npm run wiki:build-retrieval and commit its generated outputs; npm run wiki:check-retrieval confirms they are in sync. The retrieval test checks that the 127 per-guide Markdown documents contain the same material as the published source guides and that unverified research topics are excluded. No LLM-generated answers are returned as documentation.

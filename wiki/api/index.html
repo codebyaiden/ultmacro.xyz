@@ -4,107 +4,201 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#081625">
-  <meta name="description" content="Connect a bot or AI tool to the Ultimate Macro Wiki. One public JSON link with the published guides.">
+  <meta name="description" content="Search Ultimate Macro Wiki guides and connect bots with fast, source-linked Markdown documentation.">
   <link rel="canonical" href="https://ultmacro.xyz/wiki/api/">
   <link rel="icon" href="../../icon.ico">
-  <title>Connect the Wiki · Ultimate Macro</title>
+  <link rel="describedby" href="../llms.txt" type="text/plain">
+  <title>Search and connect · Ultimate Macro Wiki</title>
   <style>
-    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#eaf3ff;background:#081625;font-synthesis:none}
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#edf5ff;background:#081625}
     *{box-sizing:border-box}
-    body{margin:0;min-height:100dvh;line-height:1.65;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#091b2e 0,#081625 470px)}
-    a{color:#add0ff;text-underline-offset:3px}
+    body{margin:0;min-height:100dvh;line-height:1.6;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#0a2035 0,#081625 430px)}
+    a{color:#b7d9ff;text-underline-offset:3px}
     a:hover{color:#fff}
-    button{font:inherit;cursor:pointer}
-    :focus-visible{outline:2px solid #9dcaff;outline-offset:4px}
-    .skip{position:absolute;left:18px;top:-65px;padding:9px 15px;border-radius:10px;background:#edf5ff;color:#102945;z-index:3}
-    .skip:focus{top:9px}
-    .header{height:72px;border-bottom:1px solid #ffffff19;background:#091827cc}
-    .header-inner{height:100%;width:min(1060px,calc(100% - 48px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-size:13px;font-weight:750;letter-spacing:-.01em;color:#f0f6ff}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    :focus-visible{outline:2px solid #b3d7ff;outline-offset:3px}
+    .skip{position:absolute;top:-80px;left:15px;padding:10px 14px;background:#f0f6ff;color:#10223e;border-radius:8px}
+    .skip:focus{top:10px}
+    header{height:70px;border-bottom:1px solid #ffffff1a;background:#091827d9}
+    .bar{width:min(1040px,calc(100% - 42px));height:100%;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:13px;font-weight:740;color:#f0f6ff}
     .brand img{width:29px;height:29px;border-radius:7px}
-    .back{color:#b0c4de;text-decoration:none;font-size:12px;font-weight:600}
-    .back:hover{color:#f8fbff}
-    main{width:min(760px,calc(100% - 42px));margin:clamp(55px,8vw,104px) auto 95px}
-    h1{font:400 clamp(42px,6.3vw,63px)/1.09 Georgia,"Times New Roman",serif;letter-spacing:-.045em;margin:0 0 19px;max-width:710px;color:#f4f8ff}
-    .lead{font-size:clamp(15px,1.8vw,17px);line-height:1.75;color:#b7cbe3;max-width:590px;margin:0 0 38px}
-    .share{background:#122b45;border:1px solid #345675;border-radius:18px;padding:23px 24px 24px;box-shadow:0 12px 32px #0108152a}
-    .share-label{font-size:12px;font-weight:730;color:#e8f1ff;margin:0 0 8px}
-    .url{display:block;overflow-wrap:anywhere;font:12.5px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#aaccff;background:#0a1e32;border:1px solid #2a4561;border-radius:11px;padding:13px 15px;user-select:all}
-    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:18px}
-    .copy{background:#e5f0ff;color:#102848;border:0;border-radius:11px;padding:11px 20px;font-weight:770;font-size:13px;min-height:44px}
-    .copy:hover{background:#c9e1ff}
-    .view{font-weight:650;font-size:12px;text-decoration:none;padding:9px 0}
-    .message{font-size:11px;color:#a8cfff;min-height:18px;margin:9px 0 0}
-    h2{font-size:17px;letter-spacing:-.015em;margin:44px 0 15px;color:#ecf4ff}
-    .steps{list-style:none;padding:0;margin:0;display:grid;gap:15px}
-    .steps li{display:grid;grid-template-columns:24px 1fr;gap:11px;color:#c0d2e9;font-size:13.5px}
-    .steps b{color:#95bdf2;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;padding-top:2px}
-    .steps strong{color:#eef6ff}
-    .aside{margin:29px 0 0;color:#a6b9d3;font-size:12px}
-    details{margin-top:42px;border-top:1px solid #2e4762;padding-top:20px}
-    summary{cursor:pointer;color:#bed7fa;font-weight:660;font-size:13px}
-    summary:hover{color:#fff}
-    .advanced{padding:5px 0 0;max-width:680px}
-    .advanced p{color:#adbed6;font-size:12.5px;line-height:1.75}
-    .advanced pre{overflow:auto;border-radius:12px;background:#0b2036;border:1px solid #28435f;padding:15px;color:#d5e8ff;font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace}
-    .advanced code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-    .footer{border-top:1px solid #273d57;margin-top:52px;padding-top:20px;display:flex;gap:14px;flex-wrap:wrap;color:#8a9fb9;font-size:11px}
-    .footer a{color:#9ebce0}
-    @media(max-width:600px){.header{height:65px}.header-inner{width:calc(100% - 34px)}main{margin:55px auto 65px}.share{padding:18px}.url{font-size:11px}.lead{margin-bottom:27px}.actions{gap:11px}.copy{flex:1;min-width:155px}}
+    .back{font-size:12px;text-decoration:none;color:#b7cee9}
+    main{width:min(850px,calc(100% - 42px));margin:70px auto 95px}
+    .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:750;color:#8fb9ee;margin:0 0 14px}
+    h1{font:400 clamp(41px,6.6vw,66px)/1.08 Georgia,"Times New Roman",serif;letter-spacing:-.045em;margin:0 0 18px;max-width:790px}
+    .lead{font-size:clamp(15px,1.8vw,17px);color:#b8cde5;max-width:690px;line-height:1.8;margin:0 0 33px}
+    .search{padding:18px;border:1px solid #436180;background:#10273f;border-radius:17px;box-shadow:0 18px 50px #0209132b}
+    .search label{font-size:12px;font-weight:760;display:block;margin-bottom:9px}
+    .input{display:flex;gap:8px}
+    .input input{flex:1;min-width:0;background:#071b2e;border:1px solid #43607e;color:#f1f7ff;border-radius:9px;padding:13px 14px;font-size:14px}
+    .input input::placeholder{color:#829bb8}
+    .input button,.primary{background:#e4f0ff;border:0;border-radius:9px;color:#142b49;font-size:13px;font-weight:750;padding:10px 19px;min-height:45px}
+    .input button:hover,.primary:hover{background:#c8e2ff}
+    .hint{font-size:12px;color:#a4bddc;margin:10px 0 0}
+    .results{margin-top:24px}
+    .results-header{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #2e4761;padding-bottom:10px}
+    .results h2,.section-title{font-size:16px;letter-spacing:-.01em;margin:0;color:#f4f8ff}
+    .count{font-size:12px;color:#a8bfdc}
+    .result{padding:19px 0;border-bottom:1px solid #263c54}
+    .result a{font-size:15px;font-weight:700;text-decoration:none;color:#f0f7ff}
+    .result a:hover{text-decoration:underline}
+    .result p{color:#b6cce5;font-size:13px;line-height:1.6;margin:7px 0}
+    .result .meta{color:#84a9d3;font-size:11px;margin-top:7px}
+    .result .md{font-size:11.5px;color:#a9d0ff;white-space:nowrap}
+    .result-foot{display:flex;align-items:center;justify-content:space-between;gap:15px}
+    .pages{display:flex;align-items:center;gap:13px;margin-top:19px}
+    .pages button{border:1px solid #355875;background:#132f49;border-radius:8px;color:#e1efff;padding:8px 14px}
+    .pages button:disabled{opacity:.4;cursor:default}
+    .pages span{font-size:12px;color:#a9c2df}
+    .empty{padding:28px 0;color:#adbed6;font-size:13px}
+    .guide{margin-top:66px;padding-top:26px;border-top:1px solid #2c455f}
+    .guide>p{font-size:13.5px;color:#b4c9df}
+    .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:23px 0 24px}
+    .steps strong{font-size:13px;color:#f2f7ff}
+    .steps p{font-size:12px;color:#adc3dc;margin:6px 0}
+    .num{font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;color:#8abaff;display:block;margin-bottom:10px}
+    .urls{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}
+    .urls a{font-size:12px;text-decoration:none;padding:9px 11px;border:1px solid #365571;border-radius:8px}
+    details{margin-top:25px;border-top:1px solid #29425b;padding-top:19px}
+    summary{cursor:pointer;font-size:13px;font-weight:680;color:#bed9fa}
+    .advanced{font-size:12.5px;color:#bed0e5}
+    pre{overflow:auto;background:#0b2035;border:1px solid #2b4763;border-radius:10px;padding:15px;font:12px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#d5e8ff}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .status{font-size:12px;color:#bad2ed}
+    footer{border-top:1px solid #29435d;margin-top:53px;padding-top:20px;display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#91a8c5}
+    @media(max-width:650px){main{margin:47px auto 65px}.steps{grid-template-columns:1fr;gap:11px}.input{flex-wrap:wrap}.input button{width:100%}.result-foot{align-items:start;flex-direction:column;gap:5px}}
   </style>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header class="header"><div class="header-inner">
+  <header><div class="bar">
     <a class="brand" href="../../"><img src="../../icon.ico" alt="" width="29" height="29">Ultimate Macro</a>
-    <a class="back" href="../">← Back to Wiki</a>
+    <a class="back" href="../">← Wiki</a>
   </div></header>
   <main id="main">
-    <h1>Connect the Wiki to your bot.</h1>
-    <p class="lead">One public link containing all published Ultimate Macro guides. Use it in a Discord bot, AI tool, or your own app. No account or API key.</p>
-    <section class="share" aria-label="Wiki data URL">
-      <p class="share-label">Your Wiki data link</p>
-      <code id="data-url" class="url">https://ultmacro.xyz/wiki/api/v1/articles.json</code>
-      <div class="actions">
-        <button id="copy-link" class="copy" type="button">Copy link</button>
-        <a class="view" href="./v1/articles.json">View the data ↗</a>
-      </div>
-      <p id="copy-status" class="message" role="status" aria-live="polite"></p>
+    <p class="eyebrow">Wiki · Search & integrations</p>
+    <h1>Find the right guide. Not a giant JSON file.</h1>
+    <p class="lead">Search the published documentation, open one article, or connect a bot to source-linked Markdown. No account, API key or AI-generated guesses.</p>
+
+    <section class="search" aria-label="Guide search">
+      <form id="search-form">
+        <label for="query">Search the guides</label>
+        <div class="input">
+          <input id="query" name="q" type="search" placeholder="e.g. towers won't upgrade, OCR, Strategy Lab" maxlength="160" autocomplete="off">
+          <button type="submit">Search</button>
+        </div>
+      </form>
+      <p class="hint">This search reads a small metadata index, not the entire article collection.</p>
     </section>
-    <h2>How to use it</h2>
-    <ol class="steps">
-      <li><b>01</b><span><strong>Copy the link</strong> above.</span></li>
-      <li><b>02</b><span><strong>Give it to a bot or AI tool</strong> that can read JSON from a URL.</span></li>
-      <li><b>03</b><span><strong>Use the guides as sources.</strong> Each article includes a link back to the Wiki.</span></li>
-    </ol>
-    <p class="aside">Only published documentation is included. Draft and unverified topics aren't part of this data.</p>
-    <details>
-      <summary>For developers: example code and API status</summary>
-      <div class="advanced">
-        <p>Fetch the dataset, then search the <code>articles</code> array. Each article contains a title, summary, keywords, sections, and source URL.</p>
-        <pre><code>const res = await fetch('https://ultmacro.xyz/wiki/api/v1/articles.json');
-const { articles } = await res.json();
-const matches = articles.filter(article =>
-  article.title.toLowerCase().includes('ocr'));</code></pre>
-        <p>The separate search endpoints under <code>/api/wiki/v1/</code> are not live yet. The complete JSON link above works now; the dynamic endpoints require the website's production proxy to forward them to the Node service.</p>
+
+    <section class="results" aria-label="Search results">
+      <div class="results-header"><h2>Published guides</h2><span class="count" id="result-count" aria-live="polite">Loading index…</span></div>
+      <div id="result-list"><p class="empty">Loading available guides.</p></div>
+      <nav class="pages" id="pagination" aria-label="Search result pages" hidden>
+        <button id="previous-page" type="button">Previous</button><span id="page-label"></span><button id="next-page" type="button">Next</button>
+      </nav>
+    </section>
+
+    <section class="guide" aria-labelledby="bot-heading">
+      <h2 class="section-title" id="bot-heading">Connect a bot or AI agent</h2>
+      <p>For most integrations, use just two requests. The compact index is much smaller than the complete JSON export.</p>
+      <div class="steps">
+        <div><span class="num">01</span><strong>Find a topic</strong><p>Search the compact index using titles, summaries and keywords.</p></div>
+        <div><span class="num">02</span><strong>Fetch one guide</strong><p>Follow its <code>markdown</code> URL to read the relevant instructions.</p></div>
+        <div><span class="num">03</span><strong>Cite your source</strong><p>Keep the guide URL and version with the answer. Research candidates are excluded.</p></div>
       </div>
-    </details>
-    <div class="footer"><span>Ultimate Macro Wiki</span><a href="../">Read the guides</a><a href="../../strategies/">Strategy Network</a></div>
+      <div class="urls">
+        <a href="./v1/index.json">Compact index ↗</a>
+        <a href="../llms.txt">AI guide map (llms.txt) ↗</a>
+        <a href="./v1/articles.json">Complete JSON export ↗</a>
+      </div>
+      <details>
+        <summary>Developer example and live search API status</summary>
+        <div class="advanced">
+          <p>Use the compact index without processing the full published-guide JSON dataset.</p>
+          <pre><code>const { articles } = await (await fetch(
+  'https://ultmacro.xyz/wiki/api/v1/index.json'
+)).json();
+const guide = articles.find(a =>
+  a.keywords.includes('ocr') || a.title.toLowerCase().includes('ocr'));
+const markdown = guide && await (await fetch(guide.markdown)).text();
+// Include guide.url and guide.version with answers.</code></pre>
+          <p id="api-status" class="status" aria-live="polite">Checking optional dynamic search…</p>
+          <p>When production routing forwards <code>/api/wiki/v1/</code> to the Node service, bots can also call <code>/api/wiki/v1/search?q=upgrade</code>, request paginated search results, or use <code>/api/wiki/v1/context?q=upgrade</code> for short sourced excerpts. These endpoints need a working production proxy; the static index and Markdown files don't.</p>
+        </div>
+      </details>
+    </section>
+    <footer><span>Ultimate Macro Wiki</span><a href="../">Browse Wiki</a><a href="../../strategies/">Strategy Network</a></footer>
   </main>
   <script>
-    const button=document.getElementById('copy-link');
-    const status=document.getElementById('copy-status');
-    const address=document.getElementById('data-url').textContent.trim();
-    button.addEventListener('click',async()=>{
-      try {
-        if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-        await navigator.clipboard.writeText(address);
-        button.textContent='Copied!';
-        status.textContent='Ready to paste into your bot or AI tool.';
-      } catch {
-        status.textContent='Select and copy the link above.';
+    (() => {
+      const input=document.getElementById('query');
+      const count=document.getElementById('result-count');
+      const list=document.getElementById('result-list');
+      const pager=document.getElementById('pagination');
+      const previous=document.getElementById('previous-page');
+      const next=document.getElementById('next-page');
+      const label=document.getElementById('page-label');
+      let articles=[], matches=[],page=1;
+      const pageSize=6;
+      function words(value) {
+        return String(value||'').toLowerCase().split(/[^a-z0-9]+/).filter(x=>x.length>2);
       }
-    });
+      function find(query) {
+        const terms=words(query);
+        if(!terms.length) return articles.slice();
+        return articles.map(article=>{
+          const title=(article.title||'').toLowerCase();
+          const keywords=(article.keywords||[]).join(' ').toLowerCase();
+          const summary=(article.summary||'').toLowerCase();
+          let score=0;
+          for(const term of terms) {
+            if(title.includes(term))score+=12;
+            else if(keywords.includes(term))score+=8;
+            else if(summary.includes(term))score+=4;
+          }
+          return {article,score};
+        }).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.article.title.localeCompare(b.article.title)).map(x=>x.article);
+      }
+      function render() {
+        const pages=Math.max(1,Math.ceil(matches.length/pageSize));
+        page=Math.min(page,pages);
+        count.textContent=matches.length+' matching published guides';
+        list.replaceChildren();
+        for(const article of matches.slice((page-1)*pageSize,page*pageSize)){
+          const row=document.createElement('article');row.className='result';
+          const title=document.createElement('a');title.href=article.url;title.textContent=article.title;
+          const summary=document.createElement('p');summary.textContent=article.summary;
+          const foot=document.createElement('div');foot.className='result-foot';
+          const meta=document.createElement('span');meta.className='meta';
+          meta.textContent=article.category+(article.version?' · '+article.version:'');
+          const md=document.createElement('a');md.className='md';md.href=article.markdown;md.textContent='Read Markdown ↗';
+          foot.append(meta,md);row.append(title,summary,foot);list.append(row);
+        }
+        if(!matches.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='No published guide matches. Try a different term or browse the Wiki.';list.append(empty)}
+        pager.hidden=pages<=1;label.textContent='Page '+page+' of '+pages;
+        previous.disabled=page===1;next.disabled=page===pages;
+      }
+      function search() {
+        matches=find(input.value.trim());page=1;render();
+        const url=new URL(location.href);
+        if(input.value.trim())url.searchParams.set('q',input.value.trim());else url.searchParams.delete('q');
+        history.replaceState(null,'',url);
+      }
+      document.getElementById('search-form').addEventListener('submit',event=>{event.preventDefault();search()});
+      input.addEventListener('input',search);
+      previous.addEventListener('click',()=>{page--;render()});
+      next.addEventListener('click',()=>{page++;render()});
+      fetch('./v1/index.json').then(res=>{if(!res.ok)throw new Error('HTTP '+res.status);return res.json()})
+        .then(data=>{articles=data.articles||[];input.value=new URLSearchParams(location.search).get('q')||'';matches=find(input.value);render()})
+        .catch(()=>{count.textContent='Index unavailable';list.textContent='The compact index could not be loaded. Use the full Wiki instead.'});
+      const status=document.getElementById('api-status');
+      fetch('/api/wiki/v1',{cache:'no-store'}).then(res=>{if(!res.ok)throw new Error();return res.json()})
+        .then(data=>{status.textContent='Dynamic search API is live ('+data.totalPublished+' published guides).'})
+        .catch(()=>{status.textContent='Dynamic search API is not reachable here yet. Static index and Markdown links still work.'});
+    })();
   </script>
 </body>
 </html>

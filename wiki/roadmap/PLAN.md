@@ -94,3 +94,17 @@ The research index preserves all 778 titles, but their detail pages now show mat
 ## Expanded v1.3.5 source references
 
 Another **37 detailed guides** are available: 19 settings/updater/diagnostic topics and 18 Strategy Lab .strat command reference pages, with exact signatures, parameter tables and examples. The total is **127 source-linked articles**, still distinct from the 778 unverified research-topic candidates. The release ZIP itself was not transferred into the working environment, and the screenshots/GIFs require real Windows/TDS captures; there are no invented screen states.
+
+## Scaling toward 1,000+ genuinely useful published guides
+
+A page-count target is not a publication criterion. The current baseline remains 127 source-linked published guides and 778 separately labeled candidate topics. A new standalone guide must contain unique, actionable, version-applicable evidence; do not split one procedure across many near-duplicate URLs solely to reach a numerical target.
+
+Publish in reviewed batches of 20–30, prioritizing:
+1. P1 candidates whose exact answer is currently unverified, especially data safety, first-run blockers, reconnects, missing strategies, upgrade confirmation and import/overwrite behavior.
+2. Real support questions not yet covered by a published guide, backed by redacted reports and reproductions.
+3. Verified release-specific settings, commands and failure recovery from the published ZIP and exact tagged source.
+4. Real Windows/TDS screenshots and brief action GIFs when they materially reduce confusion.
+
+Each guide must identify prerequisites, version, expected result, test/evidence source, fallback if the fix does not work, and a reviewer. Mark unresolved topics as research, never as ready-made fixes. Merge overlapping candidate topics into more useful sections and search aliases.
+
+The static per-guide Markdown system and compact index support growth without requiring bots to read the entire documentation corpus. Once the corpus actually reaches hundreds of distinct verified articles, revisit automated content quality checks and build times; do not migrate to another documentation framework in advance.

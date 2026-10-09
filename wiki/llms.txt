@@ -1,0 +1,36 @@
+# Ultimate Macro Wiki
+
+> Source-linked documentation for the Ultimate Macro Windows/Tower Defense Simulator automation tool.
+
+Published guides only. Research-topic candidates are not verified fixes.
+Use the compact index to find a guide, then fetch its individual Markdown document. Do not download the full articles.json for every question.
+
+## Find documentation
+- [Search and API guide](https://ultmacro.xyz/wiki/api/): human-friendly search and integration instructions
+- [Compact index](https://ultmacro.xyz/wiki/api/v1/index.json): titles, summaries, keywords and individual Markdown URLs
+- [Complete JSON export](https://ultmacro.xyz/wiki/api/v1/articles.json): optional bulk/backup dataset, not needed for normal retrieval
+
+## Key guides
+- [Install Ultimate Macro](https://ultmacro.xyz/wiki/api/v1/docs/install.md): From ZIP download to first launch.
+- [Requirements](https://ultmacro.xyz/wiki/api/v1/docs/requirements.md): Supported Windows versions, resolution and dependencies.
+- [Run your first strategy](https://ultmacro.xyz/wiki/api/v1/docs/first-run.md): Test a built-in strategy before leaving the macro unattended.
+- [TDS settings](https://ultmacro.xyz/wiki/api/v1/docs/tds-settings.md): Match the interface layout expected by tower placement and upgrades.
+- [Roblox settings](https://ultmacro.xyz/wiki/api/v1/docs/roblox-settings.md): Use the game settings expected by the documented macro.
+- [Windows display & OCR](https://ultmacro.xyz/wiki/api/v1/docs/windows-display.md): Configure the screen settings used by image detection.
+- [Record a strategy](https://ultmacro.xyz/wiki/api/v1/docs/record-strategy.md): Turn a played match into a .strat file.
+- [Upgrades fail or use the wrong path](https://ultmacro.xyz/wiki/api/v1/docs/upgrade-not-working.md): Check the upgrade panel, money, keybinds and delay.
+- [Clicks miss or towers won't place](https://ultmacro.xyz/wiki/api/v1/docs/wrong-clicks.md): Check display geometry before changing timing.
+- [Wave or cash detection is wrong](https://ultmacro.xyz/wiki/api/v1/docs/ocr-errors.md): Correct missing OCR language support and font changes.
+- [Open Strategy Lab](https://ultmacro.xyz/wiki/api/v1/docs/strategy-lab-start.md): Launch the visual .strat editor from the Create tab or release folder.
+- [Back up your setup](https://ultmacro.xyz/wiki/api/v1/docs/profiles.md): Export or import settings, hotkeys and strategies with Profile Manager.
+- [Import a profile safely](https://ultmacro.xyz/wiki/api/v1/docs/profile-import.md): Restore a bundle without losing your current setup.
+- [Where strategy recordings are saved](https://ultmacro.xyz/wiki/api/v1/docs/where-recordings-are-saved.md): Find personal .strat recordings and the bundled strategy directory.
+- [Default strategy recording hotkeys](https://ultmacro.xyz/wiki/api/v1/docs/recording-hotkey-defaults.md): The exact v1.3.5 shortcut defaults from the reset-settings map.
+- [Anatomy of a .strat file](https://ultmacro.xyz/wiki/api/v1/docs/strat-file-layout.md): A .strat file is plain text split into sections. [Settings] holds the run configuration, [DO NOT EDIT] stores the resolution the strategy was recorded at, and [Steps] holds one command per line, executed top to bottom. [Info] is optional and only describes the strategy in the macro list.
+- [SpawnTower command](https://ultmacro.xyz/wiki/api/v1/docs/strat-spawntower.md): Places a tower from the hotbar on the map and gives it an id. Every later command that touches this tower refers to it by that id.
+- [UpgradeTower command](https://ultmacro.xyz/wiki/api/v1/docs/strat-upgradetower.md): Buys upgrades for a tower that is already placed. The macro opens the tower panel, waits until the upgrade is affordable and confirms each one.
+
+## Scope
+- Published guide count: 127
+- Unverified research topics: excluded from this index and retrieval API
+- Respect the version and source stated inside each Markdown guide
