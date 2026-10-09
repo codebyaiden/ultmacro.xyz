@@ -14,10 +14,12 @@ const CHECKS = [
   { id: 'discovery', path: '/api/wiki/v1', scope: 'dynamic' },
   { id: 'search', path: '/api/wiki/v1/search?q=ocr&limit=2', scope: 'dynamic' },
   { id: 'context', path: '/api/wiki/v1/context?q=upgrade&limit=2', scope: 'dynamic' },
+  { id: 'ask', path: '/api/wiki/v1/ask', scope: 'dynamic' },
 ];
 
 function validate(id, body) {
-  if (id === 'api-page') return body.includes('Find the right guide.');
+  if (id === 'api-page') return body.includes('Give your bot the') &&
+    body.includes('/api/wiki/v1/ask');
   if (id === 'llms') return body.startsWith('# Ultimate Macro Wiki');
   if (id === 'markdown') return body.startsWith('# Install Ultimate Macro') &&
     body.includes('Status: published');
@@ -31,16 +33,24 @@ function validate(id, body) {
     Number.isInteger(data.totalPublished) && data.totalPublished > 0;
   if (id === 'search' || id === 'context') return Array.isArray(data.data) &&
     typeof data.total === 'number' && data.query?.length > 0;
+  if (id === 'ask') return data.status === 'answered' &&
+    typeof data.answer === 'string' && data.answer.length > 10 &&
+    Array.isArray(data.citations) && data.citations.length > 0 &&
+    data.citations.some(c => c.slug === 'upgrade-not-working' &&
+      c.url?.startsWith('https://ultmacro.xyz/wiki/'));
   return false;
 }
 
 export async function probe(base, check, fetchImpl = fetch) {
   const address = new URL(check.path, base).toString();
   try {
+    const ask = check.id === 'ask';
     const response = await fetchImpl(address, {
-      method: 'GET', redirect: 'follow',
+      method: ask ? 'POST' : 'GET', redirect: 'follow',
       signal: AbortSignal.timeout(10000),
-      headers: { accept: check.id === 'api-page' ? 'text/html' : '*/*' },
+      headers: { accept: check.id === 'api-page' ? 'text/html' : 'application/json',
+        ...(ask ? { 'content-type': 'application/json' } : {}) },
+      ...(ask ? { body: JSON.stringify({ question: "Why won't my towers upgrade?" }) } : {}),
     });
     if (!response.ok) return { id: check.id, status: response.status, ok: false };
     const body = await response.text();
@@ -55,7 +65,7 @@ export async function probe(base, check, fetchImpl = fetch) {
 
 const good = (results, id) => Boolean(results?.find(x => x.id === id && x.ok));
 const failed404 = (results, id) => results?.find(x => x.id === id)?.status === 404;
-const WIKI = ['discovery','search','context'];
+const WIKI = ['discovery','search','context','ask'];
 const allWikiGood = results => WIKI.every(id => good(results,id));
 const allWiki404 = results => WIKI.every(id => failed404(results,id));
 
