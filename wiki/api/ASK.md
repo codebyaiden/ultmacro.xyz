@@ -1,6 +1,6 @@
 # Ask Ultimate Macro Wiki
 
-**Status: implemented in source; not publicly live until the existing /api/wiki/v1 proxy/service deployment issue is resolved.** Keep using the working static Markdown/compact-index fallback until live smoke tests pass.
+**Status: live in production.** Default sourced mode returns extractive answers from published guides; the static Markdown/compact-index fallback remains available.
 
 ## One question, one HTTP request
 
@@ -79,7 +79,7 @@ Do not enable public provider spending before the API route is confirmed, the qu
 
 ## Should there be an MCP server?
 
-Not yet. A minimal MCP adapter could reuse the same askWiki(question) call later, but introducing a separate server now would increase hosting and maintenance burden while the public REST route still returns 404. Stabilize REST and bot integrations first.
+Not yet. A minimal MCP adapter could reuse the live askWiki(question) call later, but introducing a separate server would increase hosting and maintenance burden. Stabilize REST and bot integrations first.
 
 ## Deploy verification
 
@@ -92,4 +92,4 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) and the read-only deployment checker from P
 - No provider calls occur with AI disabled.
 - The response functions from the public domain, not merely localhost.
 
-No VPS changes, proxy edits or production API calls are performed by this PR.
+Production verification completed against localhost, api-origin.ultmacro.xyz and ultmacro.xyz. Re-run the deployment checker after future backend or proxy changes.

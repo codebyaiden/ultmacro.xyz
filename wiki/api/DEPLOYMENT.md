@@ -10,9 +10,10 @@ Direct public checks confirmed:
 - https://ultmacro.xyz/wiki/api/v1/docs/install.md — accessible source-linked Markdown.
 - https://ultmacro.xyz/api/health and /api/strategies — working existing Node APIs.
 - https://api-origin.ultmacro.xyz/api/health and /api/strategies — also working.
-- /api/wiki/v1, /api/wiki/v1/search, /api/wiki/v1/context — 404 on both public and api-origin domains.
+- https://ultmacro.xyz/api/wiki/v1, /search, /context and /ask — working through the public origin.
+- POST /api/wiki/v1/ask returns source-backed extractive answers with citations; unsupported and future-version questions return not_found.
 
-**Not yet established:** whether local 127.0.0.1:3000 already implements the new Wiki API. The first safe check must be on the VPS, not a guessed redirect.
+The deployed Node service, api-origin proxy and public edge have all been checked independently. No separate Wiki-specific Nginx location is required because the existing `/api/` proxy forwards the route unchanged.
 
 Run this from the deployed website checkout using the Node process already installed:
 
@@ -39,7 +40,7 @@ Read-only investigation commands (do not paste tokens or full private environmen
 2. Local good / origin bad: add or correct a **scoped** origin proxy location matching /api/wiki/v1 and /api/wiki/v1/*, preserving path and using the existing healthy /api/strategies upstream and headers. Validate nginx syntax before a reload; don't change accounts, poll or admin routes.
 3. Origin good / public bad: inspect the public edge rule for just /api/wiki/v1 and forward it to the verified working origin; do not replace an API-wide rule based on one endpoint.
 
-Run the smoke command again, then confirm search pagination, context citations, JSON/Markdown formats and CORS from the public URL. No deploy or systemd/nginx mutation is performed by this PR.
+Run the smoke command again after future changes, then confirm search pagination, context citations, JSON/Markdown formats and CORS from the public URL.
 
 ---
 

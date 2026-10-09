@@ -63,12 +63,18 @@ test('Python example identifies itself to public edge protections', async () => 
   assert.match(python, /User-Agent.*UltimateMacroWiki/);
 });
 
-test('developer docs explicitly distinguish unavailable Ask API and working fallback', async () => {
+test('developer docs show the live Ask API and retain the static fallback', async () => {
+  const html = await read('wiki/api/index.html');
   const js = await read('wiki/api/app.mjs');
+  const ask = await read('wiki/api/ASK.md');
   const css = await read('wiki/api/site.css');
   assert.match(js, /data\.endpoints\?\.ask !== '\/api\/wiki\/v1\/ask'/);
-  assert.match(js, /Ask API not deployed publicly yet/);
+  assert.match(js, /title\.textContent = 'Ask API available'/);
   assert.match(js, /static index and Markdown documents below are available/);
+  assert.match(html, /The source-backed Ask API is live/);
+  assert.doesNotMatch(html, /cannot return answers publicly until the dynamic API is deployed/);
+  assert.match(ask, /\*\*Status: live/);
+  assert.doesNotMatch(ask, /not publicly live until/);
   assert.match(js, /setPlatform\(/);
   assert.match(js, /ArrowRight/);
   assert.match(js, /ArrowLeft/);
