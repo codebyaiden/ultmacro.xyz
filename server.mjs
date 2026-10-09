@@ -106,7 +106,7 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
     if (!info.isFile()) throw Object.assign(new Error(), { code: 'ENOENT' });
     const body = await readFile(target);
     const ext = path.extname(target).toLowerCase();
-    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.strat': 'text/plain; charset=utf-8' };
+    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.strat': 'text/plain; charset=utf-8' };
     return send(res, 200, req.method === 'HEAD' ? null : body, { 'content-type': types[ext] || 'application/octet-stream', 'cache-control': ext === '.html' ? 'no-cache' : 'public, max-age=3600' });
   } catch (caught) { return send(res, caught.code === 'ENOENT' ? 404 : 500, 'not found\n'); }
 }
