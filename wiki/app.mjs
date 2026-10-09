@@ -94,16 +94,40 @@ function sectionHeading(title, subtitle = '') {
 function home() {
   document.title = 'Ultimate Macro Wiki · Setup, strategies and fixes';
   const hero = node('section', 'home-hero');
-  hero.append(node('p', 'wiki-kicker', 'DOCUMENTATION'));
-  hero.append(node('h1', '', 'Ultimate Macro Wiki'));
-  hero.append(node('p', '', 'Setup instructions, strategy recording, and troubleshooting for the Tower Defense Simulator macro.'));
-  const searchButton = node('button', 'search-large');
-  searchButton.type = 'button';
-  searchButton.setAttribute('aria-label', 'Search wiki articles');
-  searchButton.append(node('span', '', 'Search an error, setting, or feature…'), node('kbd', '', '/'));
-  searchButton.addEventListener('click', () => openSearch());
-  hero.append(searchButton);
+  const copy = node('div', 'hero-content');
+  const heading = node('h1');
+  heading.append(document.createTextNode('Your guide to '), node('em', '', 'Ultimate Macro.'));
+  copy.append(heading);
+  copy.append(node('p', '', 'Set up Roblox and TDS, record a strategy, or find out why a run stopped working.'));
+  const actions = node('div', 'hero-actions');
+  const start = articleLink(docs.get('install'), 'hero-action');
+  start.textContent = 'Get started ↗';
+  const fix = categoryLink('Troubleshooting', 'hero-secondary');
+  fix.textContent = 'Find a fix →';
+  actions.append(start, fix);
+  copy.append(actions);
+  hero.append(copy);
+  const image = node('div', 'hero-device');
+  const frame = node('div', 'device-frame');
+  const screenshot = node('img');
+  screenshot.src = '../assets/ui/ultimate-macro-main-new.png';
+  screenshot.alt = 'Ultimate Macro desktop app main screen';
+  screenshot.width = 702;
+  screenshot.height = 567;
+  screenshot.loading = 'lazy';
+  frame.append(screenshot);
+  image.append(frame);
+  hero.append(image);
   view.append(hero);
+
+  const searchButton = node('button', 'hero-search');
+  searchButton.type = 'button';
+  searchButton.setAttribute('aria-label', 'Search all wiki articles');
+  const icon = node('span', 'search-glyph');
+  icon.setAttribute('aria-hidden', 'true');
+  searchButton.append(icon, node('span', '', 'Search setup, hotkeys, errors, strategies…'), node('kbd', '', '/'));
+  searchButton.addEventListener('click', () => openSearch());
+  view.append(searchButton);
 
   const entry = node('div', 'home-entry');
   const groups = [
@@ -111,37 +135,37 @@ function home() {
       className: 'home-lane',
       title: 'Set up Ultimate Macro',
       entries: [
-        ['install', '01', 'Install the macro', 'Download and launch Main.ahk'],
+        ['install', '01', 'Install the macro', 'Download and open Main.ahk'],
         ['windows-display', '02', 'Configure Windows', 'Resolution, scaling and OCR'],
-        ['tds-settings', '03', 'Configure TDS', 'Required in-game settings'],
-        ['first-run', '04', 'Run a strategy', 'Check a full match before leaving']
+        ['tds-settings', '03', 'Configure TDS', 'UI Scale, upgrades and screen shake'],
+        ['first-run', '04', 'Run a strategy', 'Watch the first match']
       ]
     },
     {
       className: 'home-lane issue-lane',
-      title: 'Troubleshoot',
+      title: 'Something not working?',
       entries: [
         ['launch-fails', '', "Main.ahk won't open", ''],
-        ['wrong-clicks', '', 'Towers not placing', ''],
-        ['upgrade-not-working', '', 'Upgrades skipped', ''],
-        ['ocr-errors', '', 'Wave or cash detection wrong', '']
+        ['wrong-clicks', '', "Towers won't place", ''],
+        ['upgrade-not-working', '', 'Upgrades get skipped', ''],
+        ['ocr-errors', '', 'Wrong wave or cash detection', '']
       ]
     }
   ];
   for (const group of groups) {
     const section = node('section', group.className);
-    const heading = node('div', 'lane-head');
-    heading.append(node('h2', '', group.title));
-    section.append(heading);
+    const head = node('div', 'lane-head');
+    head.append(node('h2', '', group.title));
+    section.append(head);
     const list = node('div', 'lane-list');
     for (const [slug, number, title, subtitle] of group.entries) {
       const a = articleLink(docs.get(slug), 'lane-link');
       a.textContent = '';
       if (number) a.append(node('span', 'number', number));
-      const body = node('span', 'label');
-      body.append(node('strong', '', title));
-      if (subtitle) body.append(node('small', '', subtitle));
-      a.append(body, node('span', 'arrow', '↗'));
+      const label = node('span', 'label');
+      label.append(node('strong', '', title));
+      if (subtitle) label.append(node('small', '', subtitle));
+      a.append(label, node('span', 'arrow', '↗'));
       list.append(a);
     }
     section.append(list);
@@ -150,15 +174,15 @@ function home() {
   view.append(entry);
 
   const browse = node('section', 'home-section');
-  browse.append(sectionHeading('Browse articles'));
-  const topicList = node('div', 'topic-list');
+  browse.append(sectionHeading('Explore the wiki'));
+  const topics = node('div', 'topic-list');
   for (const name of categories) {
     const a = categoryLink(name, 'topic-link');
     a.textContent = '';
-    a.append(node('strong', 'topic-name', name), node('span', 'topic-arrow', '↗'));
-    topicList.append(a);
+    a.append(node('span', 'topic-name', name), node('span', 'topic-arrow', '↗'));
+    topics.append(a);
   }
-  browse.append(topicList);
+  browse.append(topics);
   view.append(browse);
 }
 function categoryView(name) {
@@ -401,6 +425,7 @@ navToggle.addEventListener('click',()=>{
   sidebar.classList.toggle('open',open);scrim.hidden=!open;navToggle.setAttribute('aria-expanded',String(open));
 });
 scrim.addEventListener('click',closeMenu);
+$('sidebar-close').addEventListener('click',closeMenu);
 helperToggle.addEventListener('click',()=>toggleHelper(helper.hidden));
 $('helper-close').addEventListener('click',()=>toggleHelper(false));
 $('helper-suggestions').addEventListener('click',e=>{

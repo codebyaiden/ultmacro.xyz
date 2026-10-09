@@ -1,5 +1,4 @@
-// Public setup guide and official project links are the source of this baseline.
-// Use version-specific verification before adding instructions for future releases.
+// Source-backed wiki content. Check instructions against the official release before updating.
 export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
 export const articles = [
   {
@@ -1363,6 +1362,138 @@ export const articles = [
       "license",
       "source",
       "history"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "slow-inputs",
+    "category": "Troubleshooting",
+    "title": "Macro is slow or misses inputs",
+    "summary": "Adjust timing and performance settings without breaking placement.",
+    "sections": [
+      {
+        "title": "Change one delay at a time",
+        "paragraphs": [],
+        "steps": [
+          "Open Ultimate Macro Settings.",
+          "If upgrades are skipped while the upgrade panel loads, raise Upgrade Delay.",
+          "If mouse actions happen too quickly, increase Mouse Delay.",
+          "If key presses are missed, increase Key Delay.",
+          "Test a short run after each adjustment so you know which change helped."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "On weaker PCs",
+        "paragraphs": [
+          "Potato Mode lowers macro overhead on slower machines. Try it before switching image detection methods."
+        ],
+        "steps": [],
+        "checks": [
+          "Keep Legacy Mode off unless needed as a fallback.",
+          "Legacy Mode may be limited to 1920×1080 and disables Auto Equip and target changes."
+        ],
+        "rows": []
+      }
+    ],
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "lag",
+      "slow",
+      "delay",
+      "mouse",
+      "keyboard",
+      "potato",
+      "mode",
+      "freezes",
+      "timing"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "record-abilities",
+    "category": "Strategies",
+    "title": "Record DJ and tower abilities",
+    "summary": "Hotkeys for DJ tracks, Necromancer and Brawler actions.",
+    "sections": [
+      {
+        "title": "DJ track changes",
+        "paragraphs": [
+          "The existing recorder also supports scheduling DJ disc changes by wave."
+        ],
+        "steps": [
+          "Open Create → Record a Strategy.",
+          "During the match, use Ctrl + D to record a DJ track change.",
+          "Save the .strat file and replay it to confirm the track change is timed correctly."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Necromancer and Brawler",
+        "paragraphs": [
+          "To record Raise the Dead (Necromancer) or a Brawler reposition, hold Ctrl with the ability's in-game keybind. These actions do not use a separate recording shortcut."
+        ],
+        "steps": [],
+        "checks": [
+          "Confirm the ability keybinds in Ultimate Macro match TDS.",
+          "Test the strategy before sharing it."
+        ],
+        "rows": []
+      }
+    ],
+    "source": "/guide/recording/",
+    "keywords": [
+      "dj",
+      "track",
+      "disc",
+      "change",
+      "abilities",
+      "record",
+      "necromancer",
+      "brawler",
+      "keybind"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "timescale-tickets",
+    "category": "Sessions & tools",
+    "title": "Use Timescale tickets",
+    "summary": "Configure 1.5× or 2× matches when you have tickets.",
+    "sections": [
+      {
+        "title": "Configure Timescale",
+        "paragraphs": [],
+        "steps": [
+          "Confirm that timescale tickets are available on the Roblox account.",
+          "Open Ultimate Macro Settings.",
+          "Set Timescale to 1.5× or 2×.",
+          "Run one match while watching its timing and game transitions."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Check the strategy",
+        "paragraphs": [
+          "Faster games reduce run time, but a strategy still needs to work at the selected speed. Return to standard speed if the run repeatedly stalls or misses actions."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/sessions/",
+    "keywords": [
+      "timescale",
+      "tickets",
+      "1.5x",
+      "2x",
+      "speed",
+      "quick",
+      "run"
     ],
     "version": "v1.3.x"
   }
