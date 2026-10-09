@@ -1,5 +1,5 @@
-// Wiki articles based on the public Ultimate Macro setup guide and linked official resources.
-// Version-dependent behaviors are not claimed to have been tested against unreleased builds.
+// Public setup guide and official project links are the source of this baseline.
+// Use version-specific verification before adding instructions for future releases.
 export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
 export const articles = [
   {
@@ -21,25 +21,15 @@ export const articles = [
         "rows": []
       },
       {
-        "title": "Next",
-        "paragraphs": [
-          "Before starting a strategy, configure Windows, Roblox and TDS. The macro reads your screen, so display settings matter."
-        ],
+        "title": "Before your first run",
+        "paragraphs": [],
         "steps": [],
         "checks": [
-          "Set up Windows display and OCR",
-          "Set up Roblox and TDS",
-          "Run a bundled strategy while watching the first match"
+          "Windows resolution: supported 16:9; scaling: 100% recommended",
+          "Windows taskbar: visible",
+          "Roblox: 60 FPS, Classic camera, Manual graphics",
+          "TDS: Large UI, Screen Shake off, Vertical Upgrades on"
         ],
-        "rows": []
-      },
-      {
-        "title": "If Main.ahk will not open",
-        "paragraphs": [
-          "Check that .ahk files launch with AutoHotkey v2 and that no Roblox multi-client tool is running. Follow the startup troubleshooting page for more checks."
-        ],
-        "steps": [],
-        "checks": [],
         "rows": []
       }
     ],
@@ -305,15 +295,6 @@ export const articles = [
             "Enabled"
           ]
         ]
-      },
-      {
-        "title": "Test after changes",
-        "paragraphs": [
-          "Run one match while watching tower placement and upgrades. UI changes affect where the macro looks for controls and text."
-        ],
-        "steps": [],
-        "checks": [],
-        "rows": []
       }
     ],
     "source": "/guide/display/",
@@ -735,7 +716,7 @@ export const articles = [
       {
         "title": "Import with care",
         "paragraphs": [
-          "Review the import preview and backup options so you know which current settings and strategies may be replaced."
+          "Check the import preview before replacing existing settings, hotkeys or strategies."
         ],
         "steps": [],
         "checks": [],
@@ -786,15 +767,6 @@ export const articles = [
             "Opens consumable crates and counts how many were opened."
           ]
         ]
-      },
-      {
-        "title": "Before using Auto Call of Arms",
-        "paragraphs": [
-          "Check the ability keybinds in Settings against your TDS keybinds."
-        ],
-        "steps": [],
-        "checks": [],
-        "rows": []
       }
     ],
     "source": "/guide/tools/",
@@ -830,7 +802,7 @@ export const articles = [
       {
         "title": "If the error remains",
         "paragraphs": [
-          "Record the exact startup error, AutoHotkey version and macro version. Report that text rather than describing it as 'doesn't work'."
+          "Share the exact error, AutoHotkey version and Ultimate Macro version when requesting support."
         ],
         "steps": [],
         "checks": [],
@@ -1016,7 +988,7 @@ export const articles = [
       {
         "title": "Check Legacy Mode",
         "paragraphs": [
-          "In documented releases, Auto Equip and tower targeting changes do not work while Legacy Mode is enabled. This is a limitation, not a random crash."
+          "Legacy Mode disables Auto Equip and target changes. Turn it off to use those features."
         ],
         "steps": [],
         "checks": [],
@@ -1067,7 +1039,7 @@ export const articles = [
       {
         "title": "Wrong map after a win-only run?",
         "paragraphs": [
-          "The public guide suggests turning Restart off for a win strategy if it sometimes enters the wrong map."
+          "Disable Click Restart if a win-only strategy sends you to the wrong map."
         ],
         "steps": [],
         "checks": [],
@@ -1092,9 +1064,9 @@ export const articles = [
     "summary": "What recovery handles and what to check when it stalls.",
     "sections": [
       {
-        "title": "Expected recovery",
+        "title": "Automatic recovery",
         "paragraphs": [
-          "The documented macro includes a Roblox reconnect flow, game re-entry, and startup checks for lobby/Ready states."
+          "Ultimate Macro can reconnect Roblox and re-enter TDS after a disconnect. If it stops at a login prompt or unexpected dialog, use the checks below."
         ],
         "steps": [],
         "checks": [],
@@ -1145,7 +1117,7 @@ export const articles = [
       {
         "title": "Remote commands",
         "paragraphs": [
-          "First confirm the macro runs locally, then test the bot's status command. Check the bot connection and the configuration for your installed release."
+          "Check that the macro runs locally, then try a bot status request. If that fails, verify the connection for your version."
         ],
         "steps": [],
         "checks": [],
@@ -1255,7 +1227,7 @@ export const articles = [
       {
         "title": "Before enabling",
         "paragraphs": [
-          "The public guide describes EngineerBot integration and an optional personal-bot setup. Availability and command surfaces depend on the installed release. Keep remote credentials private and test with a status request first."
+          "Test a status command before relying on remote controls. Available commands depend on the installed version; keep bot credentials private."
         ],
         "steps": [],
         "checks": [],
@@ -1281,7 +1253,7 @@ export const articles = [
       {
         "title": "Official server",
         "paragraphs": [
-          "Use the Ultimate Macro Discord for release announcements, shared strategies and support. The current channel names and roles are maintained in Discord, not hard-coded here."
+          "The official Discord hosts announcements, community strategies and support. See the current channels for roles and events."
         ],
         "steps": [],
         "checks": [],
@@ -1333,7 +1305,7 @@ export const articles = [
       {
         "title": "Where to send it",
         "paragraphs": [
-          "Open a GitHub issue or post in the appropriate support channel on the official Discord. Never include passwords, bot tokens, or webhook URLs."
+          "Send the report to GitHub Issues or the official Discord support channel. Remove credentials and webhook URLs from any logs."
         ],
         "steps": [],
         "checks": [],

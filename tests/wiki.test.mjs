@@ -47,13 +47,20 @@ test('wiki UI uses real controls, native links and transparent helper descriptio
   assert.match(html, /id="search-overlay"/);
   assert.match(html, /id="nav-toggle"/);
   assert.match(html, /id="helper-panel"/);
-  assert.match(html, /Searches published guides only/);
+  assert.match(html, /Searches wiki articles\. AI responses are not enabled\./);
   assert.match(app, /function search\(/);
   assert.match(app, /function categoryView\(/);
   assert.match(app, /function articleView\(/);
   assert.match(app, /setting-table/);
-  assert.match(css, /--navy:#07111f/);
-  assert.match(css, /--bright:#3a86ff/);
+  assert.match(html, /\.\.\/styles\/base\.css\?v=28/);
+  assert.match(html, /class="site-head wiki-head"/);
+  assert.match(html, /href="\.\.\/strategies\/">Strategy Network/);
+  assert.match(css, /--bg:#0e0e10/);
+  assert.match(css, /--acc:#3a86ff/);
+  assert.match(css, /border-radius:15px/);
+  assert.match(app, /Towers not placing/);
+  assert.doesNotMatch(app, /Quick setup reference|Quick fixes|Find what you need|WIKI \/ TOPIC/);
+  assert.doesNotMatch(html, /AI answers coming later|Guides based on public documentation/);
   assert.match(css, /prefers-reduced-motion/);
   new vm.Script(app.replace(/^import[^\n]*\n/, ''));
 });
@@ -62,4 +69,14 @@ test('wiki remains linked from the site and the existing server serves modules',
   assert.match(await read('server.mjs'), /'\.mjs': 'text\/javascript; charset=utf-8'/);
   assert.match(await read('index.html'), /href="wiki\/">Wiki/);
   assert.match(await read('sitemap.xml'), /https:\/\/ultmacro\.xyz\/wiki\//);
+});
+
+test('source-backed help does not invent live AI capabilities', async () => {
+  const html = await read('wiki/index.html');
+  const app = await read('wiki/app.mjs');
+  assert.match(html, /AI responses are not enabled/);
+  assert.match(app, /function ask\(/);
+  assert.match(app, /const relatedBySlug =/);
+  assert.match(app, /AutoHotkey v2/);
+  assert.match(app, /discord\.gg\/ultmacro/);
 });

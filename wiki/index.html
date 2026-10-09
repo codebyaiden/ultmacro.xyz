@@ -3,98 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#07111f">
-  <meta name="description" content="Ultimate Macro Wiki. Installation, settings, strategy recording, troubleshooting and community guides.">
+  <meta name="theme-color" content="#0e0e10">
+  <meta name="description" content="Ultimate Macro Wiki. Guides for Windows setup, Tower Defense Simulator settings, .strat recording, and troubleshooting.">
   <meta property="og:title" content="Ultimate Macro Wiki">
-  <meta property="og:description" content="Install the macro, configure TDS, learn strategies and fix common problems.">
+  <meta property="og:description" content="Set up Ultimate Macro, record strategies, and fix common problems.">
   <link rel="canonical" href="https://ultmacro.xyz/wiki/">
   <link rel="icon" href="../icon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./site.css?v=2">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/base.css?v=28">
+  <link rel="stylesheet" href="./site.css?v=3">
   <title>Ultimate Macro Wiki</title>
 </head>
-<body>
+<body class="wiki-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="../" aria-label="Ultimate Macro homepage">
-        <img src="../icon.ico" width="30" height="30" alt="">
-        <span>Ultimate <strong>Macro</strong></span>
+  <header class="site-head wiki-head">
+    <div class="wrap">
+      <a class="brand" href="../" aria-label="Ultimate Macro home">
+        <img class="brand-mark" src="../icon.ico" alt="" width="28" height="28">
+        <span class="brand-text">Ultimate<i>Macro</i></span>
       </a>
-      <span class="brand-rule" aria-hidden="true"></span>
+      <span class="wiki-identity" aria-hidden="true"></span>
       <a class="wiki-brand" href="./">Wiki</a>
-      <nav class="top-links" aria-label="Ultimate Macro links">
-        <a href="../download/">Download</a>
-        <a href="../strategies/">Strategies</a>
-        <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord <span aria-hidden="true">↗</span></a>
+      <nav class="site-nav" aria-label="Site navigation">
+        <a href="../#features">Features</a>
+        <a href="../guide/">Guide</a>
+        <a href="./" aria-current="page">Wiki</a>
+        <a href="../strategies/">Strategy Network</a>
+        <a href="../early-access/">Early Access</a>
       </nav>
-      <button type="button" class="top-search" id="search-trigger" aria-label="Search the wiki">
-        <svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5.5 5.5"/></svg>
-        <span>Search</span><kbd>/</kbd>
-      </button>
-      <button type="button" class="mobile-nav-button" id="nav-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Open navigation">
-        <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
+      <div class="head-actions">
+        <button class="top-search" type="button" id="search-trigger" aria-label="Search wiki">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>
+          <span>Search</span><kbd>/</kbd>
+        </button>
+        <a class="btn primary sm wiki-download" href="../download/">Download</a>
+        <button class="mobile-nav-button" type="button" id="nav-toggle" aria-controls="sidebar" aria-expanded="false" aria-label="Open wiki navigation">
+          <svg viewBox="0 0 24 24" aria-hidden="true" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
     </div>
   </header>
   <div class="shell">
-    <div id="mobile-scrim" class="mobile-scrim" hidden></div>
-    <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
+    <div class="mobile-scrim" id="mobile-scrim" hidden></div>
+    <aside class="sidebar" id="sidebar" aria-label="Wiki navigation">
       <div class="sidebar-scroll">
-        <a id="sidebar-home" href="./" class="sidebar-home">Overview <span aria-hidden="true">↗</span></a>
-        <nav id="sidebar-nav" aria-label="Wiki topics"></nav>
+        <a href="./" id="sidebar-home" class="sidebar-home">Wiki home</a>
+        <nav id="sidebar-nav" aria-label="Wiki articles"></nav>
         <div class="sidebar-links">
-          <a href="../download/">Download Ultimate Macro ↗</a>
-          <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Get support ↗</a>
+          <a href="../strategies/">Strategy Network <span aria-hidden="true">↗</span></a>
+          <a href="../download/">Download <span aria-hidden="true">↗</span></a>
+          <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord support <span aria-hidden="true">↗</span></a>
         </div>
       </div>
     </aside>
     <main class="main" id="main" tabindex="-1">
       <div id="view"></div>
-      <footer class="footer"><span>Ultimate Macro Wiki</span><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues" target="_blank" rel="noopener noreferrer">Report an issue ↗</a></footer>
+      <footer class="footer">
+        <span>Ultimate Macro</span>
+        <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord support ↗</a>
+      </footer>
     </main>
   </div>
+
   <div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-labelledby="search-title" hidden>
     <div class="search-dialog">
-      <h2 id="search-title" class="sr-only">Search the wiki</h2>
+      <h2 class="sr-only" id="search-title">Search wiki articles</h2>
       <div class="search-field-row">
-        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5.5 5.5"/></svg>
-        <label class="sr-only" for="search-field">Search wiki articles</label>
-        <input type="search" id="search-field" placeholder="Try 'upgrades', 'OCR', or 'webhook'" autocomplete="off" spellcheck="false">
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>
+        <label class="sr-only" for="search-field">Search</label>
+        <input id="search-field" type="search" autocomplete="off" spellcheck="false" placeholder="Search settings, errors, strategies…">
         <button type="button" id="search-close">Close <kbd>Esc</kbd></button>
       </div>
-      <div id="search-results" class="search-results" aria-live="polite"></div>
+      <div class="search-results" id="search-results" aria-live="polite"></div>
     </div>
   </div>
+
   <div class="helper">
-    <section class="helper-panel" id="helper-panel" aria-label="Wiki help" hidden>
+    <section class="helper-panel" id="helper-panel" aria-label="Wiki search help" hidden>
       <div class="helper-head">
-        <span class="helper-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a8 8 0 1 0 8 8c0-4.4-3.6-8-8-8Z" transform="translate(0 1)"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 17h.01"/></svg></span>
-        <div><strong>Find an answer</strong><small>Search the wiki</small></div>
+        <div class="helper-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.2a8 8 0 0 1-8 8c-1.6 0-3.1-.5-4.3-1.3L3.5 19l1.4-4.1A8 8 0 1 1 20 11.2Z"/><path d="M8.5 11h7M12 7.5v7"/></svg>
+        </div>
+        <div><strong>Wiki search</strong><small>Find a guide for your problem</small></div>
         <button type="button" id="helper-close" aria-label="Close help">×</button>
       </div>
       <div class="helper-body" id="helper-history" aria-live="polite">
-        <p class="helper-intro">Describe a problem or ask about a setting. I'll find matching guides.</p>
+        <p class="helper-intro">What do you need help with?</p>
         <div class="helper-suggestions" id="helper-suggestions">
-          <button type="button" data-ask="My towers aren't placing">Towers won't place</button>
-          <button type="button" data-ask="How do I record a strategy?">Record a strategy</button>
-          <button type="button" data-ask="Roblox OCR is wrong">OCR is wrong</button>
+          <button type="button" data-ask="tower placement fails">Towers not placing</button>
+          <button type="button" data-ask="how to record a strategy">Recording a strategy</button>
+          <button type="button" data-ask="OCR wave detection wrong">Wrong wave detection</button>
         </div>
       </div>
       <form class="helper-form" id="helper-form">
-        <label class="sr-only" for="helper-input">Search for an answer</label>
-        <input id="helper-input" type="text" placeholder="Ask about the macro…" maxlength="250" autocomplete="off" required>
-        <button type="submit" aria-label="Search wiki">↑</button>
+        <label class="sr-only" for="helper-input">Search for an article</label>
+        <input id="helper-input" type="text" maxlength="250" placeholder="Describe your issue…" autocomplete="off" required>
+        <button type="submit" aria-label="Search articles">↑</button>
       </form>
-      <p class="helper-foot">Searches published guides only.</p>
+      <p class="helper-foot">Searches wiki articles. AI responses are not enabled.</p>
     </section>
-    <button type="button" class="helper-toggle" id="helper-toggle" aria-controls="helper-panel" aria-expanded="false" aria-label="Open wiki help">
-      <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 11.6a8.2 8.2 0 0 1-12.5 7L3.7 20l1.4-4A8.2 8.2 0 1 1 20.2 11.6Z"/><path d="M8.7 11.5h6.6M12 8.2v6.6"/></svg>
+    <button type="button" id="helper-toggle" class="helper-toggle" aria-expanded="false" aria-controls="helper-panel" aria-label="Open wiki help">
+      <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.2a8 8 0 0 1-8 8c-1.6 0-3.1-.5-4.3-1.3L3.5 19l1.4-4.1A8 8 0 1 1 20 11.2Z"/><path d="M8.6 11.2h6.8M12 8v6.5"/></svg>
     </button>
   </div>
-  <noscript><div class="noscript">The wiki search needs JavaScript. You can still read the <a href="../guide/">setup guide</a> and visit <a href="../download/">downloads</a>.</div></noscript>
-  <script type="module" src="./app.mjs?v=2"></script>
+  <noscript><div class="noscript">The wiki needs JavaScript for article search. The <a href="../guide/">setup guide</a> is available without it.</div></noscript>
+  <script type="module" src="./app.mjs?v=3"></script>
 </body>
 </html>

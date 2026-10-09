@@ -92,82 +92,80 @@ function sectionHeading(title, subtitle = '') {
   return section;
 }
 function home() {
-  document.title = 'Ultimate Macro Wiki · Guides and troubleshooting';
+  document.title = 'Ultimate Macro Wiki · Setup, strategies and fixes';
   const hero = node('section', 'home-hero');
-  const left = node('div');
-  left.append(node('p', 'eyebrow', 'ULTIMATE MACRO / WIKI'));
-  const title = node('h1');
-  title.append(document.createTextNode('Find what you '), node('span', '', 'need.'));
-  left.append(title, node('p', 'hero-description', 'Install the macro, set up your game, record strategies, or fix a problem.'));
+  hero.append(node('p', 'wiki-kicker', 'DOCUMENTATION'));
+  hero.append(node('h1', '', 'Ultimate Macro Wiki'));
+  hero.append(node('p', '', 'Setup instructions, strategy recording, and troubleshooting for the Tower Defense Simulator macro.'));
   const searchButton = node('button', 'search-large');
   searchButton.type = 'button';
-  searchButton.append(node('span', '', 'Search guides, settings, errors…'), node('kbd', '', '/'));
+  searchButton.setAttribute('aria-label', 'Search wiki articles');
+  searchButton.append(node('span', '', 'Search an error, setting, or feature…'), node('kbd', '', '/'));
   searchButton.addEventListener('click', () => openSearch());
-  left.append(searchButton);
-  hero.append(left);
-  const setup = node('aside', 'quick-setup');
-  setup.append(node('h2', '', 'Quick setup reference'), node('p', '', 'Recommended starting values'));
-  for (const [label, val] of [['Windows', '1920 × 1080 / 100%'], ['Roblox', '60 FPS / Classic'], ['TDS UI Scale', 'Large'], ['Screen Shake', 'Off']]) {
-    const row = node('div', 'setup-value');
-    row.append(node('span', '', label), node('strong', '', val));
-    setup.append(row);
-  }
-  const setupLink = articleLink(docs.get('windows-display'));
-  setupLink.textContent = 'Full configuration guide →';
-  setup.append(setupLink);
-  hero.append(setup);
+  hero.append(searchButton);
   view.append(hero);
 
-  const start = node('section', 'home-section');
-  start.append(sectionHeading('Start here'));
-  const startGrid = node('div', 'start-list');
-  const entries = [
-    { slug:'install', subtitle:'Download and open Main.ahk' },
-    { slug:'first-run', subtitle:'Start and stop your first match' },
-    { slug:'record-strategy', subtitle:'Save actions as a .strat file' },
-    { slug:'wrong-clicks', subtitle:'Fix misplaced clicks and placements' }
+  const entry = node('div', 'home-entry');
+  const groups = [
+    {
+      className: 'home-lane',
+      title: 'Set up Ultimate Macro',
+      entries: [
+        ['install', '01', 'Install the macro', 'Download and launch Main.ahk'],
+        ['windows-display', '02', 'Configure Windows', 'Resolution, scaling and OCR'],
+        ['tds-settings', '03', 'Configure TDS', 'Required in-game settings'],
+        ['first-run', '04', 'Run a strategy', 'Check a full match before leaving']
+      ]
+    },
+    {
+      className: 'home-lane issue-lane',
+      title: 'Troubleshoot',
+      entries: [
+        ['launch-fails', '', "Main.ahk won't open", ''],
+        ['wrong-clicks', '', 'Towers not placing', ''],
+        ['upgrade-not-working', '', 'Upgrades skipped', ''],
+        ['ocr-errors', '', 'Wave or cash detection wrong', '']
+      ]
+    }
   ];
-  for (const [i, item] of entries.entries()) {
-    const a = docs.get(item.slug), l = articleLink(a, 'start-link');
-    l.textContent = '';
-    const content = node('div');
-    content.append(node('strong', '', a.title), node('small', '', item.subtitle));
-    l.append(node('span', 'number', String(i + 1).padStart(2, '0')), content, node('span', 'arrow', '↗'));
-    startGrid.append(l);
+  for (const group of groups) {
+    const section = node('section', group.className);
+    const heading = node('div', 'lane-head');
+    heading.append(node('h2', '', group.title));
+    section.append(heading);
+    const list = node('div', 'lane-list');
+    for (const [slug, number, title, subtitle] of group.entries) {
+      const a = articleLink(docs.get(slug), 'lane-link');
+      a.textContent = '';
+      if (number) a.append(node('span', 'number', number));
+      const body = node('span', 'label');
+      body.append(node('strong', '', title));
+      if (subtitle) body.append(node('small', '', subtitle));
+      a.append(body, node('span', 'arrow', '↗'));
+      list.append(a);
+    }
+    section.append(list);
+    entry.append(section);
   }
-  start.append(startGrid);
-  view.append(start);
+  view.append(entry);
 
   const browse = node('section', 'home-section');
-  browse.append(sectionHeading('Browse topics'));
+  browse.append(sectionHeading('Browse articles'));
   const topicList = node('div', 'topic-list');
   for (const name of categories) {
-    const count = articles.filter(a => a.category === name).length;
-    const row = categoryLink(name, 'topic-link');
-    row.textContent = '';
-    row.append(node('strong', 'topic-name', name), node('span', 'topic-description', categoryDetails[name]), node('span', 'topic-count', String(count)), node('span', 'topic-arrow', '↗'));
-    topicList.append(row);
+    const a = categoryLink(name, 'topic-link');
+    a.textContent = '';
+    a.append(node('strong', 'topic-name', name), node('span', 'topic-arrow', '↗'));
+    topicList.append(a);
   }
   browse.append(topicList);
   view.append(browse);
-
-  const fixes = node('section', 'home-section');
-  fixes.append(sectionHeading('Common problems', 'Quick fixes'));
-  const list = node('div', 'issue-list');
-  for (const slug of ['launch-fails','wrong-clicks','ocr-errors','upgrade-not-working','abilities-not-working','stuck-between-matches']) {
-    const a = docs.get(slug), l = articleLink(a);
-    l.textContent = '';
-    l.append(node('span', '', a.title), node('span', '', '↗'));
-    list.append(l);
-  }
-  fixes.append(list);
-  view.append(fixes);
 }
 function categoryView(name) {
   document.title = name + ' · Ultimate Macro Wiki';
   view.append(breadcrumb(name));
   const head = node('header','article-header');
-  head.append(node('span','article-category','WIKI / TOPIC'),node('h1','',name),node('p','article-summary',categoryDetails[name]));
+  head.append(node('span','article-category','Articles'),node('h1','',name),node('p','article-summary',categoryDetails[name]));
   view.append(head);
   const list = node('div','category-articles');
   for(const a of articles.filter(x => x.category === name)) {
@@ -219,31 +217,80 @@ function articleView(article) {
     body.append(section);
     toc.append(link(sec.title,'#'+id));
   }
-  const src=node('p','article-source');
-  src.append(document.createTextNode('Reference: '));
-  const sourceLabel=article.source.startsWith('/guide/')?'Ultimate Macro setup guide':article.source.includes('/issues')?'GitHub issues':article.source.includes('discord.gg')?'Official Discord':article.source==='/strategies/'?'Strategy Network': 'Official project repository';
-  const source=link(sourceLabel+' ↗',article.source);
-  if(article.source.startsWith('https:')){source.target='_blank';source.rel='noopener noreferrer';}
-  src.append(source);
-  body.append(src);
-  const actions=node('div','article-actions');
-  const copy=node('button','text-button','Copy link');
-  copy.type='button';
-  copy.addEventListener('click', async()=> {
-    try{await navigator.clipboard.writeText(new URL(articleURL(article.slug),location.href).href);copy.textContent='Copied';}
-    catch{copy.textContent='Use your address bar';}
+  const actions = node('div', 'article-actions');
+  const copy = node('button', 'text-button', 'Copy article link');
+  copy.type = 'button';
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(new URL(articleURL(article.slug), location.href).href);
+      copy.textContent = 'Copied';
+    } catch {
+      copy.textContent = 'Copy from address bar';
+    }
   });
-  const support=link('Report a problem ↗','https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues','text-button');
-  support.target='_blank';support.rel='noopener noreferrer';
-  actions.append(copy,support);body.append(actions);
-
-  const nearby=articles.filter(a=>a.category===article.category&&a.slug!==article.slug).slice(0,3);
-  if(nearby.length){
-    const more=node('section','related-section');
-    more.append(sectionHeading('Related guides'));
-    const list=node('div','issue-list');
-    for(const a of nearby){const l=articleLink(a);l.textContent='';l.append(node('span','',a.title),node('span','','↗'));list.append(l);}
-    more.append(list);body.append(more);
+  actions.append(copy);
+  if (article.category === 'Troubleshooting') {
+    const help = link('Still stuck? Get support ↗', 'https://discord.gg/ultmacro', 'text-button');
+    help.target = '_blank'; help.rel = 'noopener noreferrer';
+    actions.append(help);
+  }
+  const sources = {
+    install: [
+      ['Download Ultimate Macro', '/download/'],
+      ['Get AutoHotkey v2', 'https://www.autohotkey.com/v2/']
+    ],
+    'community-strategies': [['Browse Strategy Network', '/strategies/']],
+    'discord-community': [['Join Discord', 'https://discord.gg/ultmacro']]
+  };
+  if (sources[article.slug]) {
+    const resources = node('div', 'article-resources');
+    for (const [label, url] of sources[article.slug]) {
+      const a = link(label + ' ↗', url);
+      if (url.startsWith('https:')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      resources.append(a);
+    }
+    header.append(resources);
+  }
+  const original = link('Source ↗', article.source, 'article-source');
+  if (article.source.startsWith('https:')) {
+    original.target = '_blank';
+    original.rel = 'noopener noreferrer';
+  }
+  actions.append(original);
+  body.append(actions);
+  const relatedBySlug = {
+    install: ['requirements', 'windows-display', 'launch-fails'],
+    requirements: ['install', 'windows-display'],
+    'first-run': ['tds-settings', 'hotkeys'],
+    'windows-display': ['roblox-settings', 'tds-settings', 'wrong-clicks'],
+    'roblox-settings': ['tds-settings', 'ocr-errors'],
+    'tds-settings': ['wrong-clicks', 'upgrade-not-working'],
+    hotkeys: ['record-strategy', 'abilities-not-working'],
+    'record-strategy': ['hotkeys', 'edit-strategy'],
+    'edit-strategy': ['record-strategy', 'community-strategies'],
+    'wrong-clicks': ['windows-display', 'tds-settings'],
+    'ocr-errors': ['windows-display', 'roblox-settings'],
+    'upgrade-not-working': ['tds-settings', 'hotkeys'],
+    'abilities-not-working': ['hotkeys'],
+    'legacy-mode': ['wrong-clicks'],
+    'discord-not-working': ['discord-webhooks', 'discord-remote'],
+    'discord-webhooks': ['discord-not-working', 'discord-remote'],
+    'stuck-between-matches': ['session-settings'],
+    'party-vip': ['session-settings']
+  };
+  const related = (relatedBySlug[article.slug] || []).map(slug => docs.get(slug)).filter(Boolean);
+  if (related.length) {
+    const more = node('section', 'related-section');
+    more.append(sectionHeading('See also'));
+    const list = node('div', 'issue-list');
+    for (const a of related) {
+      const l = articleLink(a);
+      l.textContent = '';
+      l.append(node('span', '', a.title), node('span', '', '↗'));
+      list.append(l);
+    }
+    more.append(list);
+    body.append(more);
   }
   columns.append(body,toc);view.append(columns);
 }
@@ -313,7 +360,7 @@ function ask(question){
   helperHistory.append(node('div','help-question',question));
   const matches=search(question,3);
   if(matches.length){
-    helperHistory.append(node('div','help-answer','These guides are the closest matches:'));
+    helperHistory.append(node('div','help-answer','Try these guides:'));
     const list=node('div','help-links');
     for(const a of matches){const l=articleLink(a);l.textContent=a.title+' →';list.append(l);}
     helperHistory.append(list);

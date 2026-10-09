@@ -1,28 +1,43 @@
 # Ultimate Macro Wiki
 
-A static documentation website served at `/wiki/` using the existing website server.
+A static documentation site at `/wiki/` using the existing website server. No extra framework.
 
-## Design and copy rules
+## Site design contract
 
-- Keep every heading and paragraph useful. Avoid duplicate warnings, generic marketing, or empty feature pages.
-- Lead troubleshooting pages with the exact check or fix. Explain the reason only if it changes what the user should do.
-- Match the Ultimate Macro visual system: deep navy, clear blue accents, Archivo headings and restrained corners.
-- Use settings tables for pairs of values, ordered steps for procedures, and links for navigation. Do not draw controls that do not function.
-- Cite the relevant guide or official resource for each article. Mark future-version material only when it has been checked.
+The homepage and Strategy Network are the visual references. The wiki must belong to the same product, without copying the homepage's decorative hero into documentation.
 
-## Content
+- Use the existing site tokens and `styles/base.css` for the header, typefaces and blue accents.
+- Use **purposeful** rounding on search, active navigation, article groups, inputs and the help bubble. Neither raw square tiles nor giant generic pills.
+- Let typography and spacing create hierarchy. Avoid a border, icon, badge or card around every sentence.
+- Show real Ultimate Macro information: TDS settings, F1/F2 shortcuts, .strat recording, exact error fixes. Do not invent gameplay screenshots, release dates, status data or features.
+- Keep the homepage as task navigation, not a second marketing landing page. No generic taglines, meaningless metrics, decorative stat cards, repetitive CTAs or duplicated topic lists.
+- Don't use gradient-glass blobs, neon/cyberpunk UI, fake dashboards or a symmetrical three-card SaaS template.
+- Every visible control must have a useful outcome. Every related link must actually relate to the article.
+- Match the site's visual personality while allowing documentation to be denser and more readable than the homepage.
 
-`content.mjs` exports the six categories and article records. Each article has a unique slug, source URL, summary, optional keywords, and sections with paragraphs, steps, bullets, or setting rows. The browser renders the content as safe text, not unsanitized HTML.
+## Editorial rules
 
-Articles: `/wiki/?article=wrong-clicks`
-Topics: `/wiki/?category=Troubleshooting`
+- If a sentence could appear in the help center of any unrelated product, delete it or rewrite it with specific Ultimate Macro details.
+- Troubleshooting should start with **the fix**, then clarify the cause where needed.
+- Use actual in-app setting names and values. Prefer a table for settings, ordered steps for procedures and concise paragraphs for context.
+- Avoid "the documentation says", "the public guide suggests", generic caution copy, and filler headings.
+- Do not publish speculative bug explanations or unsupported v1.4 details.
+- Give external resources as **real links**, not unclicable URLs in paragraph text.
+- Every article should keep a source URL and should be reviewed after version-dependent changes. A source is shown unobtrusively, not as an oversized warning.
 
-The current material is based on the public v1.3.x setup guide and official project resources, not unverified v1.4 behavior.
+## Content and navigation
+
+`content.mjs` exports category labels and articles. Each article needs a unique slug, source URL, factual summary, optional keywords, and sections with paragraphs, steps, bullets or setting rows. Article content is rendered as text rather than injected HTML.
+
+Article URLs: `/wiki/?article=wrong-clicks`
+Category URLs: `/wiki/?category=Troubleshooting`
+
+The current material is based on official public v1.3.x documentation, not unreleased builds.
 
 ## Assistant
 
-The floating helper currently searches the articles and links to matching pages. It does not generate LLM answers. A future AI integration should use a secured server-side endpoint, source retrieval, rate limits and an unknown-answer fallback. Do not expose API credentials to the browser.
+The floating widget is currently **article search**, not a generative AI. It shows links to documentation without pretending to diagnose a problem. A future AI backend needs server-only credentials, rate limits, source-grounded retrieval and honest unknown-answer handling.
 
-## Tests
+## Quality gate
 
-Run `npm test` from the repository root. The wiki tests validate article integrity, key topics, client script syntax, and website integration. Browser QA on mobile and desktop remains required before deployment.
+Run `npm test`, then check the homepage, a settings table, a troubleshooting article, category view, search dialog and helper on desktop and a narrow phone. Confirm real link targets, active navigation, dark-mode contrast, keyboard accessibility and no horizontal overflow.
