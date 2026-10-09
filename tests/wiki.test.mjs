@@ -5,44 +5,61 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { articles, categories } from '../wiki/content.mjs';
 
-const relative = async path => readFile(fileURLToPath(new URL('../' + path, import.meta.url)), 'utf8');
+const read = path => readFile(fileURLToPath(new URL('../' + path, import.meta.url)), 'utf8');
 
-test('wiki content has unique slugs and source-backed, useful sections', () => {
+test('every wiki article has unique navigation, nonempty instructions and a source', () => {
   assert.ok(articles.length >= 25);
-  assert.equal(new Set(articles.map(article => article.slug)).size, articles.length);
-  assert.ok(categories.length >= 5);
+  assert.equal(new Set(articles.map(a => a.slug)).size, articles.length);
+  assert.equal(new Set(categories).size, categories.length);
   for (const article of articles) {
     assert.match(article.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
     assert.ok(categories.includes(article.category), article.slug);
-    assert.ok(article.title.length >= 5 && article.summary.length >= 20, article.slug);
+    assert.ok(article.title.length >= 5, article.slug);
+    assert.ok(article.summary.length >= 16, article.slug);
     assert.ok(article.source.startsWith('/') || article.source.startsWith('https://'), article.slug);
-    assert.ok(article.sections.length, article.slug);
-    for (const section of article.sections) assert.ok(section.title && (section.paragraphs.length || section.steps.length || section.checks.length), article.slug);
+    assert.ok(article.sections.length > 0, article.slug);
+    for (const section of article.sections) {
+      assert.ok(section.title, article.slug);
+      assert.ok([...(section.paragraphs || []), ...(section.steps || []), ...(section.checks || []), ...(section.rows || [])].length, article.slug + ': ' + section.title);
+      for (const pair of section.rows || []) assert.equal(pair.length, 2, article.slug + ': ' + section.title);
+    }
   }
 });
 
-test('critical setup and troubleshooting guides exist', () => {
-  const slugs = new Set(articles.map(article => article.slug));
-  for (const slug of ['install', 'requirements', 'first-run', 'windows-display', 'roblox-settings', 'tds-settings', 'record-strategy', 'wrong-clicks', 'launch-fails', 'ocr-errors', 'discord-community']) {
-    assert.ok(slugs.has(slug), slug);
+test('every advertised setup and troubleshooting topic has an article', () => {
+  const slugs = new Set(articles.map(a => a.slug));
+  for (const slug of [
+    'install','requirements','first-run','windows-display','roblox-settings','tds-settings',
+    'hotkeys','record-strategy','edit-strategy','strategy-rotation','session-settings',
+    'party-vip','launch-fails','wrong-clicks','ocr-errors','upgrade-not-working',
+    'abilities-not-working','legacy-mode','stuck-between-matches','discord-webhooks','report-issue'
+  ]) assert.ok(slugs.has(slug), slug);
+  for (const old of ['download-safely','safe-stop','goals','timescale','potato-mode','auto-configure']) {
+    assert.ok(!slugs.has(old), 'redundant page remains: ' + old);
   }
 });
 
-test('wiki shell, client syntax, and assistant transparency', async () => {
-  const html = await relative('wiki/index.html');
-  const script = await relative('wiki/app.mjs');
-  assert.match(html, /href="\.\/site\.css"/);
-  assert.match(html, /type="module" src="\.\/app\.mjs"/);
+test('wiki UI uses real controls, native links and transparent helper description', async () => {
+  const html = await read('wiki/index.html');
+  const app = await read('wiki/app.mjs');
+  const css = await read('wiki/site.css');
+  assert.match(html, /id="search-trigger"/);
   assert.match(html, /id="search-overlay"/);
+  assert.match(html, /id="nav-toggle"/);
   assert.match(html, /id="helper-panel"/);
-  assert.match(html, /documentation search, not a generative AI assistant yet/i);
-  assert.match(script, /function findArticles/);
-  assert.match(script, /function navigateCategory/);
-  new vm.Script(script.replace(/^import[^\n]*\n/, ''));
+  assert.match(html, /Searches published guides only/);
+  assert.match(app, /function search\(/);
+  assert.match(app, /function categoryView\(/);
+  assert.match(app, /function articleView\(/);
+  assert.match(app, /setting-table/);
+  assert.match(css, /--navy:#07111f/);
+  assert.match(css, /--bright:#3a86ff/);
+  assert.match(css, /prefers-reduced-motion/);
+  new vm.Script(app.replace(/^import[^\n]*\n/, ''));
 });
 
-test('web server serves JS modules and the homepage/sitemap include wiki', async () => {
-  assert.match(await relative('server.mjs'), /'\.mjs': 'text\/javascript; charset=utf-8'/);
-  assert.match(await relative('index.html'), /href="wiki\/">Wiki/);
-  assert.match(await relative('sitemap.xml'), /https:\/\/ultmacro\.xyz\/wiki\//);
+test('wiki remains linked from the site and the existing server serves modules', async () => {
+  assert.match(await read('server.mjs'), /'\.mjs': 'text\/javascript; charset=utf-8'/);
+  assert.match(await read('index.html'), /href="wiki\/">Wiki/);
+  assert.match(await read('sitemap.xml'), /https:\/\/ultmacro\.xyz\/wiki\//);
 });

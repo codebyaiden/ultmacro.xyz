@@ -1,888 +1,1397 @@
-// Version-aware, hand-reviewed wiki seed. Add only verified guidance; avoid invented troubleshooting fixes.
-export const categories = ["Getting started","Configuration","Strategies","Features","Troubleshooting","Discord & community"];
+// Wiki articles based on the public Ultimate Macro setup guide and linked official resources.
+// Version-dependent behaviors are not claimed to have been tested against unreleased builds.
+export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
 export const articles = [
   {
     "slug": "install",
-    "category": "Getting started",
+    "category": "Start here",
     "title": "Install Ultimate Macro",
-    "summary": "Download, extract, install AutoHotkey v2, and launch your first copy.",
+    "summary": "From ZIP download to first launch.",
     "sections": [
       {
-        "title": "Before downloading",
+        "title": "Download and extract",
+        "paragraphs": [],
+        "steps": [
+          "Download the ZIP from the official Ultimate Macro download page.",
+          "Right-click the ZIP and extract the whole archive to a folder. Do not run Main.ahk inside the ZIP.",
+          "Install 64-bit AutoHotkey v2 from autohotkey.com/v2. AutoHotkey v1.1 will not work.",
+          "Open Main.ahk in the extracted folder."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Next",
         "paragraphs": [
-          "Ultimate Macro is a Windows application for Roblox Tower Defense Simulator. Use only the official download page or GitHub release assets."
+          "Before starting a strategy, configure Windows, Roblox and TDS. The macro reads your screen, so display settings matter."
         ],
         "steps": [],
         "checks": [
-          "Windows 10 or 11",
-          "A supported 16:9 display",
-          "AutoHotkey v2.0 (64-bit)"
-        ]
-      },
-      {
-        "title": "Install in order",
-        "paragraphs": [],
-        "steps": [
-          "Open the official Ultimate Macro download page and get the current release ZIP.",
-          "Extract the entire archive into its own folder. Do not launch scripts from inside the ZIP.",
-          "Install AutoHotkey v2.0 from the official AutoHotkey website. AutoHotkey v1.1 cannot run this project.",
-          "Open Main.ahk from the extracted folder.",
-          "Configure the display and game settings before starting a strategy."
+          "Set up Windows display and OCR",
+          "Set up Roblox and TDS",
+          "Run a bundled strategy while watching the first match"
         ],
-        "checks": []
+        "rows": []
       },
       {
-        "title": "If it does not open",
+        "title": "If Main.ahk will not open",
         "paragraphs": [
-          "Confirm that .ahk files use the v2 launcher, that the complete archive was extracted, and that no Roblox multi-client utility is running. See the launch troubleshooting article."
+          "Check that .ahk files launch with AutoHotkey v2 and that no Roblox multi-client tool is running. Follow the startup troubleshooting page for more checks."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/install/",
+    "keywords": [
+      "download",
+      "zip",
+      "autohotkey",
+      "main ahk",
+      "launch"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "requirements",
-    "category": "Getting started",
-    "title": "System requirements",
-    "summary": "Supported operating systems, AutoHotkey, resolution, and OCR requirements.",
+    "category": "Start here",
+    "title": "Requirements",
+    "summary": "Supported Windows versions, resolution and dependencies.",
     "sections": [
       {
         "title": "Required",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "Windows 10 or 11",
-          "64-bit AutoHotkey v2.0",
-          "Supported 16:9 resolution from 1280×720 to 3840×2160",
-          "English (US) Windows OCR language pack",
-          "Visible Windows taskbar",
-          "Roblox running as a normal single client"
+        "checks": [],
+        "rows": [
+          [
+            "Operating system",
+            "Windows 10 or 11"
+          ],
+          [
+            "AutoHotkey",
+            "v2.0, 64-bit"
+          ],
+          [
+            "Display",
+            "16:9, 1280×720 through 3840×2160"
+          ],
+          [
+            "Windows OCR",
+            "English (United States) language pack"
+          ],
+          [
+            "Taskbar",
+            "Visible, not auto-hidden"
+          ],
+          [
+            "Roblox",
+            "Single client; close multi-instance tools"
+          ]
         ]
       },
       {
-        "title": "Recommended baseline",
+        "title": "Recommended",
         "paragraphs": [
-          "1920×1080 resolution with Windows scaling at 100% is the recommended starting point. The macro has adaptive resolution support, but unusual display setups should be tested before unattended use.",
-          "On slower PCs, Potato Mode and increased delays can help."
+          "1920×1080 at 100% Windows scaling is the easiest baseline for troubleshooting. Other supported 16:9 resolutions are supported by the documented adaptive detection path.",
+          "A slower PC may need longer mouse, key or upgrade delays."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/requirements/",
+    "keywords": [
+      "computer",
+      "pc",
+      "windows",
+      "resolution",
+      "system",
+      "minimum"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "first-run",
-    "category": "Getting started",
-    "title": "Your first run",
-    "summary": "Set up a built-in strategy and test one complete match.",
+    "category": "Start here",
+    "title": "Run your first strategy",
+    "summary": "Test a built-in strategy before leaving the macro unattended.",
     "sections": [
       {
-        "title": "Start with a known strategy",
+        "title": "Start a test run",
         "paragraphs": [],
         "steps": [
-          "Launch Roblox and open Tower Defense Simulator.",
-          "Open Ultimate Macro and choose a bundled strategy on the Main tab.",
-          "Confirm the tower loadout matches the strategy requirements.",
-          "Check game settings, keybinds, and window placement.",
-          "Press Start or F1, then watch the entire first match.",
-          "Use F2 to stop safely if anything goes wrong."
+          "Open Roblox and join Tower Defense Simulator.",
+          "Open Ultimate Macro. On the Main tab, select a strategy that came with the release.",
+          "Confirm you have the towers required by that strategy.",
+          "Make sure Windows, Roblox, and TDS settings match the setup pages.",
+          "Select Start or press F1.",
+          "Watch a full match, including upgrades and the end-of-match screen."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Before leaving it unattended",
+        "title": "Stop safely",
         "paragraphs": [
-          "Do not assume a successful launch means a strategy is stable. Check placement, upgrades, result detection, and transitions between matches."
+          "Press F2 to stop the macro and release held input. Check placement, upgrades, result detection, and the next-match transition before running longer sessions."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "download-safely",
-    "category": "Getting started",
-    "title": "Official downloads and updates",
-    "summary": "Where to download releases and what to avoid.",
-    "sections": [
-      {
-        "title": "Trusted download sources",
-        "paragraphs": [
-          "Use the Ultimate Macro download page or the UltimateMacro/Ultimate-Macro-New-Era releases page. Do not trust reuploaded ZIPs from unrelated sites.",
-          "Release pages include version notes. Check the version before following instructions for an older build."
-        ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "Keep your files",
-        "paragraphs": [
-          "Before changing versions, back up your custom .strat files and important settings. Preserve the full release directory when extracting."
-        ],
-        "steps": [],
-        "checks": []
-      }
+    "source": "/guide/first-run/",
+    "keywords": [
+      "start",
+      "run",
+      "play",
+      "first",
+      "f1",
+      "f2"
     ],
-    "source": "/download/"
+    "version": "v1.3.x"
   },
   {
     "slug": "windows-display",
-    "category": "Configuration",
-    "title": "Windows display settings",
-    "summary": "Resolution, scaling, taskbar, and OCR settings that affect detection.",
+    "category": "Setup & settings",
+    "title": "Windows display & OCR",
+    "summary": "Configure the screen settings used by image detection.",
     "sections": [
       {
-        "title": "Configure Windows",
+        "title": "Windows settings",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "Use a supported 16:9 resolution; start with 1920×1080 when possible.",
-          "Use 100% display scaling as the baseline.",
-          "Keep the taskbar visible. Do not auto-hide it.",
-          "Install the Windows English (US) OCR language pack.",
-          "Avoid moving or resizing Roblox after the macro starts."
+        "checks": [],
+        "rows": [
+          [
+            "Resolution",
+            "16:9, 1280×720 to 3840×2160"
+          ],
+          [
+            "Recommended resolution",
+            "1920×1080"
+          ],
+          [
+            "Display scaling",
+            "100% recommended"
+          ],
+          [
+            "Taskbar",
+            "Visible; do not auto-hide"
+          ],
+          [
+            "OCR language",
+            "English (United States) installed"
+          ]
         ]
       },
       {
-        "title": "Why this matters",
+        "title": "Check before running",
+        "paragraphs": [],
+        "steps": [
+          "Open Windows Settings → System → Display and confirm resolution and scale.",
+          "Make the taskbar visible in Windows taskbar settings.",
+          "Ensure the English (US) OCR language pack is available.",
+          "Do not move or resize Roblox while a run is in progress."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "When clicks miss",
         "paragraphs": [
-          "Ultimate Macro uses screen coordinates, image detection, and OCR. A different UI scale or an obscured taskbar can change what the macro sees."
+          "If the macro clicks the wrong location, check display geometry before increasing delays. The macro uses screen coordinates and image matching."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/display/",
+    "keywords": [
+      "screen",
+      "monitor",
+      "scale",
+      "dpi",
+      "resolution",
+      "ocr",
+      "taskbar"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "roblox-settings",
-    "category": "Configuration",
+    "category": "Setup & settings",
     "title": "Roblox settings",
-    "summary": "Set Roblox up for predictable macro input and image detection.",
+    "summary": "Use the game settings expected by the documented macro.",
     "sections": [
       {
-        "title": "Recommended settings",
+        "title": "Set these values",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "Maximum Frame Rate: 60 FPS",
-          "Camera Mode: Classic",
-          "Graphics Mode: Manual",
-          "UI Navigation Toggle: Enabled"
+        "checks": [],
+        "rows": [
+          [
+            "Maximum Frame Rate",
+            "60 FPS"
+          ],
+          [
+            "Camera Mode",
+            "Classic"
+          ],
+          [
+            "Graphics Mode",
+            "Manual"
+          ],
+          [
+            "UI Navigation Toggle",
+            "Enabled"
+          ]
         ]
       },
       {
-        "title": "Keep the picture stable",
+        "title": "Avoid layout changes",
         "paragraphs": [
-          "Do not use custom Roblox font modifications. They can break text recognition. Use a consistent window position and size while the macro is running."
+          "Do not use custom Roblox fonts. They can cause wave and currency OCR to read text incorrectly. Keep the game window at the same size and location during a session."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/display/",
+    "keywords": [
+      "camera",
+      "fps",
+      "graphics",
+      "navigation",
+      "roblox"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "tds-settings",
-    "category": "Configuration",
-    "title": "Tower Defense Simulator settings",
-    "summary": "The required in-game UI layout and accessibility settings.",
+    "category": "Setup & settings",
+    "title": "TDS settings",
+    "summary": "Match the interface layout expected by tower placement and upgrades.",
     "sections": [
       {
-        "title": "Recommended TDS settings",
+        "title": "Set these values",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "UI Scale: Large",
-          "Screen Shake: Disabled",
-          "Prefer Vertical Upgrades: Enabled",
-          "Dialog: Disabled",
-          "Show Tower Options: Enabled"
+        "checks": [],
+        "rows": [
+          [
+            "UI Scale",
+            "Large"
+          ],
+          [
+            "Screen Shake",
+            "Disabled"
+          ],
+          [
+            "Prefer Vertical Upgrades",
+            "Enabled"
+          ],
+          [
+            "Dialog",
+            "Disabled"
+          ],
+          [
+            "Show Tower Options",
+            "Enabled"
+          ]
         ]
       },
       {
-        "title": "After changing settings",
+        "title": "Test after changes",
         "paragraphs": [
-          "Restart a short supervised test run. Even a small UI change can make a recorded click or image match unreliable."
+          "Run one match while watching tower placement and upgrades. UI changes affect where the macro looks for controls and text."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/display/",
+    "keywords": [
+      "tds",
+      "tower defense simulator",
+      "ui scale",
+      "shake",
+      "vertical upgrade",
+      "dialog"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "hotkeys",
-    "category": "Configuration",
-    "title": "Keyboard shortcuts and keybinds",
-    "summary": "Default playback and strategy-recording controls.",
+    "category": "Setup & settings",
+    "title": "Hotkeys & keybinds",
+    "summary": "Playback and recording shortcuts in the documented release.",
     "sections": [
       {
         "title": "Playback",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "F1: start the macro",
-          "F2: stop the macro and release held input"
+        "checks": [],
+        "rows": [
+          [
+            "Start macro",
+            "F1"
+          ],
+          [
+            "Stop macro",
+            "F2"
+          ]
         ]
       },
       {
-        "title": "Recording defaults",
+        "title": "Recording",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "F: place tower",
-          "Ctrl + U: upgrade tower",
-          "Ctrl + X: sell tower",
-          "Ctrl + `: change target",
-          "Ctrl + D: change DJ track",
-          "Ctrl + T: align camera",
-          "Ctrl + Alt + H: hologram tower",
-          "Ctrl + B: delete last recorded action",
-          "Ctrl + Shift + E: record inputs"
+        "checks": [],
+        "rows": [
+          [
+            "Place tower",
+            "F"
+          ],
+          [
+            "Upgrade",
+            "Ctrl + U"
+          ],
+          [
+            "Sell tower",
+            "Ctrl + X"
+          ],
+          [
+            "Change target",
+            "Ctrl + `"
+          ],
+          [
+            "Change DJ track",
+            "Ctrl + D"
+          ],
+          [
+            "Align camera",
+            "Ctrl + T"
+          ],
+          [
+            "Hologram tower",
+            "Ctrl + Alt + H"
+          ],
+          [
+            "Delete last recorded action",
+            "Ctrl + B"
+          ],
+          [
+            "Record inputs",
+            "Ctrl + Shift + E"
+          ]
         ]
       },
       {
-        "title": "Customize safely",
+        "title": "Change shortcuts",
         "paragraphs": [
-          "Recording shortcuts can be changed under Settings → Recording Hotkeys. Check for conflicts with your TDS keybinds before recording."
+          "Recording shortcuts are configurable under Settings → Recording Hotkeys. For abilities, confirm the keybinds in Settings → TDS Keybinds also match TDS."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/recording/",
+    "keywords": [
+      "keybind",
+      "shortcut",
+      "f1",
+      "f2",
+      "f",
+      "ctrl",
+      "ability",
+      "recording"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "record-strategy",
     "category": "Strategies",
-    "title": "Record your first strategy",
-    "summary": "Save your actions during a TDS match into a reusable .strat file.",
+    "title": "Record a strategy",
+    "summary": "Turn a played match into a .strat file.",
     "sections": [
       {
-        "title": "Prepare",
+        "title": "Before recording",
         "paragraphs": [
-          "Choose the right map, mode, loadout, and keybinds. Make sure Windows, Roblox, and TDS settings are correct first."
+          "Pick your map, mode and tower loadout. Confirm the game and recording keybinds first. The recorder captures actions as you play, not a guaranteed successful strategy."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Record",
+        "title": "Record and save",
         "paragraphs": [],
         "steps": [
-          "Open Create in Ultimate Macro.",
-          "Choose Record a Strategy.",
-          "Play the match normally, using the configured recording shortcuts for actions you want captured.",
-          "Save the completed recording as a .strat file.",
-          "Replay it while supervising a match to confirm it behaves correctly."
+          "Open Create → Record a Strategy.",
+          "Play a match normally. Use the recording shortcuts for placement, upgrades, selling and other actions.",
+          "If an action was recorded incorrectly, use Delete Record (Ctrl + B) before continuing.",
+          "Finish recording and save the result as a .strat file.",
+          "Replay the new strategy under supervision before sharing it."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Improve reliability",
+        "title": "Useful shortcuts",
+        "paragraphs": [],
+        "steps": [],
+        "checks": [],
+        "rows": [
+          [
+            "Place",
+            "F"
+          ],
+          [
+            "Upgrade",
+            "Ctrl + U"
+          ],
+          [
+            "Sell",
+            "Ctrl + X"
+          ],
+          [
+            "Change target",
+            "Ctrl + `"
+          ],
+          [
+            "Change DJ track",
+            "Ctrl + D"
+          ]
+        ]
+      },
+      {
+        "title": "Recording tip",
         "paragraphs": [
-          "Record at a pace the macro can reproduce on slower machines. Verify money-dependent upgrades and placement timing."
+          "Leave enough time for game animations and currency changes. Fast manual actions may need longer delays to replay reliably on other PCs."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/recording/",
+    "keywords": [
+      "create",
+      "save",
+      ".strat",
+      "record",
+      "strategy",
+      "tower"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "edit-strategy",
     "category": "Strategies",
-    "title": "Edit strategies with Strategy Lab",
-    "summary": "Inspect and refine a .strat without manually editing raw files.",
+    "title": "Edit a strategy",
+    "summary": "Open a .strat file in Strategy Lab.",
     "sections": [
       {
-        "title": "Open the editor",
-        "paragraphs": [
-          "Choose Edit a Strategy or Open Strategy Lab from the Create tab. You can also launch StrategyLab.exe from the extracted release folder."
+        "title": "Open Strategy Lab",
+        "paragraphs": [],
+        "steps": [
+          "In Ultimate Macro, open Create.",
+          "Choose Edit a Strategy or Open Strategy Lab.",
+          "Open the .strat file you want to inspect or change.",
+          "Save a separate copy before replacing a strategy that already works."
         ],
-        "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "What it is for",
+        "title": "Standalone editor",
         "paragraphs": [
-          "Strategy Lab is a visual .strat editor for inspecting placements, ranges, paths, and other strategy actions. Preserve a copy of the original file while experimenting."
+          "You can also launch StrategyLab.exe from the release folder. Strategy Lab is the visual editor for strategy actions. Test an edited strategy before relying on it."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/recording/",
+    "keywords": [
+      "strategy lab",
+      "editor",
+      "edit",
+      "strat"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "strategy-rotation",
     "category": "Strategies",
-    "title": "Strategy Rotation",
-    "summary": "Run more than one strategy in a session.",
+    "title": "Rotate strategies",
+    "summary": "Alternate between two strategies after a run count or time limit.",
     "sections": [
       {
-        "title": "When to use it",
-        "paragraphs": [
-          "Strategy Rotation can alternate between configured strategies across runs. Confirm that every selected strategy is compatible with the current mode and tower loadout."
+        "title": "Configure rotation",
+        "paragraphs": [],
+        "steps": [
+          "On the Main tab, choose the two strategies you want to alternate.",
+          "Enable Strategy Rotation.",
+          "Set Swap after to a number of Runs or Minutes.",
+          "Test each strategy on its own before starting rotation."
         ],
-        "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Troubleshooting",
+        "title": "Check compatibility",
         "paragraphs": [
-          "Test each strategy alone first. If individual strategies fail, rotation will not fix them."
+          "The selected strategies may require different maps or towers. Make sure both can run with your current loadout and settings."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/sessions/",
+    "keywords": [
+      "swap",
+      "rotate",
+      "alternating",
+      "runs",
+      "minutes"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "community-strategies",
     "category": "Strategies",
-    "title": "Community strategies",
-    "summary": "Find and use shared .strat files through Strategy Network.",
+    "title": "Find community strategies",
+    "summary": "Browse and test shared .strat files in Strategy Network.",
     "sections": [
       {
-        "title": "Getting a strategy",
-        "paragraphs": [
-          "Browse Strategy Network for shared strategy files. Check their requirements, supported maps, modes, and loadouts before use."
-        ],
+        "title": "Use a shared strategy",
+        "paragraphs": [],
         "steps": [
-          "Open Strategy Network.",
-          "Choose a strategy that matches your unlocked towers and target mode.",
-          "Download or select it using the supported macro workflow.",
-          "Watch its first complete run and stop with F2 if actions do not match."
+          "Open Strategy Network and find a strategy for your mode or map.",
+          "Check the tower loadout and other listed requirements.",
+          "Download or choose the strategy through the supported workflow.",
+          "Run a supervised match before leaving it unattended."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Important",
+        "title": "After a game update",
         "paragraphs": [
-          "A shared strategy is not proof of reliability on your own machine or after a game update."
+          "An older strategy may no longer match current game behavior, even if its file loads. Check its requirements and look for a newer version if it fails."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/strategies/"
-  },
-  {
-    "slug": "timescale",
-    "category": "Features",
-    "title": "Timescale support",
-    "summary": "Use supported 1.5× and 2× timescale options.",
-    "sections": [
-      {
-        "title": "Before use",
-        "paragraphs": [
-          "Ultimate Macro supports 1.5× and 2× timescale features in documented releases. Confirm that the selected strategy is suitable for the chosen speed.",
-          "If timescale prompts, tickets, or confirmations cause stalls, return to a slower supervised test run and collect logs."
-        ],
-        "steps": [],
-        "checks": []
-      }
+    "source": "/strategies/",
+    "keywords": [
+      "strategy network",
+      "shared",
+      "download",
+      "community",
+      "maps"
     ],
-    "source": "/guide/"
+    "version": "v1.3.x"
   },
   {
-    "slug": "goals",
-    "category": "Features",
-    "title": "Goals and longer sessions",
-    "summary": "Configure longer-running sessions with clear stopping conditions.",
+    "slug": "session-settings",
+    "category": "Sessions & tools",
+    "title": "Long session settings",
+    "summary": "Goals, timescale, and between-match actions.",
     "sections": [
       {
-        "title": "What goals do",
-        "paragraphs": [
-          "The existing guide describes Goals as part of longer-session automation. Consult the version-specific settings in your installation before relying on any stopping condition."
-        ],
+        "title": "Goals and Timescale",
+        "paragraphs": [],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": [
+          [
+            "Goals",
+            "Set a currency target; the macro selects compatible strategies until the goal is reached."
+          ],
+          [
+            "Timescale",
+            "In Settings, use 1.5× or 2× with available timescale tickets."
+          ]
+        ]
       },
       {
-        "title": "Safe first test",
+        "title": "Between matches",
+        "paragraphs": [],
+        "steps": [],
+        "checks": [],
+        "rows": [
+          [
+            "Click Restart button",
+            "Used after a loss; enabled by default."
+          ],
+          [
+            "Click Play Again button",
+            "Used after a win; enabled by default."
+          ],
+          [
+            "Check the map",
+            "Verifies the destination map after joining and reloads if wrong. Recommended on."
+          ],
+          [
+            "Collect playtime rewards",
+            "Claims playtime and daily rewards when available."
+          ]
+        ]
+      },
+      {
+        "title": "Before a long session",
         "paragraphs": [
-          "Start with a small goal you can observe. Verify that the macro stops when expected before running it for hours."
+          "Watch one full match first. If you are running a win-only strategy and Restart lands you on the wrong map, try disabling the restart action."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/sessions/",
+    "keywords": [
+      "goals",
+      "timescale",
+      "speed",
+      "rewards",
+      "play again",
+      "restart",
+      "check map",
+      "currency"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "party-vip",
-    "category": "Features",
-    "title": "Party mode and VIP servers",
-    "summary": "What to check when using multiplayer or private servers.",
+    "category": "Sessions & tools",
+    "title": "Party & VIP servers",
+    "summary": "Private server links and Host/Member party configuration.",
     "sections": [
       {
-        "title": "Before starting",
-        "paragraphs": [
-          "Ultimate Macro includes Party and VIP server workflows in documented releases. Ensure all required accounts, access permissions, invites, and loadouts are ready."
-        ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "If invitations fail",
-        "paragraphs": [
-          "Verify the Roblox account can join the intended experience manually, then test party handling under supervision and record the exact failure step."
-        ],
-        "steps": [],
-        "checks": []
-      }
-    ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "discord-webhooks",
-    "category": "Discord & community",
-    "title": "Set up Discord webhooks",
-    "summary": "Send runtime logs, screenshots, and session information to a private Discord channel.",
-    "sections": [
-      {
-        "title": "Create a webhook",
+        "title": "VIP server",
         "paragraphs": [],
         "steps": [
-          "In Discord, open a server channel's settings.",
-          "Choose Integrations → Webhooks and create a webhook.",
-          "Copy the webhook URL.",
-          "In Ultimate Macro's Discord tab, enable webhooks and paste the URL.",
-          "Use Test Webhook before saving."
+          "Paste a private server link into VIP Server Link.",
+          "Enable Use VIP Server.",
+          "Confirm that the Roblox account can join that server manually before testing the macro."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Available reporting",
-        "paragraphs": [
-          "The documented Discord integration can send debug logs, OCR-based statistics, periodic screenshots, and end-of-match results."
+        "title": "Party mode",
+        "paragraphs": [],
+        "steps": [
+          "Open the Party tab.",
+          "Select Host to create a party and invite others, or Member to wait for an invite.",
+          "Enter the host's display name and members' names.",
+          "Choose whether to return to the lobby when all or any party member leaves.",
+          "Save and test the group with all accounts present."
         ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "Protect your webhook",
-        "paragraphs": [
-          "A webhook URL is a secret: anyone holding it can send messages to that channel. Do not post it in public screenshots or support tickets."
-        ],
-        "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "discord-remote",
-    "category": "Discord & community",
-    "title": "Discord remote control",
-    "summary": "Control selected macro actions and request status through supported Discord integrations.",
-    "sections": [
-      {
-        "title": "Supported workflows",
-        "paragraphs": [
-          "The documented EngineerBot integration can start and stop the macro, request status and screenshots, and query logs, version, and the selected strategy. The release also documents an optional personal-bot interface."
-        ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "When commands fail",
-        "paragraphs": [
-          "Start with local macro operation: the remote interface cannot fix an installation that already fails to start. Recheck connection state and bot configuration, then test a simple status request."
-        ],
-        "steps": [],
-        "checks": []
-      }
+    "source": "/guide/sessions/",
+    "keywords": [
+      "party",
+      "vip",
+      "private server",
+      "host",
+      "member",
+      "invite"
     ],
-    "source": "/guide/"
+    "version": "v1.3.x"
   },
   {
     "slug": "profiles",
-    "category": "Features",
-    "title": "Profile Manager",
-    "summary": "Back up, import, and export settings and strategies.",
+    "category": "Sessions & tools",
+    "title": "Back up your setup",
+    "summary": "Export or import settings, hotkeys and strategies with Profile Manager.",
     "sections": [
       {
-        "title": "What it handles",
+        "title": "Export before changing your setup",
         "paragraphs": [
-          "Profile Manager supports importing and exporting settings, hotkeys, and strategies with previews and backups in documented releases."
+          "Profile Manager bundles settings, hotkeys and strategies for backup or moving to another PC. Export a working configuration before experimenting."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Before importing",
+        "title": "Import with care",
         "paragraphs": [
-          "Keep a separate copy of your current working profile. Review the preview so a shared profile does not silently replace your own hotkeys or strategy choices."
+          "Review the import preview and backup options so you know which current settings and strategies may be replaced."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "potato-mode",
-    "category": "Features",
-    "title": "Potato Mode and slow computers",
-    "summary": "Reduce time-sensitive failures on slower Windows devices.",
-    "sections": [
-      {
-        "title": "When to try it",
-        "paragraphs": [
-          "If the application runs but actions are delayed or image detection is inconsistent, enable Potato Mode and increase delays rather than immediately reinstalling the macro."
-        ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "Test properly",
-        "paragraphs": [
-          "Compare one supervised match before and after the setting change. Avoid altering resolution, scaling, and timing all at once."
-        ],
-        "steps": [],
-        "checks": []
-      }
+    "source": "/guide/discord/",
+    "keywords": [
+      "profile manager",
+      "backup",
+      "import",
+      "export",
+      "settings"
     ],
-    "source": "/guide/"
+    "version": "v1.3.x"
   },
   {
-    "slug": "auto-configure",
-    "category": "Features",
-    "title": "Auto Configure Settings",
-    "summary": "Let the macro prepare supported Roblox settings when available.",
+    "slug": "tools",
+    "category": "Sessions & tools",
+    "title": "Built-in tools",
+    "summary": "Auto Call of Arms, Auto Spin, and Auto Open Consumable.",
     "sections": [
       {
-        "title": "How it works",
+        "title": "Open a tool",
         "paragraphs": [
-          "Documented releases offer an optional Auto Configure Settings flow for Roblox-side settings and restore the previous values afterward."
+          "The Tools tab opens utilities in separate always-on-top windows. F3 starts the selected tool; F4 stops it."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Still verify manually",
-        "paragraphs": [
-          "Windows resolution, display scaling, language packs, and all TDS settings still deserve a quick check. Never assume automation configured an unrelated application."
-        ],
-        "steps": [],
-        "checks": []
-      }
-    ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "recover-disconnect",
-    "category": "Troubleshooting",
-    "title": "Roblox disconnected during a session",
-    "summary": "Diagnose reconnection and automatic re-entry behavior.",
-    "sections": [
-      {
-        "title": "Expected behavior",
-        "paragraphs": [
-          "Documented versions contain reconnect and game re-entry handling, as well as resume-aware startup in supported states."
-        ],
-        "steps": [],
-        "checks": []
-      },
-      {
-        "title": "When it does not recover",
+        "title": "Available tools",
         "paragraphs": [],
-        "steps": [
-          "Check Roblox and your network connection manually.",
-          "Confirm no unexpected modal window or login prompt is blocking Roblox.",
-          "Stop safely with F2 if possible, then collect the session logs.",
-          "Retry under supervision and report the last visible state, version, and logs."
-        ],
-        "checks": []
-      }
-    ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "wrong-clicks",
-    "category": "Troubleshooting",
-    "title": "Macro clicks the wrong place",
-    "summary": "Fix incorrect placement targets, UI misses, and actions that appear to do nothing.",
-    "sections": [
-      {
-        "title": "Check these first",
-        "paragraphs": [],
-        "steps": [
-          "Confirm your display uses supported 16:9 resolution and preferably 100% Windows scaling.",
-          "Keep the Windows taskbar visible.",
-          "Set TDS UI Scale to Large and Screen Shake to Disabled.",
-          "Confirm Roblox is focused, and has not moved or resized since starting.",
-          "Test one known bundled strategy while watching it."
-        ],
-        "checks": []
+        "steps": [],
+        "checks": [],
+        "rows": [
+          [
+            "Auto Call of Arms",
+            "Triggers Call of Arms and Drop the Beat on configured intervals; each ability can be disabled."
+          ],
+          [
+            "Auto Spin",
+            "Claims spinning-wheel prizes and counts tickets used."
+          ],
+          [
+            "Auto Open Consumable",
+            "Opens consumable crates and counts how many were opened."
+          ]
+        ]
       },
       {
-        "title": "If clicks still miss",
+        "title": "Before using Auto Call of Arms",
         "paragraphs": [
-          "Record the exact action, resolution, scaling percentage, macro version, and relevant logs. Randomly increasing all delays rarely fixes a geometry mismatch."
+          "Check the ability keybinds in Settings against your TDS keybinds."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/tools/",
+    "keywords": [
+      "call of arms",
+      "auto spin",
+      "consumable",
+      "f3",
+      "f4",
+      "utility"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "launch-fails",
     "category": "Troubleshooting",
-    "title": "Main.ahk will not start",
-    "summary": "Resolve the most common startup blockers.",
+    "title": "Main.ahk won't open",
+    "summary": "Fix common startup failures.",
     "sections": [
       {
-        "title": "Check in order",
+        "title": "Check in this order",
         "paragraphs": [],
         "steps": [
-          "Install AutoHotkey v2.0 64-bit; version 1.1 is not compatible.",
-          "Fully extract the release ZIP, preserving its folders and runtime files.",
-          "Ensure .ahk files open with AutoHotkey v2.",
-          "Close Roblox multi-client utilities such as Roblox Account Manager.",
-          "Relaunch Main.ahk from the extracted folder."
+          "Extract the entire ZIP before running anything.",
+          "Install 64-bit AutoHotkey v2.0. v1.1 cannot run Main.ahk.",
+          "Make sure .ahk files open using the AutoHotkey v2 launcher.",
+          "Close Roblox Account Manager and other multi-instance utilities.",
+          "Open Main.ahk again."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Still failing?",
+        "title": "If the error remains",
         "paragraphs": [
-          "Capture the exact error message, Windows version, AutoHotkey version, and release version. Avoid posting personal file paths or tokens publicly."
+          "Record the exact startup error, AutoHotkey version and macro version. Report that text rather than describing it as 'doesn't work'."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "startup",
+      "launch",
+      "not opening",
+      "ahk",
+      "autohotkey",
+      "crash"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "wrong-clicks",
+    "category": "Troubleshooting",
+    "title": "Clicks miss or towers won't place",
+    "summary": "Check display geometry before changing timing.",
+    "sections": [
+      {
+        "title": "Fix screen-related misses",
+        "paragraphs": [],
+        "steps": [
+          "Check Windows resolution is supported 16:9 and scaling is preferably 100%.",
+          "Keep the Windows taskbar visible.",
+          "Set TDS UI Scale to Large and turn Screen Shake off.",
+          "Focus Roblox. Avoid resizing or moving its window once the run starts.",
+          "Test a bundled strategy for one match."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "If actions are late rather than misplaced",
+        "paragraphs": [
+          "Try a higher Mouse Delay or Key Delay in Settings. A timing issue is different from a consistent wrong click position."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "tower placement",
+      "placement fails",
+      "wrong location",
+      "mouse",
+      "click",
+      "cursor"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "ocr-errors",
     "category": "Troubleshooting",
-    "title": "Waves or currency are read incorrectly",
-    "summary": "Fix OCR problems when the macro cannot recognize text.",
+    "title": "Wave or cash detection is wrong",
+    "summary": "Correct missing OCR language support and font changes.",
     "sections": [
       {
-        "title": "Primary checks",
+        "title": "Fix OCR",
         "paragraphs": [],
         "steps": [
-          "Install the Windows English (US) OCR language pack.",
-          "Remove Roblox custom font modifications.",
-          "Return Windows scaling to 100% for a baseline test.",
-          "Check that the relevant game UI is visible and not obscured.",
-          "Retry in a supervised run and compare the detected values."
+          "Install the English (United States) Windows OCR language pack.",
+          "Remove custom Roblox font modifications.",
+          "Use 100% Windows scaling as a test baseline.",
+          "Keep wave and currency UI visible and unobstructed.",
+          "Run a short test and compare the on-screen value to the value in macro logs."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "How to report",
+        "title": "Still incorrect?",
         "paragraphs": [
-          "Include the macro version, a cropped screenshot with private details removed, expected value, and observed value."
+          "Save the release version, screen resolution and a cropped screenshot showing the wrong value. Remove private details before sharing it."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "stuck-between-matches",
-    "category": "Troubleshooting",
-    "title": "Macro gets stuck between matches",
-    "summary": "Debug results, lobby transitions, and a session that stops progressing.",
-    "sections": [
-      {
-        "title": "Before resetting everything",
-        "paragraphs": [],
-        "steps": [
-          "Check for a Roblox disconnect, modal, dialog, or unexpected game update.",
-          "Confirm result screens and menus are visible at the expected scale.",
-          "Stop with F2 and retry with a known-good single strategy.",
-          "Collect the logs around the last successful action and the next attempted action."
-        ],
-        "checks": []
-      },
-      {
-        "title": "What to report",
-        "paragraphs": [
-          "Provide the exact game state, version, strategy, and whether the issue reproduces every time."
-        ],
-        "steps": [],
-        "checks": []
-      }
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "ocr",
+      "currency",
+      "cash",
+      "wave",
+      "numbers",
+      "read"
     ],
-    "source": "/guide/"
+    "version": "v1.3.x"
   },
   {
     "slug": "upgrade-not-working",
     "category": "Troubleshooting",
-    "title": "Tower upgrades fail or are skipped",
-    "summary": "Differentiate timing, insufficient funds, and upgrade-panel problems.",
+    "title": "Upgrades fail or use the wrong path",
+    "summary": "Check the upgrade panel, money, keybinds and delay.",
     "sections": [
       {
-        "title": "Isolate the reason",
+        "title": "Troubleshoot upgrades",
         "paragraphs": [],
         "steps": [
-          "Check whether the tower has enough money for the upgrade.",
-          "Verify the tower upgrade panel is visible and not blocked.",
-          "Confirm Prefer Vertical Upgrades is enabled in TDS.",
-          "Try a supervised strategy run with slightly more generous delays.",
-          "Save logs showing the intended and observed action."
+          "Confirm the tower has enough cash for the action.",
+          "Enable Prefer Vertical Upgrades in TDS.",
+          "Check that the upgrade and bottom-path keybinds in Ultimate Macro match your game settings.",
+          "Increase Upgrade Delay in Settings if the panel opens slowly.",
+          "Replay the same step while supervising and record which upgrade was missed."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Avoid masking a bug",
+        "title": "What changes the diagnosis",
         "paragraphs": [
-          "If the interface shows an upgrade that the macro counted as successful but did not occur, report that precise mismatch rather than repeatedly restarting Roblox."
+          "If the macro clicked the wrong button, check UI settings. If it clicked before the panel appeared, increase the delay. These are different problems."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "upgrade",
+      "path",
+      "top",
+      "bottom",
+      "money",
+      "delay"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "abilities-not-working",
+    "category": "Troubleshooting",
+    "title": "Abilities don't activate",
+    "summary": "Fix mismatched TDS ability keybinds.",
+    "sections": [
+      {
+        "title": "Check both sets of keybinds",
+        "paragraphs": [],
+        "steps": [
+          "Open TDS and find the key assigned to the ability.",
+          "Open Ultimate Macro → Settings → TDS Keybinds.",
+          "Set the matching key in both places.",
+          "Test the ability manually, then in a short supervised macro run."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Why there may be no error",
+        "paragraphs": [
+          "The macro sends the configured key press. If the game expects a different key, no action happens, even though the macro sent its input."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "ability",
+      "abilities",
+      "call of arms",
+      "dj",
+      "brawler",
+      "keybind"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "legacy-mode",
+    "category": "Troubleshooting",
+    "title": "Auto Equip or targeting stopped working",
+    "summary": "Legacy Mode deliberately disables some features.",
+    "sections": [
+      {
+        "title": "Check Legacy Mode",
+        "paragraphs": [
+          "In documented releases, Auto Equip and tower targeting changes do not work while Legacy Mode is enabled. This is a limitation, not a random crash."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "What to do",
+        "paragraphs": [],
+        "steps": [
+          "Open Settings and check whether Legacy Mode is enabled.",
+          "Disable it to use the adaptive image-detection path.",
+          "Retest Auto Equip and tower targeting.",
+          "Only use Legacy Mode as a fallback when necessary; it can retain 1920×1080 limitations."
+        ],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/troubleshooting/",
+    "keywords": [
+      "legacy",
+      "auto equip",
+      "target",
+      "targeting",
+      "disabled"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "stuck-between-matches",
+    "category": "Troubleshooting",
+    "title": "Stuck after a match",
+    "summary": "Check restart, play-again, and map verification.",
+    "sections": [
+      {
+        "title": "Check the transition",
+        "paragraphs": [],
+        "steps": [
+          "Check whether the macro stopped on a win, loss, lobby, or Ready screen.",
+          "Verify that Click Restart and Click Play Again are configured for your strategy.",
+          "Keep Check the map enabled so a wrong map can be detected.",
+          "Stop with F2 and replay a single strategy while watching the transition.",
+          "Save the last log entry and the screen state if it gets stuck again."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Wrong map after a win-only run?",
+        "paragraphs": [
+          "The public guide suggests turning Restart off for a win strategy if it sometimes enters the wrong map."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/sessions/",
+    "keywords": [
+      "restart",
+      "play again",
+      "map",
+      "stuck",
+      "lobby",
+      "between"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "recover-disconnect",
+    "category": "Troubleshooting",
+    "title": "Roblox disconnects during a run",
+    "summary": "What recovery handles and what to check when it stalls.",
+    "sections": [
+      {
+        "title": "Expected recovery",
+        "paragraphs": [
+          "The documented macro includes a Roblox reconnect flow, game re-entry, and startup checks for lobby/Ready states."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "If it doesn't rejoin",
+        "paragraphs": [],
+        "steps": [
+          "Check whether Roblox can connect normally.",
+          "Dismiss unexpected Roblox dialogs or login prompts.",
+          "Stop with F2 if possible and save the recent logs.",
+          "Retry while watching the reconnect sequence and identify the screen where it gets stuck."
+        ],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/sessions/",
+    "keywords": [
+      "reconnect",
+      "disconnect",
+      "roblox",
+      "lost connection",
+      "retry",
+      "recover"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "discord-not-working",
     "category": "Troubleshooting",
-    "title": "Discord logs or remote commands fail",
-    "summary": "Find problems with Discord webhook and remote connection configuration.",
+    "title": "Discord updates aren't arriving",
+    "summary": "Separate webhook failures from remote-control failures.",
     "sections": [
       {
-        "title": "Test from simplest to hardest",
+        "title": "Webhook test",
         "paragraphs": [],
         "steps": [
-          "Confirm the macro itself launches and runs locally.",
-          "Test a Discord webhook using the built-in Test Webhook button.",
-          "Check the webhook was not deleted and was pasted without extra characters.",
-          "For remote commands, verify the supported bot connection and permissions.",
-          "Collect connection diagnostics without sharing tokens, webhook URLs, or secrets."
+          "Open the macro's Discord tab.",
+          "Use Test Webhook with your configured URL.",
+          "If it fails, confirm the webhook still exists and the right URL was pasted.",
+          "Check whether Discord message permissions or channel settings have changed."
         ],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Keep access safe",
+        "title": "Remote commands",
         "paragraphs": [
-          "Anyone with a bot token or webhook URL can abuse it. Revoke and replace exposed credentials immediately."
+          "First confirm the macro runs locally, then test the bot's status command. Check the bot connection and the configuration for your installed release."
         ],
         "steps": [],
-        "checks": []
-      }
-    ],
-    "source": "/guide/"
-  },
-  {
-    "slug": "safe-stop",
-    "category": "Troubleshooting",
-    "title": "Stop a macro safely",
-    "summary": "Use the stop shortcut and avoid stuck key or mouse input.",
-    "sections": [
-      {
-        "title": "Normal stop",
-        "paragraphs": [
-          "Press F2. The documented stop flow releases held input and lets the macro perform cleanup."
-        ],
-        "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "If it will not stop",
+        "title": "Keep secrets private",
         "paragraphs": [
-          "Do not leave an uncontrolled automation running. Regain control of Windows, close the macro if necessary, and restart it only after investigating the issue."
+          "Never paste webhook URLs or bot tokens into public support posts. Rotate a URL or token if it leaks."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "/guide/"
+    "source": "/guide/discord/",
+    "keywords": [
+      "discord",
+      "webhook",
+      "bot",
+      "remote",
+      "status",
+      "error"
+    ],
+    "version": "v1.3.x"
   },
   {
-    "slug": "discord-community",
-    "category": "Discord & community",
-    "title": "Ultimate Macro Discord server",
-    "summary": "Where to get announcements, support, community strategies, and help.",
+    "slug": "discord-webhooks",
+    "category": "Community",
+    "title": "Send logs to Discord",
+    "summary": "Set up a webhook for run logs, stats and screenshots.",
     "sections": [
       {
-        "title": "Join the community",
-        "paragraphs": [
-          "The official Discord server is linked below. Check its current channel descriptions and rules: channel names, role availability, and events can change."
+        "title": "Create a private webhook",
+        "paragraphs": [],
+        "steps": [
+          "In a Discord server, open a channel's settings → Integrations → Webhooks.",
+          "Create a webhook and copy its URL.",
+          "Open the macro's Discord tab, paste the URL and enable the webhook.",
+          "Select the information you want to send, then use Test Webhook."
         ],
-        "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Get useful support",
-        "paragraphs": [
-          "When requesting help, include the macro version, game mode, a clear description of the failure, the last action that worked, and relevant logs. Never share account credentials or private webhook tokens."
-        ],
-        "steps": [],
-        "checks": []
-      }
-    ],
-    "source": "https://discord.gg/ultmacro"
-  },
-  {
-    "slug": "report-issue",
-    "category": "Discord & community",
-    "title": "Report a bug properly",
-    "summary": "Provide enough information to reproduce a problem and verify a fix.",
-    "sections": [
-      {
-        "title": "Include this information",
+        "title": "Available reports",
         "paragraphs": [],
         "steps": [],
-        "checks": [
-          "Ultimate Macro version and release source",
-          "Windows resolution and scaling",
-          "Roblox/TDS settings and game mode",
-          "Exact steps to reproduce",
-          "What you expected and what actually happened",
-          "Logs and redacted screenshots, if available"
+        "checks": [],
+        "rows": [
+          [
+            "Send Statistics",
+            "Currency and session numbers read with OCR."
+          ],
+          [
+            "Debug Logs",
+            "Local debug events forwarded to Discord."
+          ],
+          [
+            "Automatic screenshots",
+            "Periodic images during a run."
+          ],
+          [
+            "Triumph / Loss screenshots",
+            "Result-screen images, optionally sent to a second webhook."
+          ]
         ]
       },
       {
-        "title": "Where to report",
+        "title": "Privacy",
         "paragraphs": [
-          "Use the official GitHub issues page or the appropriate Discord support channel. Search for an existing issue before opening a duplicate."
+          "Treat a webhook URL as a password. Screenshots may show account names or other on-screen details."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues"
+    "source": "/guide/discord/",
+    "keywords": [
+      "discord",
+      "webhook",
+      "logs",
+      "screenshots",
+      "statistics"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "discord-remote",
+    "category": "Community",
+    "title": "Remote control from Discord",
+    "summary": "Use documented EngineerBot or personal-bot commands.",
+    "sections": [
+      {
+        "title": "What it can do",
+        "paragraphs": [],
+        "steps": [],
+        "checks": [
+          "Start and stop the macro",
+          "Request status or a screenshot",
+          "Check version, stats and logs",
+          "Check or select the strategy (where supported)"
+        ],
+        "rows": []
+      },
+      {
+        "title": "Before enabling",
+        "paragraphs": [
+          "The public guide describes EngineerBot integration and an optional personal-bot setup. Availability and command surfaces depend on the installed release. Keep remote credentials private and test with a status request first."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "/guide/discord/",
+    "keywords": [
+      "engineerbot",
+      "discord",
+      "remote",
+      "personal bot",
+      "screenshot"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "discord-community",
+    "category": "Community",
+    "title": "Discord community",
+    "summary": "Find announcements, strategies and support.",
+    "sections": [
+      {
+        "title": "Official server",
+        "paragraphs": [
+          "Use the Ultimate Macro Discord for release announcements, shared strategies and support. The current channel names and roles are maintained in Discord, not hard-coded here."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Before asking for help",
+        "paragraphs": [],
+        "steps": [],
+        "checks": [
+          "Macro version",
+          "What you were doing",
+          "What happened versus what you expected",
+          "Relevant log or screenshot with personal details removed"
+        ],
+        "rows": []
+      }
+    ],
+    "source": "https://discord.gg/ultmacro",
+    "keywords": [
+      "discord",
+      "server",
+      "roles",
+      "support",
+      "community"
+    ],
+    "version": "v1.3.x"
+  },
+  {
+    "slug": "report-issue",
+    "category": "Community",
+    "title": "Report an issue",
+    "summary": "Give developers a reproducible report instead of a vague description.",
+    "sections": [
+      {
+        "title": "Collect the important details",
+        "paragraphs": [],
+        "steps": [
+          "Enable Debug Logs in Settings.",
+          "Reproduce the problem once, if safe.",
+          "Note the version, Windows resolution and game settings.",
+          "Describe the expected result and actual result.",
+          "Attach the relevant log and a redacted screenshot when useful.",
+          "Search existing GitHub issues before filing a new one."
+        ],
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Where to send it",
+        "paragraphs": [
+          "Open a GitHub issue or post in the appropriate support channel on the official Discord. Never include passwords, bot tokens, or webhook URLs."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
+      }
+    ],
+    "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues",
+    "keywords": [
+      "bug",
+      "issue",
+      "error",
+      "report",
+      "log",
+      "support"
+    ],
+    "version": "v1.3.x"
   },
   {
     "slug": "about",
-    "category": "Discord & community",
+    "category": "Community",
     "title": "About Ultimate Macro",
-    "summary": "What Ultimate Macro is, who maintains it, and the licensing basics.",
+    "summary": "Project background and license.",
     "sections": [
       {
-        "title": "The project",
+        "title": "What it is",
         "paragraphs": [
-          "Ultimate Macro is a free, open-source Windows macro for Roblox Tower Defense Simulator. It records and replays strategies using image detection, coordinates, and OCR."
+          "Ultimate Macro is a free, open-source Windows macro for Roblox Tower Defense Simulator. It uses image detection and OCR rather than injecting code into Roblox."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
       },
       {
-        "title": "Credits and licensing",
+        "title": "Open source",
         "paragraphs": [
-          "Originally created by Darksen. Ultimate Macro: The New Era is maintained by the community and distributed under GNU GPL v3.0. See the current repository for accurate contributors and license text."
+          "The New Era continues the project originally created by Darksen. The public code is distributed under GPL-3.0. Read the repository for license terms, contributors and releases."
         ],
         "steps": [],
-        "checks": []
+        "checks": [],
+        "rows": []
+      },
+      {
+        "title": "Not an official Roblox product",
+        "paragraphs": [
+          "Ultimate Macro is a third-party tool and is not affiliated with Roblox or Paradoxum Games. Automation carries account and game-policy risks."
+        ],
+        "steps": [],
+        "checks": [],
+        "rows": []
       }
     ],
-    "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era"
+    "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era",
+    "keywords": [
+      "about",
+      "license",
+      "source",
+      "history"
+    ],
+    "version": "v1.3.x"
   }
 ];

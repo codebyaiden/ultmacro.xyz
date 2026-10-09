@@ -1,23 +1,28 @@
 # Ultimate Macro Wiki
 
-The wiki is served statically at /wiki/ without an additional framework or database.
+A static documentation website served at `/wiki/` using the existing website server.
 
-## Files
-- content.mjs: reviewed source-backed articles.
-- index.html: accessible page shell and floating helper.
-- site.css: responsive documentation design.
-- app.mjs: navigation, article categories, full-text search, and helper.
+## Design and copy rules
 
-## Links
-Articles: /wiki/?article=install
-Topics: /wiki/?category=Getting%20started
-Stable deep links work without additional rewrite rules on existing hosts.
+- Keep every heading and paragraph useful. Avoid duplicate warnings, generic marketing, or empty feature pages.
+- Lead troubleshooting pages with the exact check or fix. Explain the reason only if it changes what the user should do.
+- Match the Ultimate Macro visual system: deep navy, clear blue accents, Archivo headings and restrained corners.
+- Use settings tables for pairs of values, ordered steps for procedures, and links for navigation. Do not draw controls that do not function.
+- Cite the relevant guide or official resource for each article. Mark future-version material only when it has been checked.
 
-## Content maintenance
-Add articles to the array in content.mjs. Use unique slugs, a supported category, an informative summary, nonempty sections, and the original source. Verify real behavior and fixes before publishing. Public v1.3.x is the initial documentation baseline.
+## Content
 
-## Assistant status
-The floating helper currently searches the published wiki. It is not a generative AI assistant. Never put AI API keys in browser scripts. A future AI service needs server-side secrets, rate limiting, article retrieval, source citations, and an honest unknown-answer fallback.
+`content.mjs` exports the six categories and article records. Each article has a unique slug, source URL, summary, optional keywords, and sections with paragraphs, steps, bullets, or setting rows. The browser renders the content as safe text, not unsanitized HTML.
+
+Articles: `/wiki/?article=wrong-clicks`
+Topics: `/wiki/?category=Troubleshooting`
+
+The current material is based on the public v1.3.x setup guide and official project resources, not unverified v1.4 behavior.
+
+## Assistant
+
+The floating helper currently searches the articles and links to matching pages. It does not generate LLM answers. A future AI integration should use a secured server-side endpoint, source retrieval, rate limits and an unknown-answer fallback. Do not expose API credentials to the browser.
 
 ## Tests
-Run npm test at the repository root. tests/wiki.test.mjs checks content quality, essential topics, front-end syntax, and route integration.
+
+Run `npm test` from the repository root. The wiki tests validate article integrity, key topics, client script syntax, and website integration. Browser QA on mobile and desktop remains required before deployment.
