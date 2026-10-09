@@ -9,6 +9,9 @@ const view = $('view');
 const sidebar = $('sidebar');
 const scrim = $('mobile-scrim');
 const navToggle = $('nav-toggle');
+const mobileNavigation = window.matchMedia('(max-width: 1110px)');
+const expandedGroups = new Set(['Start here', 'Troubleshooting']);
+let sectionObserver;
 const overlay = $('search-overlay');
 const searchInput = $('search-field');
 const searchResults = $('search-results');
@@ -55,11 +58,28 @@ function go(type = '', value = '') {
   closeMenu();
   render();
   window.scrollTo(0, 0);
+  $('main').focus({ preventScroll: true });
 }
-function closeMenu() {
+function syncSidebarAccessibility() {
+  sidebar.inert = mobileNavigation.matches && !sidebar.classList.contains('open');
+}
+function closeMenu({ restoreFocus = false } = {}) {
+  const wasOpen = sidebar.classList.contains('open');
   sidebar.classList.remove('open');
   navToggle.setAttribute('aria-expanded', 'false');
   scrim.hidden = true;
+  document.body.classList.remove('wiki-menu-open');
+  syncSidebarAccessibility();
+  if (restoreFocus && wasOpen && mobileNavigation.matches) navToggle.focus();
+}
+function openMenu() {
+  closeSearch(false);
+  sidebar.classList.add('open');
+  navToggle.setAttribute('aria-expanded', 'true');
+  scrim.hidden = false;
+  document.body.classList.add('wiki-menu-open');
+  syncSidebarAccessibility();
+  $('sidebar-close').focus();
 }
 function nav() {
   const root = $('sidebar-nav');
@@ -70,12 +90,17 @@ function nav() {
   const activeCategory = docs.get(article)?.category || category;
   for (const name of categories) {
     const group = node('details', 'nav-group');
-    if (activeCategory === name || (!activeCategory && (name === 'Start here' || name === 'Troubleshooting'))) group.open = true;
-    const summary = node('summary', '', name);
+    group.open = activeCategory === name || expandedGroups.has(name);
+    group.addEventListener('toggle', () => {
+      if (group.open) expandedGroups.add(name);
+      else expandedGroups.delete(name);
+    });
+    const summary = node('summary');
     summary.setAttribute('aria-label', 'Toggle ' + name + ' articles');
+    const groupArticles = articles.filter(x => x.category === name);
+    summary.append(node('span', 'nav-group-label', name), node('span', 'nav-count', String(groupArticles.length)));
     group.append(summary);
     const items = node('div', 'nav-items');
-    const groupArticles = articles.filter(x => x.category === name);
     const visible = groupArticles.slice(0, 7);
     const current = groupArticles.find(x => x.slug === article);
     if (current && !visible.includes(current)) visible.push(current);
@@ -392,6 +417,14 @@ function articleView(article) {
     figure.append(img,node('figcaption','',article.illustration.caption));header.append(figure);
   }
   view.append(header);
+  const mobileToc = node('details', 'mobile-toc');
+  const mobileSummary = node('summary', '', 'On this page');
+  const sectionCount = node('span', 'mobile-toc-count', article.sections.length + ' sections');
+  mobileSummary.append(sectionCount);
+  const mobileLinks = node('nav', 'mobile-toc-links');
+  mobileLinks.setAttribute('aria-label', 'Article sections');
+  mobileToc.append(mobileSummary, mobileLinks);
+  view.append(mobileToc);
   const columns=node('div','article-columns');
   const body=node('div','article-sections');
   const toc=node('nav','page-toc');
@@ -421,7 +454,11 @@ function articleView(article) {
     }
     body.append(section);
     toc.append(link(sec.title,'#'+id));
+    mobileLinks.append(link(sec.title,'#'+id));
   }
+  mobileLinks.addEventListener('click', event => {
+    if (event.target.closest('a[href^="#"]')) mobileToc.open = false;
+  });
   const actions = node('div', 'article-actions');
   const copy = node('button', 'text-button', 'Copy article link');
   copy.type = 'button';
@@ -498,8 +535,21 @@ function articleView(article) {
     body.append(more);
   }
   columns.append(body,toc);view.append(columns);
+  if ('IntersectionObserver' in window) {
+    sectionObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        for (const anchor of toc.querySelectorAll('a')) {
+          if (anchor.getAttribute('href') === '#' + entry.target.id) anchor.setAttribute('aria-current', 'location');
+          else anchor.removeAttribute('aria-current');
+        }
+      }
+    }, { rootMargin: '-110px 0px -65% 0px', threshold: 0 });
+    for (const section of body.querySelectorAll('.doc-section')) sectionObserver.observe(section);
+  }
 }
 function render() {
+  if (sectionObserver) { sectionObserver.disconnect(); sectionObserver = undefined; }
   view.replaceChildren();
   const {article,category,topic,library}=queryState();
   if(article && docs.has(article)) articleView(docs.get(article));
@@ -566,6 +616,7 @@ function showResults(q) {
   }
 }
 function openSearch(query=''){
+  closeMenu();
   overlay.hidden=false;document.body.style.overflow='hidden';
   searchInput.value=query;showResults(query);searchInput.focus();searchInput.select();
 }
@@ -614,7 +665,7 @@ $('search-close').addEventListener('click',()=>closeSearch());
 searchInput.addEventListener('input',()=>showResults(searchInput.value));
 overlay.addEventListener('click',e=>{if(e.target===overlay)closeSearch();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeSearch();closeMenu();if(!helper.hidden)toggleHelper(false);}
+  if(e.key==='Escape'){closeSearch();closeMenu({ restoreFocus: true });if(!helper.hidden)toggleHelper(false);}
   if (!overlay.hidden && e.key === 'Tab') {
     const focusables = [...overlay.querySelectorAll('input,button,a[href]')].filter(el => !el.disabled && !el.hidden);
     if (focusables.length) {
@@ -631,12 +682,14 @@ document.addEventListener('keydown',e=>{
     if(result)go('article',result.slug);
   }
 });
-navToggle.addEventListener('click',()=>{
-  const open=!sidebar.classList.contains('open');
-  sidebar.classList.toggle('open',open);scrim.hidden=!open;navToggle.setAttribute('aria-expanded',String(open));
+navToggle.addEventListener('click', () => {
+  if (sidebar.classList.contains('open')) closeMenu({ restoreFocus: true });
+  else openMenu();
 });
-scrim.addEventListener('click',closeMenu);
-$('sidebar-close').addEventListener('click',closeMenu);
+scrim.addEventListener('click', () => closeMenu({ restoreFocus: true }));
+$('sidebar-close').addEventListener('click', () => closeMenu({ restoreFocus: true }));
+mobileNavigation.addEventListener('change', () => closeMenu());
+syncSidebarAccessibility();
 helperToggle.addEventListener('click',()=>toggleHelper(helper.hidden));
 $('helper-close').addEventListener('click',()=>toggleHelper(false));
 $('helper-suggestions').addEventListener('click',e=>{

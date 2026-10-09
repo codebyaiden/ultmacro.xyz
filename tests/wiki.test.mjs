@@ -72,20 +72,40 @@ test('all wiki links stay routed and the existing website can serve modules', as
 });
 
 
-test('wiki reading surfaces use a dark navy theme throughout', async () => {
+test('wiki retains its dark theme using consolidated component styles', async () => {
   const css = await read('wiki/site.css');
   const html = await read('wiki/index.html');
-  const theme = css.slice(css.indexOf('/* Wiki dark reading theme.'));
-  assert.ok(theme.startsWith('/* Wiki dark reading theme.'));
-  assert.match(theme, /--paper:#081625/);
-  assert.match(theme, /\.sidebar\{background:#0a1b2e/);
-  assert.match(theme, /\.home-lane\{background:#11263d/);
-  assert.match(theme, /\.topic-link\{background:#10243a/);
-  assert.match(theme, /\.article-header h1\{color:#f3f7ff/);
-  assert.match(theme, /\.setting-table\{background:#10253b/);
-  assert.match(theme, /\.search-dialog\{background:#101f33/);
-  assert.match(theme, /\.category-articles a\{background:#10263f/);
+  assert.match(css, /--paper:#081625/);
+  assert.match(css, /\.sidebar\{background:#0a1b2e/);
+  assert.match(css, /\.home-lane\{background:#11263d/);
+  assert.match(css, /\.topic-link\{[^}]*background:#10243a/);
+  assert.match(css, /\.article-header h1\{[^}]*color:#f3f7ff/);
+  assert.match(css, /\.setting-table\{[^}]*background:#10253b/);
+  assert.match(css, /\.search-dialog\{[^}]*background:#101f33/);
+  assert.match(css, /\.category-articles a\{[^}]*background:#10263f/);
+  assert.doesNotMatch(css, /\/\* Wiki dark reading theme\./);
   assert.match(html, /content="#07111f"/);
+});
+
+test('wiki UI polish preserves routing and adds accessible mobile navigation', async () => {
+  const app = await read('wiki/app.mjs');
+  const css = await read('wiki/site.css');
+  const html = await read('wiki/index.html');
+  assert.match(app, /mobileNavigation = window\.matchMedia/);
+  assert.match(app, /sidebar\.inert = mobileNavigation\.matches/);
+  assert.match(app, /restoreFocus: true/);
+  assert.match(app, /function syncSidebarAccessibility\(/);
+  assert.match(app, /expandedGroups = new Set/);
+  assert.match(app, /className = ''/);
+  assert.match(app, /node\('details', 'mobile-toc'\)/);
+  assert.match(app, /article\.sections\.length \+ ' sections'/);
+  assert.match(app, /mobileLinks\.append\(link\(sec\.title,'#'\+id\)\)/);
+  assert.match(app, /sectionObserver\.disconnect\(\)/);
+  assert.match(css, /\.mobile-toc\{display:block;position:sticky/);
+  assert.match(css, /\.nav-count\{/);
+  assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
+  assert.match(html, /site\.css\?v=10/);
+  assert.match(html, /app\.mjs\?v=11/);
 });
 
 test('500+ topic inventory is separate from published wiki docs', async () => {
@@ -145,7 +165,7 @@ test('topic index supports category filters, search and explicit unverified labe
   assert.doesNotMatch(html, /id="sidebar-library"/);
   assert.match(html, /Research backlog/);
   assert.match(html, /href="\.\/api\/"/);
-  assert.match(html, /site\.css\?v=9/);
+  assert.match(html, /site\.css\?v=10/);
   assert.match(css, /\.library-controls/);
   assert.match(css, /\.catalog-row/);
   assert.match(css, /\.topic-guide/);
