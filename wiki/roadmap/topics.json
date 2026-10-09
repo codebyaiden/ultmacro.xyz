@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "purpose": "Wiki topic coverage catalog: candidates are publicly discoverable in a separate research index, but not published as verified instructions until reviewed.",
-  "existingPublishedArticles": 76,
+  "existingPublishedArticles": 90,
   "totalPlanned": 778,
   "publicationRule": "Publish only after source review or reproducible testing; merge overlapping candidates into sections rather than making thin pages.",
   "topics": [

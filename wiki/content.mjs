@@ -1,4 +1,5 @@
 import { expandedArticles } from './content-expanded.mjs';
+import { sourceVerifiedArticles } from './content-v135-source.mjs';
 // Source-backed wiki content. Check instructions against the official release before updating.
 export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
 const baseArticles = [
@@ -1500,4 +1501,4 @@ const baseArticles = [
   }
 ];
 
-export const articles = [...baseArticles, ...expandedArticles];
+export const articles = [...baseArticles, ...expandedArticles, ...sourceVerifiedArticles];

@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { articles, categories } from '../wiki/content.mjs';
 import { proposedTopics, topicCategories } from '../wiki/catalog.mjs';
+import { sourceVerifiedArticles } from '../wiki/content-v135-source.mjs';
+import { resolveTopicGuidance } from '../wiki/topic-support.mjs';
 
 const read = path => readFile(fileURLToPath(new URL('../' + path, import.meta.url)), 'utf8');
 
@@ -143,7 +145,7 @@ test('topic index supports category filters, search and explicit unverified labe
   assert.doesNotMatch(html, /id="sidebar-library"/);
   assert.match(html, /Research backlog/);
   assert.match(html, /href="\.\/api\/"/);
-  assert.match(html, /site\.css\?v=7/);
+  assert.match(html, /site\.css\?v=8/);
   assert.match(css, /\.library-controls/);
   assert.match(css, /\.catalog-row/);
   assert.match(css, /\.topic-guide/);
@@ -170,4 +172,47 @@ test('published help search excludes research-only topic suggestions and article
   const block = app.slice(app.indexOf('function showResults'), app.indexOf('function openSearch'));
   assert.match(block, /search\(q, 8\)/);
   assert.doesNotMatch(block, /research-hit|topicLink/);
+});
+
+
+test('tagged v1.3.5 evidence produces substantive versioned guide pages', () => {
+  assert.equal(sourceVerifiedArticles.length, 14);
+  const known = new Set(articles.map(a=>a.slug));
+  for (const article of sourceVerifiedArticles) {
+    assert.ok(known.has(article.slug), article.slug);
+    assert.equal(article.version, 'v1.3.5');
+    assert.equal(article.source, 'https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/Main.ahk');
+    assert.ok(article.sections.every(s=>
+      [...(s.paragraphs||[]),...(s.steps||[]),...(s.checks||[]),...(s.rows||[])].length),article.slug);
+  }
+});
+
+test('all 778 topic pages have useful published evidence or clear release gates', () => {
+  const docs = new Map(articles.map(a=>[a.slug,a]));
+  let grounded=0, gated=0;
+  for (const topic of proposedTopics) {
+    const answer = resolveTopicGuidance(topic,docs);
+    assert.ok(['related','requires-release','unverified'].includes(answer.kind),topic.slug);
+    if (answer.kind === 'related') {
+      assert.ok(answer.guide && answer.section,topic.slug);
+      assert.ok(answer.guide.source,topic.slug);
+      assert.ok(
+        answer.section.steps?.length || answer.section.paragraphs?.length ||
+        answer.section.rows?.length || answer.section.checks?.length,
+        topic.slug
+      );
+      grounded++;
+    } else gated++;
+  }
+  assert.equal(grounded+gated,proposedTopics.length);
+  assert.ok(gated>0,'future release candidates remain gated');
+  assert.ok(grounded>700,'most catalog pages show real related instructions');
+});
+
+test('wiki topic pages display real source-linked steps instead of a placeholder alone', async () => {
+  const app = await read('wiki/app.mjs');
+  assert.match(app, /resolveTopicGuidance\(topic, docs\)/);
+  assert.match(app, /guidance\.section/);
+  assert.match(app, /guidance\.guide\.source/);
+  assert.match(app, /className|topic-evidence/);
 });

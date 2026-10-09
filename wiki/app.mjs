@@ -1,5 +1,6 @@
-import { articles, categories } from './content.mjs?v=6';
+import { articles, categories } from './content.mjs?v=8';
 import { proposedTopics, topicCategories } from './catalog.mjs?v=6';
+import { resolveTopicGuidance } from './topic-support.mjs?v=8';
 
 const $ = id => document.getElementById(id);
 const docs = new Map(articles.map(a => [a.slug, a]));
@@ -299,29 +300,63 @@ function libraryView() {
 }
 
 function topicView(topic) {
-  document.title = topic.title + ' · Wiki topics';
-  view.append(breadcrumb('Topic index'));
-  const head = node('header','article-header');
-  head.append(node('span','article-category',topic.category));
-  head.append(node('h1','',topic.title));
-  head.append(node('p','article-summary','This topic is on the research list, but a verified standalone guide has not been published.'));
+  document.title = topic.title + ' · Ultimate Macro Wiki topics';
+  view.append(breadcrumb('Research backlog'));
+  const guidance = resolveTopicGuidance(topic, docs);
+  const head = node('header', 'article-header');
+  head.append(node('span', 'article-category', topic.category));
+  head.append(node('h1', '', topic.title));
+  head.append(node('p', 'article-summary', guidance.kind === 'related'
+    ? 'Relevant documented steps are shown below. This exact topic has not been independently tested as a standalone guide.'
+    : 'This requires release evidence or a reproducible test before instructions can be published.'));
   view.append(head);
-  const wrap = node('div','topic-detail');
-  const known = docs.get(topic.relatedGuide);
-  if (known) {
-    wrap.append(node('h2','','Related published guide'));
-    const a = articleLink(known,'topic-guide');
-    a.textContent = '';
-    a.append(node('strong','',known.title),node('span','',known.summary),node('span','', 'Read guide →'));
-    wrap.append(a);
-    wrap.append(node('p','topic-note','This guide covers related settings or workflows. It is not a verified fix for every variation of the topic above.'));
+
+  const body = node('div', 'topic-detail');
+  body.append(node('h2', '', guidance.headline));
+  if (guidance.guide && guidance.section) {
+    const section = guidance.section;
+    const documented = node('section', 'topic-evidence');
+    documented.append(node('h3', '', section.title));
+    for (const paragraph of (section.paragraphs || []).slice(0,3)) documented.append(node('p','',paragraph));
+    if (section.steps?.length) {
+      const ol = node('ol');
+      for (const step of section.steps.slice(0,8)) ol.append(node('li','',step));
+      documented.append(ol);
+    }
+    if (section.checks?.length) {
+      const ul = node('ul');
+      for (const check of section.checks.slice(0,8)) ul.append(node('li','',check));
+      documented.append(ul);
+    }
+    if (section.rows?.length) {
+      const table = node('table','setting-table'), tbody = node('tbody');
+      for (const [key,val] of section.rows.slice(0,10)) {
+        const tr=node('tr');
+        const th=node('th','',key);th.setAttribute('scope','row');
+        tr.append(th,node('td','',val));tbody.append(tr);
+      }
+      table.append(tbody);documented.append(table);
+    }
+    body.append(documented);
+    const source = link('Source: '+guidance.guide.title+' ↗',guidance.guide.source,'topic-reference');
+    if(guidance.guide.source.startsWith('https:')){source.target='_blank';source.rel='noopener noreferrer';}
+    body.append(source);
+    const read=articleLink(guidance.guide,'topic-guide');
+    read.textContent='';
+    read.append(node('strong','','Read the full '+guidance.guide.title+' guide'),
+      node('span','',guidance.guide.summary),node('span','','Open guide →'));
+    body.append(read);
+    if(guidance.guide.version)body.append(node('p','article-version','Documented for '+guidance.guide.version));
+  } else {
+    body.append(node('p','topic-note',guidance.note));
   }
-  const links = node('div','topic-actions');
-  const back = link('← Research backlog',libraryURL(),'text-button');back.dataset.library='1';
-  const issue = link('Report an issue ↗','https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues','text-button');
+  if(guidance.kind==='related')body.append(node('p','topic-note',guidance.note));
+  const actions=node('div','topic-actions');
+  const back=link('← Research backlog',libraryURL(),'text-button');back.dataset.library='1';
+  const issue=link('Request or report evidence ↗','https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues','text-button');
   issue.target='_blank';issue.rel='noopener noreferrer';
-  links.append(back,issue);wrap.append(links);
-  view.append(wrap);
+  actions.append(back,issue);body.append(actions);
+  view.append(body);
 }
 
 function breadcrumb(category, articleTitle) {
