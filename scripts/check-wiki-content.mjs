@@ -27,6 +27,10 @@ for (const article of articles) {
 
 const file = new URL('../wiki/roadmap/topics.json', import.meta.url);
 const roadmap = JSON.parse(await readFile(file, 'utf8'));
+const publishedSnapshot = JSON.parse(await readFile(new URL('../wiki/api/v1/articles.json',import.meta.url), 'utf8'));
+if (publishedSnapshot.articles.length !== articles.length) errors.push('Static API snapshot is stale');
+const snapshotSlugs = new Set(publishedSnapshot.articles.map(x => x.slug));
+for (const article of articles) if (!snapshotSlugs.has(article.slug)) errors.push('Missing static API article: '+article.slug);
 const catalog = new Map();
 for (const topic of proposedTopics) {
   if (!topic.title || !topic.slug || !topic.category) errors.push('Incomplete research topic');

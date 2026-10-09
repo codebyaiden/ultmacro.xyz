@@ -137,11 +137,13 @@ test('topic index supports category filters, search and explicit unverified labe
   assert.match(app, /function libraryView\(/);
   assert.match(app, /function topicView\(/);
   assert.match(app, /function searchTopics\(/);
-  assert.match(app, /Published guides/);
-  assert.match(app, /Research topics · not verified articles/);
+  assert.match(app, /No published guide matches/);
+  assert.doesNotMatch(app.slice(app.indexOf('function showResults'), app.indexOf('function openSearch')), /searchTopics\(/);
   assert.match(app, /a\[data-article\],a\[data-category\],a\[data-topic\],a\[data-library\]/);
-  assert.match(html, /id="sidebar-library"/);
-  assert.match(html, /site\.css\?v=6/);
+  assert.doesNotMatch(html, /id="sidebar-library"/);
+  assert.match(html, /Research backlog/);
+  assert.match(html, /href="\.\/api\/"/);
+  assert.match(html, /site\.css\?v=7/);
   assert.match(css, /\.library-controls/);
   assert.match(css, /\.catalog-row/);
   assert.match(css, /\.topic-guide/);
@@ -158,4 +160,14 @@ test('expanded guides are distinct and grounded in official sources', () => {
     assert.ok(!a.source.includes('example.com'), a.slug);
     assert.ok(a.sections.every(s => [...s.steps, ...s.paragraphs, ...s.checks, ...(s.rows || [])].length), a.slug);
   }
+});
+
+test('published help search excludes research-only topic suggestions and article versions are visible', async () => {
+  const app = await read('wiki/app.mjs');
+  assert.match(app, /Documented for /);
+  assert.match(app, /history\.replaceState\(null,'',url\)/);
+  assert.match(app, /focusables = \[\.\.\.overlay\.querySelectorAll/);
+  const block = app.slice(app.indexOf('function showResults'), app.indexOf('function openSearch'));
+  assert.match(block, /search\(q, 8\)/);
+  assert.doesNotMatch(block, /research-hit|topicLink/);
 });

@@ -1,0 +1,3378 @@
+{
+  "apiVersion": "1",
+  "scope": "published-documentation-only",
+  "researchTopicsIncluded": false,
+  "source": "https://ultmacro.xyz/wiki/",
+  "generatedFrom": "repository wiki/content.mjs + content-expanded.mjs",
+  "articles": [
+    {
+      "slug": "install",
+      "title": "Install Ultimate Macro",
+      "summary": "From ZIP download to first launch.",
+      "category": "Start here",
+      "source": "/guide/install/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=install",
+      "keywords": [
+        "download",
+        "zip",
+        "autohotkey",
+        "main ahk",
+        "launch"
+      ],
+      "sections": [
+        {
+          "title": "Download and extract",
+          "paragraphs": [],
+          "steps": [
+            "Download the ZIP from the official Ultimate Macro download page.",
+            "Right-click the ZIP and extract the whole archive to a folder. Do not run Main.ahk inside the ZIP.",
+            "Install 64-bit AutoHotkey v2 from autohotkey.com/v2. AutoHotkey v1.1 will not work.",
+            "Open Main.ahk in the extracted folder."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Before your first run",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [
+            "Windows resolution: supported 16:9; scaling: 100% recommended",
+            "Windows taskbar: visible",
+            "Roblox: 60 FPS, Classic camera, Manual graphics",
+            "TDS: Large UI, Screen Shake off, Vertical Upgrades on"
+          ],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "requirements",
+      "title": "Requirements",
+      "summary": "Supported Windows versions, resolution and dependencies.",
+      "category": "Start here",
+      "source": "/guide/requirements/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=requirements",
+      "keywords": [
+        "computer",
+        "pc",
+        "windows",
+        "resolution",
+        "system",
+        "minimum"
+      ],
+      "sections": [
+        {
+          "title": "Required",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Operating system",
+              "Windows 10 or 11"
+            ],
+            [
+              "AutoHotkey",
+              "v2.0, 64-bit"
+            ],
+            [
+              "Display",
+              "16:9, 1280×720 through 3840×2160"
+            ],
+            [
+              "Windows OCR",
+              "English (United States) language pack"
+            ],
+            [
+              "Taskbar",
+              "Visible, not auto-hidden"
+            ],
+            [
+              "Roblox",
+              "Single client; close multi-instance tools"
+            ]
+          ]
+        },
+        {
+          "title": "Recommended",
+          "paragraphs": [
+            "1920×1080 at 100% Windows scaling is the easiest baseline for troubleshooting. Other supported 16:9 resolutions are supported by the documented adaptive detection path.",
+            "A slower PC may need longer mouse, key or upgrade delays."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "first-run",
+      "title": "Run your first strategy",
+      "summary": "Test a built-in strategy before leaving the macro unattended.",
+      "category": "Start here",
+      "source": "/guide/first-run/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=first-run",
+      "keywords": [
+        "start",
+        "run",
+        "play",
+        "first",
+        "f1",
+        "f2"
+      ],
+      "sections": [
+        {
+          "title": "Start a test run",
+          "paragraphs": [],
+          "steps": [
+            "Open Roblox and join Tower Defense Simulator.",
+            "Open Ultimate Macro. On the Main tab, select a strategy that came with the release.",
+            "Confirm you have the towers required by that strategy.",
+            "Make sure Windows, Roblox, and TDS settings match the setup pages.",
+            "Select Start or press F1.",
+            "Watch a full match, including upgrades and the end-of-match screen."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Stop safely",
+          "paragraphs": [
+            "Press F2 to stop the macro and release held input. Check placement, upgrades, result detection, and the next-match transition before running longer sessions."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "windows-display",
+      "title": "Windows display & OCR",
+      "summary": "Configure the screen settings used by image detection.",
+      "category": "Setup & settings",
+      "source": "/guide/display/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=windows-display",
+      "keywords": [
+        "screen",
+        "monitor",
+        "scale",
+        "dpi",
+        "resolution",
+        "ocr",
+        "taskbar"
+      ],
+      "sections": [
+        {
+          "title": "Windows settings",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Resolution",
+              "16:9, 1280×720 to 3840×2160"
+            ],
+            [
+              "Recommended resolution",
+              "1920×1080"
+            ],
+            [
+              "Display scaling",
+              "100% recommended"
+            ],
+            [
+              "Taskbar",
+              "Visible; do not auto-hide"
+            ],
+            [
+              "OCR language",
+              "English (United States) installed"
+            ]
+          ]
+        },
+        {
+          "title": "Check before running",
+          "paragraphs": [],
+          "steps": [
+            "Open Windows Settings → System → Display and confirm resolution and scale.",
+            "Make the taskbar visible in Windows taskbar settings.",
+            "Ensure the English (US) OCR language pack is available.",
+            "Do not move or resize Roblox while a run is in progress."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "When clicks miss",
+          "paragraphs": [
+            "If the macro clicks the wrong location, check display geometry before increasing delays. The macro uses screen coordinates and image matching."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "roblox-settings",
+      "title": "Roblox settings",
+      "summary": "Use the game settings expected by the documented macro.",
+      "category": "Setup & settings",
+      "source": "/guide/display/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=roblox-settings",
+      "keywords": [
+        "camera",
+        "fps",
+        "graphics",
+        "navigation",
+        "roblox"
+      ],
+      "sections": [
+        {
+          "title": "Set these values",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Maximum Frame Rate",
+              "60 FPS"
+            ],
+            [
+              "Camera Mode",
+              "Classic"
+            ],
+            [
+              "Graphics Mode",
+              "Manual"
+            ],
+            [
+              "UI Navigation Toggle",
+              "Enabled"
+            ]
+          ]
+        },
+        {
+          "title": "Avoid layout changes",
+          "paragraphs": [
+            "Do not use custom Roblox fonts. They can cause wave and currency OCR to read text incorrectly. Keep the game window at the same size and location during a session."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "tds-settings",
+      "title": "TDS settings",
+      "summary": "Match the interface layout expected by tower placement and upgrades.",
+      "category": "Setup & settings",
+      "source": "/guide/display/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=tds-settings",
+      "keywords": [
+        "tds",
+        "tower defense simulator",
+        "ui scale",
+        "shake",
+        "vertical upgrade",
+        "dialog"
+      ],
+      "sections": [
+        {
+          "title": "Set these values",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "UI Scale",
+              "Large"
+            ],
+            [
+              "Screen Shake",
+              "Disabled"
+            ],
+            [
+              "Prefer Vertical Upgrades",
+              "Enabled"
+            ],
+            [
+              "Dialog",
+              "Disabled"
+            ],
+            [
+              "Show Tower Options",
+              "Enabled"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "hotkeys",
+      "title": "Hotkeys & keybinds",
+      "summary": "Playback and recording shortcuts in the documented release.",
+      "category": "Setup & settings",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=hotkeys",
+      "keywords": [
+        "keybind",
+        "shortcut",
+        "f1",
+        "f2",
+        "f",
+        "ctrl",
+        "ability",
+        "recording"
+      ],
+      "sections": [
+        {
+          "title": "Playback",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Start macro",
+              "F1"
+            ],
+            [
+              "Stop macro",
+              "F2"
+            ]
+          ]
+        },
+        {
+          "title": "Recording",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Place tower",
+              "F"
+            ],
+            [
+              "Upgrade",
+              "Ctrl + U"
+            ],
+            [
+              "Sell tower",
+              "Ctrl + X"
+            ],
+            [
+              "Change target",
+              "Ctrl + `"
+            ],
+            [
+              "Change DJ track",
+              "Ctrl + D"
+            ],
+            [
+              "Align camera",
+              "Ctrl + T"
+            ],
+            [
+              "Hologram tower",
+              "Ctrl + Alt + H"
+            ],
+            [
+              "Delete last recorded action",
+              "Ctrl + B"
+            ],
+            [
+              "Record inputs",
+              "Ctrl + Shift + E"
+            ]
+          ]
+        },
+        {
+          "title": "Change shortcuts",
+          "paragraphs": [
+            "Recording shortcuts are configurable under Settings → Recording Hotkeys. For abilities, confirm the keybinds in Settings → TDS Keybinds also match TDS."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "record-strategy",
+      "title": "Record a strategy",
+      "summary": "Turn a played match into a .strat file.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=record-strategy",
+      "keywords": [
+        "create",
+        "save",
+        ".strat",
+        "record",
+        "strategy",
+        "tower"
+      ],
+      "sections": [
+        {
+          "title": "Before recording",
+          "paragraphs": [
+            "Pick your map, mode and tower loadout. Confirm the game and recording keybinds first. The recorder captures actions as you play, not a guaranteed successful strategy."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Record and save",
+          "paragraphs": [],
+          "steps": [
+            "Open Create → Record a Strategy.",
+            "Play a match normally. Use the recording shortcuts for placement, upgrades, selling and other actions.",
+            "If an action was recorded incorrectly, use Delete Record (Ctrl + B) before continuing.",
+            "Finish recording and save the result as a .strat file.",
+            "Replay the new strategy under supervision before sharing it."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Useful shortcuts",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Place",
+              "F"
+            ],
+            [
+              "Upgrade",
+              "Ctrl + U"
+            ],
+            [
+              "Sell",
+              "Ctrl + X"
+            ],
+            [
+              "Change target",
+              "Ctrl + `"
+            ],
+            [
+              "Change DJ track",
+              "Ctrl + D"
+            ]
+          ]
+        },
+        {
+          "title": "Recording tip",
+          "paragraphs": [
+            "Leave enough time for game animations and currency changes. Fast manual actions may need longer delays to replay reliably on other PCs."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "edit-strategy",
+      "title": "Edit a strategy",
+      "summary": "Open a .strat file in Strategy Lab.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=edit-strategy",
+      "keywords": [
+        "strategy lab",
+        "editor",
+        "edit",
+        "strat"
+      ],
+      "sections": [
+        {
+          "title": "Open Strategy Lab",
+          "paragraphs": [],
+          "steps": [
+            "In Ultimate Macro, open Create.",
+            "Choose Edit a Strategy or Open Strategy Lab.",
+            "Open the .strat file you want to inspect or change.",
+            "Save a separate copy before replacing a strategy that already works."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Standalone editor",
+          "paragraphs": [
+            "You can also launch StrategyLab.exe from the release folder. Strategy Lab is the visual editor for strategy actions. Test an edited strategy before relying on it."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-rotation",
+      "title": "Rotate strategies",
+      "summary": "Alternate between two strategies after a run count or time limit.",
+      "category": "Strategies",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-rotation",
+      "keywords": [
+        "swap",
+        "rotate",
+        "alternating",
+        "runs",
+        "minutes"
+      ],
+      "sections": [
+        {
+          "title": "Configure rotation",
+          "paragraphs": [],
+          "steps": [
+            "On the Main tab, choose the two strategies you want to alternate.",
+            "Enable Strategy Rotation.",
+            "Set Swap after to a number of Runs or Minutes.",
+            "Test each strategy on its own before starting rotation."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Check compatibility",
+          "paragraphs": [
+            "The selected strategies may require different maps or towers. Make sure both can run with your current loadout and settings."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "community-strategies",
+      "title": "Find community strategies",
+      "summary": "Browse and test shared .strat files in Strategy Network.",
+      "category": "Strategies",
+      "source": "/strategies/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=community-strategies",
+      "keywords": [
+        "strategy network",
+        "shared",
+        "download",
+        "community",
+        "maps"
+      ],
+      "sections": [
+        {
+          "title": "Use a shared strategy",
+          "paragraphs": [],
+          "steps": [
+            "Open Strategy Network and find a strategy for your mode or map.",
+            "Check the tower loadout and other listed requirements.",
+            "Download or choose the strategy through the supported workflow.",
+            "Run a supervised match before leaving it unattended."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "After a game update",
+          "paragraphs": [
+            "An older strategy may no longer match current game behavior, even if its file loads. Check its requirements and look for a newer version if it fails."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "session-settings",
+      "title": "Long session settings",
+      "summary": "Goals, timescale, and between-match actions.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=session-settings",
+      "keywords": [
+        "goals",
+        "timescale",
+        "speed",
+        "rewards",
+        "play again",
+        "restart",
+        "check map",
+        "currency"
+      ],
+      "sections": [
+        {
+          "title": "Goals and Timescale",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Goals",
+              "Set a currency target; the macro selects compatible strategies until the goal is reached."
+            ],
+            [
+              "Timescale",
+              "In Settings, use 1.5× or 2× with available timescale tickets."
+            ]
+          ]
+        },
+        {
+          "title": "Between matches",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Click Restart button",
+              "Used after a loss; enabled by default."
+            ],
+            [
+              "Click Play Again button",
+              "Used after a win; enabled by default."
+            ],
+            [
+              "Check the map",
+              "Verifies the destination map after joining and reloads if wrong. Recommended on."
+            ],
+            [
+              "Collect playtime rewards",
+              "Claims playtime and daily rewards when available."
+            ]
+          ]
+        },
+        {
+          "title": "Before a long session",
+          "paragraphs": [
+            "Watch one full match first. If you are running a win-only strategy and Restart lands you on the wrong map, try disabling the restart action."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "party-vip",
+      "title": "Party & VIP servers",
+      "summary": "Private server links and Host/Member party configuration.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=party-vip",
+      "keywords": [
+        "party",
+        "vip",
+        "private server",
+        "host",
+        "member",
+        "invite"
+      ],
+      "sections": [
+        {
+          "title": "VIP server",
+          "paragraphs": [],
+          "steps": [
+            "Paste a private server link into VIP Server Link.",
+            "Enable Use VIP Server.",
+            "Confirm that the Roblox account can join that server manually before testing the macro."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Party mode",
+          "paragraphs": [],
+          "steps": [
+            "Open the Party tab.",
+            "Select Host to create a party and invite others, or Member to wait for an invite.",
+            "Enter the host's display name and members' names.",
+            "Choose whether to return to the lobby when all or any party member leaves.",
+            "Save and test the group with all accounts present."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "profiles",
+      "title": "Back up your setup",
+      "summary": "Export or import settings, hotkeys and strategies with Profile Manager.",
+      "category": "Sessions & tools",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=profiles",
+      "keywords": [
+        "profile manager",
+        "backup",
+        "import",
+        "export",
+        "settings"
+      ],
+      "sections": [
+        {
+          "title": "Export before changing your setup",
+          "paragraphs": [
+            "Profile Manager bundles settings, hotkeys and strategies for backup or moving to another PC. Export a working configuration before experimenting."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Import with care",
+          "paragraphs": [
+            "Check the import preview before replacing existing settings, hotkeys or strategies."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "tools",
+      "title": "Built-in tools",
+      "summary": "Auto Call of Arms, Auto Spin, and Auto Open Consumable.",
+      "category": "Sessions & tools",
+      "source": "/guide/tools/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=tools",
+      "keywords": [
+        "call of arms",
+        "auto spin",
+        "consumable",
+        "f3",
+        "f4",
+        "utility"
+      ],
+      "sections": [
+        {
+          "title": "Open a tool",
+          "paragraphs": [
+            "The Tools tab opens utilities in separate always-on-top windows. F3 starts the selected tool; F4 stops it."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Available tools",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Auto Call of Arms",
+              "Triggers Call of Arms and Drop the Beat on configured intervals; each ability can be disabled."
+            ],
+            [
+              "Auto Spin",
+              "Claims spinning-wheel prizes and counts tickets used."
+            ],
+            [
+              "Auto Open Consumable",
+              "Opens consumable crates and counts how many were opened."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "launch-fails",
+      "title": "Main.ahk won't open",
+      "summary": "Fix common startup failures.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=launch-fails",
+      "keywords": [
+        "startup",
+        "launch",
+        "not opening",
+        "ahk",
+        "autohotkey",
+        "crash"
+      ],
+      "sections": [
+        {
+          "title": "Check in this order",
+          "paragraphs": [],
+          "steps": [
+            "Extract the entire ZIP before running anything.",
+            "Install 64-bit AutoHotkey v2.0. v1.1 cannot run Main.ahk.",
+            "Make sure .ahk files open using the AutoHotkey v2 launcher.",
+            "Close Roblox Account Manager and other multi-instance utilities.",
+            "Open Main.ahk again."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "If the error remains",
+          "paragraphs": [
+            "Share the exact error, AutoHotkey version and Ultimate Macro version when requesting support."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "wrong-clicks",
+      "title": "Clicks miss or towers won't place",
+      "summary": "Check display geometry before changing timing.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=wrong-clicks",
+      "keywords": [
+        "tower placement",
+        "placement fails",
+        "wrong location",
+        "mouse",
+        "click",
+        "cursor"
+      ],
+      "sections": [
+        {
+          "title": "Fix screen-related misses",
+          "paragraphs": [],
+          "steps": [
+            "Check Windows resolution is supported 16:9 and scaling is preferably 100%.",
+            "Keep the Windows taskbar visible.",
+            "Set TDS UI Scale to Large and turn Screen Shake off.",
+            "Focus Roblox. Avoid resizing or moving its window once the run starts.",
+            "Test a bundled strategy for one match."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "If actions are late rather than misplaced",
+          "paragraphs": [
+            "Try a higher Mouse Delay or Key Delay in Settings. A timing issue is different from a consistent wrong click position."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "ocr-errors",
+      "title": "Wave or cash detection is wrong",
+      "summary": "Correct missing OCR language support and font changes.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=ocr-errors",
+      "keywords": [
+        "ocr",
+        "currency",
+        "cash",
+        "wave",
+        "numbers",
+        "read"
+      ],
+      "sections": [
+        {
+          "title": "Fix OCR",
+          "paragraphs": [],
+          "steps": [
+            "Install the English (United States) Windows OCR language pack.",
+            "Remove custom Roblox font modifications.",
+            "Use 100% Windows scaling as a test baseline.",
+            "Keep wave and currency UI visible and unobstructed.",
+            "Run a short test and compare the on-screen value to the value in macro logs."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Still incorrect?",
+          "paragraphs": [
+            "Save the release version, screen resolution and a cropped screenshot showing the wrong value. Remove private details before sharing it."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "upgrade-not-working",
+      "title": "Upgrades fail or use the wrong path",
+      "summary": "Check the upgrade panel, money, keybinds and delay.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=upgrade-not-working",
+      "keywords": [
+        "upgrade",
+        "path",
+        "top",
+        "bottom",
+        "money",
+        "delay"
+      ],
+      "sections": [
+        {
+          "title": "Troubleshoot upgrades",
+          "paragraphs": [],
+          "steps": [
+            "Confirm the tower has enough cash for the action.",
+            "Enable Prefer Vertical Upgrades in TDS.",
+            "Check that the upgrade and bottom-path keybinds in Ultimate Macro match your game settings.",
+            "Increase Upgrade Delay in Settings if the panel opens slowly.",
+            "Replay the same step while supervising and record which upgrade was missed."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "What changes the diagnosis",
+          "paragraphs": [
+            "If the macro clicked the wrong button, check UI settings. If it clicked before the panel appeared, increase the delay. These are different problems."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "abilities-not-working",
+      "title": "Abilities don't activate",
+      "summary": "Fix mismatched TDS ability keybinds.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=abilities-not-working",
+      "keywords": [
+        "ability",
+        "abilities",
+        "call of arms",
+        "dj",
+        "brawler",
+        "keybind"
+      ],
+      "sections": [
+        {
+          "title": "Check both sets of keybinds",
+          "paragraphs": [],
+          "steps": [
+            "Open TDS and find the key assigned to the ability.",
+            "Open Ultimate Macro → Settings → TDS Keybinds.",
+            "Set the matching key in both places.",
+            "Test the ability manually, then in a short supervised macro run."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Why there may be no error",
+          "paragraphs": [
+            "The macro sends the configured key press. If the game expects a different key, no action happens, even though the macro sent its input."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "legacy-mode",
+      "title": "Auto Equip or targeting stopped working",
+      "summary": "Legacy Mode deliberately disables some features.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=legacy-mode",
+      "keywords": [
+        "legacy",
+        "auto equip",
+        "target",
+        "targeting",
+        "disabled"
+      ],
+      "sections": [
+        {
+          "title": "Check Legacy Mode",
+          "paragraphs": [
+            "Legacy Mode disables Auto Equip and target changes. Turn it off to use those features."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "What to do",
+          "paragraphs": [],
+          "steps": [
+            "Open Settings and check whether Legacy Mode is enabled.",
+            "Disable it to use the adaptive image-detection path.",
+            "Retest Auto Equip and tower targeting.",
+            "Only use Legacy Mode as a fallback when necessary; it can retain 1920×1080 limitations."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "stuck-between-matches",
+      "title": "Stuck after a match",
+      "summary": "Check restart, play-again, and map verification.",
+      "category": "Troubleshooting",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=stuck-between-matches",
+      "keywords": [
+        "restart",
+        "play again",
+        "map",
+        "stuck",
+        "lobby",
+        "between"
+      ],
+      "sections": [
+        {
+          "title": "Check the transition",
+          "paragraphs": [],
+          "steps": [
+            "Check whether the macro stopped on a win, loss, lobby, or Ready screen.",
+            "Verify that Click Restart and Click Play Again are configured for your strategy.",
+            "Keep Check the map enabled so a wrong map can be detected.",
+            "Stop with F2 and replay a single strategy while watching the transition.",
+            "Save the last log entry and the screen state if it gets stuck again."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Wrong map after a win-only run?",
+          "paragraphs": [
+            "Disable Click Restart if a win-only strategy sends you to the wrong map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recover-disconnect",
+      "title": "Roblox disconnects during a run",
+      "summary": "What recovery handles and what to check when it stalls.",
+      "category": "Troubleshooting",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recover-disconnect",
+      "keywords": [
+        "reconnect",
+        "disconnect",
+        "roblox",
+        "lost connection",
+        "retry",
+        "recover"
+      ],
+      "sections": [
+        {
+          "title": "Automatic recovery",
+          "paragraphs": [
+            "Ultimate Macro can reconnect Roblox and re-enter TDS after a disconnect. If it stops at a login prompt or unexpected dialog, use the checks below."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "If it doesn't rejoin",
+          "paragraphs": [],
+          "steps": [
+            "Check whether Roblox can connect normally.",
+            "Dismiss unexpected Roblox dialogs or login prompts.",
+            "Stop with F2 if possible and save the recent logs.",
+            "Retry while watching the reconnect sequence and identify the screen where it gets stuck."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-not-working",
+      "title": "Discord updates aren't arriving",
+      "summary": "Separate webhook failures from remote-control failures.",
+      "category": "Troubleshooting",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-not-working",
+      "keywords": [
+        "discord",
+        "webhook",
+        "bot",
+        "remote",
+        "status",
+        "error"
+      ],
+      "sections": [
+        {
+          "title": "Webhook test",
+          "paragraphs": [],
+          "steps": [
+            "Open the macro's Discord tab.",
+            "Use Test Webhook with your configured URL.",
+            "If it fails, confirm the webhook still exists and the right URL was pasted.",
+            "Check whether Discord message permissions or channel settings have changed."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Remote commands",
+          "paragraphs": [
+            "Check that the macro runs locally, then try a bot status request. If that fails, verify the connection for your version."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Keep secrets private",
+          "paragraphs": [
+            "Never paste webhook URLs or bot tokens into public support posts. Rotate a URL or token if it leaks."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-webhooks",
+      "title": "Send logs to Discord",
+      "summary": "Set up a webhook for run logs, stats and screenshots.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-webhooks",
+      "keywords": [
+        "discord",
+        "webhook",
+        "logs",
+        "screenshots",
+        "statistics"
+      ],
+      "sections": [
+        {
+          "title": "Create a private webhook",
+          "paragraphs": [],
+          "steps": [
+            "In a Discord server, open a channel's settings → Integrations → Webhooks.",
+            "Create a webhook and copy its URL.",
+            "Open the macro's Discord tab, paste the URL and enable the webhook.",
+            "Select the information you want to send, then use Test Webhook."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Available reports",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Send Statistics",
+              "Currency and session numbers read with OCR."
+            ],
+            [
+              "Debug Logs",
+              "Local debug events forwarded to Discord."
+            ],
+            [
+              "Automatic screenshots",
+              "Periodic images during a run."
+            ],
+            [
+              "Triumph / Loss screenshots",
+              "Result-screen images, optionally sent to a second webhook."
+            ]
+          ]
+        },
+        {
+          "title": "Privacy",
+          "paragraphs": [
+            "Treat a webhook URL as a password. Screenshots may show account names or other on-screen details."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-remote",
+      "title": "Remote control from Discord",
+      "summary": "Use documented EngineerBot or personal-bot commands.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-remote",
+      "keywords": [
+        "engineerbot",
+        "discord",
+        "remote",
+        "personal bot",
+        "screenshot"
+      ],
+      "sections": [
+        {
+          "title": "What it can do",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [
+            "Start and stop the macro",
+            "Request status or a screenshot",
+            "Check version, stats and logs",
+            "Check or select the strategy (where supported)"
+          ],
+          "rows": []
+        },
+        {
+          "title": "Before enabling",
+          "paragraphs": [
+            "Test a status command before relying on remote controls. Available commands depend on the installed version; keep bot credentials private."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-community",
+      "title": "Discord community",
+      "summary": "Find announcements, strategies and support.",
+      "category": "Community",
+      "source": "https://discord.gg/ultmacro",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-community",
+      "keywords": [
+        "discord",
+        "server",
+        "roles",
+        "support",
+        "community"
+      ],
+      "sections": [
+        {
+          "title": "Official server",
+          "paragraphs": [
+            "The official Discord hosts announcements, community strategies and support. See the current channels for roles and events."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Before asking for help",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [
+            "Macro version",
+            "What you were doing",
+            "What happened versus what you expected",
+            "Relevant log or screenshot with personal details removed"
+          ],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "report-issue",
+      "title": "Report an issue",
+      "summary": "Give developers a reproducible report instead of a vague description.",
+      "category": "Community",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=report-issue",
+      "keywords": [
+        "bug",
+        "issue",
+        "error",
+        "report",
+        "log",
+        "support"
+      ],
+      "sections": [
+        {
+          "title": "Collect the important details",
+          "paragraphs": [],
+          "steps": [
+            "Enable Debug Logs in Settings.",
+            "Reproduce the problem once, if safe.",
+            "Note the version, Windows resolution and game settings.",
+            "Describe the expected result and actual result.",
+            "Attach the relevant log and a redacted screenshot when useful.",
+            "Search existing GitHub issues before filing a new one."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Where to send it",
+          "paragraphs": [
+            "Send the report to GitHub Issues or the official Discord support channel. Remove credentials and webhook URLs from any logs."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "about",
+      "title": "About Ultimate Macro",
+      "summary": "Project background and license.",
+      "category": "Community",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=about",
+      "keywords": [
+        "about",
+        "license",
+        "source",
+        "history"
+      ],
+      "sections": [
+        {
+          "title": "What it is",
+          "paragraphs": [
+            "Ultimate Macro is a free, open-source Windows macro for Roblox Tower Defense Simulator. It uses image detection and OCR rather than injecting code into Roblox."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Open source",
+          "paragraphs": [
+            "The New Era continues the project originally created by Darksen. The public code is distributed under GPL-3.0. Read the repository for license terms, contributors and releases."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Not an official Roblox product",
+          "paragraphs": [
+            "Ultimate Macro is a third-party tool and is not affiliated with Roblox or Paradoxum Games. Automation carries account and game-policy risks."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "slow-inputs",
+      "title": "Macro is slow or misses inputs",
+      "summary": "Adjust timing and performance settings without breaking placement.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=slow-inputs",
+      "keywords": [
+        "lag",
+        "slow",
+        "delay",
+        "mouse",
+        "keyboard",
+        "potato",
+        "mode",
+        "freezes",
+        "timing"
+      ],
+      "sections": [
+        {
+          "title": "Change one delay at a time",
+          "paragraphs": [],
+          "steps": [
+            "Open Ultimate Macro Settings.",
+            "If upgrades are skipped while the upgrade panel loads, raise Upgrade Delay.",
+            "If mouse actions happen too quickly, increase Mouse Delay.",
+            "If key presses are missed, increase Key Delay.",
+            "Test a short run after each adjustment so you know which change helped."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "On weaker PCs",
+          "paragraphs": [
+            "Potato Mode lowers macro overhead on slower machines. Try it before switching image detection methods."
+          ],
+          "steps": [],
+          "checks": [
+            "Keep Legacy Mode off unless needed as a fallback.",
+            "Legacy Mode may be limited to 1920×1080 and disables Auto Equip and target changes."
+          ],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "record-abilities",
+      "title": "Record DJ and tower abilities",
+      "summary": "Hotkeys for DJ tracks, Necromancer and Brawler actions.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=record-abilities",
+      "keywords": [
+        "dj",
+        "track",
+        "disc",
+        "change",
+        "abilities",
+        "record",
+        "necromancer",
+        "brawler",
+        "keybind"
+      ],
+      "sections": [
+        {
+          "title": "DJ track changes",
+          "paragraphs": [
+            "The existing recorder also supports scheduling DJ disc changes by wave."
+          ],
+          "steps": [
+            "Open Create → Record a Strategy.",
+            "During the match, use Ctrl + D to record a DJ track change.",
+            "Save the .strat file and replay it to confirm the track change is timed correctly."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Necromancer and Brawler",
+          "paragraphs": [
+            "To record Raise the Dead (Necromancer) or a Brawler reposition, hold Ctrl with the ability's in-game keybind. These actions do not use a separate recording shortcut."
+          ],
+          "steps": [],
+          "checks": [
+            "Confirm the ability keybinds in Ultimate Macro match TDS.",
+            "Test the strategy before sharing it."
+          ],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "timescale-tickets",
+      "title": "Use Timescale tickets",
+      "summary": "Configure 1.5× or 2× matches when you have tickets.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=timescale-tickets",
+      "keywords": [
+        "timescale",
+        "tickets",
+        "1.5x",
+        "2x",
+        "speed",
+        "quick",
+        "run"
+      ],
+      "sections": [
+        {
+          "title": "Configure Timescale",
+          "paragraphs": [],
+          "steps": [
+            "Confirm that timescale tickets are available on the Roblox account.",
+            "Open Ultimate Macro Settings.",
+            "Set Timescale to 1.5× or 2×.",
+            "Run one match while watching its timing and game transitions."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Check the strategy",
+          "paragraphs": [
+            "Faster games reduce run time, but a strategy still needs to work at the selected speed. Return to standard speed if the run repeatedly stalls or misses actions."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "official-downloads",
+      "title": "Use official release downloads",
+      "summary": "Find trusted ZIP files and check which release you are installing.",
+      "category": "Start here",
+      "source": "/download/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=official-downloads",
+      "keywords": [
+        "official",
+        "github",
+        "release",
+        "download",
+        "zip",
+        "trusted"
+      ],
+      "sections": [
+        {
+          "title": "Where to download",
+          "paragraphs": [
+            "Use the Ultimate Macro download page or the releases published by UltimateMacro/Ultimate-Macro-New-Era. The source repository itself is not a substitute for the complete packaged ZIP."
+          ],
+          "steps": [
+            "Open the Download page or official GitHub Releases.",
+            "Choose the release you want to use and read its notes.",
+            "Download its ZIP asset, then extract it completely."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Before updating",
+          "paragraphs": [
+            "Keep a copy of your working custom .strat files and configuration. Test any version change with a short supervised run."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "zip-folders",
+      "title": "Keep release folders together",
+      "summary": "Why Main.ahk must stay beside its libraries and resources.",
+      "category": "Start here",
+      "source": "/guide/install/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=zip-folders",
+      "keywords": [
+        "extract",
+        "zip",
+        "lib",
+        "resources",
+        "submacros",
+        "directory"
+      ],
+      "sections": [
+        {
+          "title": "Required layout",
+          "paragraphs": [
+            "Extract the release as a complete folder. Main.ahk relies on companion files and folders such as lib, Resources and submacros."
+          ],
+          "steps": [
+            "Extract all ZIP contents, not only Main.ahk.",
+            "Keep the original directory structure.",
+            "Launch Main.ahk from inside that extracted folder."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "When files go missing",
+          "paragraphs": [
+            "Download the official release again, extract it into a clean folder, and compare folder contents before transferring personal strategies."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "ahk-versions",
+      "title": "AutoHotkey v1 vs v2",
+      "summary": "Make sure Main.ahk uses the 64-bit v2 interpreter.",
+      "category": "Start here",
+      "source": "/guide/install/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=ahk-versions",
+      "keywords": [
+        "autohotkey",
+        "v2",
+        "v1",
+        "64bit",
+        "32bit",
+        "interpreter"
+      ],
+      "sections": [
+        {
+          "title": "Supported interpreter",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Required",
+              "AutoHotkey v2.0"
+            ],
+            [
+              "Architecture",
+              "64-bit"
+            ],
+            [
+              "Not compatible",
+              "AutoHotkey v1.1"
+            ]
+          ]
+        },
+        {
+          "title": "Check the association",
+          "paragraphs": [
+            "Both AutoHotkey versions can coexist on Windows."
+          ],
+          "steps": [
+            "Install 64-bit AutoHotkey v2.",
+            "Check the default application for .ahk files.",
+            "Open Main.ahk again with the v2 launcher.",
+            "If a 32-bit warning appears, change to the 64-bit build."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "first-match-checklist",
+      "title": "First-match checklist",
+      "summary": "Use one match to confirm the whole playback loop.",
+      "category": "Start here",
+      "source": "/guide/first-run/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=first-match-checklist",
+      "keywords": [
+        "first",
+        "supervised",
+        "run",
+        "check",
+        "placement",
+        "upgrade",
+        "result"
+      ],
+      "sections": [
+        {
+          "title": "Before pressing F1",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [
+            "Supported 16:9 resolution and visible Windows taskbar",
+            "TDS UI Scale: Large, Screen Shake: Disabled",
+            "Roblox at 60 FPS with Classic camera",
+            "Correct tower loadout and TDS keybinds"
+          ],
+          "rows": []
+        },
+        {
+          "title": "During the run",
+          "paragraphs": [],
+          "steps": [
+            "Watch the first placement and confirm the tower appears.",
+            "Confirm at least one upgrade follows the intended path.",
+            "Watch for end-of-match detection and correct return to the next game.",
+            "Stop with F2 if anything mismatches and note which step failed."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-equip",
+      "title": "Auto Equip Towers",
+      "summary": "Let a strategy's required towers be equipped before the match.",
+      "category": "Sessions & tools",
+      "source": "/guide/first-run/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-equip",
+      "keywords": [
+        "auto",
+        "equip",
+        "tower",
+        "loadout",
+        "missing",
+        "golden",
+        "legacy"
+      ],
+      "sections": [
+        {
+          "title": "Enable it",
+          "paragraphs": [
+            "The Main tab offers Auto Equip Towers for strategies with a defined loadout."
+          ],
+          "steps": [
+            "Choose a strategy with tower requirements.",
+            "Confirm the Roblox account owns every required tower, including golden variants.",
+            "Enable Auto Equip Towers.",
+            "Observe the loadout before your first match."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Limits",
+          "paragraphs": [
+            "Auto Equip cannot equip a tower the account doesn't own. It is unavailable in Legacy Mode."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "default-tds-keybinds",
+      "title": "Default TDS ability keybinds",
+      "summary": "Match the recorded macro keys to Tower Defense Simulator.",
+      "category": "Setup & settings",
+      "source": "/guide/first-run/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=default-tds-keybinds",
+      "keywords": [
+        "hotkeys",
+        "default",
+        "tds",
+        "abilities",
+        "command",
+        "support",
+        "caravan",
+        "keys"
+      ],
+      "sections": [
+        {
+          "title": "Default bindings",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Call of Arms",
+              "C"
+            ],
+            [
+              "Drop the Beat",
+              "B"
+            ],
+            [
+              "Support Caravan",
+              "J"
+            ],
+            [
+              "Raise the Dead",
+              "V"
+            ],
+            [
+              "Hologram",
+              "K"
+            ],
+            [
+              "Reposition",
+              "L"
+            ],
+            [
+              "Upgrade",
+              "E"
+            ],
+            [
+              "Bottom path",
+              "Z"
+            ],
+            [
+              "Cancel placement",
+              "Q"
+            ]
+          ]
+        },
+        {
+          "title": "Verify both sides",
+          "paragraphs": [
+            "In Ultimate Macro open Settings → TDS Keybinds, then compare each assigned key with TDS itself. A mismatch can make an ability do nothing without an error."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-browser",
+      "title": "Community and My Strats",
+      "summary": "Use the Main tab's built-in strategy browser.",
+      "category": "Strategies",
+      "source": "/guide/first-run/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-browser",
+      "keywords": [
+        "community",
+        "my",
+        "strats",
+        "browser",
+        "local",
+        "choose",
+        "strategies"
+      ],
+      "sections": [
+        {
+          "title": "Choose a source",
+          "paragraphs": [
+            "On Main → Strategies, Community contains shared strategy cards and My Strats contains your own files."
+          ],
+          "steps": [
+            "Open the Strategies browser.",
+            "Use Community to inspect a shared strategy, or My Strats for your recordings.",
+            "Use Browse to select a local .strat file when needed.",
+            "Review required towers, map and mode before pressing Start."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Don't skip the test",
+          "paragraphs": [
+            "Community cards and download metadata do not guarantee a strategy will work after a TDS update. Watch its first match."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-metadata",
+      "title": "Strategy recording setup",
+      "summary": "Set map, mode, towers and modifiers before capturing actions.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-metadata",
+      "keywords": [
+        "record",
+        "map",
+        "mode",
+        "towers",
+        "modifier",
+        "golden",
+        "metadata",
+        "strategy"
+      ],
+      "sections": [
+        {
+          "title": "Create → Record a Strategy",
+          "paragraphs": [],
+          "steps": [
+            "Choose the map and mode from the dropdowns.",
+            "Enter required towers as a comma-separated list.",
+            "For a golden tower, prefix the name with G, for example G Minigunner.",
+            "Hold Ctrl while selecting multiple modifiers.",
+            "Choose ability toggles, wave skipping and optional starting movement as needed.",
+            "Record your match and save its .strat file."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Supported mode families",
+          "paragraphs": [
+            "The documented recorder includes Easy, Casual, Intermediate, Molten, Fallen, Frost, Hardcore, Voidcore and Arcade, plus map-specific selections. The game may change available modes."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-modifiers",
+      "title": "Record multiple modifiers",
+      "summary": "Use Ctrl selection when preparing a strategy recording.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-modifiers",
+      "keywords": [
+        "record",
+        "modifiers",
+        "ctrl",
+        "multi",
+        "select",
+        "recording"
+      ],
+      "sections": [
+        {
+          "title": "Choose modifiers",
+          "paragraphs": [],
+          "steps": [
+            "Open Create → Record a Strategy.",
+            "Find the Modifiers control.",
+            "Hold Ctrl while selecting or deselecting additional modifiers.",
+            "Confirm your selection before starting the match.",
+            "Save and replay the strategy to verify the configuration."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Why record metadata",
+          "paragraphs": [
+            "A strategy without correct mode and modifier information can run on the wrong configuration even when its actions are valid."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "golden-tower-requirements",
+      "title": "Specify golden tower requirements",
+      "summary": "How the recording loadout denotes golden variants.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=golden-tower-requirements",
+      "keywords": [
+        "golden",
+        "tower",
+        "g",
+        "prefix",
+        "recording",
+        "requirements"
+      ],
+      "sections": [
+        {
+          "title": "Tower list format",
+          "paragraphs": [
+            "Recording accepts a comma-separated tower list. Use the G prefix for a golden version, such as G Minigunner, alongside regular names like Ranger or Commander."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Check before sharing",
+          "paragraphs": [],
+          "steps": [
+            "Confirm the golden tower variant is required by the strategy.",
+            "Include it in the recording metadata.",
+            "Tell users they must own it before trying Auto Equip.",
+            "Test that the matching loadout is equipped."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-ability-toggles",
+      "title": "Recording ability options",
+      "summary": "Understand the recording controls for abilities and wave skipping.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-ability-toggles",
+      "keywords": [
+        "record",
+        "call",
+        "of",
+        "arms",
+        "support",
+        "caravan",
+        "drop",
+        "the",
+        "beat",
+        "skip",
+        "waves",
+        "ability"
+      ],
+      "sections": [
+        {
+          "title": "Available recording options",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Use Call of Arms",
+              "Record or enable relevant ability automation"
+            ],
+            [
+              "Use Support Caravan",
+              "Include support ability use"
+            ],
+            [
+              "Use Drop the Beat",
+              "Include DJ ability use"
+            ],
+            [
+              "Auto Skip Waves",
+              "Include recorded skip behavior"
+            ],
+            [
+              "Abilities Spam",
+              "Set the recorder's repeated ability option"
+            ]
+          ]
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Confirm game keybinds and ability ownership on the receiving account. A toggle is not proof a tower or ability is available."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-movement",
+      "title": "Record opening movement",
+      "summary": "Configure optional starting movement before tower placement.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-movement",
+      "keywords": [
+        "record",
+        "move",
+        "milliseconds",
+        "direction",
+        "initial",
+        "character"
+      ],
+      "sections": [
+        {
+          "title": "Move option",
+          "paragraphs": [
+            "The documented recording form can move your Roblox character in a chosen direction for a specified number of milliseconds at the start of a run."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Use carefully",
+          "paragraphs": [],
+          "steps": [
+            "Open the recording setup.",
+            "Choose a starting direction only when the strategy requires it.",
+            "Set a short movement duration in milliseconds.",
+            "Record and test the opening sequence before extending the duration."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-quality",
+      "title": "Record a repeatable strategy",
+      "summary": "Avoid capturing rushed actions that fail on replay.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-quality",
+      "keywords": [
+        "reliable",
+        "recording",
+        "timing",
+        "money",
+        "delay",
+        "test"
+      ],
+      "sections": [
+        {
+          "title": "Before recording",
+          "paragraphs": [
+            "The recorder saves what you actually do. A winning match doesn't guarantee a repeatable strategy if clicks and upgrades are too tightly spaced."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Improve your recording",
+          "paragraphs": [],
+          "steps": [
+            "Use stable Windows and TDS settings.",
+            "Allow UI panels to open before taking the next action.",
+            "Wait for cash to become available before upgrading.",
+            "Use descriptive filenames, for example pw2_solo_farm.strat.",
+            "Replay the finished file and watch the whole match."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "tower-upgrade-paths",
+      "title": "Record split upgrade paths",
+      "summary": "Capture the intended top or bottom upgrade path.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=tower-upgrade-paths",
+      "keywords": [
+        "split",
+        "path",
+        "top",
+        "bottom",
+        "upgrades",
+        "strategy",
+        "recording"
+      ],
+      "sections": [
+        {
+          "title": "Record upgrades",
+          "paragraphs": [
+            "The recorded strategy format supports top and bottom upgrade paths as separate actions."
+          ],
+          "steps": [
+            "Confirm TDS Prefer Vertical Upgrades is enabled.",
+            "Record the tower placement first.",
+            "Use the correct upgrade hotkey for the intended path.",
+            "Save the .strat and replay until you confirm the right path was upgraded."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Troubleshoot",
+          "paragraphs": [
+            "If paths differ during replay, verify TDS keybinds and panel layout. Increase Upgrade Delay only when the panel is late opening."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "record-delete-last",
+      "title": "Undo the last recorded action",
+      "summary": "Remove a mistaken recorder action with Ctrl + B.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=record-delete-last",
+      "keywords": [
+        "delete",
+        "record",
+        "undo",
+        "ctrl",
+        "b",
+        "recording"
+      ],
+      "sections": [
+        {
+          "title": "During recording",
+          "paragraphs": [],
+          "steps": [
+            "Pause before recording the next action.",
+            "Press Ctrl + B to remove the last recorded action.",
+            "Check the remaining sequence before continuing.",
+            "Save a separate test .strat and replay it to verify the correction."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Default hotkey",
+          "paragraphs": [
+            "Ctrl + B is the documented default Delete Record shortcut; it can be changed in Recording Hotkeys."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "dj-wave-schedule",
+      "title": "Schedule DJ discs by wave",
+      "summary": "Use wave-based DJ track changes instead of manual timing where supported.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=dj-wave-schedule",
+      "keywords": [
+        "dj",
+        "disc",
+        "wave",
+        "schedule",
+        "music",
+        "record"
+      ],
+      "sections": [
+        {
+          "title": "Available recording behavior",
+          "paragraphs": [
+            "The documented recorder supports DJ disc changes with Ctrl + D and a wave-based schedule."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Validate the sequence",
+          "paragraphs": [],
+          "steps": [
+            "Set the intended DJ change in the strategy's recording flow.",
+            "Confirm the starting DJ track.",
+            "Run a supervised replay and note the wave on which the disc actually changes.",
+            "Adjust the strategy if the match reaches the change earlier than expected."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-rotation-runs",
+      "title": "Rotate strategies after runs",
+      "summary": "Switch between two strategies after a chosen run count.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-rotation-runs",
+      "keywords": [
+        "swap",
+        "strategy",
+        "rotation",
+        "runs",
+        "count",
+        "alternate"
+      ],
+      "sections": [
+        {
+          "title": "Main tab",
+          "paragraphs": [],
+          "steps": [
+            "Select two strategies on Main.",
+            "Enable Strategy Rotation.",
+            "Choose Runs for Swap after.",
+            "Enter how many runs to complete before switching.",
+            "Watch at least one switch to confirm both strategies start correctly."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Pre-check",
+          "paragraphs": [
+            "Both strategies need compatible maps, modes and tower loadouts."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-rotation-minutes",
+      "title": "Rotate strategies after minutes",
+      "summary": "Use a time interval rather than a run count.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-rotation-minutes",
+      "keywords": [
+        "swap",
+        "rotation",
+        "minutes",
+        "interval",
+        "strategy"
+      ],
+      "sections": [
+        {
+          "title": "Main tab",
+          "paragraphs": [],
+          "steps": [
+            "Choose two strategies.",
+            "Turn on Strategy Rotation.",
+            "Choose Minutes under Swap after.",
+            "Set the intended interval.",
+            "Watch the first switch and verify the target strategy."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Avoid surprises",
+          "paragraphs": [
+            "The time setting controls rotation; it does not make an incompatible strategy work with the current towers."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "currency-goals",
+      "title": "Set a currency goal",
+      "summary": "Let the macro select compatible strategies until a target is met.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=currency-goals",
+      "keywords": [
+        "goals",
+        "currency",
+        "coin",
+        "gem",
+        "target",
+        "stop"
+      ],
+      "sections": [
+        {
+          "title": "Goal behavior",
+          "paragraphs": [
+            "The documented Goals feature uses a currency target, not only a fixed number of runs, and selects compatible strategies toward it."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Set up",
+          "paragraphs": [],
+          "steps": [
+            "Open the session goal controls in your installed version.",
+            "Choose the currency and target.",
+            "Check that compatible strategies are available.",
+            "Watch the first run and confirm progress updates.",
+            "Verify that the session stops at the intended target."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "between-matches-settings",
+      "title": "Restart, Play Again and map checks",
+      "summary": "Set the behavior the macro uses between matches.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=between-matches-settings",
+      "keywords": [
+        "restart",
+        "play",
+        "again",
+        "check",
+        "map",
+        "between",
+        "matches"
+      ],
+      "sections": [
+        {
+          "title": "Options",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Click Restart",
+              "Used after a loss; normally enabled"
+            ],
+            [
+              "Click Play Again",
+              "Used after a win; normally enabled"
+            ],
+            [
+              "Check the map",
+              "Verifies the destination map and can reload if incorrect"
+            ],
+            [
+              "Collect playtime rewards",
+              "Claims available daily and playtime rewards"
+            ]
+          ]
+        },
+        {
+          "title": "Recommended test",
+          "paragraphs": [
+            "Run one match and observe the result-screen action and map selection. For a win-only strategy entering the wrong map, try turning Restart off."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "timescale-confirmation",
+      "title": "Check Timescale ticket prompts",
+      "summary": "Diagnose a Timescale prompt before a faster run.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=timescale-confirmation",
+      "keywords": [
+        "timescale",
+        "ticket",
+        "prompt",
+        "confirmation",
+        "1.5",
+        "2"
+      ],
+      "sections": [
+        {
+          "title": "First checks",
+          "paragraphs": [],
+          "steps": [
+            "Confirm the account has the required Timescale tickets.",
+            "Select 1.5× or 2× in Settings.",
+            "Run once under supervision and watch the confirmation flow.",
+            "If a ticket prompt prevents starting, return to normal speed and collect the exact prompt."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Scope",
+          "paragraphs": [
+            "The documented public release supports Timescale. Confirm button labels and confirmation behavior against the installed build before escalating a bug."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "startup-resume",
+      "title": "Start from lobby or Ready screen",
+      "summary": "How resume-aware startup handles a running Roblox session.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=startup-resume",
+      "keywords": [
+        "resume",
+        "lobby",
+        "ready",
+        "startup",
+        "detect",
+        "existing",
+        "session"
+      ],
+      "sections": [
+        {
+          "title": "Supported states",
+          "paragraphs": [
+            "Documented releases can start while Roblox is already in the TDS lobby or on the Ready screen."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Before testing",
+          "paragraphs": [],
+          "steps": [
+            "Check the correct Roblox window is focused.",
+            "Open the macro with a known-good strategy.",
+            "Observe the existing game state being recognized.",
+            "Stop with F2 if it attempts a wrong transition."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "prerun-checks",
+      "title": "Pre-run diagnostics",
+      "summary": "Review resolution, scaling, OCR and dependencies before playing.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=prerun-checks",
+      "keywords": [
+        "precheck",
+        "diagnostics",
+        "ocr",
+        "resolution",
+        "scaling",
+        "dependencies"
+      ],
+      "sections": [
+        {
+          "title": "What is checked",
+          "paragraphs": [
+            "The documented pre-run diagnostics include Windows resolution, display scaling, OCR and missing dependencies."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "If a check fails",
+          "paragraphs": [],
+          "steps": [
+            "Identify the failing prerequisite.",
+            "Open the matching Windows or macro setting.",
+            "Correct it without changing unrelated settings.",
+            "Rerun the check before starting a long session."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-statistics",
+      "title": "Discord session statistics",
+      "summary": "Understand OCR-based session information sent to Discord.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-statistics",
+      "keywords": [
+        "discord",
+        "statistics",
+        "currency",
+        "session",
+        "ocr",
+        "send"
+      ],
+      "sections": [
+        {
+          "title": "Enable the report",
+          "paragraphs": [],
+          "steps": [
+            "Create a private Discord webhook.",
+            "Enable the webhook from the macro's Discord tab.",
+            "Select Send Statistics.",
+            "Use Test Webhook, then check a live match update."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "What numbers mean",
+          "paragraphs": [
+            "Statistics are read with OCR. If a value is wrong, fix Windows OCR and Roblox fonts before treating it as a Discord problem."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-screenshot-reports",
+      "title": "Discord screenshot notifications",
+      "summary": "Use periodic and result-screen screenshots to follow a run.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-screenshot-reports",
+      "keywords": [
+        "discord",
+        "screenshot",
+        "triumphant",
+        "loss",
+        "periodic",
+        "private",
+        "webhook"
+      ],
+      "sections": [
+        {
+          "title": "Available images",
+          "paragraphs": [
+            "Automatic screenshots can be sent periodically; Triumph and Loss screenshots capture the end-of-match result screen. The result images can use a second webhook."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Privacy check",
+          "paragraphs": [],
+          "steps": [
+            "Choose a private channel.",
+            "Enable the screenshot types you want.",
+            "Check a test result for user names or other personal details.",
+            "Share only redacted examples with public support."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "discord-webhook-security",
+      "title": "Keep Discord webhook URLs private",
+      "summary": "A leaked webhook can be used to post into your channel.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=discord-webhook-security",
+      "keywords": [
+        "webhook",
+        "security",
+        "leaked",
+        "exposed",
+        "tokens",
+        "credentials"
+      ],
+      "sections": [
+        {
+          "title": "Before sharing configuration",
+          "paragraphs": [],
+          "steps": [
+            "Do not paste a webhook URL into a public issue or Discord message.",
+            "Redact the URL from screenshots and logs.",
+            "Use a private channel for the macro's screenshots and session events.",
+            "If leaked, delete or regenerate the webhook in Discord and update the macro settings."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "engineerbot-commands",
+      "title": "EngineerBot remote commands",
+      "summary": "Supported remote start, stop, screenshot and status controls.",
+      "category": "Community",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=engineerbot-commands",
+      "keywords": [
+        "discord",
+        "engineerbot",
+        "remote",
+        "control",
+        "commands"
+      ],
+      "sections": [
+        {
+          "title": "Supported actions",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Start / stop",
+              "Control the macro remotely"
+            ],
+            [
+              "Status",
+              "Query current macro state"
+            ],
+            [
+              "Screenshot",
+              "Inspect what the Windows PC shows"
+            ],
+            [
+              "Version / stats / logs",
+              "Fetch relevant diagnostics"
+            ],
+            [
+              "Selected strategy",
+              "Query the active strategy"
+            ]
+          ]
+        },
+        {
+          "title": "Before trusting remote stop",
+          "paragraphs": [
+            "Test local F2 control first and verify the bot's connection. Discord connectivity cannot repair a broken local macro session."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "profile-export",
+      "title": "Export a working profile",
+      "summary": "Back up settings, hotkeys and strategies in one bundle.",
+      "category": "Sessions & tools",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=profile-export",
+      "keywords": [
+        "profile",
+        "manager",
+        "export",
+        "backup",
+        "strategies",
+        "hotkeys"
+      ],
+      "sections": [
+        {
+          "title": "Before changing versions",
+          "paragraphs": [],
+          "steps": [
+            "Open Profile Manager.",
+            "Export the working settings, hotkeys and strategies.",
+            "Save the file somewhere outside the release folder.",
+            "Check the backup exists before editing or importing another setup."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "profile-import",
+      "title": "Import a profile safely",
+      "summary": "Restore a bundle without losing your current setup.",
+      "category": "Sessions & tools",
+      "source": "/guide/discord/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=profile-import",
+      "keywords": [
+        "profile",
+        "manager",
+        "import",
+        "preview",
+        "backup",
+        "restore"
+      ],
+      "sections": [
+        {
+          "title": "Protect the existing profile",
+          "paragraphs": [],
+          "steps": [
+            "Export your current working profile first.",
+            "Open Profile Manager and select Import.",
+            "Review its preview of settings, hotkeys and strategies.",
+            "Confirm the intended replacements and keep a backup.",
+            "Test one strategy after importing."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "tools-hotkeys",
+      "title": "Tools shortcuts: F3 and F4",
+      "summary": "Start and stop the separate tools from their own windows.",
+      "category": "Sessions & tools",
+      "source": "/guide/tools/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=tools-hotkeys",
+      "keywords": [
+        "tools",
+        "f3",
+        "f4",
+        "start",
+        "stop",
+        "spin",
+        "consumable",
+        "call",
+        "of",
+        "arms"
+      ],
+      "sections": [
+        {
+          "title": "Tool controls",
+          "paragraphs": [
+            "The Tools tab opens utilities in always-on-top windows. F3 starts the selected tool and F4 stops it."
+          ],
+          "steps": [
+            "Choose Auto Call of Arms, Auto Spin or Auto Open Consumable.",
+            "Open the tool's window.",
+            "Press F3 to begin its task.",
+            "Press F4 to stop it."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-call-of-arms",
+      "title": "Auto Call of Arms",
+      "summary": "Run supported abilities at configured intervals.",
+      "category": "Sessions & tools",
+      "source": "/guide/tools/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-call-of-arms",
+      "keywords": [
+        "auto",
+        "call",
+        "of",
+        "arms",
+        "drop",
+        "the",
+        "beat",
+        "interval",
+        "seconds"
+      ],
+      "sections": [
+        {
+          "title": "Set up intervals",
+          "paragraphs": [],
+          "steps": [
+            "Open Tools → Auto Call of Arms.",
+            "Choose the Call of Arms and Drop the Beat ability options.",
+            "Set each desired interval in seconds.",
+            "Make sure the Settings keybinds match TDS.",
+            "Press F3 to start and F4 to stop."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Important",
+          "paragraphs": [
+            "Either ability can be disabled independently. The tool cannot activate an unavailable in-game ability."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-spin",
+      "title": "Auto Spin",
+      "summary": "Automate the spinning wheel with the separate Auto Spin tool.",
+      "category": "Sessions & tools",
+      "source": "/guide/tools/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-spin",
+      "keywords": [
+        "auto",
+        "spin",
+        "wheel",
+        "tickets",
+        "f3",
+        "f4"
+      ],
+      "sections": [
+        {
+          "title": "Using Auto Spin",
+          "paragraphs": [],
+          "steps": [
+            "Open Tools → Auto Spin.",
+            "Check the spin interface is available in TDS.",
+            "Press F3 to start the tool.",
+            "Monitor the ticket count while it runs.",
+            "Press F4 to stop."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Counter",
+          "paragraphs": [
+            "The documented tool counts how many tickets were used."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-consumable",
+      "title": "Auto Open Consumable",
+      "summary": "Use the standalone crate-opening utility.",
+      "category": "Sessions & tools",
+      "source": "/guide/tools/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-consumable",
+      "keywords": [
+        "auto",
+        "open",
+        "consumable",
+        "crates",
+        "f3",
+        "f4"
+      ],
+      "sections": [
+        {
+          "title": "Opening consumables",
+          "paragraphs": [],
+          "steps": [
+            "Open Tools → Auto Open Consumable.",
+            "Confirm the intended consumables are available.",
+            "Press F3 to start opening crates.",
+            "Watch the count and stop with F4."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Counter",
+          "paragraphs": [
+            "The tool reports how many crates it opened."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "legacy-resolution",
+      "title": "Legacy Mode and resolution limits",
+      "summary": "Why Legacy Mode is a fallback for display detection.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=legacy-resolution",
+      "keywords": [
+        "legacy",
+        "mode",
+        "1080p",
+        "resolution",
+        "fallback",
+        "image",
+        "detection"
+      ],
+      "sections": [
+        {
+          "title": "Known limitation",
+          "paragraphs": [
+            "The public setup guide warns that Legacy Mode can retain 1920×1080 limitations and disables Auto Equip and target changes. Use adaptive detection when possible."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Test",
+          "paragraphs": [],
+          "steps": [
+            "Check whether Legacy Mode is enabled.",
+            "Disable it if Auto Equip or target changes are needed.",
+            "Use a supported 16:9 resolution; test at 1920×1080 if troubleshooting.",
+            "Retest with a bundled strategy before returning to long runs."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "ocr-language-fix",
+      "title": "Install missing OCR language",
+      "summary": "Correct text detection when English (US) OCR support is absent.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=ocr-language-fix",
+      "keywords": [
+        "ocr",
+        "install",
+        "english",
+        "us",
+        "windows",
+        "language"
+      ],
+      "sections": [
+        {
+          "title": "Windows requirement",
+          "paragraphs": [
+            "Ultimate Macro uses Windows OCR for currency, wave numbers and result screens."
+          ],
+          "steps": [
+            "Install the English (United States) Windows OCR language pack.",
+            "Reopen Ultimate Macro after installation.",
+            "Remove any custom Roblox fonts.",
+            "Compare a live wave/currency value against the macro's detection."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "When reporting",
+          "paragraphs": [
+            "Include a cropped screenshot of the value being read incorrectly, the resolution, scaling and release version."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "tower-path-keybind-fix",
+      "title": "Bottom-path upgrade key mismatch",
+      "summary": "Check the macro's upgrade and bottom path bindings.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=tower-path-keybind-fix",
+      "keywords": [
+        "upgrade",
+        "bottom",
+        "path",
+        "z",
+        "e",
+        "keybind"
+      ],
+      "sections": [
+        {
+          "title": "Check the keys",
+          "paragraphs": [
+            "The setup guide lists E for Upgrade and Z for Bottom path as defaults."
+          ],
+          "steps": [
+            "Open TDS and check its current upgrade and path shortcuts.",
+            "Open Ultimate Macro Settings → TDS Keybinds.",
+            "Make the matching keys identical.",
+            "Enable TDS Prefer Vertical Upgrades.",
+            "Replay one upgrade and verify the intended path."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "debug-logs-export",
+      "title": "Capture debug logs for support",
+      "summary": "Record the event around a failure without sharing private data.",
+      "category": "Troubleshooting",
+      "source": "/guide/troubleshooting/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=debug-logs-export",
+      "keywords": [
+        "debug",
+        "logs",
+        "export",
+        "support",
+        "repro",
+        "screenshot",
+        "error"
+      ],
+      "sections": [
+        {
+          "title": "Reproduce and collect",
+          "paragraphs": [],
+          "steps": [
+            "Open Settings and enable Debug Logs.",
+            "Run until the failure happens once.",
+            "Note the last successful action and the action that should have followed.",
+            "Collect the relevant local log excerpt, with personal information removed.",
+            "Include macro version, Windows resolution and screen scaling in the support report."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "What makes a report useful",
+          "paragraphs": [
+            "A short reproducible log is more useful than an entire unrelated session history."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-lab-start",
+      "title": "Open Strategy Lab",
+      "summary": "Launch the visual .strat editor from the Create tab or release folder.",
+      "category": "Strategies",
+      "source": "/guide/recording/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-lab-start",
+      "keywords": [
+        "strategy",
+        "lab",
+        "exe",
+        "create",
+        "edit",
+        "open",
+        "visual"
+      ],
+      "sections": [
+        {
+          "title": "Two entry points",
+          "paragraphs": [],
+          "steps": [
+            "Open Ultimate Macro and select Create → Open Strategy Lab or Edit a Strategy.",
+            "Alternatively, run StrategyLab.exe from the fully extracted release folder.",
+            "Open a copy of the .strat you want to inspect."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Backup",
+          "paragraphs": [
+            "Strategy Lab is a visual editor. Save a backup before changing the original strategy file."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "public-release-reference",
+      "title": "Version-specific release notes",
+      "summary": "Use release notes to understand changed behavior across builds.",
+      "category": "Community",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=public-release-reference",
+      "keywords": [
+        "versions",
+        "releases",
+        "changelog",
+        "changes",
+        "tags",
+        "fixes"
+      ],
+      "sections": [
+        {
+          "title": "Find source-of-truth details",
+          "paragraphs": [],
+          "steps": [
+            "Open the official GitHub Releases page.",
+            "Find the tag matching the installation you're using.",
+            "Read its new features, improvements and bug fixes.",
+            "Compare an observed behavior with the release it was introduced or fixed in."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Avoid guessing",
+          "paragraphs": [
+            "A feature described for one release may not exist in older versions. The current wiki baseline documents public v1.3.x behavior."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "resolution-adaptive",
+      "title": "Adaptive resolution support",
+      "summary": "Supported 16:9 display sizes and the recommended baseline.",
+      "category": "Setup & settings",
+      "source": "/guide/display/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=resolution-adaptive",
+      "keywords": [
+        "adaptive",
+        "resolution",
+        "720p",
+        "1080p",
+        "1440p",
+        "4k",
+        "image",
+        "scale"
+      ],
+      "sections": [
+        {
+          "title": "Supported displays",
+          "paragraphs": [
+            "The public 1.3.5 release supports resolution-aware image detection from 720p through 4K, with 8K scaling included. The guide lists the supported 16:9 range from 1280×720 through 3840×2160."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Baseline for troubleshooting",
+              "1920×1080 at 100% scale"
+            ],
+            [
+              "Resolution aspect ratio",
+              "16:9"
+            ],
+            [
+              "Taskbar",
+              "Visible, not auto-hidden"
+            ]
+          ]
+        },
+        {
+          "title": "If actions miss",
+          "paragraphs": [
+            "Confirm your resolution, scaling and Roblox window placement first. Increasing timing delays does not fix consistently wrong coordinates."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "macro-account-free",
+      "title": "Do I need an account?",
+      "summary": "Account requirements for the public v1.3.x local macro.",
+      "category": "Start here",
+      "source": "/guide/requirements/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=macro-account-free",
+      "keywords": [
+        "account",
+        "login",
+        "registration",
+        "required",
+        "local",
+        "free"
+      ],
+      "sections": [
+        {
+          "title": "Public v1.3.x behavior",
+          "paragraphs": [
+            "The published setup guide states that Ultimate Macro runs locally and does not require an account."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Check before a new version",
+          "paragraphs": [
+            "Account behavior may change in later builds. Follow the release notes for the installed version rather than assuming this is permanent."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "party-host",
+      "title": "Host a TDS party",
+      "summary": "Configure the Host role and invitation names.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=party-host",
+      "keywords": [
+        "party",
+        "host",
+        "invite",
+        "players",
+        "member",
+        "names"
+      ],
+      "sections": [
+        {
+          "title": "Host setup",
+          "paragraphs": [],
+          "steps": [
+            "Open the Party tab and choose Host.",
+            "Enter the members' account names.",
+            "Choose when to return to the lobby, when all members or any member leaves.",
+            "Save the party configuration.",
+            "Test with the other accounts present before an unattended run."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "party-member",
+      "title": "Join as a party member",
+      "summary": "Configure the Member role to wait for a host invitation.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=party-member",
+      "keywords": [
+        "party",
+        "member",
+        "host",
+        "invite",
+        "display",
+        "name"
+      ],
+      "sections": [
+        {
+          "title": "Member setup",
+          "paragraphs": [],
+          "steps": [
+            "Open the Party tab and choose Member.",
+            "Enter the host's display name.",
+            "Choose the expected leave/rejoin behavior.",
+            "Save, then wait for the host invitation.",
+            "Verify all accounts entered the same match."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "vip-server-link",
+      "title": "Use a VIP server link",
+      "summary": "Configure a Roblox private server for macro runs.",
+      "category": "Sessions & tools",
+      "source": "/guide/sessions/",
+      "version": "v1.3.x",
+      "url": "https://ultmacro.xyz/wiki/?article=vip-server-link",
+      "keywords": [
+        "vip",
+        "private",
+        "server",
+        "link",
+        "toggle"
+      ],
+      "sections": [
+        {
+          "title": "VIP server setup",
+          "paragraphs": [],
+          "steps": [
+            "Check that the account has access to the intended server.",
+            "Copy the private server link.",
+            "Paste it into VIP Server Link.",
+            "Enable Use VIP Server.",
+            "Join and verify the correct experience before a long run."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    }
+  ]
+}

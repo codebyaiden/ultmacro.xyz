@@ -34,3 +34,15 @@ The editorial plan lives in [`roadmap/PLAN.md`](./roadmap/PLAN.md), with 778 evi
 ## Content organization
 
 `content.mjs` combines baseline source-backed guides with `content-expanded.mjs` (44 additional reviewed public-release topics). `catalog.mjs` holds the separate 778-topic research index and must stay aligned with `roadmap/topics.json`. A planned topic is not an article and should not appear as a confirmed AI answer. Main navigation deliberately shows only the first few documents in each category.
+
+## Public read-only Wiki API
+
+The versioned Node JSON API lives in `api/wiki.mjs`, routed by `server.mjs` at `/api/wiki/v1`. It exposes paginated published articles, full article sections, categories, keyword search, discovery and OpenAPI. It has anonymous read-only access, CORS `*`, ETags, 5-minute caching and bounded query/limit input. It does **not** return roadmap-only entries, user data or AI-generated answers.
+
+The developer page is `/wiki/api/` and the guaranteed static fallback snapshot is `/wiki/api/v1/articles.json`. **Production routing requirement:** forward `/api/wiki/v1/*` through the site's edge/nginx proxy to the Node website service. A source merge alone cannot establish that edge route. The static JSON snapshot should remain accessible as a file without the API proxy.
+
+Keep `wiki/api/v1/articles.json` synchronized when editing published docs; `npm run wiki:check` verifies the snapshot's article slugs and count. Tests in `tests/wiki-api.test.mjs` cover API shape, search, method safety and caching.
+
+## Navigation decisions
+
+Primary site navigation has five tasks: Features, Wiki, Strategy Network, Early Access and Download. Existing `/guide/`, `/faq/` and background routes remain available via links and direct URLs to avoid breaking bookmarks. The 778-topic research backlog stays accessible from the wiki footer, but does not appear in main search results or the primary sidebar. Public API results include only published guides.

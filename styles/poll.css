@@ -933,10 +933,10 @@ input::placeholder {
 .progress-wrap {
   position: relative;
   overflow: hidden;
-  height: 2px;
-  border-radius: 4px;
-  background: #bbc9ee14;
-  margin-bottom: 45px;
+  height: 6px;
+  border-radius: 999px;
+  background: #9eb9ea33;
+  margin-bottom: 34px;
 }
 .progress-fill {
   position: absolute;

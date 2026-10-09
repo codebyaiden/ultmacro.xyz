@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07111f"><title>Wiki API · Ultimate Macro</title>
+<meta name="description" content="Official read-only documentation API for Ultimate Macro. Integrate wiki guides into bots and AI tools.">
+<link rel="icon" href="../../icon.ico"><style>
+:root{color-scheme:dark;font:14px/1.7 Inter,system-ui,sans-serif;background:#081625;color:#e7f1ff}
+*{box-sizing:border-box}body{margin:0}a{color:#a5c9ff}a:hover{color:#fff}
+header{border-bottom:1px solid #314968;padding:18px clamp(20px,5vw,70px);display:flex;justify-content:space-between;gap:20px}
+header a{font-weight:700;text-decoration:none}nav{display:flex;gap:20px}
+main{width:min(900px,calc(100% - 40px));margin:65px auto 90px}
+h1{font:400 clamp(40px,6vw,60px)/1.1 Georgia,serif;margin:0 0 18px;letter-spacing:-.04em}
+h2{font:700 22px Inter,system-ui;margin-top:48px}
+p{color:#b9cce3;max-width:74ch}
+.lead{font-size:16px}
+.code{border:1px solid #2e4a6a;background:#0e2238;border-radius:15px;padding:20px;overflow:auto;white-space:pre;word-break:normal;font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d8e8ff}
+.routes{display:grid;gap:10px}
+.routes a{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;text-decoration:none;border-radius:12px;border:1px solid #304c6a;background:#102942;padding:16px 20px}
+.routes code{font:12px ui-monospace,monospace;color:#a7cfff}
+small{color:#89a4c2}.warning{border-left:3px solid #84b6ff;padding:7px 15px;color:#bcd0eb}
+button{background:#d9eaff;border:0;border-radius:10px;color:#0d2646;font-weight:700;padding:10px 14px;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid #94c1ff;outline-offset:3px}
+@media(max-width:580px){nav{gap:10px;font-size:12px}main{margin:43px auto}}
+</style></head><body>
+<header><a href="../../">Ultimate Macro · Wiki</a><nav><a href="../">Guides</a><a href="../../strategies/">Strategies</a></nav></header>
+<main>
+<h1>Wiki API</h1>
+<p class="lead">Read published Ultimate Macro guides from a bot, website, or AI application. Public JSON. No account or API key required.</p>
+<p>Use citations from the returned <code>url</code> field. Results are documentation, not live diagnosis. Research-only topics are excluded.</p>
+<h2>Endpoints</h2>
+<div class="routes">
+<a href="/api/wiki/v1"><code>GET /api/wiki/v1</code><span>Discovery</span></a>
+<a href="/api/wiki/v1/articles"><code>GET /api/wiki/v1/articles</code><span>List guides</span></a>
+<a href="/api/wiki/v1/articles/install"><code>GET /api/wiki/v1/articles/:slug</code><span>Full article</span></a>
+<a href="/api/wiki/v1/search?q=tower%20placement"><code>GET /api/wiki/v1/search?q=...</code><span>Search</span></a>
+<a href="/api/wiki/v1/categories"><code>GET /api/wiki/v1/categories</code><span>Categories</span></a>
+<a href="/api/wiki/v1/openapi.json"><code>GET /api/wiki/v1/openapi.json</code><span>OpenAPI 3.1</span></a>
+<a href="./v1/articles.json"><code>GET /wiki/api/v1/articles.json</code><span>Static full snapshot</span></a>
+</div>
+<h2>Quick start</h2>
+<div class="code" id="example">const response = await fetch('https://ultmacro.xyz/api/wiki/v1/search?q=ocr');
+const { data } = await response.json();
+for (const guide of data) console.log(guide.title, guide.url);</div>
+<button id="copy" type="button">Copy example</button>
+<h2>Using the docs with AI</h2>
+<p>Fetch the search endpoint, retrieve the full article for the best-matching slug, and provide the article URL as a citation. If the article doesn't cover the user's question, say you could not verify an answer. Never silently invent a fix from an empty result.</p>
+<p class="warning"><strong>Deployment note:</strong> The live proxy must forward <code>/api/wiki/v1/*</code> to the Node website service for the query endpoints. The <a href="./v1/articles.json">static JSON snapshot</a> works as a public fallback on ordinary static hosting.</p>
+<h2>Access and limits</h2>
+<p>Read-only GET and HEAD requests; OPTIONS support for browser clients. No authentication or user-specific data. Search text is limited to 160 characters and result counts are capped. Responses support ETags and short caching. Be considerate with polling and cache article data locally.</p>
+<p><small>© Ultimate Macro · <a href="../">Read the Wiki</a></small></p>
+</main><script>
+const button=document.querySelector('#copy');button.addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText(document.querySelector('#example').textContent);button.textContent='Copied';}
+ catch{button.textContent='Select the code above';}
+});
+</script></body></html>

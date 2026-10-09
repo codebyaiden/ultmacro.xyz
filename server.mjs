@@ -6,6 +6,7 @@ import strategies from './api/strategy-network.mjs';
 import admin from './api/admin.mjs';
 import poll, { MAX_POLL_BYTES } from './api/poll.mjs';
 import pollTeam from './api/poll-team.mjs';
+import wikiApi from './api/wiki.mjs';
 
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 3000);
@@ -71,7 +72,8 @@ async function handleApi(req, res, body) {
     return serveStoredFile(pathname.slice('/api/files/'.length), req, res);
   }
   let response;
-  if (pathname === '/api/health') response = await health(request);
+  if (pathname === '/api/wiki/v1' || pathname.startsWith('/api/wiki/v1/')) response = await wikiApi(request);
+  else if (pathname === '/api/health') response = await health(request);
   else if (pathname === '/api/strategies' || pathname.startsWith('/api/strategies/')) response = await strategies(request);
   else if (pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/')) response = await pollTeam(request);
   else if (pathname === '/api/poll' || pathname.startsWith('/api/poll/')) response = await poll(request);

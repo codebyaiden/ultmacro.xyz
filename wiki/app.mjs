@@ -65,8 +65,7 @@ function nav() {
   root.replaceChildren();
   const { article, category, library, topic } = queryState();
   $('sidebar-home').classList.toggle('active', !article && !category && !library && !topic);
-  const libraryLink = $('sidebar-library');
-  if (libraryLink) libraryLink.classList.toggle('active', !!library || !!topic);
+
   const activeCategory = docs.get(article)?.category || category;
   for (const name of categories) {
     const group = node('details', 'nav-group');
@@ -199,9 +198,8 @@ function home() {
     topics.append(a);
   }
   browse.append(topics);
-  const moreTopics = link('Explore the full topic index →', libraryURL(), 'catalog-home-link');
-  moreTopics.dataset.library = '1';
-  browse.append(moreTopics);
+  const apiLink = link('Building a bot? Use the Wiki API →', './api/', 'catalog-home-link');
+  browse.append(apiLink);
   view.append(browse);
 }
 function categoryView(name) {
@@ -228,15 +226,16 @@ function researchLabel(item) {
 }
 
 function libraryView() {
-  document.title = 'All Wiki Topics · Ultimate Macro';
+  document.title = 'Documentation research backlog · Ultimate Macro';
   const head = node('section', 'library-header');
-  head.append(node('h1', '', 'All wiki topics'));
-  head.append(node('p', '', articles.length + ' published guides and ' + proposedTopics.length + ' research topics. Unverified topics are listed for coverage planning, not as confirmed problems or fixes.'));
+  head.append(node('h1', '', 'Research backlog'));
+  head.append(node('p', '', proposedTopics.length + ' candidates for future documentation. These are not tested problems or published solutions. For help, use the main wiki search.'));
   view.append(head);
 
   const controls = node('div', 'library-controls');
+  const params = new URL(location.href).searchParams;
   const filter = node('input', 'library-query');
-  filter.type = 'search'; filter.placeholder = 'Filter topics…'; filter.setAttribute('aria-label', 'Filter wiki topics');
+  filter.type = 'search'; filter.placeholder = 'Filter research topics…'; filter.setAttribute('aria-label', 'Filter research topics'); filter.value = params.get('find') || '';
   const area = node('select', 'library-select');
   area.setAttribute('aria-label', 'Filter by subject');
   const all = node('option', '', 'All subjects'); all.value = ''; area.append(all);
@@ -246,6 +245,8 @@ function libraryView() {
   for (const [value, title] of [['', 'All priorities'],['P1','First priority'],['P2','Later'],['P3','Release-dependent']]) {
     const opt = node('option', '', title);opt.value = value;priority.append(opt);
   }
+  area.value = topicCategories.includes(params.get('subject')) ? params.get('subject') : '';
+  priority.value = ['P1','P2','P3'].includes(params.get('priority')) ? params.get('priority') : '';
   controls.append(filter, area, priority);
   view.append(controls);
   const count = node('p', 'library-count');
@@ -282,7 +283,15 @@ function libraryView() {
       listing.append(more);
     }
   }
-  const onChange = () => {shown=50;refresh();};
+  const onChange = () => {
+    shown=50;
+    const url = new URL(location.href);
+    for (const [name, value] of [['find',filter.value.trim()],['subject',area.value],['priority',priority.value]]) {
+      if (value) url.searchParams.set(name,value); else url.searchParams.delete(name);
+    }
+    history.replaceState(null,'',url);
+    refresh();
+  };
   filter.addEventListener('input',onChange);
   area.addEventListener('change',onChange);
   priority.addEventListener('change',onChange);
@@ -308,7 +317,7 @@ function topicView(topic) {
     wrap.append(node('p','topic-note','This guide covers related settings or workflows. It is not a verified fix for every variation of the topic above.'));
   }
   const links = node('div','topic-actions');
-  const back = link('← All topics',libraryURL(),'text-button');back.dataset.library='1';
+  const back = link('← Research backlog',libraryURL(),'text-button');back.dataset.library='1';
   const issue = link('Report an issue ↗','https://github.com/UltimateMacro/Ultimate-Macro-New-Era/issues','text-button');
   issue.target='_blank';issue.rel='noopener noreferrer';
   links.append(back,issue);wrap.append(links);
@@ -333,6 +342,7 @@ function articleView(article) {
   view.append(breadcrumb(article.category,article.title));
   const header=node('header','article-header');
   header.append(node('span','article-category',article.category),node('h1','',article.title),node('p','article-summary',article.summary));
+  if (article.version) header.append(node('p','article-version','Documented for '+article.version));
   view.append(header);
   const columns=node('div','article-columns');
   const body=node('div','article-sections');
@@ -485,33 +495,17 @@ function searchTopics(q, limit = 4) {
 }
 function showResults(q) {
   searchResults.replaceChildren();
-  const hits = search(q, 6);
-  const planned = searchTopics(q, 5);
-  if (!hits.length && !planned.length) {
-    searchResults.append(node('p','search-empty','No match. Try a shorter term or open the full topic index.'));
+  const hits = search(q, 8);
+  if (!hits.length) {
+    searchResults.append(node('p','search-empty','No published guide matches. Try a shorter term, or ask in Discord support.'));
     return;
   }
-  if (hits.length) {
-    searchResults.append(node('p','result-heading','Published guides'));
-    for (const a of hits) {
-      const l = articleLink(a,'search-hit');
-      l.textContent = '';
-      l.append(node('span','group',a.category),node('strong','',a.title),node('small','',a.summary));
-      searchResults.append(l);
-    }
+  for (const article of hits) {
+    const item = articleLink(article,'search-hit');
+    item.textContent = '';
+    item.append(node('span','group',article.category),node('strong','',article.title),node('small','',article.summary));
+    searchResults.append(item);
   }
-  if (planned.length) {
-    searchResults.append(node('p','result-heading','Research topics · not verified articles'));
-    for (const t of planned) {
-      const l = topicLink(t,'search-hit research-hit');
-      l.textContent = '';
-      l.append(node('span','group',t.category),node('strong','',t.title),node('small','',researchLabel(t)));
-      searchResults.append(l);
-    }
-  }
-  const seeAll = link('Browse all topics →',libraryURL(),'search-all-topics');
-  seeAll.dataset.library='1';
-  searchResults.append(seeAll);
 }
 function openSearch(query=''){
   overlay.hidden=false;document.body.style.overflow='hidden';
@@ -563,6 +557,14 @@ searchInput.addEventListener('input',()=>showResults(searchInput.value));
 overlay.addEventListener('click',e=>{if(e.target===overlay)closeSearch();});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeSearch();closeMenu();if(!helper.hidden)toggleHelper(false);}
+  if (!overlay.hidden && e.key === 'Tab') {
+    const focusables = [...overlay.querySelectorAll('input,button,a[href]')].filter(el => !el.disabled && !el.hidden);
+    if (focusables.length) {
+      const first = focusables[0], last = focusables[focusables.length-1];
+      if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    }
+  }
   const target=e.target;
   const writing=target instanceof HTMLElement&&target.matches('input,textarea,select,[contenteditable="true"]');
   if((e.key==='/'&&!writing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k')){e.preventDefault();openSearch();}
