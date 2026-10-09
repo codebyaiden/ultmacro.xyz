@@ -4,11 +4,12 @@ import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { articles, categories } from '../wiki/content.mjs';
+import { proposedTopics, topicCategories } from '../wiki/catalog.mjs';
 
 const read = path => readFile(fileURLToPath(new URL('../' + path, import.meta.url)), 'utf8');
 
 test('wiki articles contain original instructions, useful sections, and real sources', () => {
-  assert.ok(articles.length >= 30);
+  assert.ok(articles.length >= 75);
   assert.equal(new Set(articles.map(a => a.slug)).size, articles.length);
   assert.equal(new Set(categories).size, categories.length);
   for (const article of articles) {
@@ -55,7 +56,7 @@ test('wiki uses homepage brand language and real Ultimate Macro media', async ()
   assert.match(css, /\.mobile-nav-button\{display:none.*border:0;background:transparent/);
   assert.match(css, /prefers-reduced-motion/);
   assert.doesNotMatch(app + html, /Quick setup reference|Quick fixes|DOCUMENTATION|WIKI \/ TOPIC|AI answers coming later/);
-  new vm.Script(app.replace(/^import[^\n]*\n/, ''));
+  new vm.Script(app.replace(/^import[^\n]*\n/gm, ''));
 });
 
 test('all wiki links stay routed and the existing website can serve modules', async () => {
@@ -103,4 +104,58 @@ test('500+ topic inventory is separate from published wiki docs', async () => {
   }
   assert.match(overview, /Never automatically publish these topics/);
   assert.match(overview, /Move to \*\*one file per article\*\*/);
+});
+
+
+test('all 778 candidate topics appear in the public, separate research index', async () => {
+  const roadmap = JSON.parse(await read('wiki/roadmap/topics.json'));
+  const source = await read('wiki/catalog.mjs');
+  assert.equal(proposedTopics.length, 778);
+  assert.equal(roadmap.totalPlanned, proposedTopics.length);
+  assert.equal(roadmap.existingPublishedArticles, articles.length);
+  assert.equal(topicCategories.length, 15);
+  assert.equal(new Set(proposedTopics.map(t => t.slug)).size, proposedTopics.length);
+  assert.ok(source.length < 200000, 'compact client index');
+  const known = new Set(articles.map(a => a.slug));
+  for (const topic of proposedTopics) {
+    assert.ok(known.has(topic.relatedGuide), 'missing related guide ' + topic.slug);
+    assert.ok(topic.title && topic.category && topic.priority && topic.slug);
+    assert.ok(topicCategories.includes(topic.category), topic.slug);
+    assert.ok(['P1', 'P2', 'P3'].includes(topic.priority), topic.slug);
+  }
+  assert.deepEqual(
+    new Set(proposedTopics.map(t => t.slug)),
+    new Set(roadmap.topics.map(t => t.slug))
+  );
+  assert.equal(roadmap.topics.filter(t => t.status !== 'planned-unverified').length, 0);
+});
+
+test('topic index supports category filters, search and explicit unverified labels', async () => {
+  const app = await read('wiki/app.mjs');
+  const html = await read('wiki/index.html');
+  const css = await read('wiki/site.css');
+  assert.match(app, /function libraryView\(/);
+  assert.match(app, /function topicView\(/);
+  assert.match(app, /function searchTopics\(/);
+  assert.match(app, /Published guides/);
+  assert.match(app, /Research topics · not verified articles/);
+  assert.match(app, /a\[data-article\],a\[data-category\],a\[data-topic\],a\[data-library\]/);
+  assert.match(html, /id="sidebar-library"/);
+  assert.match(html, /site\.css\?v=6/);
+  assert.match(css, /\.library-controls/);
+  assert.match(css, /\.catalog-row/);
+  assert.match(css, /\.topic-guide/);
+  assert.match(css, /\.sidebar-more/);
+});
+
+test('expanded guides are distinct and grounded in official sources', () => {
+  const mustHave = ['auto-equip','default-tds-keybinds','recording-metadata','strategy-rotation-runs',
+    'currency-goals','prerun-checks','discord-screenshot-reports','engineerbot-commands','auto-spin',
+    'ocr-language-fix','party-host','party-member','vip-server-link'];
+  const slugs = new Set(articles.map(a => a.slug));
+  for (const slug of mustHave) assert.ok(slugs.has(slug));
+  for (const a of articles) {
+    assert.ok(!a.source.includes('example.com'), a.slug);
+    assert.ok(a.sections.every(s => [...s.steps, ...s.paragraphs, ...s.checks, ...(s.rows || [])].length), a.slug);
+  }
 });

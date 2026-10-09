@@ -21,7 +21,7 @@ A static, searchable wiki at \`/wiki/\`, served by the website's existing Node/s
 Article URLs: \`/wiki/?article=wrong-clicks\`
 Category URLs: \`/wiki/?category=Troubleshooting\`
 
-The homepage routes visitors into setup, common problems and all topic categories. The floating helper is presently **wiki article search**, not an LLM.
+The homepage routes visitors into setup, common problems and all topic categories. The floating helper is presently **wiki article search**, not an LLM. The full library at `?library=1` includes 778 unverified topic candidates, which can link to relevant published guides; `?topic=<slug>` does not pretend to contain a verified solution.
 
 ## QA
 
@@ -30,3 +30,7 @@ Run \`npm test\`, then check keyboard search, sidebar drawer, article deep links
 ## Expansion backlog
 
 The editorial plan lives in [`roadmap/PLAN.md`](./roadmap/PLAN.md), with 778 evidence-gated candidate topics in [`roadmap/topics.json`](./roadmap/topics.json). These are **not yet published documentation**. Add a topic only after verifying it, and merge redundant topics into stronger articles rather than generating hundreds of empty pages.
+
+## Content organization
+
+`content.mjs` combines baseline source-backed guides with `content-expanded.mjs` (44 additional reviewed public-release topics). `catalog.mjs` holds the separate 778-topic research index and must stay aligned with `roadmap/topics.json`. A planned topic is not an article and should not appear as a confirmed AI answer. Main navigation deliberately shows only the first few documents in each category.

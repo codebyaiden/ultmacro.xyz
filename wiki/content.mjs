@@ -1,6 +1,7 @@
+import { expandedArticles } from './content-expanded.mjs';
 // Source-backed wiki content. Check instructions against the official release before updating.
 export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
-export const articles = [
+const baseArticles = [
   {
     "slug": "install",
     "category": "Start here",
@@ -1498,3 +1499,5 @@ export const articles = [
     "version": "v1.3.x"
   }
 ];
+
+export const articles = [...baseArticles, ...expandedArticles];

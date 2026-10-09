@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./site.css?v=5">
+  <link rel="stylesheet" href="./site.css?v=6">
   <title>Ultimate Macro Wiki</title>
 </head>
 <body>
@@ -47,6 +47,7 @@
       <div class="sidebar-scroll">
         <div class="mobile-sidebar-top"><span>Browse wiki</span><button id="sidebar-close" type="button" aria-label="Close navigation">×</button></div>
         <a href="./" id="sidebar-home" class="sidebar-home">Overview</a>
+        <a href="./?library=1" id="sidebar-library" class="sidebar-home sidebar-library" data-library="1">All wiki topics <span>778 →</span></a>
         <nav id="sidebar-nav" aria-label="Wiki articles"></nav>
         <div class="sidebar-links">
           <a href="../strategies/">Strategy Network ↗</a>
@@ -101,6 +102,6 @@
     </button>
   </div>
   <noscript><div class="noscript">Article search requires JavaScript. The <a href="../guide/">setup guide</a> remains available.</div></noscript>
-  <script type="module" src="./app.mjs?v=4"></script>
+  <script type="module" src="./app.mjs?v=6"></script>
 </body>
 </html>
