@@ -13,7 +13,8 @@
     "wiki:check": "node scripts/check-wiki-content.mjs",
     "wiki:release-audit": "node scripts/audit-release-zip.mjs",
     "wiki:build-retrieval": "node scripts/build-wiki-retrieval.mjs",
-    "wiki:check-retrieval": "node scripts/build-wiki-retrieval.mjs --check"
+    "wiki:check-retrieval": "node scripts/build-wiki-retrieval.mjs --check",
+    "wiki:deployment-check": "node scripts/check-wiki-deployment.mjs"
   },
   "dependencies": {
     "pg": "^8.16.3"

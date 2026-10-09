@@ -1,0 +1,37 @@
+name: Wiki and website tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Full Node test suite
+        run: npm test
+        env:
+          NODE_ENV: test
+          TEST_POLL_DATABASE_URL: ''
+          POLL_TEST_PGLITE_MODULE: ''
+          DATABASE_URL: ''
+      - name: Verify Wiki guides
+        run: npm run wiki:check
+      - name: Verify generated Markdown and index
+        run: npm run wiki:check-retrieval

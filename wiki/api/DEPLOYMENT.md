@@ -1,5 +1,48 @@
 # Wiki API: deployment and operational checks
 
+## Verified live state (October 9, 2026)
+
+Direct public checks confirmed:
+
+- https://ultmacro.xyz/wiki/api/ — new API page served.
+- https://ultmacro.xyz/wiki/api/v1/index.json — 127 published guide metadata records served.
+- https://ultmacro.xyz/wiki/llms.txt — accessible.
+- https://ultmacro.xyz/wiki/api/v1/docs/install.md — accessible source-linked Markdown.
+- https://ultmacro.xyz/api/health and /api/strategies — working existing Node APIs.
+- https://api-origin.ultmacro.xyz/api/health and /api/strategies — also working.
+- /api/wiki/v1, /api/wiki/v1/search, /api/wiki/v1/context — 404 on both public and api-origin domains.
+
+**Not yet established:** whether local 127.0.0.1:3000 already implements the new Wiki API. The first safe check must be on the VPS, not a guessed redirect.
+
+Run this from the deployed website checkout using the Node process already installed:
+
+    npm run wiki:deployment-check -- --local=http://127.0.0.1:3000
+    npm run wiki:deployment-check -- --local=http://127.0.0.1:3000 --json
+
+The command is read-only and checks static files, existing health, origin, public and local Wiki endpoints. It exits nonzero while the public Wiki API is incomplete.
+
+If local Wiki returns 200 but api-origin 404, inspect the **api-origin nginx/edge route**, not application logic. If local returns 404, first inspect which commit and working directory systemd actually runs; an old Node server may not include the Wiki dispatcher even while the separate static website serves the latest published docs.
+
+Read-only investigation commands (do not paste tokens or full private environment output into a ticket):
+
+    sudo systemctl show ultmacro-strategy-network.service -p WorkingDirectory -p ExecStart
+    sudo systemctl status ultmacro-strategy-network.service --no-pager
+    cd /opt/ultmacro/website && git rev-parse --short HEAD
+    curl -si http://127.0.0.1:3000/api/wiki/v1
+    curl -si 'http://127.0.0.1:3000/api/wiki/v1/search?q=ocr'
+    curl -si 'https://api-origin.ultmacro.xyz/api/wiki/v1/search?q=ocr'
+    curl -si 'https://ultmacro.xyz/api/wiki/v1/search?q=ocr'
+
+**Only after determining the failing layer:**
+
+1. Old or missing Node code: deploy the tested website revision to the actual systemd working directory and restart only the `ultmacro-strategy-network.service` after confirming no unrelated changes.
+2. Local good / origin bad: add or correct a **scoped** origin proxy location matching /api/wiki/v1 and /api/wiki/v1/*, preserving path and using the existing healthy /api/strategies upstream and headers. Validate nginx syntax before a reload; don't change accounts, poll or admin routes.
+3. Origin good / public bad: inspect the public edge rule for just /api/wiki/v1 and forward it to the verified working origin; do not replace an API-wide rule based on one endpoint.
+
+Run the smoke command again, then confirm search pagination, context citations, JSON/Markdown formats and CORS from the public URL. No deploy or systemd/nginx mutation is performed by this PR.
+
+---
+
 ## What works without proxy changes
 
 The following files are static and require no dynamic API handler:
