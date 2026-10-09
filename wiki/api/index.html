@@ -113,6 +113,7 @@
         <a href="./v1/index.json">Compact index ↗</a>
         <a href="../llms.txt">AI guide map (llms.txt) ↗</a>
         <a href="./v1/articles.json">Complete JSON export ↗</a>
+        <a href="./ASK.md">Ask Wiki API & examples ↗</a>
       </div>
       <details>
         <summary>Developer example and live search API status</summary>
@@ -125,6 +126,17 @@ const guide = articles.find(a =>
   a.keywords.includes('ocr') || a.title.toLowerCase().includes('ocr'));
 const markdown = guide && await (await fetch(guide.markdown)).text();
 // Include guide.url and guide.version with answers.</code></pre>
+          <p><strong>Plug-and-play Ask Wiki API</strong></p>
+          <p>When the Node API route is live, your bot can ask one question and receive a sourced answer or a clear <code>not_found</code> result. This API is not publicly active yet.</p>
+          <pre><code>const res = await fetch('https://ultmacro.xyz/api/wiki/v1/ask', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ question: "Why won't my towers upgrade?" })
+});
+const result = await res.json();
+if (result.status === 'answered')
+  console.log(result.answer, result.citations);</code></pre>
+          <p>See <a href="./ASK.md">full API contract, Python, Discord and AI tool examples</a>. Default answers require no paid AI model, but they are excerpts from published guides, not a diagnosis of your computer.</p>
           <p id="api-status" class="status" aria-live="polite">Checking optional dynamic search…</p>
           <p>When production routing forwards <code>/api/wiki/v1/</code> to the Node service, bots can also call <code>/api/wiki/v1/search?q=upgrade</code>, request paginated search results, or use <code>/api/wiki/v1/context?q=upgrade</code> for short sourced excerpts. These endpoints need a working production proxy; the static index and Markdown files don't.</p>
         </div>

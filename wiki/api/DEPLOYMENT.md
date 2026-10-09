@@ -95,3 +95,15 @@ Do not paste this unreviewed into production. External routing may require separ
 **Without dynamic routing:** cache the small static index.json, search its metadata locally and fetch only the relevant /docs/{slug}.md files. Do not download the full articles.json per user question.
 
 All answer generators should retain the published guide source, URL and applicable version. The 778 unverified research candidates remain excluded.
+
+## Wiki Ask activation (after the original 404 issue is resolved)
+
+After activating /api/wiki/v1 at the website Node service, also verify the POST route with a short JSON question, expected excerpt, article link and source version:
+
+    curl -si -X POST 'https://ultmacro.xyz/api/wiki/v1/ask' \
+      -H 'Content-Type: application/json' \
+      --data '{"question":"Why won'\''t my towers upgrade?"}'
+
+Expected: HTTP 200, JSON status "answered", answer_type "extractive" and source slug "upgrade-not-working". An unrelated question should return status "not_found" without an invented answer. GET /api/wiki/v1/ask must return 405. The origin or edge must forward POST, OPTIONS and the Content-Type header without exposing unrelated routes.
+
+Do not enable optional paid AI synthesis until source-only mode passes, operational rate limits exist, and spending limits have been reviewed. See [ASK.md](./ASK.md) for scope, risks and examples. The live deployment diagnostic above is independent of the Ask feature.

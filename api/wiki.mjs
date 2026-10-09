@@ -1,14 +1,17 @@
 import { createHash } from 'node:crypto';
 import { articles, categories } from '../wiki/content.mjs';
 import { searchWiki, wikiSummary, wikiManifest, markdownWikiArticle } from '../wiki/retrieval.mjs';
+import { createWikiAskEngine } from '../wiki/ask.mjs';
+import { makeWikiSynthesizer } from './wiki-synthesis.mjs';
 
 const root = '/api/wiki/v1';
 const slugs = new Map(articles.map(a => [a.slug, a]));
+const askEngine = createWikiAskEngine(articles,{synthesizer:makeWikiSynthesizer()});
 const cache = 'public, max-age=300, stale-while-revalidate=600';
 const headers = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, HEAD, OPTIONS',
-  'access-control-allow-headers': 'Accept, If-None-Match',
+  'access-control-allow-methods': 'GET, HEAD, POST, OPTIONS',
+  'access-control-allow-headers': 'Accept, Content-Type, If-None-Match',
   'access-control-max-age': '86400',
   'cache-control': cache,
   'x-content-type-options': 'nosniff'
@@ -72,11 +75,22 @@ function openapi() {
     query('offset',{type:'integer',minimum:0}),
     query('category',{type:'string'})
   ];
-  return {openapi:'3.1.0',info:{title:'Ultimate Macro Wiki API',version:'1.1.0',
+  return {openapi:'3.1.0',info:{title:'Ultimate Macro Wiki API',version:'1.2.0',
     description:'Read-only access to source-linked published guides; research candidates are excluded.'},
     servers:[{url:'https://ultmacro.xyz'}],
     paths:{
       [root]:{get:{summary:'Discover the API',responses:{'200':{description:'Available endpoints'}}}},
+      [root+'/ask']:{post:{
+        summary:'Answer a question using source-backed published Wiki sections',
+        description:'Default mode is deterministic extractive answers. AI synthesis is optional and server-configured. Insufficient evidence returns status not_found without an invented answer.',
+        requestBody:{required:true,content:{'application/json':{schema:{type:'object',required:['question'],additionalProperties:false,properties:{
+          question:{type:'string',minLength:3,maxLength:300},
+          version:{type:['string','null'],description:'Optional release filter, e.g. v1.3.5'},
+          mode:{type:'string',enum:['sourced','ai'],default:'sourced'}
+        }}}}},
+        responses:{'200':{description:'Sourced answer or explicit not_found'},'400':{description:'Invalid question or version'},
+          '413':{description:'Request too large'},'415':{description:'Requires JSON'}}
+      }},
       [root+'/index']:{get:{summary:'Compact guide catalog',responses:{'200':{description:'Metadata only'}}}},
       [root+'/categories']:{get:{summary:'Published categories',responses:{'200':{description:'Category counts'}}}},
       [root+'/articles']:{get:{summary:'Browse articles',parameters:pagination,responses:{'200':{description:'Paginated summaries'}}}},
@@ -101,15 +115,35 @@ export default async function wikiApi(request) {
   const path = url.pathname;
   const method = request.method;
   if (method === 'OPTIONS') return new Response(null,{status:204,headers});
-  if (!['GET','HEAD'].includes(method)) return new Response(JSON.stringify({error:{code:405,message:'Method not allowed'}}),
-    {status:405,headers:{...headers,'content-type':'application/json; charset=utf-8',allow:'GET, HEAD, OPTIONS'}});
   if (!path.startsWith(root)) return fail('Not found',404,request);
   const suffix = path.slice(root.length);
+  if (method === 'POST' && suffix === '/ask') {
+    if (!/^application\/json(?:\s*;|\s*$)/i.test(request.headers.get('content-type')||''))
+      return fail('POST /ask requires application/json',415,request);
+    let raw;
+    try {raw=await request.text();} catch {return fail('Unable to read request body',400,request);}
+    if (Buffer.byteLength(raw,'utf8')>2048) return fail('Ask request is too large',413,request);
+    let input;
+    try { input=JSON.parse(raw); } catch {return fail('Invalid JSON',400,request);}
+    if (!input||Array.isArray(input)||typeof input!=='object'||
+        Object.keys(input).some(k=>!['question','version','mode'].includes(k)))
+      return fail('Expected question, optional version and mode',400,request);
+    const answer=await askEngine.ask(input);
+    if (answer.error) return fail(answer.error,400,request);
+    return new Response(JSON.stringify(answer),{status:200,headers:{
+      ...headers,'content-type':'application/json; charset=utf-8','cache-control':'no-store'
+    }});
+  }
+  if (!['GET','HEAD'].includes(method) || suffix === '/ask')
+    return new Response(JSON.stringify({error:{code:405,message:'Method not allowed'}}),
+      {status:405,headers:{...headers,'content-type':'application/json; charset=utf-8',
+        allow:suffix==='/ask'?'POST, OPTIONS':'GET, HEAD, OPTIONS'}});
+
 
   if (suffix === '' || suffix === '/') return json({
-    name:'Ultimate Macro Wiki API', version:'1.1', scope:'Published documentation only',
+    name:'Ultimate Macro Wiki API', version:'1.2', scope:'Published documentation only',
     documentation:'https://ultmacro.xyz/wiki/api/',
-    endpoints:{search:root+'/search?q=ocr',context:root+'/context?q=ocr',
+    endpoints:{ask:root+'/ask',search:root+'/search?q=ocr',context:root+'/context?q=ocr',
       article:root+'/articles/{slug}',articles:root+'/articles?page=1&limit=20',
       index:root+'/index',categories:root+'/categories',openapi:root+'/openapi.json'},
     static:{index:'https://ultmacro.xyz/wiki/api/v1/index.json',

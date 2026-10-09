@@ -64,3 +64,9 @@ Preferred public, proxy-independent integration: read the compact JSON index at 
 The Node API at /api/wiki/v1 provides ranked search excerpts, pagination (page or offset, with next/previous links), short citation-ready context and Markdown responses. Production edge/nginx forwarding still has to be verified and activated before advertising this dynamic API as live. See wiki/api/DEPLOYMENT.md.
 
 After editing articles, run npm run wiki:build-retrieval and commit its generated outputs; npm run wiki:check-retrieval confirms they are in sync. The retrieval test checks that the 127 per-guide Markdown documents contain the same material as the published source guides and that unverified research topics are excluded. No LLM-generated answers are returned as documentation.
+
+## Plug-and-play Wiki Ask
+
+The optional **POST /api/wiki/v1/ask** endpoint accepts \`{"question":"...","version":"v1.3.5"}\` and returns a deterministic excerpt from the best matching published Wiki section, its source citation, and an explicit \`not_found\` state if evidence is insufficient. See [wiki/api/ASK.md](api/ASK.md) for the request/response contract and the [examples](examples/) for JavaScript, Python, Discord and AI-agent tools.
+
+Default mode uses no language model or secret. AI synthesis is off unless a trusted server operator enables an HTTPS provider with process-local budgets and short timeouts; it is always labeled an AI draft rather than proof. Do **not** advertise it as publicly live before /api/wiki/v1/ passes the production origin and edge routing smoke checks. The existing static index and Markdown documents continue to work.
