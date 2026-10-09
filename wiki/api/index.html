@@ -1,61 +1,110 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07111f"><title>Wiki API · Ultimate Macro</title>
-<meta name="description" content="Official read-only documentation API for Ultimate Macro. Integrate wiki guides into bots and AI tools.">
-<link rel="icon" href="../../icon.ico"><style>
-:root{color-scheme:dark;font:14px/1.7 Inter,system-ui,sans-serif;background:#081625;color:#e7f1ff}
-*{box-sizing:border-box}body{margin:0}a{color:#a5c9ff}a:hover{color:#fff}
-header{border-bottom:1px solid #314968;padding:18px clamp(20px,5vw,70px);display:flex;justify-content:space-between;gap:20px}
-header a{font-weight:700;text-decoration:none}nav{display:flex;gap:20px}
-main{width:min(900px,calc(100% - 40px));margin:65px auto 90px}
-h1{font:400 clamp(40px,6vw,60px)/1.1 Georgia,serif;margin:0 0 18px;letter-spacing:-.04em}
-h2{font:700 22px Inter,system-ui;margin-top:48px}
-p{color:#b9cce3;max-width:74ch}
-.lead{font-size:16px}
-.code{border:1px solid #2e4a6a;background:#0e2238;border-radius:15px;padding:20px;overflow:auto;white-space:pre;word-break:normal;font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d8e8ff}
-.routes{display:grid;gap:10px}
-.routes a{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;text-decoration:none;border-radius:12px;border:1px solid #304c6a;background:#102942;padding:16px 20px}
-.routes code{font:12px ui-monospace,monospace;color:#a7cfff}
-small{color:#89a4c2}.warning{border-left:3px solid #84b6ff;padding:7px 15px;color:#bcd0eb}
-button{background:#d9eaff;border:0;border-radius:10px;color:#0d2646;font-weight:700;padding:10px 14px;cursor:pointer}
-button:focus-visible,a:focus-visible{outline:2px solid #94c1ff;outline-offset:3px}
-@media(max-width:580px){nav{gap:10px;font-size:12px}main{margin:43px auto}}
-</style></head><body>
-<header><a href="../../">Ultimate Macro · Wiki</a><nav><a href="../">Guides</a><a href="../../strategies/">Strategies</a></nav></header>
-<main>
-<h1>Wiki API</h1>
-<p class="lead">Read published Ultimate Macro guides from a bot, website, or AI application. Public JSON. No account or API key required.</p>
-<p>Use citations from the returned <code>url</code> field. Results are documentation, not live diagnosis. Research-only topics are excluded.</p>
-<h2>Available now: complete JSON export</h2>
-<p>The full published wiki is available at the static endpoint below. Bots, server-side applications and local AI agents can fetch it without a key or a dedicated API server. This snapshot contains all 76 published guides, their source links and full sections.</p>
-<div class="routes"><a href="./v1/articles.json"><code>GET /wiki/api/v1/articles.json</code><span>Public JSON · live</span></a></div>
-<h2>Query endpoints</h2>
-<p class="warning">These server-side endpoints require the production proxy to forward <code>/api/wiki/v1/*</code> to the updated Node server and a service restart. They may return 404 until that deployment step is completed.</p>
-<div class="routes">
-<a href="/api/wiki/v1"><code>GET /api/wiki/v1</code><span>Discovery</span></a>
-<a href="/api/wiki/v1/articles"><code>GET /api/wiki/v1/articles</code><span>List guides</span></a>
-<a href="/api/wiki/v1/articles/install"><code>GET /api/wiki/v1/articles/:slug</code><span>Full article</span></a>
-<a href="/api/wiki/v1/search?q=tower%20placement"><code>GET /api/wiki/v1/search?q=...</code><span>Search</span></a>
-<a href="/api/wiki/v1/categories"><code>GET /api/wiki/v1/categories</code><span>Categories</span></a>
-<a href="/api/wiki/v1/openapi.json"><code>GET /api/wiki/v1/openapi.json</code><span>OpenAPI 3.1</span></a>
-<a href="./v1/articles.json"><code>GET /wiki/api/v1/articles.json</code><span>Static full snapshot</span></a>
-</div>
-<h2>Quick start: Node.js or server-side bots</h2>
-<div class="code" id="example">const response = await fetch('https://ultmacro.xyz/wiki/api/v1/articles.json');
-const { articles } = await response.json();
-const matches = articles.filter(a =>
-  a.title.toLowerCase().includes('ocr') || a.keywords.includes('ocr'));
-for (const guide of matches) console.log(guide.title, guide.url);</div>
-<button id="copy" type="button">Copy example</button>
-<h2>Using the docs with AI</h2>
-<p>Fetch the search endpoint, retrieve the full article for the best-matching slug, and provide the article URL as a citation. If the article doesn't cover the user's question, say you could not verify an answer. Never silently invent a fix from an empty result.</p>
-<p class="warning"><strong>Deployment note:</strong> The live proxy must forward <code>/api/wiki/v1/*</code> to the Node website service for the query endpoints. The <a href="./v1/articles.json">static JSON snapshot</a> works as a public fallback on ordinary static hosting.</p>
-<h2>Access and limits</h2>
-<p>The JSON export is public and read-only. Dynamic Node endpoints additionally support GET, HEAD, OPTIONS, CORS, bounded search input, ETags and short caching once production routing is enabled. Cross-origin browser access to the static file depends on the website's response headers; server-side bots can fetch it directly.</p>
-<p><small>© Ultimate Macro · <a href="../">Read the Wiki</a></small></p>
-</main><script>
-const button=document.querySelector('#copy');button.addEventListener('click',async()=>{
- try{await navigator.clipboard.writeText(document.querySelector('#example').textContent);button.textContent='Copied';}
- catch{button.textContent='Select the code above';}
-});
-</script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#081625">
+  <meta name="description" content="Connect a bot or AI tool to the Ultimate Macro Wiki. One public JSON link with the published guides.">
+  <link rel="canonical" href="https://ultmacro.xyz/wiki/api/">
+  <link rel="icon" href="../../icon.ico">
+  <title>Connect the Wiki · Ultimate Macro</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#eaf3ff;background:#081625;font-synthesis:none}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100dvh;line-height:1.65;-webkit-font-smoothing:antialiased;background:linear-gradient(180deg,#091b2e 0,#081625 470px)}
+    a{color:#add0ff;text-underline-offset:3px}
+    a:hover{color:#fff}
+    button{font:inherit;cursor:pointer}
+    :focus-visible{outline:2px solid #9dcaff;outline-offset:4px}
+    .skip{position:absolute;left:18px;top:-65px;padding:9px 15px;border-radius:10px;background:#edf5ff;color:#102945;z-index:3}
+    .skip:focus{top:9px}
+    .header{height:72px;border-bottom:1px solid #ffffff19;background:#091827cc}
+    .header-inner{height:100%;width:min(1060px,calc(100% - 48px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-size:13px;font-weight:750;letter-spacing:-.01em;color:#f0f6ff}
+    .brand img{width:29px;height:29px;border-radius:7px}
+    .back{color:#b0c4de;text-decoration:none;font-size:12px;font-weight:600}
+    .back:hover{color:#f8fbff}
+    main{width:min(760px,calc(100% - 42px));margin:clamp(55px,8vw,104px) auto 95px}
+    h1{font:400 clamp(42px,6.3vw,63px)/1.09 Georgia,"Times New Roman",serif;letter-spacing:-.045em;margin:0 0 19px;max-width:710px;color:#f4f8ff}
+    .lead{font-size:clamp(15px,1.8vw,17px);line-height:1.75;color:#b7cbe3;max-width:590px;margin:0 0 38px}
+    .share{background:#122b45;border:1px solid #345675;border-radius:18px;padding:23px 24px 24px;box-shadow:0 12px 32px #0108152a}
+    .share-label{font-size:12px;font-weight:730;color:#e8f1ff;margin:0 0 8px}
+    .url{display:block;overflow-wrap:anywhere;font:12.5px/1.8 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#aaccff;background:#0a1e32;border:1px solid #2a4561;border-radius:11px;padding:13px 15px;user-select:all}
+    .actions{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:18px}
+    .copy{background:#e5f0ff;color:#102848;border:0;border-radius:11px;padding:11px 20px;font-weight:770;font-size:13px;min-height:44px}
+    .copy:hover{background:#c9e1ff}
+    .view{font-weight:650;font-size:12px;text-decoration:none;padding:9px 0}
+    .message{font-size:11px;color:#a8cfff;min-height:18px;margin:9px 0 0}
+    h2{font-size:17px;letter-spacing:-.015em;margin:44px 0 15px;color:#ecf4ff}
+    .steps{list-style:none;padding:0;margin:0;display:grid;gap:15px}
+    .steps li{display:grid;grid-template-columns:24px 1fr;gap:11px;color:#c0d2e9;font-size:13.5px}
+    .steps b{color:#95bdf2;font:700 12px ui-monospace,SFMono-Regular,Menlo,monospace;padding-top:2px}
+    .steps strong{color:#eef6ff}
+    .aside{margin:29px 0 0;color:#a6b9d3;font-size:12px}
+    details{margin-top:42px;border-top:1px solid #2e4762;padding-top:20px}
+    summary{cursor:pointer;color:#bed7fa;font-weight:660;font-size:13px}
+    summary:hover{color:#fff}
+    .advanced{padding:5px 0 0;max-width:680px}
+    .advanced p{color:#adbed6;font-size:12.5px;line-height:1.75}
+    .advanced pre{overflow:auto;border-radius:12px;background:#0b2036;border:1px solid #28435f;padding:15px;color:#d5e8ff;font:12px/1.8 ui-monospace,SFMono-Regular,Menlo,monospace}
+    .advanced code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .footer{border-top:1px solid #273d57;margin-top:52px;padding-top:20px;display:flex;gap:14px;flex-wrap:wrap;color:#8a9fb9;font-size:11px}
+    .footer a{color:#9ebce0}
+    @media(max-width:600px){.header{height:65px}.header-inner{width:calc(100% - 34px)}main{margin:55px auto 65px}.share{padding:18px}.url{font-size:11px}.lead{margin-bottom:27px}.actions{gap:11px}.copy{flex:1;min-width:155px}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header"><div class="header-inner">
+    <a class="brand" href="../../"><img src="../../icon.ico" alt="" width="29" height="29">Ultimate Macro</a>
+    <a class="back" href="../">← Back to Wiki</a>
+  </div></header>
+  <main id="main">
+    <h1>Connect the Wiki to your bot.</h1>
+    <p class="lead">One public link containing all published Ultimate Macro guides. Use it in a Discord bot, AI tool, or your own app. No account or API key.</p>
+    <section class="share" aria-label="Wiki data URL">
+      <p class="share-label">Your Wiki data link</p>
+      <code id="data-url" class="url">https://ultmacro.xyz/wiki/api/v1/articles.json</code>
+      <div class="actions">
+        <button id="copy-link" class="copy" type="button">Copy link</button>
+        <a class="view" href="./v1/articles.json">View the data ↗</a>
+      </div>
+      <p id="copy-status" class="message" role="status" aria-live="polite"></p>
+    </section>
+    <h2>How to use it</h2>
+    <ol class="steps">
+      <li><b>01</b><span><strong>Copy the link</strong> above.</span></li>
+      <li><b>02</b><span><strong>Give it to a bot or AI tool</strong> that can read JSON from a URL.</span></li>
+      <li><b>03</b><span><strong>Use the guides as sources.</strong> Each article includes a link back to the Wiki.</span></li>
+    </ol>
+    <p class="aside">Only published documentation is included. Draft and unverified topics aren't part of this data.</p>
+    <details>
+      <summary>For developers: example code and API status</summary>
+      <div class="advanced">
+        <p>Fetch the dataset, then search the <code>articles</code> array. Each article contains a title, summary, keywords, sections, and source URL.</p>
+        <pre><code>const res = await fetch('https://ultmacro.xyz/wiki/api/v1/articles.json');
+const { articles } = await res.json();
+const matches = articles.filter(article =>
+  article.title.toLowerCase().includes('ocr'));</code></pre>
+        <p>The separate search endpoints under <code>/api/wiki/v1/</code> are not live yet. The complete JSON link above works now; the dynamic endpoints require the website's production proxy to forward them to the Node service.</p>
+      </div>
+    </details>
+    <div class="footer"><span>Ultimate Macro Wiki</span><a href="../">Read the guides</a><a href="../../strategies/">Strategy Network</a></div>
+  </main>
+  <script>
+    const button=document.getElementById('copy-link');
+    const status=document.getElementById('copy-status');
+    const address=document.getElementById('data-url').textContent.trim();
+    button.addEventListener('click',async()=>{
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(address);
+        button.textContent='Copied!';
+        status.textContent='Ready to paste into your bot or AI tool.';
+      } catch {
+        status.textContent='Select and copy the link above.';
+      }
+    });
+  </script>
+</body>
+</html>
