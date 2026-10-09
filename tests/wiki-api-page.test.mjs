@@ -46,6 +46,7 @@ test('each menu item has real setup instructions and a source-backed HTTP exampl
   assert.match(integrations[0].code, /method: 'POST'/);
   assert.match(integrations[0].code, /result\.status === 'answered'/);
   assert.match(integrations[1].code, /def ask_wiki\(/);
+  assert.match(integrations[1].code, /User-Agent.*UltimateMacroWiki/);
   assert.match(integrations[1].code, /result\["status"\] == "answered"/);
   assert.match(integrations[2].code, /handleWikiCommand/);
   assert.match(integrations[2].code, /SlashCommandBuilder/);
@@ -55,6 +56,11 @@ test('each menu item has real setup instructions and a source-backed HTTP exampl
   assert.match(integrations[2].code, /process\.env\.DISCORD_BOT_TOKEN/);
   assert.match(integrations[3].code, /wikiAskTool, callWikiAskTool/);
   assert.match(integrations[4].code, /curl -sS -X POST/);
+});
+
+test('Python example identifies itself to public edge protections', async () => {
+  const python = await read('wiki/examples/ask.py');
+  assert.match(python, /User-Agent.*UltimateMacroWiki/);
 });
 
 test('developer docs explicitly distinguish unavailable Ask API and working fallback', async () => {

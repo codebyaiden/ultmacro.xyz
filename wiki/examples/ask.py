@@ -10,7 +10,11 @@ def ask_wiki(question, version=None, mode="sourced", base_url="https://ultmacro.
     request = Request(
         base_url.rstrip("/") + "/api/wiki/v1/ask",
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "UltimateMacroWikiExample/1.0 (+https://ultmacro.xyz/wiki/api/)",
+        },
         method="POST",
     )
     try:
