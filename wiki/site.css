@@ -383,3 +383,11 @@ body{
 .topic-reference{display:inline-block;color:#9ac4ff;font-size:11px;font-weight:650;margin:5px 0 18px;text-decoration:underline;text-underline-offset:3px}
 .topic-reference:hover{color:#f5f9ff}
 @media(max-width:600px){.topic-evidence{padding:19px 17px}}
+
+.doc-code{position:relative;max-width:100%;background:#071726;border:1px solid #345577;border-radius:13px;margin:16px 0 6px;overflow:hidden}
+.doc-code pre{margin:0;padding:44px 18px 19px;overflow-x:auto;color:#d8e9ff;font:12.5px/1.7 "JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+.doc-code-copy{position:absolute;right:10px;top:9px;background:#21466b;border:1px solid #466b94;border-radius:9px;padding:5px 11px;color:#d7e8ff;font-size:11px;font-weight:680}
+.doc-code-copy:hover{background:#315c89}
+.article-figure{margin:23px 0 0;max-width:590px;padding:0}
+.article-figure img{display:block;width:100%;height:auto;object-fit:contain;border:1px solid #3a5a7a;border-radius:15px;background:#0c1e31}
+.article-figure figcaption{font-size:11px;color:#9bb2d0;margin:10px 0 0;line-height:1.6}

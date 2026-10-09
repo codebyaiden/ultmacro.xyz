@@ -50,3 +50,9 @@ Primary site navigation has five tasks: Features, Wiki, Strategy Network, Early 
 ## Tagged source verification
 
 See [`verification/v1.3.5-source-review.md`](verification/v1.3.5-source-review.md) for the exact release code that supports newly documented paths, hotkeys, defaults and reset behavior. The official ZIP could not be transferred into this environment, so ZIP-only runtime content, real Windows screenshots and GIFs still require an actual Windows capture session. `topic-support.mjs` extracts relevant published steps for research-topic detail pages, but does not promote those candidate pages into the public Wiki JSON API as independently verified articles.
+
+## Strategy syntax and packaged release verification
+
+The Wiki now combines the original 76 guides, 14 source-reviewed public-release guides, 19 additional source-pinned settings/updater/diagnostic guides and **18 precise Strategy Lab command reference pages**. The latter are derived from Strategy Lab's COMMAND_REFERENCE at the official v1.3.5 tag and include parameters and code examples. They document syntax, not a claim that every example has been replay-tested in TDS.
+
+Run `npm run wiki:release-audit` on a network-enabled Node 22+ machine to download the latest stable official ZIP, check its GitHub SHA-256, and inspect the archive's expected file inventory, without executing binaries. The ZIP could not be transferred into the working environment for this change. Before publishing Windows screenshots or GIFs, inspect the actual package and capture the installed version on a real Windows/TDS session. Do not fabricate gameplay screenshots.

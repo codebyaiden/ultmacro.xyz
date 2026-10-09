@@ -3,7 +3,7 @@
   "scope": "published-documentation-only",
   "researchTopicsIncluded": false,
   "source": "https://ultmacro.xyz/wiki/",
-  "generatedFrom": "repository wiki/content.mjs + content-expanded.mjs",
+  "generatedFrom": "repository Wiki content modules: base + expanded + v1.3.5 source + v1.3.5 release + Strategy Lab reference",
   "articles": [
     {
       "slug": "install",
@@ -148,7 +148,12 @@
           "checks": [],
           "rows": []
         }
-      ]
+      ],
+      "illustration": {
+        "src": "../assets/ui/ultimate-macro-main-new.png",
+        "alt": "Actual Ultimate Macro desktop application screenshot",
+        "caption": "Official website image; appearance may differ between installed releases."
+      }
     },
     {
       "slug": "windows-display",
@@ -4097,6 +4102,2181 @@
             "Confirm whether Legacy Mode is enabled.",
             "Try a first-match placement test before changing timing delays."
           ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "release-asset-integrity",
+      "title": "Verify the official ZIP and checksum",
+      "summary": "Compare the packaged release asset against its published SHA-256 digest.",
+      "category": "Start here",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/submacros/updater.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=release-asset-integrity",
+      "keywords": [
+        "download",
+        "sha256",
+        "checksum",
+        "zip",
+        "verify",
+        "official"
+      ],
+      "sections": [
+        {
+          "title": "Identify the release asset",
+          "paragraphs": [
+            "The updater source checks the latest stable GitHub release and looks for a ZIP with the expected name and SHA-256 digest."
+          ],
+          "steps": [
+            "Open the official GitHub Releases page.",
+            "Choose the release matching your intended version.",
+            "Download the attached ZIP, not a file reposted by another account.",
+            "Check the digest associated with that specific release asset."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Verify locally",
+          "paragraphs": [
+            "Run this in PowerShell from the download folder and compare the hexadecimal result with the published digest."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Command",
+              "Get-FileHash -Algorithm SHA256 .\\TDS.Macro.v1.3.5.zip"
+            ],
+            [
+              "Pass condition",
+              "The hashes match exactly"
+            ]
+          ]
+        },
+        {
+          "title": "When to stop",
+          "paragraphs": [
+            "If the digest is missing or the hash differs, do not bypass verification with a random replacement archive."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "updater-filename-mismatch",
+      "title": "Updater doesn't recognize the newest release ZIP",
+      "summary": "The v1.3.5 updater expects a filename that differs from its published ZIP asset.",
+      "category": "Troubleshooting",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/submacros/updater.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=updater-filename-mismatch",
+      "keywords": [
+        "updater",
+        "file",
+        "name",
+        "mismatch",
+        "TDS_Macro",
+        "zip",
+        "v135"
+      ],
+      "sections": [
+        {
+          "title": "Confirmed source versus release",
+          "paragraphs": [
+            "The v1.3.5 updater sets PreferredAsset to TDS_Macro.zip, while the published v1.3.5 asset is named TDS.Macro.v1.3.5.zip. The exact-name comparison can prevent this updater implementation from finding that release asset."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Expected by code",
+              "TDS_Macro.zip"
+            ],
+            [
+              "Published v1.3.5 ZIP",
+              "TDS.Macro.v1.3.5.zip"
+            ],
+            [
+              "Symptom",
+              "Update check may silently return without offering an update"
+            ]
+          ]
+        },
+        {
+          "title": "What users should do",
+          "paragraphs": [],
+          "steps": [
+            "Check which version is installed; if it is already v1.3.5, there is no newer stable v1.3.5 update to install.",
+            "Visit official GitHub Releases and verify whether a newer stable tag exists.",
+            "If updating manually, use the official asset and preserve your strategies and settings.",
+            "Report the filename mismatch to maintainers so the updater can be fixed in a release."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Do not workaround by",
+          "paragraphs": [
+            "Do not rename or spoof a GitHub release asset locally to force the updater or disable its integrity validation."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "release-prereleases",
+      "title": "Know whether a release is stable or prerelease",
+      "summary": "Read Github's stable release feed as the macro updater does.",
+      "category": "Start here",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/submacros/updater.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=release-prereleases",
+      "keywords": [
+        "stable",
+        "prerelease",
+        "github",
+        "latest",
+        "release",
+        "versions"
+      ],
+      "sections": [
+        {
+          "title": "The source endpoint",
+          "paragraphs": [
+            "The v1.3.5 updater calls GitHub's /releases/latest endpoint, which selects the latest stable published release rather than unreleased tester builds."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Stable releases",
+              "Look for the public release tag and a ZIP asset"
+            ],
+            [
+              "Tester/prerelease",
+              "Follow explicit tester instructions; don't assume the updater uses it"
+            ]
+          ]
+        },
+        {
+          "title": "Before switching builds",
+          "paragraphs": [],
+          "steps": [
+            "Check release date, version tag and published channel.",
+            "Preserve the current .strat files and profile export.",
+            "Read the release notes for settings or compatibility changes.",
+            "Do a supervised test run after switching builds."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "safe-update-validation",
+      "title": "What safe update verifies before installing",
+      "summary": "Understand downloaded staging files, checksums and rollback support.",
+      "category": "Sessions & tools",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/submacros/safe_update.ps1",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=safe-update-validation",
+      "keywords": [
+        "update",
+        "staged",
+        "sha256",
+        "rollback",
+        "safe",
+        "zip",
+        "preserved",
+        "strategies"
+      ],
+      "sections": [
+        {
+          "title": "The update sequence",
+          "paragraphs": [
+            "The updater downloads a release to staging, compares its SHA-256 with the release digest and validates the archive before replacing existing files. Backup and rollback logic are in the release package."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Before updating",
+              "Working version and custom strategies should remain backed up"
+            ],
+            [
+              "Verification",
+              "SHA-256 and package structure checks"
+            ],
+            [
+              "Recovery",
+              "Existing backup/rollback path rather than unchecked overwrite"
+            ]
+          ]
+        },
+        {
+          "title": "When the update fails",
+          "paragraphs": [],
+          "steps": [
+            "Leave the current installation folder intact.",
+            "Save the full error message.",
+            "Determine whether the download, checksum or extracted-file validation failed.",
+            "Retry only after the asset issue is resolved."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-roblox-settings-reference",
+      "title": "Auto Configure: actual Roblox settings",
+      "summary": "A source-backed reference for the Roblox values applied by Auto Configure.",
+      "category": "Setup & settings",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/auto_settings.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-roblox-settings-reference",
+      "keywords": [
+        "roblox",
+        "auto",
+        "configure",
+        "framerate",
+        "chat",
+        "camera",
+        "ui",
+        "graphics"
+      ],
+      "sections": [
+        {
+          "title": "Settings applied by source",
+          "paragraphs": [
+            "The feature writes selected named fields in Roblox's GlobalBasicSettings_13.xml. These are not arbitrary performance recommendations; they are the values encoded in v1.3.5."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "FramerateCap",
+              "60"
+            ],
+            [
+              "Fullscreen",
+              "false"
+            ],
+            [
+              "UiNavigationKeyBindEnabled",
+              "true"
+            ],
+            [
+              "GraphicsQualityLevel",
+              "1"
+            ],
+            [
+              "CameraMode",
+              "0"
+            ],
+            [
+              "ChatVisible",
+              "false"
+            ],
+            [
+              "PlayerListVisible",
+              "false"
+            ],
+            [
+              "PerformanceStatsVisible",
+              "true"
+            ]
+          ]
+        },
+        {
+          "title": "Avoid overriding by hand",
+          "paragraphs": [
+            "The macro stores a backup and provenance metadata to restore the previous state safely. Hand-editing the XML while Auto Configure is active can interfere with that restoration."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-roblox-settings-backup",
+      "title": "Where Auto Configure saves its backup",
+      "summary": "Locate the original XML backup, metadata, and error log.",
+      "category": "Setup & settings",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/auto_settings.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-roblox-settings-backup",
+      "keywords": [
+        "roblox",
+        "auto",
+        "configure",
+        "xml",
+        "localappdata",
+        "backup",
+        "meta"
+      ],
+      "sections": [
+        {
+          "title": "File locations",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Original",
+              "%LOCALAPPDATA%\\Roblox\\GlobalBasicSettings_13.xml"
+            ],
+            [
+              "Backup",
+              "GlobalBasicSettings_13.xml.macro_bak"
+            ],
+            [
+              "Metadata",
+              "GlobalBasicSettings_13.xml.macro_bak.meta"
+            ],
+            [
+              "Error log",
+              "GlobalBasicSettings_13.xml.macro_error.log"
+            ]
+          ]
+        },
+        {
+          "title": "Before investigating",
+          "paragraphs": [],
+          "steps": [
+            "Close Roblox before attempting a restore.",
+            "Make a copy of the XML, backup and metadata files.",
+            "Read the .macro_error.log text without exposing sensitive folder information.",
+            "Report the failure reason and installed macro version."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "auto-roblox-restore-refused",
+      "title": "Auto Configure refuses to restore Roblox settings",
+      "summary": "Investigate the mismatch without destroying the original backup.",
+      "category": "Troubleshooting",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/auto_settings.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=auto-roblox-restore-refused",
+      "keywords": [
+        "settings",
+        "restore",
+        "refused",
+        "provenance",
+        "metadata",
+        "changed",
+        "xml"
+      ],
+      "sections": [
+        {
+          "title": "Why the restore can stop",
+          "paragraphs": [
+            "The restore path validates the original backup and metadata. It can refuse restoration when the current XML no longer matches the verified backup or macro-applied state."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Expected safety behavior",
+              "Refuse uncertain file replacement"
+            ],
+            [
+              "Do not do",
+              "Delete metadata or overwrite XML to bypass verification"
+            ]
+          ]
+        },
+        {
+          "title": "Safest diagnosis",
+          "paragraphs": [],
+          "steps": [
+            "Stop Roblox and the macro.",
+            "Preserve the XML and .macro_bak files.",
+            "Read the .macro_error.log file for the exact mismatch.",
+            "Include that message in a report; wait for a verified recovery procedure before forcing a replacement."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "profile-export-ump-reference",
+      "title": "What's inside an exported .ump profile",
+      "summary": "Review metadata, strategy contents, option groups and privacy.",
+      "category": "Sessions & tools",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/Profiles.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=profile-export-ump-reference",
+      "keywords": [
+        "ump",
+        "export",
+        "profile",
+        "strategies",
+        "json",
+        "settings",
+        "metadata"
+      ],
+      "sections": [
+        {
+          "title": "Profile format",
+          "paragraphs": [
+            "The source writes an UTF-8 JSON-based .ump file containing export metadata, selected settings groups and optional strategy file contents."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Extension",
+              ".ump"
+            ],
+            [
+              "Metadata",
+              "macroVersion, createdAt, name, description"
+            ],
+            [
+              "Optional groups",
+              "Options, Hotkeys, RecordingHotkeys"
+            ],
+            [
+              "Strategy entries",
+              "File names and text contents for selected strategy paths"
+            ]
+          ]
+        },
+        {
+          "title": "Before sharing",
+          "paragraphs": [
+            "The export may contain sensitive configuration, and included strategy files may be private. Prefer a redacted log excerpt over sharing your whole profile to public support."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "profile-selective-groups",
+      "title": "Export only selected profile groups",
+      "summary": "Choose what a .ump backup includes.",
+      "category": "Sessions & tools",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/Profiles.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=profile-selective-groups",
+      "keywords": [
+        "profile",
+        "export",
+        "options",
+        "hotkeys",
+        "strategies",
+        "selectable"
+      ],
+      "sections": [
+        {
+          "title": "Export selection",
+          "paragraphs": [
+            "Profile Manager has independent choices for general settings, keybind groups and strategy contents. It omits sections that weren't selected."
+          ],
+          "steps": [
+            "Open Profile Manager → Export.",
+            "Choose a name and description.",
+            "Select the groups to include.",
+            "Review the export preview.",
+            "Save the .ump somewhere outside the release folder."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "What the file may not contain",
+          "paragraphs": [
+            "If the strategy selection is disabled or a selected strategy file doesn't exist, it won't be included. Check this before treating the export as a complete backup."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-file-info-section",
+      "title": "Understand .strat [Info] metadata",
+      "summary": "Read author credit, notes, duration and approximate income.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-file-info-section",
+      "keywords": [
+        "strat",
+        "info",
+        "metadata",
+        "title",
+        "author",
+        "desc",
+        "income",
+        "time"
+      ],
+      "sections": [
+        {
+          "title": "Documented fields",
+          "paragraphs": [
+            "Strategy Lab's code reference includes an [Info] section used by published strategy files. Gameplay-income estimates are descriptive, not verified guarantees."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "title",
+              "Public strategy name"
+            ],
+            [
+              "author",
+              "Creator attribution"
+            ],
+            [
+              "desc",
+              "Useful restrictions and setup notes"
+            ],
+            [
+              "income",
+              "Claimed farming yield"
+            ],
+            [
+              "time",
+              "Approximate run length"
+            ]
+          ]
+        },
+        {
+          "title": "Improve a shared strategy",
+          "paragraphs": [],
+          "steps": [
+            "Name the map and mode in a useful title or description.",
+            "Identify tower requirements and optional modifiers.",
+            "Record a tested run and note the conditions.",
+            "Avoid claiming exact hourly earnings without consistent measurements."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-lab-visual-capabilities",
+      "title": "What Strategy Lab actually supports",
+      "summary": "Visual editing for footprints, attack ranges and map backgrounds.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/README.md",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-lab-visual-capabilities",
+      "keywords": [
+        "strategy",
+        "lab",
+        "map",
+        "footprint",
+        "attack",
+        "range",
+        "split",
+        "path",
+        "calibration"
+      ],
+      "sections": [
+        {
+          "title": "In the v1.3.5 source",
+          "paragraphs": [
+            "The packaged Strategy Lab is described as a separate visual editor with placement footprints, tower attack ranges, map backgrounds, calibration persistence and split-path range tracking."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Open from",
+              "Create → Strategy Lab, or StrategyLab.exe"
+            ],
+            [
+              "Input",
+              ".strat file"
+            ],
+            [
+              "Visual context",
+              "Placement positions, footprints, ranges and map background"
+            ]
+          ]
+        },
+        {
+          "title": "Safe edit workflow",
+          "paragraphs": [],
+          "steps": [
+            "Back up the original .strat.",
+            "Open the copy in Strategy Lab.",
+            "Change one spatial action or related sequence.",
+            "Save the edited file under a new name.",
+            "Reopen the file, then test the strategy in a supervised match."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strategy-lab-sandbox-camera",
+      "title": "Capture a Strategy Lab map in Sandbox",
+      "summary": "Understand why capture needs an already-open Sandbox session.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/calibration/sandbox_replay.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=strategy-lab-sandbox-camera",
+      "keywords": [
+        "map",
+        "capture",
+        "sandbox",
+        "camera",
+        "alignment",
+        "screenshot",
+        "calibration"
+      ],
+      "sections": [
+        {
+          "title": "Precondition",
+          "paragraphs": [
+            "The calibration helper is designed to operate inside an already-open TDS Sandbox match. It verifies the macro's camera and coordinate assumptions before attempting an exact replay."
+          ],
+          "steps": [
+            "Enter the intended map in Sandbox manually.",
+            "Open the Strategy Lab capture/calibration feature for that build.",
+            "Allow the helper to validate its camera alignment.",
+            "Save the resulting map capture if the tool confirms success."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "If calibration refuses",
+          "paragraphs": [
+            "Do not force a replay on an incompatible map or resolution. Save the refusal message and version details for the developer."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "recording-hotkeys-source",
+      "title": "Source-backed recording hotkey defaults",
+      "summary": "Read the default keys used when recording actions.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/Main.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=recording-hotkeys-source",
+      "keywords": [
+        "record",
+        "hotkey",
+        "spawn",
+        "upgrade",
+        "align",
+        "dj",
+        "sell",
+        "delete",
+        "inputs"
+      ],
+      "sections": [
+        {
+          "title": "Defaults in Main.ahk",
+          "paragraphs": [
+            "These keys are read from the RecordingHotkeys section and can be changed by the user. They are not always the current bindings on an existing installation."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Place tower",
+              "F"
+            ],
+            [
+              "Upgrade tower",
+              "Ctrl+U"
+            ],
+            [
+              "Align camera",
+              "Ctrl+T"
+            ],
+            [
+              "Delete last recorded action",
+              "Ctrl+B"
+            ],
+            [
+              "Record inputs",
+              "Ctrl+Shift+E"
+            ]
+          ]
+        },
+        {
+          "title": "When a shortcut fails",
+          "paragraphs": [],
+          "steps": [
+            "Open the recording keybind settings.",
+            "Compare the configured combination with the macro defaults.",
+            "Check for conflicts with Roblox or another desktop application.",
+            "Re-test a single recorded action in a supervised session."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "launch-stop-source",
+      "title": "Start and stop keys in the installed macro",
+      "summary": "Confirm the F1/F2 bindings and what they call.",
+      "category": "Start here",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/Main.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=launch-stop-source",
+      "keywords": [
+        "f1",
+        "f2",
+        "start",
+        "stop",
+        "strategy",
+        "stop",
+        "cleanup"
+      ],
+      "sections": [
+        {
+          "title": "Source behavior",
+          "paragraphs": [
+            "Main.ahk binds F1 to StartStrategy and F2 to StopStrategy. The implementation uses pass-through hotkeys, so the keys can also reach another focused application."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "F1",
+              "StartStrategy"
+            ],
+            [
+              "F2",
+              "StopStrategy"
+            ]
+          ]
+        },
+        {
+          "title": "When stopping a stuck run",
+          "paragraphs": [],
+          "steps": [
+            "Press F2 once and allow cleanup to finish.",
+            "If Roblox remains active, check whether held inputs have actually been released.",
+            "Collect logs if the macro ignores the stop key or remains in a recovery loop."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "settings-defaults-source",
+      "title": "Understand saved option defaults",
+      "summary": "See the settings used when a value is absent from the macro's INI file.",
+      "category": "Setup & settings",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/Main.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=settings-defaults-source",
+      "keywords": [
+        "settings",
+        "ini",
+        "autoequip",
+        "restart",
+        "replay",
+        "defaults"
+      ],
+      "sections": [
+        {
+          "title": "Read-time defaults",
+          "paragraphs": [
+            "The v1.3.5 macro reads settings from an INI file and supplies fallbacks. Saved user settings override these defaults."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "AutoEquip",
+              "Off (0)"
+            ],
+            [
+              "UseRestartBtn",
+              "On (1)"
+            ],
+            [
+              "UsePlayAgainBtn",
+              "On (1)"
+            ],
+            [
+              "CheckTheMap",
+              "On (1)"
+            ],
+            [
+              "RotateStrategies",
+              "Off (0)"
+            ]
+          ]
+        },
+        {
+          "title": "When defaults don't match",
+          "paragraphs": [
+            "A previously saved value can differ from a default. Review Settings and the underlying INI before assuming the program ignored the user."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "map-ready-recovery-source",
+      "title": "Understand lobby and Ready-screen recovery",
+      "summary": "What can happen when a session starts or resumes in an unexpected state.",
+      "category": "Sessions & tools",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/README.md",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=map-ready-recovery-source",
+      "keywords": [
+        "reconnect",
+        "resume",
+        "lobby",
+        "ready",
+        "map",
+        "detection",
+        "retry"
+      ],
+      "sections": [
+        {
+          "title": "Supported behavior",
+          "paragraphs": [
+            "The v1.3.5 release advertises automatic reconnect and game re-entry, with watchdog and action-confirmation improvements. Whether a particular unexpected dialog is recoverable depends on its actual screen state."
+          ],
+          "steps": [
+            "Run one complete match supervised.",
+            "Check the transition back to the lobby or Ready screen.",
+            "Watch which map and mode are selected on re-entry.",
+            "If the macro stalls, stop with F2 and capture the last visible state and logs."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Don't assume universal recovery",
+          "paragraphs": [
+            "Game UI updates, Roblox login prompts or a mismatched strategy may require a manual intervention even when automatic reconnect works normally."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "source-backed-issue-report",
+      "title": "Make a reproducible issue report from code evidence",
+      "summary": "Collect useful version, screen state and logs for a real bug.",
+      "category": "Troubleshooting",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/README.md",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=source-backed-issue-report",
+      "keywords": [
+        "bug",
+        "issue",
+        "report",
+        "version",
+        "screenshot",
+        "logs",
+        "reproduce"
+      ],
+      "sections": [
+        {
+          "title": "Useful evidence",
+          "paragraphs": [],
+          "steps": [
+            "Record the installed Ultimate Macro version and which release tag it came from.",
+            "Write the exact action expected and action observed.",
+            "Note Windows resolution/scaling, Roblox FPS, TDS UI Scale and map/mode.",
+            "Capture a cropped screenshot of the unexpected state.",
+            "Include a redacted log excerpt, not account tokens or private webhook URLs."
+          ],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Avoid speculative diagnosis",
+          "paragraphs": [
+            "A missed click can be caused by map geometry, cash, a changing UI, or input timing. The report should separate observed facts from proposed causes."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "timescale-source-reference",
+      "title": "How TimeScale is represented in macro settings",
+      "summary": "Identify the setting used for accelerated matches.",
+      "category": "Sessions & tools",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/lib/Profiles.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=timescale-source-reference",
+      "keywords": [
+        "timescale",
+        "1.5x",
+        "2x",
+        "setting",
+        "profile",
+        "mode"
+      ],
+      "sections": [
+        {
+          "title": "Implementation names",
+          "paragraphs": [
+            "Profile Manager exports TimeScaleMode, and the official README lists 1.5x and 2x TimeScale support."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Profile field",
+              "TimeScaleMode"
+            ],
+            [
+              "Game behavior",
+              "Requires the relevant ticket/prompt to be available"
+            ]
+          ]
+        },
+        {
+          "title": "Supervised validation",
+          "paragraphs": [],
+          "steps": [
+            "Check whether tickets are available in TDS.",
+            "Select the supported speed in macro settings.",
+            "Start a short supervised run.",
+            "Confirm gameplay actually changes speed and the strategy still completes.",
+            "Return to standard speed if timing or prompts cause failure."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "updater-missing-safe-script",
+      "title": "Updater cannot find safe_update.ps1",
+      "summary": "Identify an incomplete extracted package before attempting an update.",
+      "category": "Troubleshooting",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/submacros/updater.ahk",
+      "version": "v1.3.5 source inspection",
+      "url": "https://ultmacro.xyz/wiki/?article=updater-missing-safe-script",
+      "keywords": [
+        "safe_update.ps1",
+        "missing",
+        "updater",
+        "error",
+        "submacros"
+      ],
+      "sections": [
+        {
+          "title": "Source check",
+          "paragraphs": [
+            "The updater explicitly looks for submacros\\safe_update.ps1. If missing, it displays an Update Error and stops without changing the installation."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "Expected file",
+              "<extracted release>\\submacros\\safe_update.ps1"
+            ],
+            [
+              "Typical cause",
+              "Incomplete extraction or moving Main.ahk by itself"
+            ]
+          ]
+        },
+        {
+          "title": "Fix without bypassing checks",
+          "paragraphs": [],
+          "steps": [
+            "Stop Ultimate Macro.",
+            "Download the complete official ZIP.",
+            "Extract it as a whole into a clean folder.",
+            "Confirm submacros\\safe_update.ps1 exists.",
+            "Back up existing .strat files before switching to the clean folder."
+          ],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-file-layout",
+      "title": "Anatomy of a .strat file",
+      "summary": "A .strat file is plain text split into sections. [Settings] holds the run configuration, [DO NOT EDIT] stores the resolution the strategy was recorded at, and [Steps] holds one command per line, executed top to bottom. [Info] is optional and only describes the strategy in the macro list.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-file-layout",
+      "keywords": [
+        "file layout",
+        "info",
+        "settings",
+        "not",
+        "edit",
+        "steps"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: [Info] / [Settings] / [DO NOT EDIT] / [Steps]",
+            "A .strat file is plain text split into sections. [Settings] holds the run configuration, [DO NOT EDIT] stores the resolution the strategy was recorded at, and [Steps] holds one command per line, executed top to bottom. [Info] is optional and only describes the strategy in the macro list."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "[Info]",
+              "Optional. Shown on the strategy card in the macro. See the Info keys entry below."
+            ],
+            [
+              "[Settings]",
+              "key = value lines. See the Settings keys entry below."
+            ],
+            [
+              "[DO NOT EDIT]",
+              "width and height of the Roblox client when the strategy was recorded. Every coordinate in [Steps] is scaled from these numbers, so changing them moves every placement."
+            ],
+            [
+              "[Steps]",
+              "The command list. Blank lines are ignored, and anything after a ; on a line is treated as a comment."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "[Settings]\nmap=Crossroads\ndifficulty=Molten\nrequiredTowers=Minigunner, Commander\n\n[DO NOT EDIT]\nwidth=1920\nheight=1080\n\n[Steps]\nSleep(2000)\nSpawnTower(960, 540, 1, Mini1)"
+        }
+      ]
+    },
+    {
+      "slug": "strat-settings-keys",
+      "title": "All .strat [Settings] keys",
+      "summary": "The configuration the macro reads before a run starts. Unknown keys are ignored, and any key left out falls back to the default shown here.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-settings-keys",
+      "keywords": [
+        "settings keys",
+        "settings",
+        "key",
+        "value"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: [Settings] key = value",
+            "The configuration the macro reads before a run starts. Unknown keys are ignored, and any key left out falls back to the default shown here."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "map",
+              "Map name exactly as TDS spells it, for example Crossroads."
+            ],
+            [
+              "difficulty",
+              "Casual, Easy, Intermediate, Molten, Fallen, Hardcore, Voidcore, or an Arcade / Trial name."
+            ],
+            [
+              "requiredTowers",
+              "Comma separated loadout in hotbar order. Prefix a tower with G for the golden version and R for the regular one, for example G Minigunner. Slot n in SpawnTower is the n-th tower here."
+            ],
+            [
+              "modifiers",
+              "Comma separated match modifiers to apply in the map menu. Leave empty for none."
+            ],
+            [
+              "autoChain",
+              "ON or OFF. Spams Call of Arms during the run."
+            ],
+            [
+              "autoCaravan",
+              "ON or OFF. Spams Support Caravan."
+            ],
+            [
+              "autoDropTheBeat",
+              "ON or OFF. Spams Drop the Beat."
+            ],
+            [
+              "autoSkip",
+              "ON or OFF, default ON. Presses the wave skip button when it appears."
+            ],
+            [
+              "abilitySpam",
+              "ON or OFF, default ON. Allows abilities to be used between steps."
+            ],
+            [
+              "moveEnabled",
+              "true or false. Walk after aligning the camera so the view is not blocked."
+            ],
+            [
+              "moveDirection",
+              "W, A, S or D. Which way to walk when moveEnabled is true."
+            ],
+            [
+              "moveDuration",
+              "How long to hold that key, in milliseconds. Default 750."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "requiredTowers=G Minigunner, Commander, DJ\nmodifiers=Fog\nautoChain=ON\nmoveEnabled=true\nmoveDirection=S\nmoveDuration=750"
+        }
+      ]
+    },
+    {
+      "slug": "strat-info-keys",
+      "title": "All .strat [Info] keys",
+      "summary": "Optional description shown on the strategy card inside the macro. Nothing here changes how the run is played, so it is safe to edit freely.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-info-keys",
+      "keywords": [
+        "info keys",
+        "info",
+        "key",
+        "value"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: [Info] key = value",
+            "Optional description shown on the strategy card inside the macro. Nothing here changes how the run is played, so it is safe to edit freely."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "title",
+              "Name shown on the card. Defaults to the file name."
+            ],
+            [
+              "author",
+              "Who made the strategy. Defaults to You for local recordings."
+            ],
+            [
+              "desc",
+              "One or two lines describing the strategy or what it needs."
+            ],
+            [
+              "time",
+              "Roughly how long a run takes, for example 6-7 minutes."
+            ],
+            [
+              "income",
+              "What a run pays out, for example up to 5,000 coins per hour."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "[Info]\ntitle=Coin + Any Tower EXP Farm\nauthor=gall\ndesc=Modifiers recommended, timescale optional.\nincome=up to 5,000 coins per hour\ntime=6-7 minutes"
+        }
+      ]
+    },
+    {
+      "slug": "strat-spawntower",
+      "title": "SpawnTower command",
+      "summary": "Places a tower from the hotbar on the map and gives it an id. Every later command that touches this tower refers to it by that id.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-spawntower",
+      "keywords": [
+        "spawntower",
+        "spawntower",
+        "slot",
+        "towerid"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: SpawnTower(x, y, slot, towerID)",
+            "Places a tower from the hotbar on the map and gives it an id. Every later command that touches this tower refers to it by that id.",
+            "This is the line the visual editor rewrites when a marker is dragged, so its x and y stay in sync with the map view."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "x",
+              "Horizontal position in pixels, measured from the left edge of the Roblox client at the resolution in [DO NOT EDIT]."
+            ],
+            [
+              "y",
+              "Vertical position in pixels, measured from the top edge."
+            ],
+            [
+              "slot",
+              "Hotbar slot, 1 to 5. Slot n is the n-th tower in requiredTowers."
+            ],
+            [
+              "towerID",
+              "A name of your choice, such as Mini1 or dj. It has to be unique in the file. UpgradeTower, SellTower, ChangeTargets, CloneTower and BrawlerReposition all take this id."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "SpawnTower(1063, 528, 1, Mini1)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-upgradetower",
+      "title": "UpgradeTower command",
+      "summary": "Buys upgrades for a tower that is already placed. The macro opens the tower panel, waits until the upgrade is affordable and confirms each one.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-upgradetower",
+      "keywords": [
+        "upgradetower",
+        "upgradetower",
+        "towerid",
+        "skipopen",
+        "amount",
+        "path",
+        "pathlevel"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: UpgradeTower(towerID [, skipOpen] [, amount] [, path] [, pathLevel])",
+            "Buys upgrades for a tower that is already placed. The macro opens the tower panel, waits until the upgrade is affordable and confirms each one."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "towerID",
+              "The id used in SpawnTower."
+            ],
+            [
+              "skipOpen",
+              "true or false, default false. Pass true when the tower panel is already open so the macro does not click the tower again."
+            ],
+            [
+              "amount",
+              "How many upgrades to buy in a row. Default 1."
+            ],
+            [
+              "path",
+              "Which upgrade path to take on a branching tower. Default 0, the top path. Only needed for towers that branch."
+            ],
+            [
+              "pathLevel",
+              "The level at which the tower branches. Default 0. Used together with path so the macro knows when the choice appears."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "UpgradeTower(Mini1)\nUpgradeTower(Mini1, false, 4)\nUpgradeTower(Ace1, false, 1, 2, 3)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-selltower",
+      "title": "SellTower command",
+      "summary": "Sells a placed tower and frees its spot. The id stops being usable by later commands.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-selltower",
+      "keywords": [
+        "selltower",
+        "selltower",
+        "towerid"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: SellTower(towerID)",
+            "Sells a placed tower and frees its spot. The id stops being usable by later commands."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "towerID",
+              "The id used in SpawnTower."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "SellTower(Scout1)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-clonetower",
+      "title": "CloneTower command",
+      "summary": "Uses the Hologram ability to place a copy of an existing tower at a new spot.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-clonetower",
+      "keywords": [
+        "clonetower",
+        "clonetower",
+        "towerid",
+        "wait"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: CloneTower(towerID, x, y [, wait])",
+            "Uses the Hologram ability to place a copy of an existing tower at a new spot."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "towerID",
+              "The tower to copy, by the id used in SpawnTower."
+            ],
+            [
+              "x",
+              "Horizontal position of the clone, in the same pixel space as SpawnTower."
+            ],
+            [
+              "y",
+              "Vertical position of the clone."
+            ],
+            [
+              "wait",
+              "Optional milliseconds to wait before cloning. Default 0, and it is skipped while recording."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "CloneTower(Mini1, 1180, 553)\nCloneTower(Mini1, 1180, 553, 4000)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-brawlerreposition",
+      "title": "BrawlerReposition command",
+      "summary": "Moves a placed Brawler to a new spot using its reposition ability.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-brawlerreposition",
+      "keywords": [
+        "brawlerreposition",
+        "brawlerreposition",
+        "towerid"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: BrawlerReposition(towerID, x, y)",
+            "Moves a placed Brawler to a new spot using its reposition ability."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "towerID",
+              "The Brawler, by the id used in SpawnTower."
+            ],
+            [
+              "x",
+              "New horizontal position, in the same pixel space as SpawnTower."
+            ],
+            [
+              "y",
+              "New vertical position."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "BrawlerReposition(Brawler1, 992, 604)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-enforcerreposition",
+      "title": "EnforcerReposition command",
+      "summary": "Uses the Helicopter Reposition ability of a top path Enforcer to carry another placed tower to a new spot.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-enforcerreposition",
+      "keywords": [
+        "enforcerreposition",
+        "enforcerreposition",
+        "enforcerid",
+        "towerid"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: EnforcerReposition(enforcerID, towerID, x, y)",
+            "Uses the Helicopter Reposition ability of a top path Enforcer to carry another placed tower to a new spot."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "enforcerID",
+              "The Enforcer running the ability, by the id used in SpawnTower. It has to be top path level 5 or higher."
+            ],
+            [
+              "towerID",
+              "The tower being carried, by the id used in SpawnTower."
+            ],
+            [
+              "x",
+              "New horizontal position of the carried tower, in the same pixel space as SpawnTower."
+            ],
+            [
+              "y",
+              "New vertical position of the carried tower."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "EnforcerReposition(Enf1, Mini1, 1024, 512)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-activateenforcervan",
+      "title": "ActivateEnforcerVan command",
+      "summary": "Presses the SWAT Van keybind of a bottom path Enforcer. The strategy needs a bottom path Enforcer at level 5 or higher, otherwise the step is skipped.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-activateenforcervan",
+      "keywords": [
+        "activateenforcervan",
+        "activateenforcervan",
+        "wait"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: ActivateEnforcerVan([wait])",
+            "Presses the SWAT Van keybind of a bottom path Enforcer. The strategy needs a bottom path Enforcer at level 5 or higher, otherwise the step is skipped."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "wait",
+              "Optional milliseconds to wait before pressing it. Default 0, and it is skipped while recording."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "ActivateEnforcerVan()\nActivateEnforcerVan(3000)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-activateraisethedead",
+      "title": "ActivateRaiseTheDead command",
+      "summary": "Presses the Raise the Dead keybind, which revives the Necromancer skeletons.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-activateraisethedead",
+      "keywords": [
+        "activateraisethedead",
+        "activateraisethedead",
+        "wait"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: ActivateRaiseTheDead([wait])",
+            "Presses the Raise the Dead keybind, which revives the Necromancer skeletons."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "wait",
+              "Optional milliseconds to wait before pressing it. Default 0, and it is skipped while recording."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "ActivateRaiseTheDead()\nActivateRaiseTheDead(2500)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-changetargets",
+      "title": "ChangeTargets command",
+      "summary": "Opens the tower panel and cycles its targeting until it matches the target asked for.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-changetargets",
+      "keywords": [
+        "changetargets",
+        "changetargets",
+        "towerid",
+        "target"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: ChangeTargets(towerID, target)",
+            "Opens the tower panel and cycles its targeting until it matches the target asked for."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "towerID",
+              "The tower, by the id used in SpawnTower."
+            ],
+            [
+              "target",
+              "One of First Enemy, Last Enemy, Strongest, Weakest, Closest, Farthest or Random. Written without quotes."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "ChangeTargets(Mini1, Strongest)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-setdjtrack",
+      "title": "SetDJTrack command",
+      "summary": "Selects a track on the DJ Booth. The strategy has to place a tower with the id DJ first.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-setdjtrack",
+      "keywords": [
+        "setdjtrack",
+        "setdjtrack",
+        "track"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: SetDJTrack(\"track\")",
+            "Selects a track on the DJ Booth. The strategy has to place a tower with the id DJ first."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "track",
+              "green, purple or red, in quotes. The macro matches the track by its colour icon, so any other value is refused at runtime."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "SetDJTrack(\"green\")"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-toggleautoskip",
+      "title": "ToggleAutoskip command",
+      "summary": "Presses the in-game autoskip toggle once. Use it to turn wave skipping off for a hard wave and on again afterwards.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-toggleautoskip",
+      "keywords": [
+        "toggleautoskip",
+        "toggleautoskip"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: ToggleAutoskip()",
+            "Presses the in-game autoskip toggle once. Use it to turn wave skipping off for a hard wave and on again afterwards."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [
+            "This command has no parameters."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "ToggleAutoskip()"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-click",
+      "title": "Click command",
+      "summary": "Clicks a point on screen. Useful for buttons the other commands do not cover.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-click",
+      "keywords": [
+        "click",
+        "click",
+        "right"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: Click(x, y [, Right])",
+            "Clicks a point on screen. Useful for buttons the other commands do not cover."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "x",
+              "Horizontal position, in the same pixel space as SpawnTower."
+            ],
+            [
+              "y",
+              "Vertical position."
+            ],
+            [
+              "Right",
+              "Optional. Add Right for a right click, anything else is a left click."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "Click(960, 540)\nClick(960, 540, Right)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-send",
+      "title": "Send command",
+      "summary": "Holds a keyboard key down for a set time, then releases it. This is what the input recorder writes for movement and ability keys.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-send",
+      "keywords": [
+        "send",
+        "send",
+        "key",
+        "hold"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: Send(\"key\", hold:=ms)",
+            "Holds a keyboard key down for a set time, then releases it. This is what the input recorder writes for movement and ability keys."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "key",
+              "The key name in quotes, for example \"w\" or \"space\"."
+            ],
+            [
+              "hold",
+              "How long to hold it, in milliseconds. The hold:= part is required."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "Send(\"w\", hold:=450)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-sleep",
+      "title": "Sleep command",
+      "summary": "Waits before running the next step. This is how a strategy lines up with the waves.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-sleep",
+      "keywords": [
+        "sleep",
+        "sleep"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: Sleep(ms)",
+            "Waits before running the next step. This is how a strategy lines up with the waves."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [],
+          "steps": [],
+          "checks": [],
+          "rows": [
+            [
+              "ms",
+              "Milliseconds to wait. 1000 is one second."
+            ]
+          ]
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "Sleep(12000)"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        }
+      ]
+    },
+    {
+      "slug": "strat-commander",
+      "title": "Commander command",
+      "summary": "Tells the macro a Commander is in the loadout so it handles the Call of Arms ability during the run. The recorder adds this line by itself when it sees a Commander.",
+      "category": "Strategies",
+      "source": "https://github.com/UltimateMacro/Ultimate-Macro-New-Era/blob/v1.3.5/_app/ui/app.js",
+      "version": "v1.3.5 source reference",
+      "url": "https://ultmacro.xyz/wiki/?article=strat-commander",
+      "keywords": [
+        "commander",
+        "commander",
+        "true"
+      ],
+      "sections": [
+        {
+          "title": "What it does",
+          "paragraphs": [
+            "Syntax: Commander := true",
+            "Tells the macro a Commander is in the loadout so it handles the Call of Arms ability during the run. The recorder adds this line by itself when it sees a Commander."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Parameters",
+          "paragraphs": [
+            "This command has no parameters."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": []
+        },
+        {
+          "title": "Example",
+          "paragraphs": [
+            "This example comes from Strategy Lab's built-in command reference for v1.3.5. Adapt tower IDs and coordinates to the strategy you are editing."
+          ],
+          "steps": [],
+          "checks": [],
+          "rows": [],
+          "code": "Commander := true"
+        },
+        {
+          "title": "Before replay",
+          "paragraphs": [
+            "Keep the original .strat as a backup. Save edits under a new filename, then replay one match under supervision; a syntactically valid command does not prove that the tower, ability or coordinates work in the current TDS map."
+          ],
+          "steps": [],
           "checks": [],
           "rows": []
         }

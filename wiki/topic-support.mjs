@@ -3,6 +3,18 @@
 // Unreleased/conditional items stay gated until code or a reproducible test exists.
 
 const specificGuides = [
+  [/updater.*(?:latest|asset|filename|cannot find|new release)|release zip.*(?:wrong|mismatch)/i, 'updater-filename-mismatch'],
+  [/sha.?256|checksum|verify.*release.*zip|zip.*integrity/i, 'release-asset-integrity'],
+  [/auto.?configure.*(?:restore|fail)|roblox settings.*(?:refus|restore)/i, 'auto-roblox-restore-refused'],
+  [/auto.?configure.*(?:backup|location|file)/i, 'auto-roblox-settings-backup'],
+  [/auto.?configure|roblox.*automatic.*setting/i, 'auto-roblox-settings-reference'],
+  [/profile.*(?:format|contents|\.ump|metadata)/i, 'profile-export-ump-reference'],
+  [/profile.*(?:select|include|group).*(?:export|backup)/i, 'profile-selective-groups'],
+  [/strategy lab.*(?:map|sandbox|camera|capture|calibration)/i, 'strategy-lab-sandbox-camera'],
+  [/strategy lab.*(?:range|footprint|visual|editing)/i, 'strategy-lab-visual-capabilities'],
+  [/\.strat.*(?:format|info|metadata|author)/i, 'strategy-file-info-section'],
+  [/recording.*(?:hotkey|shortcut).*default/i, 'recording-hotkeys-source'],
+
   [/settings (?:file|folder|path|save)|appdata|options directory|settings\.tds/i, 'where-settings-are-saved'],
   [/(?:recording|recorded strategy|\.strat).*(?:file|folder|save|path)|locate saved.*strat|strategy directory/i, 'where-recordings-are-saved'],
   [/profile.*(?:folder|path|backup location)/i, 'where-profiles-are-saved'],

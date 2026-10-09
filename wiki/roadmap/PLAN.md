@@ -30,11 +30,11 @@ Never automatically publish these topics or generate 778 filler pages. One clear
 - **P1: 106 specific topics.** Divide into four review batches of about 25–27. First: reliable installation, Windows/TDS settings and first-match checks. Then tower placement/upgrades, cash/wave OCR, recording and editing, and Discord/Strategy Network.
 - **P2: 580 topics.** Expand only where release functionality is present, users ask repeatedly, or source/log evidence justifies a standalone guide.
 - **P3: 92 conditional topics.** Primarily version-specific, community-policy, migration or new-release behavior. Do not claim an unreleased 1.4 feature works.
-- **Existing 90:** Keep maintained and link them rather than publishing duplicate variations.
+- **Existing 127:** Keep maintained and link them rather than publishing duplicate variations.
 
 Suggested sequence:
 
-1. **Stabilize the existing 90** with real screens, verified instructions, and version applicability.
+1. **Stabilize the existing 127** with real screens, verified instructions, and version applicability.
 2. **Release first 25 P1 guides**: install, screen setup, OCR, Roblox and TDS settings, controls, first strategy.
 3. **Expand troubleshooting and strategies** in the next ~25-article batches using tested symptoms and reproducible fixes.
 4. **Build out integration and editing** with screenshots/GIFs of the actual app on Windows.
@@ -90,3 +90,7 @@ All 778 candidate titles are now accessible in the wiki's **All wiki topics** in
 ## Related guidance on research-topic pages
 
 The research index preserves all 778 titles, but their detail pages now show matching **source-linked excerpts of existing published instructions** when available, instead of only a generic related-article card. These excerpts are not independent validation of every title. Items whose exact behavior requires a v1.4 build are explicitly gated. More authoritative content must come from tested releases, reproducible issue reports and real Windows screenshots.
+
+## Expanded v1.3.5 source references
+
+Another **37 detailed guides** are available: 19 settings/updater/diagnostic topics and 18 Strategy Lab .strat command reference pages, with exact signatures, parameter tables and examples. The total is **127 source-linked articles**, still distinct from the 778 unverified research-topic candidates. The release ZIP itself was not transferred into the working environment, and the screenshots/GIFs require real Windows/TDS captures; there are no invented screen states.

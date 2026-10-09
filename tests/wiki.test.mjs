@@ -145,7 +145,7 @@ test('topic index supports category filters, search and explicit unverified labe
   assert.doesNotMatch(html, /id="sidebar-library"/);
   assert.match(html, /Research backlog/);
   assert.match(html, /href="\.\/api\/"/);
-  assert.match(html, /site\.css\?v=8/);
+  assert.match(html, /site\.css\?v=9/);
   assert.match(css, /\.library-controls/);
   assert.match(css, /\.catalog-row/);
   assert.match(css, /\.topic-guide/);

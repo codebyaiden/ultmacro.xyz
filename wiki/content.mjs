@@ -1,5 +1,7 @@
 import { expandedArticles } from './content-expanded.mjs';
 import { sourceVerifiedArticles } from './content-v135-source.mjs';
+import { releaseVerifiedArticles } from './content-release-v135.mjs';
+import { stratReferenceArticles } from './content-strat-reference.mjs';
 // Source-backed wiki content. Check instructions against the official release before updating.
 export const categories = ["Start here","Setup & settings","Strategies","Sessions & tools","Troubleshooting","Community"];
 const baseArticles = [
@@ -1501,4 +1503,12 @@ const baseArticles = [
   }
 ];
 
-export const articles = [...baseArticles, ...expandedArticles, ...sourceVerifiedArticles];
+// This is an existing project screenshot, not a generated rendering.
+const firstRun = baseArticles.find(a => a.slug === 'first-run');
+if (firstRun) firstRun.illustration = {
+  src: '../assets/ui/ultimate-macro-main-new.png',
+  alt: 'Actual Ultimate Macro desktop application screenshot',
+  caption: 'Official website image; appearance may differ between installed releases.'
+};
+
+export const articles = [...baseArticles, ...expandedArticles, ...sourceVerifiedArticles, ...releaseVerifiedArticles, ...stratReferenceArticles];

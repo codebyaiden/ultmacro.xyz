@@ -1,6 +1,6 @@
-import { articles, categories } from './content.mjs?v=8';
+import { articles, categories } from './content.mjs?v=9';
 import { proposedTopics, topicCategories } from './catalog.mjs?v=6';
-import { resolveTopicGuidance } from './topic-support.mjs?v=8';
+import { resolveTopicGuidance } from './topic-support.mjs?v=9';
 
 const $ = id => document.getElementById(id);
 const docs = new Map(articles.map(a => [a.slug, a]));
@@ -378,6 +378,11 @@ function articleView(article) {
   const header=node('header','article-header');
   header.append(node('span','article-category',article.category),node('h1','',article.title),node('p','article-summary',article.summary));
   if (article.version) header.append(node('p','article-version','Documented for '+article.version));
+  if(article.illustration){
+    const figure=node('figure','article-figure');
+    const img=node('img');img.src=article.illustration.src;img.alt=article.illustration.alt;img.loading='lazy';
+    figure.append(img,node('figcaption','',article.illustration.caption));header.append(figure);
+  }
   view.append(header);
   const columns=node('div','article-columns');
   const body=node('div','article-sections');
@@ -396,6 +401,16 @@ function articleView(article) {
     }
     if(sec.steps?.length){const ol=node('ol');for(const step of sec.steps)ol.append(node('li','',step));section.append(ol);}
     if(sec.checks?.length){const ul=node('ul');for(const check of sec.checks)ul.append(node('li','',check));section.append(ul);}
+    if(sec.code){
+      const box=node('div','doc-code');
+      const button=node('button','doc-code-copy','Copy code');button.type='button';
+      button.setAttribute('aria-label','Copy example for '+sec.title);
+      button.addEventListener('click',async()=>{
+        try{await navigator.clipboard.writeText(sec.code);button.textContent='Copied';}
+        catch{button.textContent='Select the example to copy';}
+      });
+      const pre=node('pre'),code=node('code','',sec.code);pre.append(code);box.append(button,pre);section.append(box);
+    }
     body.append(section);
     toc.append(link(sec.title,'#'+id));
   }
