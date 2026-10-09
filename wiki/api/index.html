@@ -26,7 +26,11 @@ button:focus-visible,a:focus-visible{outline:2px solid #94c1ff;outline-offset:3p
 <h1>Wiki API</h1>
 <p class="lead">Read published Ultimate Macro guides from a bot, website, or AI application. Public JSON. No account or API key required.</p>
 <p>Use citations from the returned <code>url</code> field. Results are documentation, not live diagnosis. Research-only topics are excluded.</p>
-<h2>Endpoints</h2>
+<h2>Available now: complete JSON export</h2>
+<p>The full published wiki is available at the static endpoint below. Bots, server-side applications and local AI agents can fetch it without a key or a dedicated API server. This snapshot contains all 76 published guides, their source links and full sections.</p>
+<div class="routes"><a href="./v1/articles.json"><code>GET /wiki/api/v1/articles.json</code><span>Public JSON · live</span></a></div>
+<h2>Query endpoints</h2>
+<p class="warning">These server-side endpoints require the production proxy to forward <code>/api/wiki/v1/*</code> to the updated Node server and a service restart. They may return 404 until that deployment step is completed.</p>
 <div class="routes">
 <a href="/api/wiki/v1"><code>GET /api/wiki/v1</code><span>Discovery</span></a>
 <a href="/api/wiki/v1/articles"><code>GET /api/wiki/v1/articles</code><span>List guides</span></a>
@@ -36,16 +40,18 @@ button:focus-visible,a:focus-visible{outline:2px solid #94c1ff;outline-offset:3p
 <a href="/api/wiki/v1/openapi.json"><code>GET /api/wiki/v1/openapi.json</code><span>OpenAPI 3.1</span></a>
 <a href="./v1/articles.json"><code>GET /wiki/api/v1/articles.json</code><span>Static full snapshot</span></a>
 </div>
-<h2>Quick start</h2>
-<div class="code" id="example">const response = await fetch('https://ultmacro.xyz/api/wiki/v1/search?q=ocr');
-const { data } = await response.json();
-for (const guide of data) console.log(guide.title, guide.url);</div>
+<h2>Quick start: Node.js or server-side bots</h2>
+<div class="code" id="example">const response = await fetch('https://ultmacro.xyz/wiki/api/v1/articles.json');
+const { articles } = await response.json();
+const matches = articles.filter(a =>
+  a.title.toLowerCase().includes('ocr') || a.keywords.includes('ocr'));
+for (const guide of matches) console.log(guide.title, guide.url);</div>
 <button id="copy" type="button">Copy example</button>
 <h2>Using the docs with AI</h2>
 <p>Fetch the search endpoint, retrieve the full article for the best-matching slug, and provide the article URL as a citation. If the article doesn't cover the user's question, say you could not verify an answer. Never silently invent a fix from an empty result.</p>
 <p class="warning"><strong>Deployment note:</strong> The live proxy must forward <code>/api/wiki/v1/*</code> to the Node website service for the query endpoints. The <a href="./v1/articles.json">static JSON snapshot</a> works as a public fallback on ordinary static hosting.</p>
 <h2>Access and limits</h2>
-<p>Read-only GET and HEAD requests; OPTIONS support for browser clients. No authentication or user-specific data. Search text is limited to 160 characters and result counts are capped. Responses support ETags and short caching. Be considerate with polling and cache article data locally.</p>
+<p>The JSON export is public and read-only. Dynamic Node endpoints additionally support GET, HEAD, OPTIONS, CORS, bounded search input, ETags and short caching once production routing is enabled. Cross-origin browser access to the static file depends on the website's response headers; server-side bots can fetch it directly.</p>
 <p><small>© Ultimate Macro · <a href="../">Read the Wiki</a></small></p>
 </main><script>
 const button=document.querySelector('#copy');button.addEventListener('click',async()=>{
