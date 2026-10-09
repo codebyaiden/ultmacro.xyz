@@ -67,3 +67,40 @@ test('all wiki links stay routed and the existing website can serve modules', as
   assert.match(await read('index.html'), /href="wiki\/">Wiki/);
   assert.match(await read('sitemap.xml'), /https:\/\/ultmacro\.xyz\/wiki\//);
 });
+
+
+test('wiki reading surfaces use a dark navy theme throughout', async () => {
+  const css = await read('wiki/site.css');
+  const html = await read('wiki/index.html');
+  const theme = css.slice(css.indexOf('/* Wiki dark reading theme.'));
+  assert.ok(theme.startsWith('/* Wiki dark reading theme.'));
+  assert.match(theme, /--paper:#081625/);
+  assert.match(theme, /\.sidebar\{background:#0a1b2e/);
+  assert.match(theme, /\.home-lane\{background:#11263d/);
+  assert.match(theme, /\.topic-link\{background:#10243a/);
+  assert.match(theme, /\.article-header h1\{color:#f3f7ff/);
+  assert.match(theme, /\.setting-table\{background:#10253b/);
+  assert.match(theme, /\.search-dialog\{background:#101f33/);
+  assert.match(theme, /\.category-articles a\{background:#10263f/);
+  assert.match(html, /content="#07111f"/);
+});
+
+test('500+ topic inventory is separate from published wiki docs', async () => {
+  const plan = JSON.parse(await read('wiki/roadmap/topics.json'));
+  const overview = await read('wiki/roadmap/PLAN.md');
+  assert.equal(plan.existingPublishedArticles, articles.length);
+  assert.equal(plan.totalPlanned, plan.topics.length);
+  assert.ok(plan.totalPlanned > 500);
+  assert.equal(new Set(plan.topics.map(t => t.slug)).size, plan.totalPlanned);
+  assert.equal(new Set(plan.topics.map(t => t.id)).size, plan.totalPlanned);
+  assert.equal(new Set(plan.topics.map(t => t.category)).size, 15);
+  assert.ok(plan.topics.some(t => t.priority === 'P1'));
+  assert.ok(plan.topics.some(t => t.priority === 'P3'));
+  for (const topic of plan.topics) {
+    assert.ok(topic.title && topic.slug && topic.validation && topic.visual);
+    assert.equal(topic.status, 'planned-unverified');
+    assert.ok(['P1', 'P2', 'P3'].includes(topic.priority));
+  }
+  assert.match(overview, /Never automatically publish these topics/);
+  assert.match(overview, /Move to \*\*one file per article\*\*/);
+});
