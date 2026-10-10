@@ -1,3 +1,4 @@
+import { earlyAccessArticles } from './content-early-access.mjs';
 import { expandedArticles } from './content-expanded.mjs?v=10';
 import { sourceVerifiedArticles } from './content-v135-source.mjs';
 import { releaseVerifiedArticles } from './content-release-v135.mjs';
@@ -1562,4 +1563,4 @@ if (firstRun) firstRun.illustration = {
   caption: 'Official website image; appearance may differ between installed releases.'
 };
 
-export const articles = [...baseArticles, ...expandedArticles, ...sourceVerifiedArticles, ...releaseVerifiedArticles, ...stratReferenceArticles];
+export const articles = [...baseArticles, ...expandedArticles, ...sourceVerifiedArticles, ...releaseVerifiedArticles, ...stratReferenceArticles, ...earlyAccessArticles];

@@ -1,6 +1,6 @@
 # Ultimate Macro Wiki: long-term documentation plan
 
-This is a **planning inventory**, not 778 completed pages or evidence that all 778 problems exist. The currently written wiki has **127 source-linked published guides**. The `topics.json` file proposes **778 additional distinct topics**, each with a category, priority, content type, verification requirement and visual-evidence hint.
+This is a **planning inventory**, not 778 completed pages or evidence that all 778 problems exist. The currently written wiki has **128 source-linked published guides**. The `topics.json` file proposes **778 additional distinct topics**, each with a category, priority, content type, verification requirement and visual-evidence hint.
 
 Never automatically publish these topics or generate 778 filler pages. One clear, verified page with screenshots is better than ten thin pages. If two planned topics need exactly the same answer, merge them into one article with clear headings and searchable aliases.
 
@@ -30,11 +30,11 @@ Never automatically publish these topics or generate 778 filler pages. One clear
 - **P1: 106 specific topics.** Divide into four review batches of about 25–27. First: reliable installation, Windows/TDS settings and first-match checks. Then tower placement/upgrades, cash/wave OCR, recording and editing, and Discord/Strategy Network.
 - **P2: 580 topics.** Expand only where release functionality is present, users ask repeatedly, or source/log evidence justifies a standalone guide.
 - **P3: 92 conditional topics.** Primarily version-specific, community-policy, migration or new-release behavior. Do not claim an unreleased 1.4 feature works.
-- **Existing 127:** Keep maintained and link them rather than publishing duplicate variations.
+- **Existing 128:** Keep maintained and link them rather than publishing duplicate variations.
 
 Suggested sequence:
 
-1. **Stabilize the existing 127** with real screens, verified instructions, and version applicability.
+1. **Stabilize the existing 128** with real screens, verified instructions, and version applicability.
 2. **Release first 25 P1 guides**: install, screen setup, OCR, Roblox and TDS settings, controls, first strategy.
 3. **Expand troubleshooting and strategies** in the next ~25-article batches using tested symptoms and reproducible fixes.
 4. **Build out integration and editing** with screenshots/GIFs of the actual app on Windows.
@@ -93,11 +93,11 @@ The research index preserves all 778 titles, but their detail pages now show mat
 
 ## Expanded v1.3.5 source references
 
-Another **37 detailed guides** are available: 19 settings/updater/diagnostic topics and 18 Strategy Lab .strat command reference pages, with exact signatures, parameter tables and examples. The total is **127 source-linked articles**, still distinct from the 778 unverified research-topic candidates. The release ZIP itself was not transferred into the working environment, and the screenshots/GIFs require real Windows/TDS captures; there are no invented screen states.
+Another **37 detailed guides** are available: 19 settings/updater/diagnostic topics and 18 Strategy Lab .strat command reference pages, with exact signatures, parameter tables and examples. The total is **128 source-linked articles**, still distinct from the 778 unverified research-topic candidates. The release ZIP itself was not transferred into the working environment, and the screenshots/GIFs require real Windows/TDS captures; there are no invented screen states.
 
 ## Scaling toward 1,000+ genuinely useful published guides
 
-A page-count target is not a publication criterion. The current baseline remains 127 source-linked published guides and 778 separately labeled candidate topics. A new standalone guide must contain unique, actionable, version-applicable evidence; do not split one procedure across many near-duplicate URLs solely to reach a numerical target.
+A page-count target is not a publication criterion. The current baseline remains 128 source-linked published guides and 778 separately labeled candidate topics. A new standalone guide must contain unique, actionable, version-applicable evidence; do not split one procedure across many near-duplicate URLs solely to reach a numerical target.
 
 Publish in reviewed batches of 20–30, prioritizing:
 1. P1 candidates whose exact answer is currently unverified, especially data safety, first-run blockers, reconnects, missing strategies, upgrade confirmation and import/overwrite behavior.

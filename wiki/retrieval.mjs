@@ -137,7 +137,8 @@ export function wikiLlmsIndex(articles) {
     'windows-display','record-strategy','upgrade-not-working','wrong-clicks',
     'ocr-errors','strategy-lab-start','profiles','profile-import',
     'where-recordings-are-saved','recording-hotkey-defaults',
-    'strat-file-layout','strat-spawntower','strat-upgradetower'
+    'strat-file-layout','strat-spawntower','strat-upgradetower',
+    'how-to-get-early-access'
   ];
   const bySlug = new Map(articles.map(a => [a.slug,a]));
   const out = [

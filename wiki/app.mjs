@@ -1,4 +1,4 @@
-import { articles, categories } from './content.mjs?v=10';
+import { articles, categories } from './content.mjs?v=11';
 import { proposedTopics, topicCategories } from './catalog.mjs?v=6';
 import { resolveTopicGuidance } from './topic-support.mjs?v=10';
 
@@ -484,7 +484,12 @@ function articleView(article) {
       ['Get AutoHotkey v2', 'https://www.autohotkey.com/v2/']
     ],
     'community-strategies': [['Browse Strategy Network', '/strategies/']],
-    'discord-community': [['Join Discord', 'https://discord.gg/ultmacro']]
+    'discord-community': [['Join Discord', 'https://discord.gg/ultmacro']],
+    'how-to-get-early-access': [
+      ['Get Early Access on Ko-fi', 'https://ko-fi.com/summary/9ed0c1ae-4c8e-4c6e-8875-2549f25384c5'],
+      ['Official Early Access page', '/early-access/'],
+      ['Join Discord', 'https://discord.gg/ultmacro']
+    ]
   };
   if (sources[article.slug]) {
     const resources = node('div', 'article-resources');
@@ -520,7 +525,8 @@ function articleView(article) {
     'discord-not-working': ['discord-webhooks', 'discord-remote'],
     'discord-webhooks': ['discord-not-working', 'discord-remote'],
     'stuck-between-matches': ['session-settings'],
-    'party-vip': ['session-settings']
+    'party-vip': ['session-settings'],
+    'how-to-get-early-access': ['discord-community']
   };
   const related = (relatedBySlug[article.slug] || []).map(slug => docs.get(slug)).filter(Boolean);
   if (related.length) {

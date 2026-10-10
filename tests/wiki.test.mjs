@@ -105,7 +105,7 @@ test('wiki UI polish preserves routing and adds accessible mobile navigation', a
   assert.match(css, /\.nav-count\{/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
   assert.match(html, /site\.css\?v=11/);
-  assert.match(html, /app\.mjs\?v=12/);
+  assert.match(html, /app\.mjs\?v=13/);
 });
 
 test('500+ topic inventory is separate from published wiki docs', async () => {

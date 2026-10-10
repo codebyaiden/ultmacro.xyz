@@ -29,8 +29,9 @@ Use the compact index to find a guide, then fetch its individual Markdown docume
 - [Anatomy of a .strat file](https://ultmacro.xyz/wiki/api/v1/docs/strat-file-layout.md): A .strat file is plain text split into sections. [Settings] holds the run configuration, [DO NOT EDIT] stores the resolution the strategy was recorded at, and [Steps] holds one command per line, executed top to bottom. [Info] is optional and only describes the strategy in the macro list.
 - [SpawnTower command](https://ultmacro.xyz/wiki/api/v1/docs/strat-spawntower.md): Places a tower from the hotbar on the map and gives it an id. Every later command that touches this tower refers to it by that id.
 - [UpgradeTower command](https://ultmacro.xyz/wiki/api/v1/docs/strat-upgradetower.md): Buys upgrades for a tower that is already placed. The macro opens the tower panel, waits until the upgrade is affordable and confirms each one.
+- [How to get Early Access](https://ultmacro.xyz/wiki/api/v1/docs/how-to-get-early-access.md): Join through Ko-fi, understand supporter benefits, and check limited-time giveaways or contributor invitations.
 
 ## Scope
-- Published guide count: 127
+- Published guide count: 128
 - Unverified research topics: excluded from this index and retrieval API
 - Respect the version and source stated inside each Markdown guide

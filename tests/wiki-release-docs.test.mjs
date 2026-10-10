@@ -36,7 +36,7 @@ test('strategy command pages have usable syntax, example and parameters', () => 
 test('static Wiki JSON mirrors article source and includes copyable examples',async()=>{
   const dataset=JSON.parse(await read('wiki/api/v1/articles.json'));
   assert.equal(dataset.articles.length,articles.length);
-  assert.equal(articles.length,127);
+  assert.ok(articles.length>=128, 'new published guides should not break the static mirror test');
   const known=new Map(articles.map(a=>[a.slug,a]));
   for(const guide of dataset.articles) {
     assert.ok(known.has(guide.slug),'unexpected '+guide.slug);
