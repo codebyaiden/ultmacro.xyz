@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#090b0e">
+<title>Private Tester Build | Ultimate Macro</title>
+<meta name="description" content="Private Ultimate Macro test build with Automated Logs disclosure and installation steps.">
+<link rel="icon" type="image/png" href="/assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#090b0e;--surface:#11151b;--line:#252a32;--text:#f3f5f8;--muted:#9ca5b2;--danger:#fa626b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}a{color:inherit}button,input{font:inherit}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #8eb0ed;outline-offset:4px}
+.page{min-height:100vh;background:radial-gradient(ellipse 700px 420px at 50% -170px,#29323c 0,transparent 72%),var(--bg)}
+nav{display:flex;align-items:center;justify-content:space-between;max-width:1040px;padding:28px 24px 0;margin:auto;gap:12px}nav .brand{display:flex;gap:10px;align-items:center;text-decoration:none;font-size:14px;font-weight:750;letter-spacing:-.03em}nav .brand img{width:28px;height:28px}nav .back{color:#acb3c0;text-decoration:none;font-size:12px}nav .back:hover{text-decoration:underline}
+main{max-width:780px;margin:0 auto;padding:103px 24px 86px}.eyebrow{display:flex;align-items:center;gap:8px;margin:0 0 22px;font-family:"JetBrains Mono",monospace;font-size:11px;color:#b0b9c5;letter-spacing:.07em;text-transform:uppercase}.dot{width:7px;height:7px;background:#e7c47d;border-radius:50%;box-shadow:0 0 0 5px #e7c47d16}h1{font-size:clamp(42px,8vw,78px);line-height:1.02;letter-spacing:-.072em;margin:0 0 22px;font-weight:760}h1 span{color:#a5afbc}.lead{max-width:590px;line-height:1.7;font-size:15px;color:#aab3be;margin:0 0 36px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:27px}.chip{border:1px solid #313843;border-radius:100px;padding:8px 11px;font-family:"JetBrains Mono",monospace;font-size:10px;color:#d2d8e0}.chip.unsafe{border-color:#8e4c32;color:#f2bc90}
+.notice{position:relative;overflow:hidden;border:1px solid #7b343d;border-radius:17px;background:linear-gradient(145deg,#32181d 0%,#211317 70%,#1a1115 100%);padding:25px 27px;margin:35px 0 25px;box-shadow:0 0 0 1px #ff4d6410,0 20px 80px #0004}.notice:before{content:"";position:absolute;top:0;left:-120%;height:2px;width:80%;background:linear-gradient(90deg,transparent,#ff646e,#ffe1e3,transparent);animation:lineSweep 5s ease-in-out infinite}.noticeHead{display:flex;align-items:center;gap:11px;margin-bottom:12px}.alarm{display:grid;place-items:center;width:30px;height:30px;border:1px solid #aa4450;background:#50252b;color:#ffb6be;border-radius:9px;font-size:16px;flex:none;animation:alarmPulse 2.8s ease-in-out infinite}.notice h2{font-size:16px;letter-spacing:-.025em;margin:0}.notice p{font-size:13px;line-height:1.75;color:#e8c9cb;margin:0 0 10px}.notice strong{color:#fff}.notice small{color:#bb989c;font-size:11px;line-height:1.6;display:block}
+@keyframes lineSweep{0%,16%{transform:translateX(0)}55%,100%{transform:translateX(290%)}}@keyframes alarmPulse{0%,100%{box-shadow:0 0 0 0 #fb647125}50%{box-shadow:0 0 0 9px #fb647100}}
+.card{background:#101419;border:1px solid #252b34;border-radius:17px;padding:26px 27px;margin:24px 0}.card h2{font-size:15px;margin:0 0 22px;letter-spacing:-.03em}.step{display:flex;align-items:flex-start;gap:15px}.step+.step{margin-top:22px}.num{flex:none;color:#b6c1cf;font-family:"JetBrains Mono",monospace;font-size:11px;border:1px solid #3c4450;width:27px;height:27px;border-radius:7px;display:grid;place-items:center}.step b{font-size:13px}.step p{font-size:12px;color:#98a3b1;line-height:1.6;margin:6px 0 0}code{font-family:"JetBrains Mono",monospace;color:#d9dee7;font-size:11px}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.dl{border:1px solid #f1f3f6;background:#f1f3f6;color:#0b0e13;padding:14px 20px;display:inline-flex;justify-content:center;align-items:center;gap:15px;border-radius:10px;font-size:13px;font-weight:750;min-width:231px;text-decoration:none;transition:transform .2s,background .2s}.dl:hover{background:#fff;transform:translateY(-2px)}.secondary{color:#b4becb;font-size:12px;text-decoration:none}.secondary:hover{text-decoration:underline}.filedetails{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-top:25px;margin-top:31px;border-top:1px solid #262c35}.filedetails code{color:#9ca6b4;overflow-wrap:anywhere}.copy{color:#b7c3d0;font-size:11px;background:transparent;border:1px solid #3b424c;border-radius:7px;padding:7px 10px;cursor:pointer}.copy:hover{border-color:#7e8b99}.foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #242a31;color:#818c99;font-size:11px;padding-top:22px;margin-top:54px;gap:12px}.foot a{color:inherit;text-decoration:none}.foot a:hover{text-decoration:underline}
+@media(max-width:560px){main{padding-top:77px}.notice,.card{padding:20px}.dl{width:100%}.actions{display:block}.actions .secondary{display:block;margin-top:15px;text-align:center}.filedetails{display:block}.copy{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="page">
+<nav aria-label="Main navigation"><a href="/" class="brand"><img src="/assets/icon.png" alt="">Ultimate Macro</a><a href="/download/" class="back">← Public downloads</a></nav>
+<main>
+<p class="eyebrow"><span class="dot" aria-hidden="true"></span> Private QA / Invited testers</p>
+<h1>Built for testing.<br><span>Not for release.</span></h1>
+<p class="lead">You're getting a test build of Ultimate Macro. It may be unstable. Please try real strategies, report anything that breaks, and don't share the package outside the tester team.</p>
+<div class="meta"><span class="chip">v1.3.6-b1</span><span class="chip">Windows · ZIP</span><span class="chip unsafe">Private testing only</span></div>
+<div class="actions" aria-label="Private test build download"><a id="download" class="dl" href="https://drive.google.com/uc?export=download&id=12PUvPD5gnTWi4Xr87VLm64S0ttybRsRx" rel="noreferrer">Download v1.3.6-b1 ZIP <span aria-hidden="true">↓</span></a><a class="secondary" href="https://discord.gg/ultmacro" rel="noopener noreferrer" target="_blank">Report issues on Discord ↗</a></div>
+<p style="font-size:11px;color:#8994a2;margin:12px 0 28px">Windows · Extract the ZIP, then run <code>Ultimate Macro.cmd</code>.</p>
+<section class="notice" aria-labelledby="logs-title" role="region">
+ <div class="noticeHead"><span class="alarm" aria-hidden="true">!</span><h2 id="logs-title">Automated Logs: please read</h2></div>
+ <p>This build offers <strong>Automated Logs</strong>. If you opt in inside Ultimate Macro, diagnostic reports are sent automatically to the development team's private Discord channel after runs, recoveries, or manual stops.</p>
+ <p>Reports can contain <strong>system information, macro settings, strategy names and actions, timings, errors, match outcomes, and verified rewards</strong>. Full planned strategy steps need separate permission inside the app.</p>
+ <small>No passwords, arbitrary typed keys, chat messages, personal files or screenshots are intended to be collected. This particular test build sends reports directly to a Discord webhook. Participation is optional in the app, and you can disable it later. Don't redistribute the ZIP.</small>
+</section>
+<section class="card" aria-labelledby="steps-title">
+ <h2 id="steps-title">Get started</h2>
+ <div class="step"><span class="num">01</span><div><b>Download and extract the full ZIP</b><p>Right-click the ZIP → Extract All. Don't launch files from inside the compressed ZIP preview.</p></div></div>
+ <div class="step"><span class="num">02</span><div><b>Run <code>Ultimate Macro.cmd</code></b><p>The launcher checks that all required files are present and helps you start the macro.</p></div></div>
+ <div class="step"><span class="num">03</span><div><b>Test it normally, then report problems</b><p>Use multiple strategies, test recovery, and include what happened when something fails. If you decline Automated Logs, report bugs manually.</p></div></div>
+</section>
+<div class="filedetails"><div><div style="color:#b9c1ce;font-size:11px;margin-bottom:5px">File integrity · SHA-256</div><code id="hash">99704028fd9b158eeba6f425c747163f4139c72b99d368057dad4e9ca73fdbb9</code></div><button class="copy" type="button" id="copy">Copy hash</button></div>
+<div class="foot"><span>Ultimate Macro · Private testing</span><a href="/wiki/">Wiki ↗</a></div>
+</main></div>
+<script>
+(()=>{'use strict';
+ const copy=document.querySelector('#copy');
+ copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.querySelector('#hash').textContent);copy.textContent='Copied';}catch{copy.textContent='Select hash above';}});
+})();
+</script>
+</body>
+</html>
