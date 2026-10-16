@@ -36,6 +36,14 @@
 		return strip(name) === strip(release.tag) ? '' : name;
 	}
 
+	function releaseNotes(release) {
+		var body = release.body || '';
+		if (release.tag === 'v1.3.6') {
+			body += '\n\n> **Auto Equip notice:** Auto Equip may still miss towers. Check your loadout before starting a match.';
+		}
+		return UM.renderMarkdown(body);
+	}
+
 	function badges(release, isLatest) {
 		var out = [];
 		if (isLatest) out.push('<span class="tag live">Latest</span>');
@@ -103,7 +111,7 @@
 			'<details class="notes">' +
 			'<summary class="notes-toggle"><span>Release notes</span>' + chevIcon + '</summary>' +
 			'<div class="notes-body">' +
-			'<div class="rel-body">' + UM.renderMarkdown(release.body) + '</div>' +
+			'<div class="rel-body">' + releaseNotes(release) + '</div>' +
 			'</div>' +
 			'</details>' +
 			'</div>' +
@@ -167,7 +175,7 @@
 					'</button>' +
 					'<div class="vrow-body" id="notes-' + esc(r.tag) + '"><div>' +
 					'<div class="vrow-inner">' +
-					'<div class="rel-body">' + UM.renderMarkdown(r.body) + '</div>' +
+					'<div class="rel-body">' + releaseNotes(r) + '</div>' +
 					'<div class="vrow-actions">' +
 					(r.asset
 						? '<a class="btn primary block" href="' + r.asset.url + '" download>' +
