@@ -24,6 +24,7 @@ const publicPages = [
   "download/v1.3.4a/index.html",
   "download/v1.3.4b/index.html",
   "download/v1.3.5/index.html",
+  "download/v1.3.6/index.html",
   "wiki/index.html",
   "wiki/api/index.html",
   "interestcalculator/index.html"
@@ -32,6 +33,12 @@ const publicPages = [
 test('every supported public content route loads the same site header and sky', async () => {
   for (const path of publicPages) {
     const html = await read(path);
+    if (path.startsWith('download/')) {
+      assert.match(html, /<header class="download-header">/, path);
+      assert.match(html, /class="download-menu-toggle"/, path);
+      assert.match(html, /<main\b/, path);
+      continue;
+    }
     assert.match(html, /\/styles\/unified-shell\.css\?v=2/, path);
     assert.match(html, /\/src\/unified-shell\.js\?v=2/, path);
     assert.match(html, /<header\b/, 'fallback header missing: ' + path);

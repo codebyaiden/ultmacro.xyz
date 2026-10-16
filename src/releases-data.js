@@ -8,7 +8,7 @@ var UMContract = (function () {
 
 	var TAG = /^v?([0-9]+(?:\.[0-9]+){1,3}[a-z]?)(-[0-9a-z.]+)?$/i;
 	var DIGEST = /^sha256:[0-9a-f]{64}$/i;
-	var ZIP = /^(?:TDS_Macro|Ultimate-Macro)(?:[_-][\w.-]+)?\.zip$|^TDS\.Macro\.v[\w.-]+\.zip$/i;
+	var ZIP = /^(?:TDS_Macro|Ultimate-Macro)(?:[_-][\w.-]+)?\.zip$|^(?:TDS|Ultimate)\.Macro\.v[\w.-]+\.zip$/i;
 
 	function isRecord(v) {
 		return typeof v === 'object' && v !== null && !Array.isArray(v);

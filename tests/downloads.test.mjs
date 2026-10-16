@@ -17,7 +17,7 @@ test('newer prereleases stay out of stable history and do not replace latest sta
     asset: { ...releases[0].asset, url: 'https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/v1.4.0-test.1/Ultimate-Macro-v1.4.0-test.1.zip' } };
   const history = contract.mergeHistory(releases, [prerelease]);
   const latest = contract.pickLatestStable(history);
-  assert.equal(latest.tag, 'v1.3.5');
+  assert.equal(latest.tag, 'v1.3.6');
   const html = view.renderMain(history, latest);
   assert.ok(!html.includes(prerelease.tag), 'prerelease has no ordinary archive row or download');
   assert.ok(!html.includes(prerelease.asset.url));
@@ -48,13 +48,14 @@ test('generation serves real downloads without JS and retains history after a pa
       assert.ok(!html.includes('downloads</p>'));
     }
     const alias = await readFile(path.join(root, 'download/latest/index.html'), 'utf8');
-    assert.match(alias, /http-equiv="refresh" content="0; url=\/download\/v1.3.5\/"/);
+    assert.match(alias, /http-equiv="refresh" content="0; url=\/download\/v1.3.6\/"/);
     const redirects = await readFile(path.join(root, '_redirects'), 'utf8');
-    assert.match(redirects, /\/download\/latest\/ \/download\/v1.3.5\/ 302/);
+    assert.match(redirects, /\/download\/latest\/ \/download\/v1.3.6\/ 302/);
     assert.match(redirects, /\/tester https:\/\/example.com 302/);
     await generator.writeVersionPages(releases.slice(0, 1));
     assert.match(await readFile(path.join(root, 'download/v1.2.0/index.html'), 'utf8'), /historical release/);
-    assert.ok((await readFile(path.join(root, 'download/v1.3.4b/index.html'), 'utf8')).includes(releases[1].asset.url));
+    const olderRelease = releases.find(release => release.tag === 'v1.3.4b');
+    assert.ok((await readFile(path.join(root, 'download/v1.3.4b/index.html'), 'utf8')).includes(olderRelease.asset.url));
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
@@ -62,6 +63,28 @@ test('ambiguous ZIP assets never silently pick one download', () => {
   const asset = name => ({ name, browser_download_url: `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/v1.3.5/${name}`, state: 'uploaded', size: 100, digest: 'sha256:' + 'a'.repeat(64), download_count: 1 });
   const release = { tag_name: 'v1.3.5', draft: false, html_url: 'https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/tag/v1.3.5', assets: [asset('TDS_Macro.zip'), asset('Ultimate-Macro-v1.3.5.zip')] };
   assert.equal(contract.selectAsset(release), null);
+});
+
+test('v1.3.6 dotted ZIP appears on the download page with its Auto Equip caveat', () => {
+  const name = 'Ultimate.Macro.v1.3.6.zip';
+  const release = contract.normalizeRelease({
+    tag_name: 'v1.3.6', draft: false, prerelease: false,
+    html_url: 'https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/tag/v1.3.6',
+    published_at: '2026-10-16T02:05:49Z', body: '`1` Added playtime rewards collection\n`4a` Faster blocked-spot detection',
+    assets: [{
+      name,
+      browser_download_url: `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/v1.3.6/${name}`,
+      state: 'uploaded', size: 36314309,
+      digest: 'sha256:40fb60f03e3689ace032915632ddd6c700da7cb30aca779a13393328641ca703',
+      download_count: 0
+    }]
+  });
+  assert.equal(release.asset.name, name);
+  const html = require('../src/release-detail.js').renderMain([release], release);
+  assert.ok(html.includes(release.asset.url));
+  assert.ok(html.includes('Added playtime rewards collection'));
+  assert.match(html, /<li>Faster blocked-spot detection<\/li>/);
+  assert.ok(html.includes('Auto Equip may still miss towers'));
 });
 
 test('server canonicalizes download aliases without losing query strings', async () => {
@@ -81,7 +104,7 @@ test('server canonicalizes download aliases without losing query strings', async
     for (const alias of ['/download/latest', '/download/latest/', '/download/latest/index.html']) {
       const response = await fetch(`http://127.0.0.1:${port}${alias}?from=old-link`, { redirect: 'manual' });
       assert.equal(response.status, 302);
-      assert.equal(response.headers.get('location'), '/download/v1.3.5/?from=old-link');
+      assert.equal(response.headers.get('location'), '/download/v1.3.6/?from=old-link');
     }
     for (const alias of ['/download/v1.3.4b', '/download/v1.3.4b/index.html']) {
       const response = await fetch(`http://127.0.0.1:${port}${alias}`, { redirect: 'manual', method: 'HEAD' });

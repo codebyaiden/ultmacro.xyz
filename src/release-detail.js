@@ -15,11 +15,15 @@
   function size(bytes) { return Math.round(bytes / 1024 / 1024) + ' MB'; }
   function hotfix(release) { return /^v?\d+\.\d+\.\d+[a-z]$/i.test(release.tag); }
   function cleanNotes(release) {
-    return String(release.body || '').replace(/\r/g, '').split('\n').filter(function (line) {
+    var body = String(release.body || '').replace(/\r/g, '').split('\n').filter(function (line) {
       return !/^> \*\*The biggest and most polished Ultimate Macro update yet is here\.\*\*$/.test(line) &&
         !/^\*\*Ultimate Macro 1\.3\.5 is faster, cleaner, more reliable, and ready for every supported setup\.\*\*$/.test(line) &&
         line.trim() !== '# ' + release.tag;
     }).join('\n').trim();
+    if (release.tag === 'v1.3.6') {
+      body += '\n\n**Auto Equip notice:** Auto Equip may still miss towers. Check your loadout before starting a match.';
+    }
+    return body;
   }
   function notes(release) {
     var lines = cleanNotes(release).split('\n');
@@ -32,7 +36,7 @@
       line = line.trim();
       var label = line.replace(/^\*\*|\*\*$/g, '').replace(/:$/, '');
       var headings = { 'New Features': 'New', Improvements: 'Improved', 'Bug Fixes': 'Fixed', Removals: 'Removed' };
-      var item = /^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/.exec(line);
+      var item = /^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/.exec(line.replace(/^`(\d+)[a-z]?`\s+/i, '$1. '));
       if (!line) { flush(); }
       else if (headings[label]) { flush(); html += '<h3>' + headings[label] + '</h3>'; }
       else if (item) {
@@ -52,7 +56,7 @@
       'Placement, upgrade, recovery, and action-confirmation fixes.'
     ];
     return cleanNotes(release).split('\n').map(function (line) {
-      var item = /^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/.exec(line.trim());
+      var item = /^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/.exec(line.trim().replace(/^`(\d+)[a-z]?`\s+/i, '$1. '));
       return item ? item[1] : null;
     }).filter(Boolean).slice(0, 4);
   }

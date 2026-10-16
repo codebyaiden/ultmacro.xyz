@@ -11,6 +11,7 @@ if (!process.env.TEST_DOWNLOAD_URL) {
 const shots = process.env.DOWNLOAD_SCREENSHOTS;
 if (shots) await mkdir(shots, { recursive: true });
 const versions = [
+  ['v1.3.6', 'Oct 16, 2026', '35 MB', '40fb60f03e3689ace032915632ddd6c700da7cb30aca779a13393328641ca703', 'Ultimate.Macro.v1.3.6.zip'],
   ['v1.3.5', 'Sep 20, 2026', '35 MB', '0ed035163585586fbba5c74a87a247eb6d0f9dce8df1ec5212680eecfae547d3', 'TDS.Macro.v1.3.5.zip'],
   ['v1.3.4b', 'Sep 5, 2026', '34 MB', '0ddd38e8b333b37fa1d0dfef00e0a6242ce6f252261b1c9c21b5ce24e63deb93', 'TDS_Macro_1.3.4b-final.zip'],
   ['v1.3.4a', 'Sep 5, 2026', '34 MB', 'b44faa487c680b94e1b119a27f6530f4dfd6c1a2288238258f6ff21b75ea026e', 'TDS_Macro_1.3.4a.zip'],
@@ -113,8 +114,8 @@ try {
         assert.ok((await page.locator('.release-meta').innerText()).includes(v[2]));
         assert.equal(await page.locator('[data-checksum]').textContent(), v[3]);
         assert.equal(await page.locator('[data-download]').first().getAttribute('href'), `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/${v[0]}/${v[4]}`);
-        assert.equal(await page.locator('.older-notice').count(), v[0] === 'v1.3.5' ? 0 : 1);
-        assert.equal(await page.locator('.latest-label').count(), v[0] === 'v1.3.5' ? 1 : 0);
+        assert.equal(await page.locator('.older-notice').count(), v[0] === 'v1.3.6' ? 0 : 1);
+        assert.equal(await page.locator('.latest-label').count(), v[0] === 'v1.3.6' ? 1 : 0);
         assert.equal(await page.locator('.version-heading .hotfix-label').count(), !main && /[ab]$/.test(v[0]) ? 1 : 0);
         assert.ok(!(await page.locator('main').innerText()).match(/\d[\d,]* downloads/));
         assert.equal(await page.locator('a[download]').count(), 0, 'do not pretend browsers can rename cross-origin assets');
