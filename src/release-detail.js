@@ -55,6 +55,12 @@
       'Strategy Lab and expanded strategy metadata.',
       'Placement, upgrade, recovery, and action-confirmation fixes.'
     ];
+    if (release.tag === 'v1.3.6') return [
+      'Collect playtime rewards automatically.',
+      'Run Solar Requiem Night 1 on Easy or Hard with the recorded loadout (beta).',
+      'Recover faster from blocked tower spots and save confirmed fixes for future runs.',
+      'Choose any map as an override and wait for enough cash before upgrades (beta).'
+    ];
     return cleanNotes(release).split('\n').map(function (line) {
       var item = /^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/.exec(line.trim().replace(/^`(\d+)[a-z]?`\s+/i, '$1. '));
       return item ? item[1] : null;

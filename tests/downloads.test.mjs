@@ -85,6 +85,8 @@ test('v1.3.6 dotted ZIP appears on the download page with its Auto Equip caveat'
   assert.ok(html.includes('Added playtime rewards collection'));
   assert.match(html, /<li>Faster blocked-spot detection<\/li>/);
   assert.ok(html.includes('Auto Equip may still miss towers'));
+  assert.ok(html.includes('Run Solar Requiem Night 1 on Easy or Hard with the recorded loadout (beta).'));
+  assert.ok(html.includes('Choose any map as an override and wait for enough cash before upgrades (beta).'));
 });
 
 test('server canonicalizes download aliases without losing query strings', async () => {
