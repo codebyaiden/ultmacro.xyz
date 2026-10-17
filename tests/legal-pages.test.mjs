@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const read = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
-test('policy pages have accessible navigation, dated terms and no advertising script', async () => {
+test('policy pages have accessible navigation, dated terms and the shared ad loader', async () => {
   for (const route of ['terms', 'privacy', 'memberships']) {
     const page = await read(route + '/index.html');
     assert.match(page, /<html lang="en">/);
@@ -10,7 +10,8 @@ test('policy pages have accessible navigation, dated terms and no advertising sc
     assert.match(page, /tdsultimatemacro@gmail\.com/);
     assert.match(page, /href="\/terms\/"/);
     assert.match(page, /href="\/privacy\/"/);
-    assert.doesNotMatch(page, /<script|\[INSERT|\[CONFIRM/);
+    assert.doesNotMatch(page, /\[INSERT|\[CONFIRM/);
+    assert.match(page, /src="\/src\/adcash\.js\?v=20261017" defer/);
     assert.match(await read('sitemap.xml'), new RegExp('https://ultmacro.xyz/' + route + '/'));
   }
 });

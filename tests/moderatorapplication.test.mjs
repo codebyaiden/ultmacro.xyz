@@ -9,6 +9,6 @@ test('moderator application embeds only the public responder form and has an acc
  assert.match(html,/viewform\?embedded=true/);
  assert.match(html,/target="_blank" rel="noopener noreferrer"/);
  assert.match(html,/Email collection is off/);
- assert.doesNotMatch(html,/\/edit(?:[?"#])|viewanalytics|api\/webhooks|<script/);
+ assert.doesNotMatch(html,/\/edit(?:[?"#])|viewanalytics|api\/webhooks/);
  assert.match(html,/\/privacy\//);
 });
