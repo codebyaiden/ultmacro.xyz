@@ -30,7 +30,7 @@ function safePath(root, relative) {
 }
 
 function send(res, status, body, headers = {}) {
-  res.writeHead(status, { 'x-content-type-options': 'nosniff', ...headers });
+  res.writeHead(status, { 'x-content-type-options': 'nosniff', 'referrer-policy': 'strict-origin-when-cross-origin', 'permissions-policy': 'camera=(), microphone=(), geolocation=()', ...headers });
   res.end(body);
 }
 
@@ -90,6 +90,11 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
   let requestPath;
   try { requestPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); } catch { return send(res, 400, 'bad path\n'); }
   requestPath = requestPath.replaceAll('\\', '/').replace(/^\/+/, '/');
+  // The static root is a source checkout, not a sanitized build directory.
+  // Never serve hidden files (including .env/.git), dependencies or server code.
+  if (requestPath.split('/').some(part => part.startsWith('.')) ||
+      /^\/(?:node_modules|db|scripts|tests|docs|audit-evidence)(?:\/|$)/.test(requestPath) ||
+      /\.(?:mjs|cjs|sql|log)$/i.test(requestPath)) return send(res, 404, 'not found\n');
   const downloadRedirect = downloadRedirects.get(requestPath);
   if (downloadRedirect) {
     const query = new URL(req.url, 'http://localhost').search;
@@ -111,7 +116,7 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
     const body = await readFile(target);
     const ext = path.extname(target).toLowerCase();
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.md': 'text/markdown; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.strat': 'text/plain; charset=utf-8' };
-    return send(res, 200, req.method === 'HEAD' ? null : body, { 'content-type': types[ext] || 'application/octet-stream', 'cache-control': ext === '.html' ? 'no-cache' : 'public, max-age=3600' });
+    return send(res, 200, req.method === 'HEAD' ? null : body, { 'content-type': types[ext] || 'application/octet-stream', 'cache-control': requestPath === '/data/advertising.json' || ext === '.html' ? 'no-cache' : 'public, max-age=3600' });
   } catch (caught) { return send(res, caught.code === 'ENOENT' ? 404 : 500, 'not found\n'); }
 }
 
@@ -125,6 +130,6 @@ const server = http.createServer(async (req, res) => {
   } catch (caught) { send(res, Number(caught.status || 500), Number(caught.status) === 413 ? 'request too large\n' : 'internal server error\n'); }
 });
 
-server.listen(port, host, () => console.log(`ultmacro server listening on http://${host}:${port}`));
+server.listen(port, host, () => console.log(`ultmacro server listening on http://${host}:${server.address().port}`));
 process.on('SIGTERM', () => server.close(() => process.exit(0)));
 process.on('SIGINT', () => server.close(() => process.exit(0)));

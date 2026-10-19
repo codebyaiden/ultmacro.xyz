@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "reviewApproved": false,
+  "siteId": "1662562",
+  "provider": "Adcash",
+  "format": "AutoTag",
+  "zoneId": "nvfhwgcmud",
+  "reason": "Disabled pending Adcash manual review and first-click navigation assessment."
+}

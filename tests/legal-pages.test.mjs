@@ -11,7 +11,7 @@ test('policy pages have accessible navigation, dated terms and the shared ad loa
     assert.match(page, /href="\/terms\/"/);
     assert.match(page, /href="\/privacy\/"/);
     assert.doesNotMatch(page, /\[INSERT|\[CONFIRM/);
-    assert.match(page, /src="\/src\/adcash\.js\?v=20261017" defer/);
+    assert.match(page, /src="\/src\/adcash\.js\?v=20261019" defer/);
     assert.match(await read('sitemap.xml'), new RegExp('https://ultmacro.xyz/' + route + '/'));
   }
 });
