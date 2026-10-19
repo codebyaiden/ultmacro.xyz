@@ -1,9 +1,9 @@
 {
-  "enabled": false,
-  "reviewApproved": false,
-  "siteId": "1662562",
-  "provider": "Adcash",
-  "format": "AutoTag",
-  "zoneId": "nvfhwgcmud",
-  "reason": "Disabled pending Adcash manual review and first-click navigation assessment."
+  "enabled": true,
+  "ownerApproved": true,
+  "siteId": "6135312",
+  "provider": "Adsterra",
+  "format": "Popunder",
+  "scriptUrl": "https://accountut.com/1/58419eafc37232d45f68b1fc4bbe4931",
+  "reason": "Owner-approved popunder replacement; Social Bar and Adcash are not installed."
 }

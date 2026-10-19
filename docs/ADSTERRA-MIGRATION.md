@@ -1,0 +1,9 @@
+# Approved Adsterra popunder replacement
+
+Owner approved replacing Adcash and publishing, after providing dashboard screenshots showing site approval. Site ID 6135312, Downloads category. Only Popunder is installed; Social Bar is intentionally omitted. Script transcribed from supplied dashboard code: https://accountut.com/1/58419eafc37232d45f68b1fc4bbe4931 (HTTP 200/application-javascript when checked as inert data).
+
+`src/advertising.js` inserts one HTTPS script in the head, retaining data-cfasync=false. `data/advertising.json` controls the deployment; set enabled=false to disable new loads. Missing/invalid config disables ads. Only the exact owner-approved provider/format/URL combination is accepted. This is not an anti-adblock mechanism or a modification of vendor code. Old `src/adcash.js` is inert for legacy references; old edge/browser caches still require revalidation or purge. Reload already-open tabs to unload previously executed handlers.
+
+No ads on forms, staff/internal/API paths, policies, memberships, Strategy Network with its publishing/admin controls, opaque poll routes, or framed pages. Neither the integration nor tests click advertisements or generate revenue measurements. Vendor script behavior, frequency, creative categories, first-click preservation and earnings remain live-verification gaps. The owner's Yes followed the request to confirm adult ads off, but dashboard configuration was not independently inspected. Do not claim those settings were verified.
+
+Earlier docs/ADCASH-AUDIT-20261019.md records the previous audit snapshot and default-off preparation; this migration supersedes its local-only deployment status and active-provider description only after verified publication. Adcash configuration and official references remain in Git history for investigation, not active loading. The ad-disabled security fixes from the audit are retained. Privacy provider wording is updated separately.

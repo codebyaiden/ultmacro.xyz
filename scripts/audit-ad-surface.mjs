@@ -9,7 +9,7 @@ for(const file of files){
  const text=await readFile(file,'utf8');
  text.split(/\r?\n/).forEach((line,index)=>{
   const ref={file,line:index+1};
-  if(/<script[^>]+src="\/src\/adcash/.test(line))inventory.adPages.push(ref);
+  if(/<script[^>]+src="\/src\/(?:adcash|advertising)/.test(line))inventory.adPages.push(ref);
   for(const match of line.matchAll(/<script[^>]+src=["']((?:https?:)?\/\/[^"']+)/g))inventory.externalScripts.push({...ref,url:match[1]});
   if(/<iframe|createElement\(['"]iframe/.test(line))inventory.frames.push(ref);
   if(/http-equiv=["']refresh|location\.(?:replace|assign)/.test(line))inventory.redirects.push(ref);

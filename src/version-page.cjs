@@ -20,7 +20,7 @@ function documentPage({ tag, latest, content, release }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="/src/adcash.js?v=20261019" defer></script>
+  <script src="/src/advertising.js?v=adsterra-20261019" defer></script>
   <script>document.documentElement.classList.add('download-nav-starting');</script>
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">

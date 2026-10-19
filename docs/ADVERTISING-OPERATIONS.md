@@ -1,5 +1,7 @@
 # Advertising incident controls — local changes only
 
+> Historical Adcash remediation record. Superseded by [ADSTERRA-MIGRATION.md](ADSTERRA-MIGRATION.md) for the owner-approved October 19 replacement. The current switch is `enabled` in `data/advertising.json`; set it to `false` to disable Adsterra. The old Adcash entry point is inert. The sections below describe the earlier, unpublished default-off audit state, not the current provider configuration.
+
 Site: ultmacro.xyz; Adcash Site ID 1662562; AutoTag nvfhwgcmud.
 
 ## Current switch
