@@ -1,9 +1,10 @@
 {
   "enabled": true,
   "ownerApproved": true,
-  "siteId": "6135312",
-  "provider": "Adsterra",
-  "format": "Popunder",
-  "scriptUrl": "https://accountut.com/1/58419eafc37232d45f68b1fc4bbe4931",
-  "reason": "Owner-approved popunder replacement; Social Bar and Adcash are not installed."
+  "reviewApproved": true,
+  "provider": "Adcash",
+  "format": "AutoTag",
+  "zoneId": "nmmtb0xi2i",
+  "scriptUrl": "https://acscdn.com/script/aclib.js",
+  "reason": "Owner confirmed Adcash approval and requested this dashboard AutoTag. Other networks retired."
 }

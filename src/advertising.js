@@ -1,4 +1,4 @@
-// Single approved popunder only. No Social Bar, click wrappers, or fallback ads.
+// One approved Adcash AutoTag. No other networks, click wrappers, or fallback ads.
 (async () => {
   const excluded = /^\/(?:api|internal|poll|p|moderatorapplication|terms|privacy|memberships|strategies)(?:\/|$)/;
   if (window.__umAdvertisingRequested || excluded.test(location.pathname) || window.top !== window.self) return;
@@ -9,13 +9,19 @@
     if (!response.ok) return;
     config = await response.json();
   } catch { return; }
-  const approvedScript = 'https://accountut.com/1/58419eafc37232d45f68b1fc4bbe4931';
-  if (config?.enabled !== true || config?.ownerApproved !== true || config?.provider !== 'Adsterra' || config?.format !== 'Popunder' || config?.scriptUrl !== approvedScript) return;
-  if (document.getElementById('um-adsterra-popunder')) return;
+  const approvedScript = 'https://acscdn.com/script/aclib.js';
+  const approvedZone = 'nmmtb0xi2i';
+  if (config?.enabled !== true || config?.ownerApproved !== true || config?.reviewApproved !== true || config?.provider !== 'Adcash' || config?.format !== 'AutoTag' || config?.zoneId !== approvedZone || config?.scriptUrl !== approvedScript) return;
+  if (document.getElementById('aclib')) return;
   const script = document.createElement('script');
-  script.id = 'um-adsterra-popunder';
-  script.setAttribute('data-cfasync', 'false');
+  script.id = 'aclib';
+  script.type = 'text/javascript';
   script.src = approvedScript;
   script.async = true;
+  script.onload = () => {
+    if (typeof window.aclib?.runAutoTag === 'function') {
+      window.aclib.runAutoTag({ zoneId: approvedZone });
+    }
+  };
   document.head.appendChild(script);
 })();

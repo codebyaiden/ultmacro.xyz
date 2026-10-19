@@ -1,5 +1,7 @@
 # Advertising incident controls — local changes only
 
+> Current configuration: see [ADCASH-RETRY.md](ADCASH-RETRY.md). The owner confirmed Adcash approval and requested the new zone. Adsterra is retired. Set `enabled: false` in `data/advertising.json` for emergency shutdown. Everything below is historical.
+
 > Historical Adcash remediation record. Superseded by [ADSTERRA-MIGRATION.md](ADSTERRA-MIGRATION.md) for the owner-approved October 19 replacement. The current switch is `enabled` in `data/advertising.json`; set it to `false` to disable Adsterra. The old Adcash entry point is inert. The sections below describe the earlier, unpublished default-off audit state, not the current provider configuration.
 
 Site: ultmacro.xyz; Adcash Site ID 1662562; AutoTag nvfhwgcmud.

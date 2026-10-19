@@ -22,17 +22,19 @@ test('all 34 public entry documents use exactly one approved loader; no raw vend
  for(const file of await pages()){
   const html=await readFile(new URL(file,root),'utf8');if(!/<head\b/i.test(html))continue;
   const exempt=/^(internal\/|poll\/team\/)/.test(file)||/http-equiv="refresh"/i.test(html);
-  assert.equal((html.match(/src="\/src\/advertising\.js\?v=adsterra-20261019"/g)||[]).length,exempt?0:1,file);
+  assert.equal((html.match(/src="\/src\/advertising\.js\?v=adcash-retry-20261019"/g)||[]).length,exempt?0:1,file);
   assert.doesNotMatch(html,/runAutoTag|acscdn\.com|src="[^" ]*adcash\.js|accountut\.com|bellnewyork\.org/,file);if(!exempt)count++;
  }
  assert.equal(count,34);
 });
-test('owner-approved popunder only loads once and retains vendor cfasync attribute',async()=>{
- assert.equal(config.provider,'Adsterra');assert.equal(config.enabled,true);assert.equal(config.ownerApproved,true);assert.equal(config.format,'Popunder');
- const e=environment();await vm.runInContext(code,e.context);await vm.runInContext(code,e.context);assert.equal(e.appended.length,1);assert.equal(e.appended[0].src,config.scriptUrl);assert.equal(e.appended[0].attributes['data-cfasync'],'false');
+test('approved Adcash library loads once and invokes the screenshot zone only after loading',async()=>{
+ assert.equal(config.provider,'Adcash');assert.equal(config.enabled,true);assert.equal(config.ownerApproved,true);assert.equal(config.reviewApproved,true);assert.equal(config.format,'AutoTag');assert.equal(config.zoneId,'nmmtb0xi2i');
+ const e=environment();const calls=[];e.context.window.aclib={runAutoTag:value=>calls.push(value.zoneId)};
+ await vm.runInContext(code,e.context);await vm.runInContext(code,e.context);assert.equal(e.appended.length,1);assert.equal(e.appended[0].src,config.scriptUrl);assert.equal(e.appended[0].id,'aclib');assert.equal(calls.length,0);e.appended[0].onload();assert.deepEqual(calls,['nmmtb0xi2i']);
+ const existing=environment();existing.context.document.getElementById=()=>({});await vm.runInContext(code,existing.context);assert.equal(existing.appended.length,0);
 });
 test('disabled, malformed or changed-provider config cannot load ads',async()=>{
- for(const value of [null,{}, {...config,enabled:false},{...config,ownerApproved:false},{...config,enabled:'true'},{...config,provider:'Adcash'},{...config,format:'Social Bar'},{...config,scriptUrl:'https://example.com/other.js'}]){const e=environment('/',value);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
+ for(const value of [null,{}, {...config,enabled:false},{...config,ownerApproved:false},{...config,reviewApproved:false},{...config,enabled:'true'},{...config,provider:'Adsterra'},{...config,zoneId:'old-zone'},{...config,format:'Social Bar'},{...config,scriptUrl:'https://example.com/other.js'}]){const e=environment('/',value);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
  for(const fetcher of [async()=>{throw Error('offline')},async()=>({ok:false}),async()=>({ok:true,json:async()=>{throw Error('invalid')}})]){const e=environment();e.context.fetch=fetcher;await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
 });
 test('sensitive workflows and frames never load popunders',async()=>{

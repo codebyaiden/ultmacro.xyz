@@ -1,5 +1,7 @@
 # Approved Adsterra popunder replacement
 
+> Historical migration, superseded by [ADCASH-RETRY.md](ADCASH-RETRY.md). Adsterra is no longer loaded.
+
 Owner approved replacing Adcash and publishing, after providing dashboard screenshots showing site approval. Site ID 6135312, Downloads category. Only Popunder is installed; Social Bar is intentionally omitted. Script transcribed from supplied dashboard code: https://accountut.com/1/58419eafc37232d45f68b1fc4bbe4931 (HTTP 200/application-javascript when checked as inert data).
 
 `src/advertising.js` inserts one HTTPS script in the head, retaining data-cfasync=false. `data/advertising.json` controls the deployment; set enabled=false to disable new loads. Missing/invalid config disables ads. Only the exact owner-approved provider/format/URL combination is accepted. This is not an anti-adblock mechanism or a modification of vendor code. Old `src/adcash.js` is inert for legacy references; old edge/browser caches still require revalidation or purge. Reload already-open tabs to unload previously executed handlers.
