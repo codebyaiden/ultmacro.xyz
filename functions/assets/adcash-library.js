@@ -18,9 +18,11 @@ export async function onRequest({ request }) {
   if (!['GET', 'HEAD'].includes(request.method)) {
     return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET, HEAD' } });
   }
+  let phase = 'fetch';
   try {
     const upstream = await fetch(UPSTREAM, {
-      method: 'GET', redirect: 'error', credentials: 'omit',
+      // Fresh server-side fetch has no cookie jar or inherited visitor headers.
+      method: 'GET', redirect: 'error',
       headers: { Accept: 'application/javascript' },
       signal: AbortSignal.timeout(10000),
     });
@@ -34,6 +36,7 @@ export async function onRequest({ request }) {
       return unavailable();
     }
     // Bound the actual stream, not just a potentially missing Content-Length.
+    phase = 'body';
     const reader = upstream.body.getReader();
     const chunks = [];
     let size = 0;
@@ -49,6 +52,7 @@ export async function onRequest({ request }) {
     let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
     if (/^\s*</.test(new TextDecoder().decode(bytes.subarray(0, 256)))) return unavailable();
+    phase = 'response';
     return new Response(request.method === 'HEAD' ? null : bytes, {
       headers: {
         'Content-Type': 'application/javascript; charset=utf-8',
@@ -59,7 +63,10 @@ export async function onRequest({ request }) {
     });
   } catch (error) {
     // No raw upstream responses, visitor data or credentials in diagnostics.
-    console.error(JSON.stringify({ event: 'adcash_library_unavailable' }));
-    return unavailable(error?.name === 'TimeoutError' ? 'origin-timeout' : 'origin-fetch-failed');
+    const type = ['TypeError', 'TimeoutError', 'AbortError'].includes(error?.name) ? error.name : 'Error';
+    // This fixed-URL request never contains credentials or visitor information.
+    const detail = String(error?.message || '').replace(/https?:\/\/\S+/g, '[upstream]').slice(0, 160);
+    console.error(JSON.stringify({ event: 'adcash_library_unavailable', phase, type, detail }));
+    return unavailable(`origin-${phase}-${type.toLowerCase()}`);
   }
 }

@@ -19,7 +19,7 @@ test('fixed upstream, no visitor credentials, unchanged bytes, and HEAD support'
     globalThis.fetch = async (url, options) => {
       assert.equal(url, 'https://api-origin.ultmacro.xyz/assets/adcash-library.js');
       assert.equal(options.redirect, 'error');
-      assert.equal(options.credentials, 'omit');
+      assert.equal(options.credentials, undefined);
       assert.deepEqual(options.headers, { Accept: 'application/javascript' });
       return new Response('/* vendor bytes */\nwindow.aclib = {};', { headers: { 'Content-Type': 'application/javascript' } });
     };
