@@ -3,10 +3,10 @@
 const UPSTREAM = 'https://api-origin.ultmacro.xyz/assets/adcash-library.js';
 const LIMIT = 2 * 1024 * 1024;
 
-function unavailable() {
+function unavailable(reason = 'invalid-library') {
   return new Response('Ad library unavailable', {
     status: 503,
-    headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain', 'X-Content-Type-Options': 'nosniff' },
+    headers: { 'Cache-Control': 'no-store', 'Content-Type': 'text/plain', 'X-Content-Type-Options': 'nosniff', 'X-UM-Library-Error': reason },
   });
 }
 
@@ -24,7 +24,11 @@ export async function onRequest({ request }) {
       headers: { Accept: 'application/javascript' },
       signal: AbortSignal.timeout(10000),
     });
-    if (upstream.status !== 200 || !upstream.body ||
+    if (upstream.status !== 200) {
+      await upstream.body?.cancel();
+      return unavailable(`origin-status-${upstream.status}`);
+    }
+    if (!upstream.body ||
         !/^(?:application|text)\/(?:javascript|x-javascript|ecmascript)(?:;|$)/i.test(upstream.headers.get('Content-Type') || '')) {
       await upstream.body?.cancel();
       return unavailable();
@@ -53,9 +57,9 @@ export async function onRequest({ request }) {
         'Cross-Origin-Resource-Policy': 'same-origin',
       },
     });
-  } catch {
+  } catch (error) {
     // No raw upstream responses, visitor data or credentials in diagnostics.
     console.error(JSON.stringify({ event: 'adcash_library_unavailable' }));
-    return unavailable();
+    return unavailable(error?.name === 'TimeoutError' ? 'origin-timeout' : 'origin-fetch-failed');
   }
 }
