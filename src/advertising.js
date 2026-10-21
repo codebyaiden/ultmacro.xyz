@@ -9,7 +9,9 @@
     if (!response.ok) return;
     config = await response.json();
   } catch { return; }
-  const approvedScript = 'https://acscdn.com/script/aclib.js';
+  // Self-hosted mode must be explicitly enabled after endpoint verification.
+  const approvedScript = config?.selfHostedEnabled === true
+    ? '/assets/adcash-library' : 'https://acscdn.com/script/aclib.js';
   const approvedZone = 'nmmtb0xi2i';
   if (config?.enabled !== true || config?.ownerApproved !== true || config?.reviewApproved !== true || config?.provider !== 'Adcash' || config?.format !== 'AutoTag' || config?.zoneId !== approvedZone || config?.scriptUrl !== approvedScript) return;
   if (document.getElementById('aclib')) return;

@@ -41,6 +41,12 @@ test('sensitive workflows and frames never load popunders',async()=>{
  for(const path of ['/internal/qa-logs/','/poll/team/','/api/auth','/poll/','/moderatorapplication/','/privacy/','/terms/','/memberships/','/strategies/','/p/test/']){const e=environment(path);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0,path);}
  const frame=environment();frame.context.window.top={};frame.context.window.self={};await vm.runInContext(code,frame.context);assert.equal(frame.appended.length,0);
 });
+
+test('self-hosted library requires an explicit matching switch and URL',async()=>{
+ const enabled={...config,selfHostedEnabled:true,scriptUrl:'/assets/adcash-library'};
+ const e=environment('/',enabled);await vm.runInContext(code,e.context);assert.equal(e.appended.length,1);assert.equal(e.appended[0].src,'/assets/adcash-library');
+ for(const value of [{...enabled,selfHostedEnabled:false},{...enabled,selfHostedEnabled:'true'},{...enabled,scriptUrl:'https://example.com/library'},{...config,selfHostedEnabled:true}]){const e=environment('/',value);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
+});
 test('cached old Adcash entry point is inert and first-party loader never intercepts navigation',async()=>{
  const legacy=await readFile(new URL('src/adcash.js',root),'utf8');assert.doesNotMatch(legacy,/runAutoTag|acscdn|createElement/);
  assert.doesNotMatch(code,/preventDefault|stopPropagation|stopImmediatePropagation|window\.open|localStorage|sessionStorage|setInterval|setTimeout|bellnewyork/);
