@@ -22,7 +22,8 @@ export async function onRequest({ request }) {
   try {
     const upstream = await fetch(UPSTREAM, {
       // Fresh server-side fetch has no cookie jar or inherited visitor headers.
-      method: 'GET', redirect: 'error',
+      // Workers supports manual/follow, not redirect:error. Reject every non-200 below.
+      method: 'GET', redirect: 'manual',
       headers: { Accept: 'application/javascript' },
       signal: AbortSignal.timeout(10000),
     });

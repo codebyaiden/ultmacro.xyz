@@ -18,7 +18,7 @@ test('fixed upstream, no visitor credentials, unchanged bytes, and HEAD support'
   try {
     globalThis.fetch = async (url, options) => {
       assert.equal(url, 'https://api-origin.ultmacro.xyz/assets/adcash-library.js');
-      assert.equal(options.redirect, 'error');
+      assert.equal(options.redirect, 'manual');
       assert.equal(options.credentials, undefined);
       assert.deepEqual(options.headers, { Accept: 'application/javascript' });
       return new Response('/* vendor bytes */\nwindow.aclib = {};', { headers: { 'Content-Type': 'application/javascript' } });
@@ -37,6 +37,7 @@ test('upstream failures, HTML, empty and oversized responses fail closed', async
   try {
     for (const factory of [
       () => new Response('missing', { status: 404 }),
+      () => new Response(null, { status: 302, headers: { Location: 'https://example.com/never-follow' } }),
       () => new Response('<html>error</html>', { headers: { 'Content-Type': 'text/html' } }),
       () => new Response('<html>error</html>', { headers: { 'Content-Type': 'application/javascript' } }),
       () => new Response('', { headers: { 'Content-Type': 'application/javascript' } }),
