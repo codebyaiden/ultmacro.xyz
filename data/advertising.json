@@ -5,6 +5,7 @@
   "provider": "Adcash",
   "format": "AutoTag",
   "zoneId": "nmmtb0xi2i",
-  "scriptUrl": "https://acscdn.com/script/aclib.js",
-  "reason": "Owner confirmed Adcash approval and requested this dashboard AutoTag. Other networks retired."
+  "selfHostedEnabled": true,
+  "scriptUrl": "/assets/adcash-library",
+  "reason": "Owner-approved self-hosted Adcash library verified byte-identical through the narrow Pages endpoint. Zone unchanged; other networks retired."
 }

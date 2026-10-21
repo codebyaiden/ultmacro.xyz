@@ -1,7 +1,16 @@
 # Adcash self-hosted library preparation — 2026-10-21
 
-Status: prepared locally, not published or activated. Existing standard Adcash
-configuration remains unchanged until the VPS file and public endpoint are verified.
+Status: owner authorized publication. Endpoint deployed and verified October 21,
+2026: both origin and Pages returned HTTP 200, 640,752 bytes, identical SHA-256
+`9d3315560b4bb7413f8fbed65906915c3d31df1cb5a74034cb0a6121cf4edbcc`.
+This activation revision switches the shared loader to that endpoint; confirm
+the production config/version after deployment. Vendor bytes change on refresh.
+No vendor JavaScript was executed during these transport checks.
+
+Cloudflare runtime testing identified a concrete initial bug: this deployment
+rejects fetch `redirect: 'error'`. Fixed using supported `manual` mode and explicit
+non-200 rejection, including a 302 regression case. Node-only mocks missed this
+platform difference. Origin headers and navigation still need live user checks.
 
 ## Verified hosting
 

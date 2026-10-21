@@ -22,7 +22,7 @@ test('all 34 public entry documents use exactly one approved loader; no raw vend
  for(const file of await pages()){
   const html=await readFile(new URL(file,root),'utf8');if(!/<head\b/i.test(html))continue;
   const exempt=/^(internal\/|poll\/team\/)/.test(file)||/http-equiv="refresh"/i.test(html);
-  assert.equal((html.match(/src="\/src\/advertising\.js\?v=adcash-retry-20261019"/g)||[]).length,exempt?0:1,file);
+  assert.equal((html.match(/src="\/src\/advertising\.js\?v=adcash-selfhost-20261021"/g)||[]).length,exempt?0:1,file);
   assert.doesNotMatch(html,/runAutoTag|acscdn\.com|src="[^" ]*adcash\.js|accountut\.com|bellnewyork\.org/,file);if(!exempt)count++;
  }
  assert.equal(count,34);
@@ -45,7 +45,8 @@ test('sensitive workflows and frames never load popunders',async()=>{
 test('self-hosted library requires an explicit matching switch and URL',async()=>{
  const enabled={...config,selfHostedEnabled:true,scriptUrl:'/assets/adcash-library'};
  const e=environment('/',enabled);await vm.runInContext(code,e.context);assert.equal(e.appended.length,1);assert.equal(e.appended[0].src,'/assets/adcash-library');
- for(const value of [{...enabled,selfHostedEnabled:false},{...enabled,selfHostedEnabled:'true'},{...enabled,scriptUrl:'https://example.com/library'},{...config,selfHostedEnabled:true}]){const e=environment('/',value);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
+ for(const value of [{...enabled,selfHostedEnabled:false},{...enabled,selfHostedEnabled:'true'},{...enabled,scriptUrl:'https://example.com/library'},{...config,selfHostedEnabled:true,scriptUrl:'https://acscdn.com/script/aclib.js'}]){const e=environment('/',value);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
+ const standard=environment('/',{...config,selfHostedEnabled:false,scriptUrl:'https://acscdn.com/script/aclib.js'});await vm.runInContext(code,standard.context);assert.equal(standard.appended.length,1);assert.equal(standard.appended[0].src,'https://acscdn.com/script/aclib.js');
 });
 test('cached old Adcash entry point is inert and first-party loader never intercepts navigation',async()=>{
  const legacy=await readFile(new URL('src/adcash.js',root),'utf8');assert.doesNotMatch(legacy,/runAutoTag|acscdn|createElement/);
