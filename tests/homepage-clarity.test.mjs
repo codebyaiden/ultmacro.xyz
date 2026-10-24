@@ -20,7 +20,10 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   for (const removed of ['interface-section', 'runtime-section', 'recorder-section', 'requirements-heading', 'download-panel', 'field-notes', 'id="record-action"']) {
     assert.ok(!home.includes(removed), 'retired UI should not be on homepage: ' + removed);
   }
-  assert.equal((home.match(/<section\b/g) || []).length, 6);
+  assert.equal((home.match(/<section\b/g) || []).length, 7);
+  assert.match(home, /id="coming"/);
+  assert.match(home, /styles\/coming\.css\?v=1/);
+  assert.match(home, /href="coming\/"/);
   assert.match(css, /home-value-section/);
   assert.match(css, /home-setup-steps/);
   assert.doesNotMatch(home, /styles\.css\?v=19|site\.js\?v=6|home-rework\.css/);
