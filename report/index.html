@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script src="/src/advertising.js?v=adcash-selfhost-20261021" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#070a10">
+  <meta name="description" content="Report a bug in Ultimate Macro. Review your details and send a structured report to the private support team.">
+  <title>Report a bug · Ultimate Macro</title>
+  <link rel="icon" type="image/png" href="/assets/icon.png">
+  <link rel="stylesheet" href="/styles/homepage.css?v=1">
+  <link rel="stylesheet" href="/styles/bug-report.css?v=1">
+</head>
+<body class="bug-report-page">
+  <header class="nav-shell">
+    <a class="brand" href="/" aria-label="Ultimate Macro home"><img class="brand-mark" src="/assets/icon.png" alt="" width="32" height="32"><span>Ultimate <b>Macro</b></span></a>
+    <button class="menu-button" data-menu-button type="button" aria-expanded="false" aria-controls="mobile-menu">Menu</button>
+    <nav aria-label="Primary navigation">
+      <a href="/#features">Features</a><a href="/wiki/">Wiki</a><a href="/strategies/">Strategy Network</a><a href="/download/">Download</a>
+    </nav>
+    <div class="nav-actions"><a class="nav-link" href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a><a class="button button-small" href="/download/">Download</a></div>
+    <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden inert>
+      <a href="/#features">Features</a><a href="/wiki/">Wiki</a><a href="/strategies/">Strategy Network</a><a href="/download/">Download</a>
+    </div>
+  </header>
+  <main class="report-main">
+    <div class="report-intro">
+      <div class="report-heading">
+        <p class="report-kicker">Ultimate Macro / Support</p>
+        <h1>Report a bug.</h1>
+        <p>Tell us what went wrong. We'll organize the details into one useful report for the staff team.</p>
+        <div class="report-service" id="delivery-status" role="status" aria-live="polite"><span class="status-dot"></span><span>Checking report delivery…</span></div>
+      </div>
+      <aside class="report-aside" aria-label="What happens next">
+        <h2>Before you send</h2>
+        <p>Reports go to a private staff Discord channel. They are not posted publicly or automatically turned into confirmed bugs.</p>
+        <p>Only include information you're comfortable sharing. Never paste passwords, tokens, email addresses, or private account paths.</p>
+        <a href="/wiki/">Try the setup &amp; troubleshooting wiki ↗</a>
+      </aside>
+    </div>
+
+    <form class="report-form" id="bug-form" autocomplete="off" novalidate>
+      <div class="report-form-title"><div><span class="report-step">01 / Details</span><h2>What happened?</h2></div><span class="form-required">* Required</span></div>
+      <div class="report-fields report-fields-three">
+        <label>Area *<select name="category" required>
+          <option value="" selected disabled>Select an area</option><option value="macro">Macro / automation</option><option value="setup">Setup / installation</option><option value="strategy">Strategy files</option><option value="website">Website</option><option value="other">Other</option>
+        </select></label>
+        <label>UM version *<select name="version" required>
+          <option value="" selected disabled>Select version</option><option value="v1.3.6">v1.3.6</option><option value="v1.3.5">v1.3.5</option><option value="v1.3.4b">v1.3.4b</option><option value="v1.3.4a">v1.3.4a</option><option value="v1.3.4">v1.3.4</option><option value="v1.3.3">v1.3.3</option><option value="older">Older</option><option value="unknown">Not sure</option><option value="not-applicable">Not applicable (website)</option>
+        </select></label>
+        <label>Device / OS *<select name="system" required>
+          <option value="" selected disabled>Select system</option><option>Windows 11</option><option>Windows 10</option><option>macOS</option><option>iOS / iPadOS</option><option>Android</option><option>Linux</option><option>Other</option><option>Unknown</option>
+        </select></label>
+      </div>
+      <div class="report-fields">
+        <label>Short title *<input name="title" type="text" minlength="8" maxlength="100" placeholder="e.g. macro stops upgrading towers on wave 20" required></label>
+      </div>
+      <div class="report-fields">
+        <label>Steps to reproduce *<textarea name="steps" minlength="15" maxlength="950" rows="4" placeholder="1. Open the macro&#10;2. Load this type of strategy&#10;3. Start the run…" required></textarea></label>
+      </div>
+      <div class="report-fields report-fields-two">
+        <label>What did you expect? *<textarea name="expected" minlength="8" maxlength="550" rows="3" placeholder="The tower should upgrade normally." required></textarea></label>
+        <label>What actually happened? *<textarea name="actual" minlength="8" maxlength="850" rows="3" placeholder="The macro clicks the wrong button and stops." required></textarea></label>
+      </div>
+      <div class="report-fields report-fields-two">
+        <label>How often? *<select name="frequency" required><option value="" selected disabled>Select frequency</option><option value="every-time">Every time</option><option value="sometimes">Sometimes</option><option value="once">Only once</option><option value="unknown">Not sure</option></select></label>
+        <div class="report-guidance" id="context-guidance" aria-live="polite">Tip: precise reproduction steps help us fix bugs much faster.</div>
+      </div>
+
+      <div class="report-form-title report-second-title"><div><span class="report-step">02 / Optional</span><h2>Extra context.</h2></div></div>
+      <div class="report-fields">
+        <label>Anything else? <textarea name="notes" maxlength="600" rows="2" placeholder="Map, tower, mode, or other useful context."></textarea></label>
+      </div>
+      <div class="report-fields">
+        <label>Relevant log excerpt <span class="optional">(optional)</span>
+          <textarea name="logExcerpt" maxlength="1200" rows="3" placeholder="Paste only a short, reviewed error excerpt. No full logs or private information."></textarea>
+          <small>The report includes exactly what you type, not your full log files. Automatic uploads are disabled.</small>
+        </label>
+      </div>
+      <div class="report-trap" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <label class="report-consent"><input type="checkbox" name="consent" required><span>I reviewed the report and removed any passwords, tokens, contact details or private information. *</span></label>
+      <div class="report-actions">
+        <button type="button" class="report-secondary" id="preview-report">Preview report</button>
+        <button type="button" class="report-secondary" id="copy-report">Copy report</button>
+        <button type="submit" class="report-submit" id="submit-report" disabled>Send to staff <span aria-hidden="true">↗</span></button>
+      </div>
+      <p class="report-message" id="report-message" role="status" aria-live="polite">Send is disabled until the private staff inbox is connected.</p>
+    </form>
+    <section class="report-preview" id="report-preview" hidden aria-label="Report preview">
+      <div class="report-preview-heading"><h2>What staff will receive</h2><button type="button" id="close-preview">Close</button></div>
+      <pre id="report-preview-text"></pre>
+    </section>
+    <section class="report-success" id="report-success" hidden aria-live="polite">
+      <span class="report-success-icon" aria-hidden="true">✓</span><h2>Report sent to staff.</h2>
+      <p>Keep this reference if you need to follow up in Discord.</p>
+      <strong id="report-receipt"></strong>
+      <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Get help in Discord ↗</a>
+    </section>
+  </main>
+  <footer><a class="brand" href="/"><img class="brand-mark" src="/assets/icon.png" alt="" width="29" height="29"><span>Ultimate <b>Macro</b></span></a><p>Community software for repeatable TDS runs.</p><div><a href="/wiki/">Wiki</a><a href="/privacy/">Privacy</a><a href="/download/">Download</a><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a></div><small>© 2026 Ultimate Macro · Not affiliated with Roblox Corporation or Paradoxum Games.</small></footer>
+  <script src="/src/homepage.js?v=1" defer></script>
+  <script src="/src/bug-report.js?v=1" defer></script>
+</body>
+</html>

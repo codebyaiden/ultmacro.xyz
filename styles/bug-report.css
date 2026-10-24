@@ -1,0 +1,64 @@
+/* The bug reporter is a small, independent support flow. */
+.bug-report-page{background:#080d17;color:#eaf0fc}
+.report-main{max-width:1080px;margin:0 auto;padding:130px 24px 96px}
+.report-intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(265px,.65fr);align-items:end;gap:55px;margin-bottom:55px}
+.report-kicker,.report-step{display:block;margin:0 0 16px;color:#9baeff;font:650 11px/1.5 ui-monospace,SFMono-Regular,monospace;letter-spacing:.1em;text-transform:uppercase}
+.report-heading h1{font:500 clamp(51px,6vw,75px)/1.04 Georgia,Cambria,serif;letter-spacing:-.06em;color:#f0f5ff;margin:0 0 18px}
+.report-heading>p:not(.report-kicker){max-width:530px;margin:0;color:#b5c3d6;font-size:15px;line-height:1.7}
+.report-service{display:inline-flex;align-items:center;gap:9px;min-height:34px;margin-top:22px;color:#9db5d5;font-size:12px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#8e9eb7;flex:none}
+.report-service[data-ready="true"] .status-dot{background:#73d6aa;box-shadow:0 0 10px #73d6aa50}
+.report-service[data-ready="false"] .status-dot{background:#d7ad76}
+.report-aside{padding:23px 25px;border:1px solid #9ab8f023;border-radius:14px;background:#111827}
+.report-aside h2{font-size:14px;margin:0 0 11px;color:#edf4ff}
+.report-aside p{font-size:12px;line-height:1.65;color:#a7b8ce;margin:10px 0}
+.report-aside a{display:inline-block;color:#b4cfff;font-size:12px;margin-top:11px;text-underline-offset:4px}
+.report-form{border:1px solid rgba(160,194,234,.18);border-radius:20px;background:linear-gradient(170deg,#0e1625,#0b111d);padding:clamp(24px,4.2vw,46px)}
+.report-form-title{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:25px}
+.report-form-title .report-step{margin-bottom:7px}
+.report-form-title h2,.report-preview h2,.report-success h2{margin:0;color:#eef4ff;font:500 clamp(27px,3.2vw,34px)/1.15 Georgia,Cambria,serif;letter-spacing:-.035em}
+.form-required{color:#8d9db3;font-size:11px;white-space:nowrap}
+.report-fields{display:grid;gap:16px;margin:0 0 19px}
+.report-fields-two{grid-template-columns:1fr 1fr}
+.report-fields-three{grid-template-columns:1.1fr 1fr 1fr}
+.report-fields label{display:flex;flex-direction:column;gap:8px;min-width:0;color:#d9e5f7;font-size:12px;font-weight:650}
+.report-fields :is(input,select,textarea){
+  box-sizing:border-box;width:100%;max-width:100%;min-height:46px;
+  background:#080f1b;color:#f4f7ff;
+  border:1px solid rgba(167,194,233,.2);border-radius:10px;
+  padding:11px 13px;font:400 13px/1.5 Inter,system-ui,sans-serif;outline:none;
+}
+.report-fields textarea{min-height:92px;resize:vertical}
+.report-fields :is(input,select,textarea):focus-visible{border-color:#93b3ee;box-shadow:0 0 0 3px rgba(112,152,225,.14)}
+.report-fields :is(input,textarea)::placeholder{color:#71839c}
+.report-fields select{cursor:pointer}
+.report-fields label small{color:#94a7bf;font-weight:400;line-height:1.5}
+.report-fields .optional{font-weight:400;color:#8299b9}
+.report-guidance{display:flex;align-items:center;min-height:44px;color:#9bb0cd;font-size:12px;line-height:1.5;padding:6px 3px}
+.report-second-title{padding-top:32px;margin-top:33px;border-top:1px solid rgba(165,192,235,.17)}
+.report-trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.report-consent{display:flex;align-items:flex-start;gap:12px;margin:30px 0 22px;color:#c4d1e3;font-size:12px;line-height:1.6;cursor:pointer}
+.report-consent input{margin-top:3px;flex:0 0 17px;width:17px;height:17px;accent-color:#8aaff3}
+.report-consent input:focus-visible{outline:2px solid #a6c8ff;outline-offset:3px}
+.report-actions{display:flex;align-items:center;justify-content:flex-end;gap:11px;flex-wrap:wrap}
+.report-actions button{border-radius:10px;cursor:pointer;font-size:12px;font-weight:650;min-height:43px;padding:10px 15px}
+.report-actions button:focus-visible,.report-preview-heading button:focus-visible{outline:2px solid #a4c8ff;outline-offset:4px}
+.report-secondary{border:1px solid rgba(160,190,236,.25);background:transparent;color:#c9daf4}
+.report-secondary:hover{background:rgba(148,181,240,.09)}
+.report-submit{border:1px solid #8277d5;background:linear-gradient(135deg,#5340a6,#3565aa);color:white;min-width:156px}
+.report-submit:not(:disabled):hover{background:linear-gradient(135deg,#6650bd,#3976bc)}
+.report-submit:disabled{opacity:.45;cursor:not-allowed}
+.report-message{margin:13px 0 0;color:#9baec9;font-size:12px;text-align:right;min-height:18px}
+.report-message[data-error="true"]{color:#edb3a2}
+.report-preview,.report-success{margin-top:20px;border:1px solid rgba(160,194,234,.22);border-radius:16px;padding:26px;background:#0e1726}
+.report-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.report-preview-heading button{border:0;background:transparent;color:#bdd0ed;cursor:pointer}
+.report-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;color:#b4c6de;font:12px/1.65 ui-monospace,SFMono-Regular,monospace}
+.report-success{text-align:center;padding:40px 20px}
+.report-success-icon{display:grid;place-items:center;width:48px;height:48px;margin:0 auto 18px;border-radius:50%;background:#164536;color:#a3e5ca;font-size:25px}
+.report-success p{color:#a8b9cf;font-size:13px}
+.report-success strong{display:block;margin:14px;color:#dce9ff;font:650 16px ui-monospace,monospace}
+.report-success a{color:#bdd5fd;font-size:13px}
+@media(max-width:760px){.report-main{padding:109px 18px 70px}.report-intro{grid-template-columns:1fr;gap:22px;margin-bottom:27px}.report-aside{padding:19px 20px}.report-fields-three,.report-fields-two{grid-template-columns:1fr 1fr}.report-fields-three label:first-child{grid-column:1/-1}}
+@media(max-width:520px){.report-heading h1{font-size:46px}.report-main{padding-top:106px}.report-form{padding:22px 18px}.report-fields-two,.report-fields-three{grid-template-columns:1fr}.report-fields-three label:first-child{grid-column:auto}.report-form-title h2{font-size:28px}.report-fields{gap:15px;margin-bottom:17px}.report-actions{display:grid;grid-template-columns:1fr 1fr}.report-actions .report-submit{grid-column:1/-1;grid-row:1}.report-actions button{width:100%}.report-message{text-align:left}.report-heading>p:not(.report-kicker){font-size:14px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}

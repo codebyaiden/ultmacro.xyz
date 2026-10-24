@@ -17,7 +17,7 @@ async function pages(dir=''){
 function environment(path='/',value=config){
  const appended=[];const context={window:{},location:{pathname:path},fetch:async()=>({ok:true,json:async()=>value}),document:{getElementById:()=>null,createElement:()=>({attributes:{},setAttribute(key,value){this.attributes[key]=value;}}),head:{appendChild:s=>appended.push(s)}}};vm.createContext(context);return {context,appended};
 }
-test('all 34 public entry documents use exactly one approved loader; no raw vendor or legacy Adcash tags',async()=>{
+test('all public entry documents use exactly one approved loader; no raw vendor or legacy Adcash tags',async()=>{
  let count=0;
  for(const file of await pages()){
   const html=await readFile(new URL(file,root),'utf8');if(!/<head\b/i.test(html))continue;
@@ -25,7 +25,7 @@ test('all 34 public entry documents use exactly one approved loader; no raw vend
   assert.equal((html.match(/src="\/src\/advertising\.js\?v=adcash-selfhost-20261021"/g)||[]).length,exempt?0:1,file);
   assert.doesNotMatch(html,/runAutoTag|acscdn\.com|src="[^" ]*adcash\.js|accountut\.com|bellnewyork\.org/,file);if(!exempt)count++;
  }
- assert.equal(count,34);
+ assert.ok(count>=35,'new public pages must use the approved loader');
 });
 test('approved Adcash library loads once and invokes the screenshot zone only after loading',async()=>{
  assert.equal(config.provider,'Adcash');assert.equal(config.enabled,true);assert.equal(config.ownerApproved,true);assert.equal(config.reviewApproved,true);assert.equal(config.format,'AutoTag');assert.equal(config.zoneId,'nmmtb0xi2i');
@@ -38,7 +38,7 @@ test('disabled, malformed or changed-provider config cannot load ads',async()=>{
  for(const fetcher of [async()=>{throw Error('offline')},async()=>({ok:false}),async()=>({ok:true,json:async()=>{throw Error('invalid')}})]){const e=environment();e.context.fetch=fetcher;await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
 });
 test('sensitive workflows and frames never load popunders',async()=>{
- for(const path of ['/internal/qa-logs/','/poll/team/','/api/auth','/poll/','/moderatorapplication/','/privacy/','/terms/','/memberships/','/strategies/','/p/test/']){const e=environment(path);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0,path);}
+ for(const path of ['/internal/qa-logs/','/poll/team/','/api/auth','/poll/','/moderatorapplication/','/privacy/','/terms/','/memberships/','/strategies/','/report/','/p/test/']){const e=environment(path);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0,path);}
  const frame=environment();frame.context.window.top={};frame.context.window.self={};await vm.runInContext(code,frame.context);assert.equal(frame.appended.length,0);
 });
 
