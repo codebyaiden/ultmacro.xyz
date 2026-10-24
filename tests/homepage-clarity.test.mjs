@@ -22,7 +22,7 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   }
   assert.equal((home.match(/<section\b/g) || []).length, 7);
   assert.match(home, /id="coming"/);
-  assert.match(home, /styles\/coming\.css\?v=1/);
+  assert.match(home, /styles\/coming\.css\?v=2/);
   assert.match(home, /href="coming\/"/);
   assert.match(css, /home-value-section/);
   assert.match(css, /home-setup-steps/);
