@@ -139,7 +139,7 @@ code{padding:.12em .38em;border:1px solid currentColor;border-radius:5px;font:in
 @keyframes runtime-orbit{from{transform:translate3d(0,0,0) scale(.96);opacity:.55}to{transform:translate3d(-24px,18px,0) scale(1.04);opacity:1}}
 @media(prefers-reduced-motion:reduce){.hero-ambient,.runtime-section:after{animation:none}.signal-strip a:hover{transform:none}}
 @media(max-width:980px){.nav-shell nav,.nav-shell .nav-actions{display:none}.nav-shell .menu-button{display:block}.hero{grid-template-columns:1fr!important}.hero-demo{margin-top:32px;max-width:100%;transform:none}}
-@media(max-width:520px){.nav-shell{width:100%;justify-content:space-between}.nav-shell .menu-button{display:grid!important;visibility:visible!important;opacity:1!important;flex:0 0 40px;position:absolute;right:16px;top:10px;z-index:20}.hero{padding-left:16px;padding-right:16px}.hero-copy,.hero-actions,.hero-demo{width:100%;max-width:calc(100vw - 32px);min-width:0}.hero-copy h1{font-size:clamp(38px,11vw,52px);line-height:.9}.hero-copy h1 span{display:block}.hero-copy .lede{width:100%;max-width:320px;font-size:15px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .button,.hero-actions .text-link{width:100%;max-width:100%}.hero-actions .button{color:var(--navy)!important}.hero-actions .text-link{display:inline-flex;justify-content:center;align-items:center}.proof-line{gap:12px;font-size:9px}.proof-line span+span:before{margin-right:12px}.showcase-topline{min-width:0}.showcase-topline span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+@media(max-width:520px){.nav-shell{width:100%;justify-content:space-between}.nav-shell .menu-button{display:grid!important;visibility:visible!important;opacity:1!important;flex:0 0 40px;position:absolute;right:16px;top:10px;z-index:20}.hero{padding-left:16px;padding-right:16px}.hero-copy,.hero-actions,.hero-demo{width:100%;max-width:calc(100vw - 32px);min-width:0}.hero-copy h1{font-size:clamp(38px,11vw,52px);line-height:.9}.hero-copy h1 span{display:block}.hero-copy .lede{width:100%;max-width:320px;font-size:15px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .button,.hero-actions .text-link{width:100%;max-width:100%}.hero-actions .button{color:#f9fbff!important;text-shadow:0 1px 2px #03081455}.hero-actions .text-link{display:inline-flex;justify-content:center;align-items:center}.proof-line{gap:12px;font-size:9px}.proof-line span+span:before{margin-right:12px}.showcase-topline{min-width:0}.showcase-topline span:nth-child(2){overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 
 .actual-ui-showcase{padding:14px;background:#071321}
 .actual-ui-label{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 4px 14px;color:#7990ad;font-size:9px;letter-spacing:.15em}
@@ -731,3 +731,35 @@ html.light-mode .menu-backdrop { background: rgba(31,55,80,.18); }
 	.nav-shell > nav a { white-space: nowrap; }
 }
 
+
+/* Home page clarity: truthful preview, visible shortcuts and restrained sky secrets. */
+.hero-hotkeys{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 17px;color:#aebfda;font-size:11px;line-height:1.4}
+.hero-hotkeys span{display:inline-flex;align-items:center;gap:6px}
+.hero-hotkeys kbd{display:inline-flex;align-items:center;justify-content:center;min-width:28px;min-height:25px;padding:3px 6px;font:600 11px/1 ui-monospace,monospace;color:#e9edff;border:1px solid #a7c4f452;border-radius:6px;background:#0d192fb3}
+.actual-ui-showcase .showcase-player{aspect-ratio:auto;overflow:visible}
+.actual-ui-showcase .hero-product-image{display:block;width:100%;height:auto;object-fit:contain}
+.actual-ui-showcase .showcase-caption{padding:10px 12px 0;color:#a9bedc;font-size:10px;line-height:1.5;text-align:center;letter-spacing:.01em}
+.interface-section .field-notes{margin-top:34px}
+.checklist-note{color:#a8b9d4;font-size:12px;line-height:1.55;margin:0 0 14px}
+.checklist input:not(:disabled){cursor:pointer;accent-color:#86b5ff}
+.checklist label:has(input:checked){color:#dceeff}
+.recorder .timeline .sample-action{animation:sample-appear .35s ease both}
+@keyframes sample-appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hero .wish-star{position:absolute;z-index:3;right:clamp(34px,14vw,240px);top:23%;appearance:none;border:0;background:transparent;color:#9fbdeb;width:34px;height:34px;border-radius:50%;padding:0;font-size:16px;cursor:pointer;opacity:.58;transition:opacity .2s ease,color .2s ease,transform .3s ease}
+.hero .wish-star:hover,.hero .wish-star:focus-visible{opacity:1;color:#edf5ff;transform:scale(1.2)}
+.hero .wish-star:focus-visible{outline:2px solid #c5d9ff;outline-offset:4px}
+.secret-toast:not([hidden]){position:fixed;z-index:1250;right:20px;bottom:20px;max-width:min(370px,calc(100vw - 40px));padding:12px 16px;border:1px solid #adcbff40;border-radius:12px;color:#f0f5ff;background:#0d1727;box-shadow:0 12px 42px #0008;font-size:12px;line-height:1.5;animation:sample-appear .25s ease both}
+.sky-wish-active .hero-easter-star{opacity:1!important;box-shadow:0 0 14px 4px #bbd5ff,0 0 36px #899bff;transform:scale(1.8);transition:box-shadow .7s ease,transform .7s ease,opacity .7s ease}
+@media(max-width:980px){.hero-hotkeys{margin-top:18px}.hero{padding-top:120px}}
+@media(max-width:520px){.hero{padding-bottom:54px;min-height:0}.hero-actions .button{font-size:13px;min-height:48px}.hero-hotkeys{font-size:10px;gap:8px 10px}.hero-hotkeys kbd{font-size:10px;min-height:24px}.hero-demo{margin-top:21px}.hero .wish-star{right:17%;top:17%}}
+@media(prefers-reduced-motion:reduce){.hero .wish-star,.sky-wish-active .hero-easter-star,.recorder .timeline .sample-action,.secret-toast:not([hidden]){animation:none!important;transition:none!important}}
+
+/* Keep the main CTA readable through every gradient stop, including bright-edge hover. */
+.hero .hero-actions .button{
+  background:linear-gradient(135deg,#4931a8,#5c49c2 58%,#285ca8);
+  color:#f9fbff!important;
+}
+.hero .hero-actions .button:hover,.hero .hero-actions .button:focus-visible{
+  background:linear-gradient(135deg,#5439ba,#5a4aca 58%,#336ab6);
+  color:#fff!important;
+}

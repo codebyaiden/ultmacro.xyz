@@ -191,7 +191,7 @@
 							<span>Setting</span><span>Value</span><span>Why</span>
 						</div>
 						<div class="st-row">
-							<span><b>Windows display resolution</b></span><span class="val">Supported 16:9</span><span class="why">The 1.3.5 image and coordinate systems adapt across supported 16:9 resolutions. 1920×1080 is still the recommended reference setup.</span>
+							<span><b>Windows display resolution</b></span><span class="val">Supported 16:9</span><span class="why">The current image and coordinate systems adapt across supported 16:9 resolutions. 1920×1080 is still the recommended reference setup.</span>
 						</div>
 						<div class="st-row">
 							<span><b>Windows display scale</b></span><span class="val">100%</span>
@@ -306,9 +306,8 @@
 								— that is when a wrong setting shows itself.</p>
 						</li>
 						<li>
-							<h3>Stop with <span class="kbd">F2</span></h3>
-							<p><span class="kbd">F2</span> stops the macro and releases any held input. Use it
-								rather than killing the window, so cleanup runs properly.</p>
+							<h3>Pause or resume with <span class="kbd">F2</span>; stop with <span class="kbd">F3</span></h3>
+							<p><span class="kbd">F2</span> pauses or resumes the main strategy. Use <span class="kbd">F3</span> to stop it and release held inputs safely. These are the main macro shortcuts in v1.3.6; standalone tools may have separate shortcuts.</p>
 						</li>
 					</ol>
 				</section>
@@ -452,7 +451,7 @@
 							<path
 								d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
 						</svg>
-						<span><strong>Legacy Mode</strong> changes how image detection works and is only a fallback. It may retain 1920×1080 limitations, and <strong>Auto Equip and changing tower targeting do not work while it is on</strong>. Leave it off unless you really need it; use the adaptive 1.3.5 path whenever possible.</span>
+						<span><strong>Legacy Mode</strong> changes how image detection works and is only a fallback. It may retain 1920×1080 limitations, and <strong>Auto Equip and changing tower targeting do not work while it is on</strong>. Leave it off unless you really need it; use the adaptive detection path whenever possible.</span>
 					</div>
 				</section>
 				<section id="discord" data-toc-label="Discord &amp; profiles">
@@ -460,7 +459,7 @@
 					<h2>Discord &amp; profiles</h2>
 					<p>
 						The <strong>Discord</strong> tab sends real-time logs, screenshots and currency stats to
-						your own server, so you can check a session from your phone. Version 1.3.5 also includes an upgraded personal-bot interface with cards, buttons, menus, screenshots, status controls and strategy selection, plus optional gateway support for faster commands and status updates. To get a webhook URL: create a
+						your own server, so you can check a session from your phone. The current release includes an upgraded personal-bot interface with cards, buttons, menus, screenshots, status controls and strategy selection, plus optional gateway support for faster commands and status updates. To get a webhook URL: create a
 						Discord server, open any channel's settings &rarr; Integrations &rarr; Create Webhook
 						&rarr; Copy Webhook URL. Paste it in, tick <strong>Enable Webhook</strong>, then use
 						<strong>Test Webhook</strong> to confirm it works before saving.

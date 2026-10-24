@@ -106,8 +106,56 @@ interfaceArrows.forEach((arrow) => {
 const recordButton = /** @type {HTMLButtonElement | null} */ (document.querySelector("#record-action"));
 const recorderStatus = /** @type {HTMLElement | null} */ (document.querySelector("#recorder-status"));
 recordButton?.addEventListener("click", () => {
-  recordButton.textContent = "✓ Action recorded";
-  recordButton.setAttribute("aria-disabled", "true");
+  const timeline = document.querySelector(".recorder .timeline");
+  if (timeline) {
+    const action = document.createElement("div");
+    action.className = "action sample-action";
+    action.innerHTML = "<span>00:41</span><b>SELL TOWER</b><small>Minigunner1 · sample</small>";
+    timeline.append(action);
+  }
+  recordButton.textContent = "✓ Sample action added";
   recordButton.disabled = true;
-  if (recorderStatus) recorderStatus.textContent = "New action added to this run";
+  if (recorderStatus) recorderStatus.textContent = "Example updated · no strategy file was saved";
 });
+
+/* Two optional night-sky easter eggs, scoped to the homepage. */
+(() => {
+  const star = document.getElementById("wish-star");
+  const toast = document.getElementById("secret-toast");
+  const hero = document.querySelector(".hero");
+  if (!star || !toast || !hero) return;
+  let hideTimer;
+  const reveal = (message) => {
+    toast.hidden = false;
+    toast.textContent = message;
+    hero.classList.remove("sky-wish-active");
+    void hero.offsetWidth;
+    hero.classList.add("sky-wish-active");
+    window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => {
+      toast.hidden = true;
+      hero.classList.remove("sky-wish-active");
+    }, 4200);
+  };
+  let wishes = 0;
+  star.addEventListener("click", () => {
+    wishes += 1;
+    reveal(wishes % 3 === 0
+      ? "Three wishes. Still need to place your own towers."
+      : "Wish logged. May your next run be a clean one.");
+  });
+  const code = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown",
+    "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  let matched = 0;
+  document.addEventListener("keydown", (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.repeat ||
+        event.target instanceof HTMLElement &&
+        event.target.closest("input, textarea, select, [contenteditable]")) return;
+    const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    matched = key === code[matched] ? matched + 1 : (key === code[0] ? 1 : 0);
+    if (matched === code.length) {
+      matched = 0;
+      reveal("↑ ↑ ↓ ↓ ← → ← → B A · Secret found. No free gems, sorry.");
+    }
+  });
+})();
