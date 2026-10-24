@@ -129,7 +129,7 @@ async function writeVersionChips(latestTag) {
       if (entry.isDirectory()) await walk(full);
       else if (entry.name.endsWith('.html')) {
         const source = await fs.readFile(full, 'utf8');
-        const next = source.replace(/(<([a-zA-Z][\w-]*)\b[^>]*\bdata-latest-version\b[^>]*>)([^<]*)(<\/\2>)/g, (match, open, tagName, text, close) => open.replace(/\s*class="([^"]*)"/, (full, classes) => {
+        const next = source.replace(/<a\b[^>]*\bdata-latest-release\b[^>]*>/g, open => open.replace(/\bhref="[^"]*"/, `href="${esc(view.versionUrl(latestTag))}"`)).replace(/(<([a-zA-Z][\w-]*)\b[^>]*\bdata-latest-version\b[^>]*>)([^<]*)(<\/\2>)/g, (match, open, tagName, text, close) => open.replace(/\s*class="([^"]*)"/, (full, classes) => {
           const kept = classes.split(/\s+/).filter(name => name && name !== 'is-loading');
           return kept.length ? ` class="${kept.join(' ')}"` : '';
         }) + esc(latestTag) + close);
@@ -141,3 +141,4 @@ async function writeVersionChips(latestTag) {
   return updated;
 }
 module.exports = { writeVersionPages, writeVersionChips };
+

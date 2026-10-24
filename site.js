@@ -119,9 +119,9 @@ const legacyActions = document.querySelector(".nav-shell .nav-actions");
 if (legacyActions && !legacyActions.querySelector(".legacy-version-chip")) {
   const versionChip = document.createElement("a");
   versionChip.className = "legacy-version-chip";
-  versionChip.href = "../download/latest/";
+  versionChip.href = "/download/latest/";
   versionChip.title = "Latest release";
-  versionChip.innerHTML = '<span aria-hidden="true"></span><b>v1.3.5</b>';
+  versionChip.innerHTML = '<span aria-hidden="true"></span><b>Latest release</b>';
   legacyActions.insertBefore(versionChip, legacyActions.firstChild);
 }
 
@@ -185,3 +185,4 @@ if (settingsHost) {
     link.setAttribute("aria-current", "page");
   }
 });
+

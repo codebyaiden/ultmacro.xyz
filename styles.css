@@ -547,9 +547,16 @@ html.light-mode .field-notes p {
 }
 
 /* keep the older secondary pages on the same quiet chrome as the home page */
-.legacy-version-chip{display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(184,207,235,.18);border-radius:9px;background:rgba(10,15,23,.55);color:#9eafc5;font:500 11px/1 var(--font-mono,ui-monospace,monospace);transition:color .2s ease,border-color .2s ease,background .2s ease,transform .24s var(--ease)}
+.legacy-version-chip{position:relative;overflow:hidden;isolation:isolate;display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid rgba(184,207,235,.18);border-radius:9px;background:rgba(10,15,23,.55);color:#9eafc5;font:500 11px/1 var(--font-mono,ui-monospace,monospace);transition:color .2s ease,border-color .2s ease,background .2s ease,transform .24s var(--ease)}
 .legacy-version-chip span{width:6px;height:6px;border-radius:50%;background:#6fa8ff;box-shadow:0 0 9px rgba(111,168,255,.8)}
 .legacy-version-chip:hover{color:#eef4ff;border-color:rgba(157,200,255,.48);background:rgba(25,48,78,.72);transform:translateY(-1px)}
+.legacy-version-chip::after{content:"";position:absolute;inset:-20% 0;pointer-events:none;background:linear-gradient(105deg,transparent 30%,rgba(157,200,255,.24) 50%,transparent 70%);transform:translateX(-120%);animation:release-shine .85s cubic-bezier(.22,1,.36,1) .2s 1 both}
+.legacy-version-chip:focus-visible{outline:2px solid #8db8ff;outline-offset:4px}
+.legacy-version-chip:focus-visible::after{animation:release-shine-focus .65s ease-out 1 both}
+@keyframes release-shine{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
+@keyframes release-shine-focus{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
+@media(hover:hover) and (pointer:fine){.legacy-version-chip:hover::after{animation:release-shine-focus .65s ease-out 1 both}}
+@media(prefers-reduced-motion:reduce){.legacy-version-chip,.legacy-version-chip::after,.legacy-version-chip:hover::after,.legacy-version-chip:focus-visible::after{animation:none;transition:none}.legacy-version-chip:hover{transform:none}.legacy-version-chip::after{display:none}}
 .nav-shell .home-context{font:500 11px/1 var(--font-mono,ui-monospace,monospace);color:#9dc8ff;white-space:nowrap}
 .nav-shell .site-settings{display:flex;align-items:center}
 .nav-shell .settings-toggle{width:34px;height:34px}
@@ -723,3 +730,4 @@ html.light-mode .menu-backdrop { background: rgba(31,55,80,.18); }
 	.nav-shell > .nav-actions { margin-left: 18px; }
 	.nav-shell > nav a { white-space: nowrap; }
 }
+

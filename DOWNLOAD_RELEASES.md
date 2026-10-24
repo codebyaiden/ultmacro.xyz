@@ -4,6 +4,8 @@
 
 `src/release-detail.js` renders both the index and version content at generation time. Download pages do not fetch the GitHub API or render a separate latest-page state. They remain usable without JavaScript. `src/download.js` only enhances navigation, disclosure motion, checksum copying, and download feedback.
 
+The homepage release badge and mobile Download link are static HTML. `writeVersionChips` stamps both `data-latest-version` labels and `data-latest-release` destinations from the same stable release used by downloads. Run `node sync-releases.cjs` and commit the homepage alongside its generated download outputs. `tests/release-version.test.mjs` blocks a mismatch in CI and exercises a future stable release with a newer prerelease present. Legacy pages without a generated badge use the version-neutral “Latest release” link rather than a hardcoded version.
+
 ## Metadata and assets
 
 Source: `GET https://api.github.com/repos/UltimateMacro/Ultimate-Macro-New-Era/releases?per_page=100`. Release dates use `published_at`, formatted in UTC so the Sep 5 sequence stays Sep 5 in every visitor timezone. Size and SHA-256 come from the validated ZIP asset's `size` and `digest`; the existing site convention rounds binary megabytes (`bytes / 1024 / 1024`) and displays MB. Notes come from `body`; the raw history stays intact. The renderer omits the v1.3.5 marketing opener/closer and duplicate version heading and formats the existing change groups. The v1.3.5 index highlights summarize four recorded changes; subsequent versions default to the first four change items.
@@ -39,3 +41,4 @@ Canonical index: `/download/`. Canonical versions: `/download/<tag>/`. Slashless
 - `npm test`: backend, release generation/history, asset ambiguity, redirect/query preservation.
 - `PLAYWRIGHT_MODULE=<playwright module> BROWSER_EXECUTABLE=<optional Chromium path> node tests/downloads-browser.mjs`: starts an isolated local server by default. `TEST_DOWNLOAD_URL` can point to a preview instead. `DOWNLOAD_SCREENSHOTS` optionally saves screenshots.
 - Browser matrix: all 7 routes × 7 viewports × normal/reduced motion; verifies version/date/size/URL/hash/status/canonical, first-viewport CTA, overflow throughout motion, keyboard disclosure, clipboard copy, immediate attachment feedback, internal links, page errors, and no-JS access. Attachment feedback uses a test response and does not increment GitHub counts.
+
