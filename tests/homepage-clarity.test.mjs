@@ -5,18 +5,25 @@ import vm from 'node:vm';
 
 const read = (path) => readFile(new URL('../' + path, import.meta.url), 'utf8');
 
-test('hero explains current controls, avoids false demo promises and offers manual checks', async () => {
+test('homepage has concise, accessible mobile-first sections', async () => {
   const home = await read('index.html');
-  const css = await read('styles.css');
+  const css = await read('styles/home-rework.css');
   assert.match(home, /Watch on YouTube/);
-  assert.doesNotMatch(home, /See it in action/);
   assert.match(home, /earlier build/);
+  assert.match(home, /styles\/home-rework\.css\?v=1/);
+  assert.match(home, /<body class="home-rework">/);
   for (const key of ['F1', 'F2', 'F3']) assert.match(home, new RegExp('<kbd>' + key + '</kbd>'));
-  assert.doesNotMatch(home, /class="runtime-section section"/);
-  assert.match(home, /Manual ready check/);
-  assert.equal((home.match(/<input type="checkbox" \/>/g) || []).length, 9);
-  assert.doesNotMatch(home, /<input type="checkbox" checked disabled \/>/);
-  assert.match(css, /\.hero-actions \.button\{color:#f9fbff!important/);
+  for (const title of ['Your strategy.', 'Replay a full run', 'Cut repetitive setup', 'Use shared strategies', 'Three steps. One run.']) {
+    assert.ok(home.includes(title), title);
+  }
+  for (const removed of ['interface-section', 'runtime-section', 'recorder-section', 'requirements-heading', 'download-panel', 'field-notes', 'id="record-action"']) {
+    assert.ok(!home.includes(removed), 'retired UI should not be on homepage: ' + removed);
+  }
+  assert.equal((home.match(/<section\b/g) || []).length, 6);
+  assert.match(css, /home-value-section/);
+  assert.match(css, /home-setup-steps/);
+  assert.match(css, /site-sky-moon/);
+  assert.match(css, /@media\(max-width:520px\)/);
 });
 
 test('every guide variant uses F3 to stop a v1.3.6 main strategy', async () => {
@@ -37,6 +44,6 @@ test('optional sky secrets and recorder sample are syntactically valid', async (
   assert.match(home, /id="secret-toast"/);
   assert.match(app, /ArrowUp/);
   assert.match(app, /\[contenteditable\]/);
-  assert.match(app, /no strategy file was saved/);
+  assert.match(app, /Wish logged/);
   assert.match(css, /prefers-reduced-motion:reduce/);
 });
