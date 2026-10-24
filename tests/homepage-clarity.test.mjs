@@ -7,10 +7,11 @@ const read = (path) => readFile(new URL('../' + path, import.meta.url), 'utf8');
 
 test('homepage has concise, accessible mobile-first sections', async () => {
   const home = await read('index.html');
-  const css = await read('styles/home-rework.css');
+  const css = await read('styles/homepage.css');
+  const menu = await read('src/homepage.js');
   assert.match(home, /Watch on YouTube/);
   assert.match(home, /earlier build/);
-  assert.match(home, /styles\/home-rework\.css\?v=1/);
+  assert.match(home, /styles\/homepage\.css\?v=1/);
   assert.match(home, /<body class="home-rework">/);
   for (const key of ['F1', 'F2', 'F3']) assert.match(home, new RegExp('<kbd>' + key + '</kbd>'));
   for (const title of ['Your strategy.', 'Replay a full run', 'Cut repetitive setup', 'Use shared strategies', 'Three steps. One run.']) {
@@ -22,8 +23,14 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   assert.equal((home.match(/<section\b/g) || []).length, 6);
   assert.match(css, /home-value-section/);
   assert.match(css, /home-setup-steps/);
-  assert.match(css, /site-sky-moon/);
+  assert.doesNotMatch(home, /styles\.css\?v=19|site\.js\?v=6|home-rework\.css/);
+  assert.match(home, /src\/advertising\.js/);
+  assert.match(menu, /aria-expanded/);
+  assert.match(menu, /Escape/);
+  assert.match(menu, /menu\.inert = true/);
+  assert.doesNotMatch(home, /class="hero-moon"|class="hero-wave"|class="hero-ambient"/);
   assert.match(css, /@media\(max-width:520px\)/);
+  assert.match(css, /footer\{display:grid/);
 });
 
 test('every guide variant uses F3 to stop a v1.3.6 main strategy', async () => {
@@ -35,11 +42,13 @@ test('every guide variant uses F3 to stop a v1.3.6 main strategy', async () => {
   }
 });
 
-test('optional sky secrets and recorder sample are syntactically valid', async () => {
+test('homepage easter egg and menu stay lightweight and valid', async () => {
   const home = await read('index.html');
   const app = await read('app.js');
-  const css = await read('styles.css');
+  const css = await read('styles/homepage.css');
   new vm.Script(app);
+  new vm.Script(await read('src/homepage.js'));
+  assert.ok(Buffer.byteLength(css, 'utf8') < 24000, 'homepage CSS should stay compact');
   assert.match(home, /id="wish-star"/);
   assert.match(home, /id="secret-toast"/);
   assert.match(app, /ArrowUp/);

@@ -83,7 +83,7 @@ test('special-purpose workflows keep their own product-specific chrome', async (
     assert.doesNotMatch(html, /unified-shell\.js/, path);
   }
   const main = await read('index.html');
-  assert.match(main, /hero-stars/);
-  assert.match(main, /hero-moon/);
-  assert.match(main, /site\.js/);
+  assert.match(main, /href="styles\/homepage\.css\?v=1"/);
+  assert.match(main, /src="src\/homepage\.js\?v=1"/);
+  assert.doesNotMatch(main, /hero-moon|hero-wave|site\.js\?v=6/);
 });
