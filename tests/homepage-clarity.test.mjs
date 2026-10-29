@@ -14,7 +14,7 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   assert.match(home, /styles\/homepage\.css\?v=1/);
   assert.match(home, /<body class="home-rework">/);
   for (const key of ['F1', 'F2', 'F3']) assert.match(home, new RegExp('<kbd>' + key + '</kbd>'));
-  for (const title of ['Your strategy.', 'Replay a full run', 'Cut repetitive setup', 'Use shared strategies', 'Three steps. One run.']) {
+  for (const title of ['What you can do', 'Replay a full run', 'Cut repetitive setup', 'Use shared strategies', 'Set up your first run']) {
     assert.ok(home.includes(title), title);
   }
   for (const removed of ['interface-section', 'runtime-section', 'recorder-section', 'requirements-heading', 'download-panel', 'field-notes', 'id="record-action"']) {

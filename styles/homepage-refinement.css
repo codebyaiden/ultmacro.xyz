@@ -1,0 +1,49 @@
+/* A restrained homepage pass: existing structure, calmer surfaces. */
+.home-rework{--bg:#101114;--ink:#eeeff2;--muted:#a2a5ae;--line:#ffffff16;background:var(--bg)}
+.home-rework .nav-shell{background:#101114f5;border-color:var(--line);backdrop-filter:none}
+.home-rework .nav-shell nav{background:none;border:0;padding:0;gap:4px}
+.home-rework .nav-shell nav a{color:#b1b2bb;border-radius:5px}
+.home-rework .nav-shell nav a:hover{background:#ffffff08;color:#fff}
+.home-rework .brand b{color:#b5a3ee}
+.home-rework .brand-mark{width:40px;height:40px;border-radius:6px;object-fit:contain}
+.home-rework .hero{background:#101114;min-height:660px;gap:56px;padding:148px max(24px,calc((100vw - 1160px)/2)) 80px}
+.home-rework .product-label{font-size:10px;letter-spacing:.1em;font-weight:600;color:#b5a3ee;margin:0 0 23px}
+.home-rework .hero-copy h1{font-family:Inter,system-ui,sans-serif;font-weight:650;font-size:clamp(44px,5.4vw,72px);line-height:1.04;letter-spacing:-.055em}
+.home-rework .hero-copy h1 span{color:#adafba}
+.home-rework .lede{color:#b0b2bc;max-width:400px;font-size:15px;line-height:1.75}
+.home-rework .button,.home-rework .home-bottom-actions .button{background:#8e79cf;border:1px solid #a18bdc;border-radius:6px;box-shadow:none;color:#fff}
+.home-rework .button:hover,.home-rework .home-bottom-actions .button:hover{background:#9c87da;border-color:#b2a0e8}
+.home-rework .text-link{font-weight:500;color:#c2c3cc}
+.home-rework .hero-demo{border:1px solid #ffffff1c;background:#15161b;border-radius:10px;padding:7px;box-shadow:none}
+.home-rework .showcase-player{border-radius:5px}
+.home-rework .showcase-caption{font-size:10px;color:#91939e;padding:10px 6px 5px}
+.home-rework .hero-hotkeys{color:#9699a4}
+.home-rework .hero-hotkeys kbd{border-color:#ffffff20;background:#1b1c21;border-radius:4px}
+.home-rework .proof-line{color:#9699a4}
+.home-rework .wish-star{display:none}
+.home-rework :is(.home-value-section,.home-setup-section,.home-faq-section,.home-community-section,.home-bottom-cta){background:#101114;border-color:var(--line);padding:68px max(24px,calc((100vw - 1160px)/2))}
+.home-rework :is(.home-value-section,.home-setup-section,.home-faq-section,.home-community-section,.home-bottom-cta) h2{font-family:Inter,system-ui,sans-serif;font-size:clamp(27px,3vw,38px);font-weight:600;letter-spacing:-.04em;line-height:1.16}
+.home-rework :is(.home-value-section,.home-setup-section,.home-faq-section,.home-community-section,.home-bottom-cta) .eyebrow{color:#999ba7;font-size:11px;letter-spacing:.02em;margin-bottom:12px}
+.home-rework :is(.home-value-section,.home-setup-section,.home-faq-section,.home-community-section,.home-bottom-cta) p{color:#a5a7b2}
+.home-rework .home-inline-link,.home-rework .home-faq-list a{color:#c3b3ee}
+.home-rework .home-value-index,.home-rework .home-step-index{color:#8d909d}
+.home-rework .home-community-links a{min-height:74px}
+.home-rework .home-community-links a:hover{background:#ffffff04;color:#c3b3ee}
+.home-rework .coming-preview{background:#141519;border-color:var(--line);padding:64px max(24px,calc((100vw - 1160px)/2))}
+.home-rework .roadmap-inner{max-width:none}
+.home-rework .roadmap-intro{margin-bottom:26px}
+.home-rework .roadmap-intro h2{font:600 32px/1.2 Inter,system-ui,sans-serif;letter-spacing:-.04em}
+.home-rework .roadmap-intro p,.home-rework .roadmap-item p{color:#a5a7b2}
+.home-rework .roadmap-category{display:none}
+.home-rework .roadmap-list{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.home-rework .roadmap-item{padding:23px 0;grid-template-columns:34px 1fr;gap:14px;border-color:#ffffff13}
+.home-rework .roadmap-icon{width:30px;height:30px;border:0;background:none;color:#a8a0bc;border-radius:0}
+.home-rework .roadmap-icon svg{width:20px;height:20px}
+.home-rework .roadmap-item h3{font-size:15px;font-weight:600}
+.home-rework .roadmap-item p{font-size:13px}
+.home-rework .roadmap-group{margin-bottom:12px}
+.home-rework .roadmap-more a{color:#c3b3ee}
+.home-rework footer{background:#101114;border-color:var(--line);padding-inline:max(24px,calc((100vw - 1160px)/2))}
+.home-rework a:focus-visible,.home-rework button:focus-visible{outline:2px solid #c3b3ee;outline-offset:5px}
+@media(max-width:980px){.home-rework .hero{padding-top:112px;min-height:0;gap:30px}.home-rework .hero-demo{max-width:640px}.home-rework .mobile-menu:not([hidden]){background:#191a20;border-color:#ffffff20;border-radius:8px}.home-rework .menu-button{background:#1b1c22;border-color:#ffffff20;border-radius:6px}}
+@media(max-width:520px){.home-rework .hero{padding:105px 22px 46px}.home-rework .hero-copy h1{font-size:48px}.home-rework .product-label{font-size:9px;margin-bottom:18px}.home-rework .lede{font-size:14px}.home-rework .hero-actions{gap:7px}.home-rework :is(.home-value-section,.home-setup-section,.home-faq-section,.home-community-section,.home-bottom-cta),.home-rework .coming-preview{padding:46px 22px}.home-rework .roadmap-list{grid-template-columns:1fr}.home-rework .hero-demo{margin-top:0}.home-rework .hero-hotkeys{font-size:10px}.home-rework .home-community-links a small{font-size:11px}}

@@ -20,8 +20,8 @@ test('homepage roadmap shows only the four major features and no interactive dem
   for (const term of ['AI Assistant Integration', 'macOS Support', 'Smart Recording System', 'AI-Powered Goals']) {
     assert.ok(section.includes(term), term);
   }
-  assert.match(section, /ChatGPT/);
-  assert.match(section, /plan, launch and adapt supported runs/);
+  assert.match(section, /AI provider you choose/);
+  assert.match(section, /supported runs around a goal/);
   assert.match(section, /roadmap-icon-ai/);
   assert.doesNotMatch(section, /<table|<button|data-coming-spotlight|coming-spotlight|roadmap-icon-update|roadmap-icon-cloud|aria-pressed/);
   assert.doesNotMatch(home, /src\/coming\.js|data-coming-spotlight/);

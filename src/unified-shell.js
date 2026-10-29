@@ -47,7 +47,7 @@
   const brand = el('a','um-brand');
   brand.href = '/'; brand.setAttribute('aria-label','Ultimate Macro homepage');
   const image = el('img');
-  image.src = '/icon.ico';image.alt = '';image.width=29;image.height=29;
+  image.src = '/assets/ultimate-logo.png';image.alt = '';image.width=29;image.height=29;
   const brandText = el('span','');
   brandText.append('Ultimate ',el('b','', 'Macro'));
   brand.append(image,brandText);

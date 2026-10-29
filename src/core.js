@@ -306,7 +306,7 @@ var UM = (function () {
 	}
 
 	function initBrandAsset() {
-		var asset = new URL('/icon.ico', window.location.origin).href;
+		var asset = new URL('/assets/ultimate-logo.png', window.location.origin).href;
 		qsa('.brand-mark').forEach(function (image) {
 			image.setAttribute('src', asset);
 		});
