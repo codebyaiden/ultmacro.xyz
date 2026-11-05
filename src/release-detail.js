@@ -69,6 +69,13 @@
   function download(release, main) {
     return release.asset ? '<a class="download-button' + (main ? ' primary-download' : '') + '" href="' + esc(release.asset.url) + '" data-download aria-label="Download ' + esc(release.tag) + ' for Windows"><span data-download-label>' + (main ? 'Download for Windows' : 'Download ' + esc(release.tag)) + '</span><span class="download-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4v12m-5-5 5 5 5-5M5 17v3h14v-3"/></svg></span></a>' : '';
   }
+  function releaseAction(release, main, available) {
+    if (release.asset) return download(release, main);
+    var previous = available && available.tag !== release.tag
+      ? '<a href="' + versionUrl(available.tag) + '">Packaged download: ' + esc(available.tag) + ' <span aria-hidden="true">→</span></a>' : '';
+    return '<a class="download-button' + (main ? ' primary-download' : '') + '" href="' + esc(release.url) + '">View source release on GitHub</a>' +
+      '<p class="release-meta">No packaged Windows ZIP is attached to this release.</p>' + (previous ? '<div class="hero-links">' + previous + '</div>' : '');
+  }
   function checksum(release, collapsed) {
     var digest = release.asset && release.asset.digest;
     if (!/^sha256:[a-f0-9]{64}$/i.test(digest || '')) return '';
@@ -87,18 +94,19 @@
     var paths = ['<rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8m-4-3v3M7 9h3m4 0h3M7 14h3m4 0h3"/>', '<path d="M5 4h14v12H9l-4 4V4Z"/><path d="M9 8h6m-6 4h4"/>', '<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M6 9v9h9m0-12h5m-3-3 3 3-3 3"/>', '<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/>'];
     return '<span class="highlight-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + paths[index % paths.length] + '</svg></span>';
   }
-  function renderMain(releases, latest) {
+  function renderMain(releases, latest, available) {
     if (!latest) return '<h1>Ultimate Macro</h1><p>No public download is available.</p>';
     var items = highlights(latest);
-    return '<section class="download-hero is-current" id="latest" aria-labelledby="download-title"><div class="hero-copy"><p class="product-name">Ultimate Macro</p><div class="version-heading"><h1 id="download-title">' + esc(latest.tag) + '</h1><span class="latest-label">Latest release</span></div>' + download(latest, true) + metadata(latest) + '<div class="hero-links"><a href="' + versionUrl(latest.tag) + '">Release notes <span aria-hidden="true">↗</span></a><a href="/guide/install/">First time installing? Setup guide <span aria-hidden="true">→</span></a></div></div>' + packageVisual(latest) + '</section>' +
+    var history = [latest].concat(releases.filter(function (r) { return !r.prerelease && r.tag !== latest.tag; }));
+    return '<section class="download-hero is-current" id="latest" aria-labelledby="download-title"><div class="hero-copy"><p class="product-name">Ultimate Macro</p><div class="version-heading"><h1 id="download-title">' + esc(latest.tag) + '</h1><span class="latest-label">Latest release</span></div>' + releaseAction(latest, true, available) + metadata(latest) + '<div class="hero-links"><a href="' + versionUrl(latest.tag) + '">Release notes <span aria-hidden="true">↗</span></a><a href="/guide/install/">First time installing? Setup guide <span aria-hidden="true">→</span></a></div></div>' + packageVisual(latest) + '</section>' +
       '<section class="changes-section" data-reveal aria-labelledby="changes-title"><h2 id="changes-title">What changed</h2><ul class="highlights">' + items.map(function (item, index) { return '<li>' + highlightIcon(index) + '<span>' + inline(item) + '</span></li>'; }).join('') + '</ul><details class="changelog" data-changelog data-reveal><summary>View full changelog <span class="changelog-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m7 10 5 5 5-5"/></svg></span></summary><div class="changelog-content"><div class="release-notes">' + notes(latest) + '</div></div></details>' + checksum(latest, true) + '</section>' +
-      '<section class="history-section" data-reveal id="history" aria-labelledby="history-title"><h2 id="history-title">Older versions</h2><ul class="version-list">' + releases.filter(function (r) { return !r.prerelease && r.tag !== latest.tag; }).map(function (r) {
+      '<section class="history-section" data-reveal id="history" aria-labelledby="history-title"><h2 id="history-title">Release history</h2><ul class="version-list">' + history.map(function (r) {
         return '<li class="version-row"><div class="version-row-info"><a class="version-link" href="' + versionUrl(r.tag) + '">' + esc(r.tag) + '</a>' + (hotfix(r) ? '<span class="hotfix-label">Hotfix</span>' : '') + '<time datetime="' + esc(r.published) + '">' + esc(date(r.published)) + '</time></div>' + download(r, false) + '</li>';
       }).join('') + '</ul></section>';
   }
-  function renderVersion(release, latest) {
+  function renderVersion(release, latest, available) {
     var current = latest && latest.tag === release.tag;
-    return '<a class="back-link" href="/download/">← Downloads</a><section class="download-hero version-hero ' + (current ? 'is-current' : 'is-historical') + '" aria-labelledby="download-title"><div class="hero-copy"><p class="product-name">Ultimate Macro</p><div class="version-heading"><h1 id="download-title">' + esc(release.tag) + '</h1>' + (current ? '<span class="latest-label">Latest</span>' : hotfix(release) ? '<span class="hotfix-label">Hotfix</span>' : '') + '</div>' + metadata(release) + download(release, false) +
+    return '<a class="back-link" href="/download/">← Downloads</a><section class="download-hero version-hero ' + (current ? 'is-current' : 'is-historical') + '" aria-labelledby="download-title"><div class="hero-copy"><p class="product-name">Ultimate Macro</p><div class="version-heading"><h1 id="download-title">' + esc(release.tag) + '</h1>' + (current ? '<span class="latest-label">Latest</span>' : hotfix(release) ? '<span class="hotfix-label">Hotfix</span>' : '') + '</div>' + metadata(release) + releaseAction(release, false, available) +
       (!current && latest ? '<p class="older-notice"><span>Older version</span><a href="' + versionUrl(latest.tag) + '">Latest release: ' + esc(latest.tag) + ' <span aria-hidden="true">→</span></a></p>' : '') +
       '<div class="hero-links"><a href="/guide/install/">First time installing? Setup guide <span aria-hidden="true">→</span></a></div></div>' + packageVisual(release) + '</section><section class="changes-section" data-reveal aria-labelledby="changes-title"><h2 id="changes-title">What changed</h2><div class="release-notes">' + notes(release) + '</div></section>' + checksum(release, false) + '<a class="github-link" href="' + esc(release.url) + '" target="_blank" rel="noopener noreferrer">View on GitHub <span aria-hidden="true">↗</span></a>';
   }

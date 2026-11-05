@@ -508,7 +508,7 @@ var UM = (function () {
 		var slots = qsa('[data-latest-version]');
 		if (!slots.length) return;
 		withReleases(function (releases) {
-			var latest = UMContract.pickLatestStable(releases);
+			var latest = UMContract.pickLatestPublished(releases);
 			if (!latest) return;
 			slots.forEach(function (el) {
 				el.textContent = latest.tag;

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
+import vm from 'node:vm';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.TEST_DOWNLOAD_URL || 'http://127.0.0.1:3100';
 let server;
@@ -10,14 +11,14 @@ if (!process.env.TEST_DOWNLOAD_URL) {
 }
 const shots = process.env.DOWNLOAD_SCREENSHOTS;
 if (shots) await mkdir(shots, { recursive: true });
-const versions = [
-  ['v1.3.6', 'Oct 16, 2026', '35 MB', '40fb60f03e3689ace032915632ddd6c700da7cb30aca779a13393328641ca703', 'Ultimate.Macro.v1.3.6.zip'],
-  ['v1.3.5', 'Sep 20, 2026', '35 MB', '0ed035163585586fbba5c74a87a247eb6d0f9dce8df1ec5212680eecfae547d3', 'TDS.Macro.v1.3.5.zip'],
-  ['v1.3.4b', 'Sep 5, 2026', '34 MB', '0ddd38e8b333b37fa1d0dfef00e0a6242ce6f252261b1c9c21b5ce24e63deb93', 'TDS_Macro_1.3.4b-final.zip'],
-  ['v1.3.4a', 'Sep 5, 2026', '34 MB', 'b44faa487c680b94e1b119a27f6530f4dfd6c1a2288238258f6ff21b75ea026e', 'TDS_Macro_1.3.4a.zip'],
-  ['v1.3.4', 'Sep 5, 2026', '33 MB', '67d6d6099af7cccd1415cd450e37a8b8b1ca52bbe1421b31959e1af406d851a6', 'TDS_Macro.zip'],
-  ['v1.3.3', 'Aug 26, 2026', '32 MB', '6d4cae2e3be38b4df70dc38be84c38cef89f1086d6db7f530d210762fc5cdde3', 'TDS_Macro.zip']
-];
+const snapshot = { window: {} };
+vm.runInNewContext(await readFile(new URL('../data/releases.js', import.meta.url), 'utf8'), snapshot);
+const history = snapshot.window.UM_RELEASES.releases.filter(release => !release.prerelease);
+const dateFormat = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const versions = history.map(release => [
+  release.tag, dateFormat.format(new Date(release.published)), release.asset ? Math.round(release.asset.size / 1024 / 1024) + ' MB' : null,
+  release.asset?.digest.slice(7), release.asset?.name
+]);
 const paths = ['/download', '/download/latest', ...versions.map(v => '/download/' + v[0])];
 const browser = await chromium.launch({ executablePath: process.env.BROWSER_EXECUTABLE, args: ['--no-sandbox'] });
 let checks = 0;
@@ -94,7 +95,7 @@ try {
       });
       for (const path of paths) {
         await page.goto(base + path);
-        await page.locator('[data-download]').first().waitFor();
+        await page.locator('.download-hero .download-button').waitFor();
         await page.keyboard.press('Tab');
         assert.equal(await page.evaluate(() => document.activeElement.className), 'download-skip');
         await page.keyboard.press('Enter');
@@ -111,11 +112,19 @@ try {
         const v = path === '/download/latest' || main ? versions[0] : versions.find(v => path.endsWith(v[0]));
         assert.equal(await page.locator('main h1').innerText(), v[0]);
         assert.equal(await page.locator('.download-hero time').innerText(), v[1]);
+        if (!v[4]) {
+          assert.equal(await page.locator('.download-hero .download-button').innerText(), 'View source release on GitHub');
+          assert.equal(await page.locator('.download-hero [data-download]').count(), 0);
+          assert.equal(await page.locator('[data-checksum]').count(), 0);
+          if (main) assert.equal(await page.locator('.version-row .version-link').first().innerText(), v[0]);
+          checks++;
+          continue;
+        }
         assert.ok((await page.locator('.release-meta').innerText()).includes(v[2]));
         assert.equal(await page.locator('[data-checksum]').textContent(), v[3]);
         assert.equal(await page.locator('[data-download]').first().getAttribute('href'), `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/${v[0]}/${v[4]}`);
-        assert.equal(await page.locator('.older-notice').count(), v[0] === 'v1.3.6' ? 0 : 1);
-        assert.equal(await page.locator('.latest-label').count(), v[0] === 'v1.3.6' ? 1 : 0);
+        assert.equal(await page.locator('.older-notice').count(), v[0] === versions[0][0] ? 0 : 1);
+        assert.equal(await page.locator('.latest-label').count(), v[0] === versions[0][0] ? 1 : 0);
         assert.equal(await page.locator('.version-heading .hotfix-label').count(), !main && /[ab]$/.test(v[0]) ? 1 : 0);
         assert.ok(!(await page.locator('main').innerText()).match(/\d[\d,]* downloads/));
         assert.equal(await page.locator('a[download]').count(), 0, 'do not pretend browsers can rename cross-origin assets');
@@ -123,7 +132,8 @@ try {
         assert.ok(bounds.height >= 44 && bounds.x >= 0 && bounds.x + bounds.width <= width);
         if (main) {
           assert.ok(bounds.y + bounds.height <= height, 'primary download visible in first viewport');
-          assert.equal(await page.locator('.version-row').count(), 4);
+          assert.equal(await page.locator('.version-row').count(), history.length);
+          assert.equal(await page.locator('.version-row .version-link').first().innerText(), versions[0][0]);
           assert.equal(await page.locator('.changelog').getAttribute('open'), null);
           const summary = page.locator('.changelog summary');
           await summary.focus(); await page.keyboard.press('Enter');
@@ -175,7 +185,7 @@ try {
   const noJS = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 640 } });
   const page = await noJS.newPage();
   for (const path of paths) {
-    await page.goto(base + path); await page.locator('[data-download]').first().waitFor();
+    await page.goto(base + path); await page.locator('.download-hero .download-button').waitFor();
     assert.equal(await page.locator('main h1').count(), 1);
     if (path === '/download') { await page.locator('.changelog summary').click(); assert.equal(await page.locator('.changelog').getAttribute('open'), ''); }
   }
@@ -193,7 +203,7 @@ try {
   const resting = await primary.boundingBox();
   await primary.hover(); await motionPage.waitForTimeout(220);
   assert.ok((await primary.boundingBox()).y < resting.y, 'CTA lift still works after entry animation');
-  assert.equal(await primary.locator('.download-arrow').evaluate(e => new DOMMatrix(getComputedStyle(e).transform).m42), 3);
+  if (versions[0][4]) assert.equal(await primary.locator('.download-arrow').evaluate(e => new DOMMatrix(getComputedStyle(e).transform).m42), 3);
   const disclosure = motionPage.locator('.changelog');
   await disclosure.locator('summary').click(); await motionPage.waitForTimeout(60);
   await disclosure.locator('summary').click(); await motionPage.waitForTimeout(60);

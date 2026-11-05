@@ -10,20 +10,42 @@ const contract = require('../src/releases-data.js');
 const context = { window: {} };
 vm.runInNewContext(await readFile(new URL('../data/releases.js', import.meta.url), 'utf8'), context);
 const releases = JSON.parse(JSON.stringify(context.window.UM_RELEASES.releases));
+const current = contract.pickLatestPublished(releases);
 
 test('newer prereleases stay out of stable history and do not replace latest stable', () => {
   const view = require('../src/release-detail.js');
-  const prerelease = { ...releases[0], tag: 'v1.4.0-test.1', prerelease: true, published: '2026-10-06T00:00:00Z',
+  const prerelease = { ...current, tag: 'v1.4.0-test.1', prerelease: true, published: '2099-10-06T00:00:00Z',
     asset: { ...releases[0].asset, url: 'https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/v1.4.0-test.1/Ultimate-Macro-v1.4.0-test.1.zip' } };
   const history = contract.mergeHistory(releases, [prerelease]);
-  const latest = contract.pickLatestStable(history);
-  assert.equal(latest.tag, 'v1.3.6');
+  const latest = contract.pickLatestPublished(history);
+  assert.equal(latest.tag, current.tag);
   const html = view.renderMain(history, latest);
   assert.ok(!html.includes(prerelease.tag), 'prerelease has no ordinary archive row or download');
   assert.ok(!html.includes(prerelease.asset.url));
+  assert.ok(html.split('id="history"')[1].includes(`href="/download/${current.tag}/"`));
+  assert.match(html.split('id="history"')[1], /<h2 id="history-title">Release history<\/h2>/);
+  assert.equal(html.split('id="history"')[1].match(/class="version-link" href="([^"]+)"/)[1], `/download/${current.tag}/`);
   for (const stable of releases) {
     assert.ok(history.some(release => release.tag === stable.tag), 'historical metadata remains intact');
-    assert.ok(html.includes(stable.asset.url), 'every stable download remains available');
+    if (stable.asset) assert.ok(html.includes(stable.asset.url), 'every stable download remains available');
+  }
+});
+
+test('latest published source release has release notes and no fabricated ZIP', () => {
+  const available = contract.pickLatestStable(releases);
+  const source = { ...available, tag: 'v9.0.0', published: '2099-01-01T00:00:00Z', asset: null,
+    url: contract.RELEASE_BASE + '/releases/tag/v9.0.0' };
+  const history = contract.mergeHistory(releases, [source]);
+  const latest = contract.pickLatestPublished(history);
+  assert.equal(latest.tag, source.tag);
+  assert.equal(contract.pickLatestStable(history).tag, available.tag);
+  const view = require('../src/release-detail.js');
+  for (const html of [view.renderMain(history, latest, available), view.renderVersion(source, latest, available)]) {
+    const hero = html.split('</section>')[0];
+    assert.match(hero, /View source release on GitHub/);
+    assert.match(hero, /No packaged Windows ZIP is attached/);
+    assert.ok(hero.includes(`href="/download/${available.tag}/"`));
+    assert.doesNotMatch(hero, /data-download/);
   }
 });
 
@@ -42,15 +64,17 @@ test('generation serves real downloads without JS and retains history after a pa
     assert.match(main, /href="https:\/\/github.com\/UltimateMacro\/Ultimate-Macro-New-Era\/releases\/download\/v1.3.5\/TDS.Macro.v1.3.5.zip"/);
     for (const release of releases) {
       const html = await readFile(path.join(root, 'download', release.tag, 'index.html'), 'utf8');
-      assert.ok(html.includes(release.asset.url));
-      assert.ok(html.includes(release.asset.digest.slice(7)));
+      if (release.asset) {
+        assert.ok(html.includes(release.asset.url));
+        assert.ok(html.includes(release.asset.digest.slice(7)));
+      } else assert.match(html, /No packaged Windows ZIP is attached/);
       assert.ok(html.includes(`https://ultmacro.xyz/download/${release.tag}/`));
       assert.ok(!html.includes('downloads</p>'));
     }
     const alias = await readFile(path.join(root, 'download/latest/index.html'), 'utf8');
-    assert.match(alias, /http-equiv="refresh" content="0; url=\/download\/v1.3.6\/"/);
+    assert.ok(alias.includes(`http-equiv="refresh" content="0; url=/download/${current.tag}/"`));
     const redirects = await readFile(path.join(root, '_redirects'), 'utf8');
-    assert.match(redirects, /\/download\/latest\/ \/download\/v1.3.6\/ 302/);
+    assert.ok(redirects.includes(`/download/latest/ /download/${current.tag}/ 302`));
     assert.match(redirects, /\/tester https:\/\/example.com 302/);
     await generator.writeVersionPages(releases.slice(0, 1));
     assert.match(await readFile(path.join(root, 'download/v1.2.0/index.html'), 'utf8'), /historical release/);
@@ -106,7 +130,7 @@ test('server canonicalizes download aliases without losing query strings', async
     for (const alias of ['/download/latest', '/download/latest/', '/download/latest/index.html']) {
       const response = await fetch(`http://127.0.0.1:${port}${alias}?from=old-link`, { redirect: 'manual' });
       assert.equal(response.status, 302);
-      assert.equal(response.headers.get('location'), '/download/v1.3.6/?from=old-link');
+      assert.equal(response.headers.get('location'), `/download/${current.tag}/?from=old-link`);
     }
     for (const alias of ['/download/v1.3.4b', '/download/v1.3.4b/index.html']) {
       const response = await fetch(`http://127.0.0.1:${port}${alias}`, { redirect: 'manual', method: 'HEAD' });

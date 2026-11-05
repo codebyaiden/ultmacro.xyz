@@ -118,6 +118,10 @@ var UMContract = (function () {
 		);
 	}
 
+	function pickLatestPublished(releases) {
+		return releases.find(function (r) { return !r.prerelease; }) || pickLatestStable(releases);
+	}
+
 	function mergeHistory(existing, incoming) {
 		var byTag = new Map(existing.map(function (r) { return [r.tag, r]; }));
 		incoming.forEach(function (r) {
@@ -138,6 +142,7 @@ var UMContract = (function () {
 		normalizePayload: normalizePayload,
 		sortReleases: sortReleases,
 		pickLatestStable: pickLatestStable,
+		pickLatestPublished: pickLatestPublished,
 		mergeHistory: mergeHistory
 	};
 })();

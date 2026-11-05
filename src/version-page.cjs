@@ -11,8 +11,8 @@ const NAV = [['/#features', 'Features'], ['/#requirements', 'Requirements'], ['/
 
 function documentPage({ tag, latest, content, release }) {
   const url = SITE + (tag ? view.versionUrl(tag) : '/download/');
-  const title = tag ? `Ultimate Macro ${tag} — download & changelog` : 'Download Ultimate Macro';
-  const description = tag ? `Download Ultimate Macro ${tag} for Windows. Release notes and SHA-256 checksum.` : 'Download Ultimate Macro for Windows. Latest release, changelog, and older versions.';
+  const title = tag ? `Ultimate Macro ${tag} — ${release.asset ? 'download & changelog' : 'release notes'}` : 'Download Ultimate Macro';
+  const description = tag ? (release.asset ? `Download Ultimate Macro ${tag} for Windows. Release notes and SHA-256 checksum.` : `Read the Ultimate Macro ${tag} release notes and view the source release on GitHub.`) : 'Download Ultimate Macro for Windows. Latest release, changelog, and older versions.';
   const nav = NAV.map(([href, label]) => `<a href="${href}"${label === 'Download' ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const schema = release ? JSON.stringify({ '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Ultimate Macro', softwareVersion: release.tag.replace(/^v/, ''), applicationCategory: 'UtilitiesApplication', operatingSystem: 'Windows 10, Windows 11', datePublished: release.published, downloadUrl: release.asset?.url, fileSize: release.asset ? String(release.asset.size) : undefined, url, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }).replace(/</g, '\\u003c') : '';
   return `<!doctype html>
@@ -91,18 +91,19 @@ function latestPage(latestTag) {
 }
 async function writeVersionPages(releases) {
   const downloadDir = path.join(ROOT, 'download');
-  const latest = contract.pickLatestStable(releases);
+  const latest = contract.pickLatestPublished(releases);
+  const available = contract.pickLatestStable(releases);
   const written = [];
   await fs.mkdir(downloadDir, { recursive: true });
   for (const release of releases) {
     if (typeof release.tag !== 'string' || !SAFE_TAG.test(release.tag)) continue;
     const dir = path.join(downloadDir, release.tag);
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, 'index.html'), documentPage({ tag: release.tag, latest, release, content: view.renderVersion(release, latest) }));
+    await fs.writeFile(path.join(dir, 'index.html'), documentPage({ tag: release.tag, latest, release, content: view.renderVersion(release, latest, available) }));
     written.push(release.tag);
   }
   if (latest) {
-    await fs.writeFile(path.join(downloadDir, 'index.html'), documentPage({ latest, release: latest, content: view.renderMain(releases, latest) }));
+    await fs.writeFile(path.join(downloadDir, 'index.html'), documentPage({ latest, release: latest, content: view.renderMain(releases, latest, available) }));
     await fs.mkdir(path.join(downloadDir, 'latest'), { recursive: true });
     await fs.writeFile(path.join(downloadDir, 'latest/index.html'), latestPage(latest.tag));
     const redirectFile = path.join(ROOT, '_redirects');

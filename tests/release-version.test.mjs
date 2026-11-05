@@ -12,7 +12,7 @@ const read = file => readFile(new URL(file, root), 'utf8');
 const context = { window: {} };
 vm.runInNewContext(await read('data/releases.js'), context);
 const releases = JSON.parse(JSON.stringify(context.window.UM_RELEASES.releases));
-const latest = require('../src/releases-data.js').pickLatestStable(releases);
+const latest = require('../src/releases-data.js').pickLatestPublished(releases);
 const chip = html => html.match(/<a\b[^>]*data-latest-release\b[^>]*>[\s\S]*?<\/a>/)?.[0];
 
 test('published homepage announces the same stable version as downloads without JS', async () => {
