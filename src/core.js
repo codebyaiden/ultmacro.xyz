@@ -505,7 +505,11 @@ var UM = (function () {
 	}
 
 	function initVersionChip() {
-		var slots = qsa('[data-latest-version]');
+		// A generated release chip already has the matching download URL. A
+		// GitHub-only response must not replace its signed updater version.
+		var slots = qsa('[data-latest-version]').filter(function (el) {
+			return !el.closest('[data-latest-release]');
+		});
 		if (!slots.length) return;
 		withReleases(function (releases) {
 			var latest = UMContract.pickLatestPublished(releases);

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Refresh data/releases.js from the Ultimate Macro GitHub releases.
+ * Refresh data/releases.js from GitHub and, when requested, the signed updater.
  *
  *   node sync-releases.cjs
+ *   node sync-releases.cjs --updater <version> <source-commit> <notes-file>
  *
  * Download HTML is generated from this snapshot: every page shares the same
  * version metadata, works without JavaScript, and needs no visitor API call.
@@ -23,6 +24,10 @@ const { writeVersionPages, writeVersionChips } = require('./src/version-page.cjs
 const OUT = path.join(__dirname, 'data', 'releases.js');
 
 async function main() {
+	const args = process.argv.slice(2);
+	if (args.length && (args[0] !== '--updater' || args.length !== 4)) {
+		throw new Error('Usage: node sync-releases.cjs [--updater <version> <source-commit> <notes-file>]');
+	}
 	const headers = {
 		Accept: 'application/vnd.github+json',
 		'User-Agent': 'ultmacro.xyz-sync'
@@ -48,7 +53,16 @@ async function main() {
 	} catch (error) {
 		if (error.code !== 'ENOENT') throw error;
 	}
-	const releases = contract.mergeHistory(existing, incoming);
+	let releases = contract.mergeHistory(existing, incoming);
+	if (args.length) {
+		const { loadSignedUpdaterRelease } = require('./scripts/signed-updater-release.cjs');
+		const [, version, commit, notesPath] = args;
+		const release = await loadSignedUpdaterRelease({ version, commit, notes: await fs.readFile(notesPath, 'utf8') });
+		releases = contract.mergeHistory(releases, [release]);
+		if (contract.pickLatestPublished(releases)?.tag !== release.tag) {
+			throw new Error('The verified updater build would not be the latest website release');
+		}
+	}
 
 	const snapshot = { repo: contract.REPO, generated: new Date().toISOString(), releases };
 	const file =
@@ -82,4 +96,7 @@ async function main() {
 	}
 }
 
-main();
+main().catch(error => {
+	console.error(error.message);
+	process.exitCode = 1;
+});

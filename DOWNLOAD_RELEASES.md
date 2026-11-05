@@ -1,6 +1,15 @@
 # Download releases
 
-`data/releases.js` is the committed GitHub release snapshot. Run `node sync-releases.cjs` after publishing; it validates GitHub assets, retains absent historical records, and generates `/download/`, all version pages, the `/download/latest` alias, and the download block in `_redirects`. Commit those outputs together. The Node server reads the same redirects on startup; restart it after updating them.
+`data/releases.js` is the committed release snapshot. Run `node sync-releases.cjs` after a GitHub release; it validates the published assets and keeps older records. Either sync mode generates `/download/`, the version pages, the `/download/latest` alias, and the download block in `_redirects`. Commit those outputs together. The Node server reads the same redirects on startup; restart it after updating them.
+
+To add an updater build to the website without creating a GitHub release, run
+`node sync-releases.cjs --updater <build> <reviewed-source-commit> <release-notes.md>`
+after the signed AHK offer is live. The command checks the version, freshness,
+pinned public-key signature, and published ZIP length and SHA-256 before
+changing the site files. It links to the same versioned ZIP and the reviewed
+source commit. A later GitHub sync retains the signed entry, and a matching
+version with different bytes is rejected. The website does not contact the
+updater at runtime.
 
 `src/release-detail.js` renders both the index and version content at generation time. Download pages do not fetch the GitHub API or render a separate latest-page state. They remain usable without JavaScript. `src/download.js` only enhances navigation, disclosure motion, checksum copying, and download feedback.
 

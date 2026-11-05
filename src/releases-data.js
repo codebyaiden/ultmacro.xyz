@@ -126,6 +126,16 @@ var UMContract = (function () {
 		var byTag = new Map(existing.map(function (r) { return [r.tag, r]; }));
 		incoming.forEach(function (r) {
 			var previous = byTag.get(r.tag);
+			if (previous && (previous.source === 'signed-updater' || r.source === 'signed-updater')) {
+				if (previous.asset && r.asset && (previous.asset.size !== r.asset.size ||
+					previous.asset.digest.toLowerCase() !== r.asset.digest.toLowerCase())) {
+					throw new Error(r.tag + ' has conflicting ZIP bytes.');
+				}
+				if (previous.source === 'signed-updater') {
+					if (r.source !== 'signed-updater') return;
+					r = Object.assign({}, r, { published: previous.published });
+				}
+			}
 			if (previous && previous.asset && !r.asset) throw new Error(r.tag + ' lost its validated download asset.');
 			byTag.set(r.tag, r);
 		});
