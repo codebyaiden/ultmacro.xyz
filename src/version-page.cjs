@@ -20,7 +20,7 @@ function documentPage({ tag, latest, content, release }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="/src/advertising.js?v=adcash-retry-20261019" defer></script>
+  <script src="/src/advertising.js?v=adcash-selfhost-20261021" defer></script>
   <script>document.documentElement.classList.add('download-nav-starting');</script>
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
@@ -71,7 +71,7 @@ function documentPage({ tag, latest, content, release }) {
   })();
   </script>
   <main class="download-main${tag ? ' is-version' : ''}" id="main" tabindex="-1">${content}</main>
-  <footer class="download-footer"><span>© <span data-year>2026</span> Ultimate Macro</span><nav aria-label="Footer"><a href="/guide/">Guide</a><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a><a href="${contract.RELEASES_PAGE}" target="_blank" rel="noopener noreferrer">GitHub</a></nav></footer>
+  <footer class="download-footer"><span>© <span data-year>2026</span> Ultimate Macro</span><nav aria-label="Footer"><a href="/guide/">Guide</a>${tag ? '' : '<a href="/report/">Report a bug</a>'}<a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a><a href="${contract.RELEASES_PAGE}" target="_blank" rel="noopener noreferrer">GitHub</a></nav></footer>
   <p class="sr-only" role="status" data-download-status></p>
 </body>
 </html>
