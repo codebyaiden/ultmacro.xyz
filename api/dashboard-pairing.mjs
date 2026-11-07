@@ -1,4 +1,5 @@
 import { randomInt, randomUUID } from 'node:crypto';
+import webpush from 'web-push';
 import { clientIp, json } from './_lib/http.mjs';
 import { databaseConfigured, sql } from './_lib/db.mjs';
 import { indexedHash, parseCookies, rateLimit, sha256, token } from './_lib/security.mjs';
@@ -13,6 +14,7 @@ const localDevices = new Map();
 const localLimits = new Map();
 const localBrowserSessions = new Map();
 const localBrowserLinks = new Map();
+const localPushSubscriptions = new Map();
 
 function pairingCode() {
   const raw = Array.from({ length: 8 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join('');
@@ -330,12 +332,124 @@ async function claimBrowserLink(rawLink, request) {
 
 function unavailable() { return json({ error: 'Pairing is temporarily unavailable.' }, 503); }
 
+function pushReady() {
+  const { DASHBOARD_VAPID_PUBLIC_KEY, DASHBOARD_VAPID_PRIVATE_KEY, DASHBOARD_VAPID_SUBJECT } = process.env;
+  if (!DASHBOARD_VAPID_PUBLIC_KEY || !DASHBOARD_VAPID_PRIVATE_KEY || !DASHBOARD_VAPID_SUBJECT) return false;
+  webpush.setVapidDetails(DASHBOARD_VAPID_SUBJECT, DASHBOARD_VAPID_PUBLIC_KEY, DASHBOARD_VAPID_PRIVATE_KEY);
+  return true;
+}
+
+function validPushSubscription(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  if (typeof value.endpoint !== 'string' || value.endpoint.length > 2048) return false;
+  try {
+    const endpoint = new URL(value.endpoint);
+    if (endpoint.protocol !== 'https:' || endpoint.username || endpoint.password) return false;
+  } catch { return false; }
+  return typeof value.keys?.p256dh === 'string' && /^[A-Za-z0-9_-]{40,180}$/.test(value.keys.p256dh)
+    && typeof value.keys?.auth === 'string' && /^[A-Za-z0-9_-]{16,64}$/.test(value.keys.auth);
+}
+
+async function savePushSubscription(ownerHash, subscription) {
+  const endpointHash = sha256(subscription.endpoint);
+  if (localStore()) {
+    localPushSubscriptions.set(endpointHash, { ownerHash, subscription });
+    return;
+  }
+  await sql().query(`insert into dashboard_push_subscriptions (endpoint_hash, owner_hash, endpoint, p256dh, auth_secret)
+    values ($1, $2, $3, $4, $5)
+    on conflict (endpoint_hash) do update set owner_hash = excluded.owner_hash, endpoint = excluded.endpoint,
+      p256dh = excluded.p256dh, auth_secret = excluded.auth_secret, updated_at = now()`,
+  [endpointHash, ownerHash, subscription.endpoint, subscription.keys.p256dh, subscription.keys.auth]);
+}
+
+async function removePushSubscription(ownerHash, endpoint) {
+  const endpointHash = sha256(endpoint);
+  if (localStore()) {
+    const row = localPushSubscriptions.get(endpointHash);
+    if (row?.ownerHash === ownerHash) localPushSubscriptions.delete(endpointHash);
+    return;
+  }
+  await sql().query('delete from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [endpointHash, ownerHash]);
+}
+
+async function sendTestPush(ownerHash) {
+  const rows = localStore()
+    ? [...localPushSubscriptions.values()].filter(row => row.ownerHash === ownerHash).map(row => row.subscription)
+    : (await sql().query('select endpoint, p256dh, auth_secret from dashboard_push_subscriptions where owner_hash = $1', [ownerHash])).rows
+      .map(row => ({ endpoint: row.endpoint, keys: { p256dh: row.p256dh, auth: row.auth_secret } }));
+  if (!rows.length) return { sent: 0, removed: 0 };
+  const payload = JSON.stringify({ title: 'Ultimate Macro', body: 'Phone notifications are working.', tag: 'um-push-test', url: '/dashboard/notifications/' });
+  let sent = 0, removed = 0, failed = 0;
+  for (const subscription of rows) {
+    try {
+      await webpush.sendNotification(subscription, payload, { TTL: 60 });
+      sent++;
+    } catch (error) {
+      const status = Number(error?.statusCode);
+      if (status === 404 || status === 410) {
+        removed++;
+        await removePushSubscription(ownerHash, subscription.endpoint);
+      } else failed++;
+    }
+  }
+  return { sent, removed, failed };
+}
+
 export default async function dashboardPairing(request) {
   if (!secureApiMode()) return unavailable();
   const path = new URL(request.url).pathname;
   const route = path.replace(/^\/api\/dashboard\/v1/, '') || '/';
 
   try {
+    if (route === '/notifications/vapid-public-key') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      if (!await bodyJson(request)) return json({ error: 'Use a JSON request.' }, 415);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
+      if (!pushReady()) return json({ error: 'Phone notifications are not configured yet.' }, 503);
+      return json({ publicKey: process.env.DASHBOARD_VAPID_PUBLIC_KEY }, 200, { 'cache-control': 'no-store' });
+    }
+
+    if (route === '/notifications/subscriptions') {
+      if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
+      if (request.method === 'POST') {
+        const body = await bodyJson(request);
+        if (!body || Object.keys(body).length !== 1 || !validPushSubscription(body.subscription))
+          return json({ error: 'This browser returned an invalid push subscription.' }, 400);
+        const limit = await limited(`dashboard-push-subscribe:${owner.hash}`, 10, 3600);
+        if (!limit.allowed) return json({ error: 'Too many notification changes. Try again later.' }, 429, { 'retry-after': String(limit.retryAfter) });
+        await savePushSubscription(owner.hash, body.subscription);
+        return json({ ok: true }, 201, { 'cache-control': 'no-store' });
+      }
+      if (request.method === 'DELETE') {
+        const body = await bodyJson(request);
+        if (!body || Object.keys(body).length !== 1 || typeof body.endpoint !== 'string' || body.endpoint.length > 2048)
+          return json({ error: 'Invalid push subscription.' }, 400);
+        await removePushSubscription(owner.hash, body.endpoint);
+        return json({ ok: true }, 200, { 'cache-control': 'no-store' });
+      }
+      return json({ error: 'Method not allowed.' }, 405, { allow: 'POST, DELETE' });
+    }
+
+    if (route === '/notifications/test') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      if (!await bodyJson(request)) return json({ error: 'Use a JSON request.' }, 415);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
+      if (!pushReady()) return json({ error: 'Phone notifications are not configured yet.' }, 503);
+      const limit = await limited(`dashboard-push-test:${owner.hash}`, 3, 3600);
+      if (!limit.allowed) return json({ error: 'You have sent enough test alerts for now.' }, 429, { 'retry-after': String(limit.retryAfter) });
+      const result = await sendTestPush(owner.hash);
+      if (!result.sent && !result.removed && !result.failed) return json({ error: 'Enable phone notifications on this device first.' }, 409);
+      if (!result.sent && result.failed) return json({ error: 'Could not deliver the test alert. Reconnect phone notifications and try again.' }, 502);
+      return json(result, 200, { 'cache-control': 'no-store' });
+    }
+
     if (route === '/session/bootstrap') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);

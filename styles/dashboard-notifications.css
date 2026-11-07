@@ -7,8 +7,14 @@
 .push-status-copy strong { font-size: 13px; font-weight: 550; }
 .push-status-copy span { color: var(--app-muted); font-size: 11px; }
 .push-status-copy .push-local-note { color: var(--app-quiet); }
-.push-status > a { display: inline-flex; min-height: 34px; align-items: center; padding: 0 13px; border: 1px solid var(--app-line); border-radius: 999px; color: var(--app-text); font-size: 11px; transition: background .16s ease,border-color .16s ease; }
-.push-status > a:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+.push-install-note { line-height: 1.45; }
+.push-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 7px; }
+.push-actions button { min-height: 34px; padding: 0 13px; border: 1px solid var(--app-line); border-radius: 999px; background: transparent; color: var(--app-text); font-size: 11px!important; white-space: nowrap; cursor: pointer; transition: background .16s ease,border-color .16s ease,transform .16s ease; }
+.push-actions button:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+.push-actions button:active { transform: scale(.98); }
+.push-actions button[data-enable-push] { border-color: transparent; background: #f3f3f5; color: #111115; }
+.push-actions button[data-enable-push]:hover { background: #fff; }
+.push-actions button:disabled { cursor: wait; opacity: .55; }
 .notification-preferences { margin-top: 25px; border-top: 1px solid var(--app-line); }
 .notification-group { display: grid; grid-template-columns: minmax(0,1fr) minmax(330px,390px); align-items: center; gap: 28px; min-height: 100px; padding: 20px 2px; border-bottom: 1px solid var(--app-line); }
 .notification-group-copy { display: grid; gap: 5px; min-width: 0; }
@@ -25,7 +31,8 @@
   .notifications-heading { margin-bottom: 19px; }
   .push-status { align-items: flex-start; gap: 11px; padding: 14px; }
   .push-status-icon { margin-top: 2px; }
-  .push-status > a { align-self: center; min-height: 32px; padding-inline: 11px; }
+  .push-actions { justify-content: flex-start; }
+  .push-actions button { min-height: 34px; }
   .notification-preferences { margin-top: 19px; }
   .notification-group { grid-template-columns: minmax(0,1fr); gap: 13px; min-height: 0; padding: 17px 0; }
   .notification-choice { width: 100%; }

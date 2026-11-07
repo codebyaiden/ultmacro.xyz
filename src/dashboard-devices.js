@@ -175,7 +175,8 @@ import QRCode from 'qrcode';
       const canvas = document.createElement('canvas');
       await QRCode.toCanvas(canvas, pairingUrl, { width: 148, margin: 1, errorCorrectionLevel: 'M', color: { dark: '#121216', light: '#f5f5f6' } });
       qrFrame.replaceChildren(canvas);
-      linkText.textContent = `${location.host}/shortlink`;
+      linkText.href = pairingUrl;
+      linkText.textContent = pairingUrl;
       clearInterval(expiryTimer);
       setExpiry();
       expiryTimer = window.setInterval(setExpiry, 1000);
@@ -217,7 +218,26 @@ import QRCode from 'qrcode';
         copyButton.title = 'Copy link';
       copyButton.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="2"></rect><path d="M12 6V4.8A1.8 1.8 0 0 0 10.2 3H5.8A1.8 1.8 0 0 0 4 4.8v8.4A1.8 1.8 0 0 0 5.8 15H7"></path></svg>';
       }, 1400);
-    } catch { errorText.textContent = 'Could not copy automatically. Scan the QR code instead.'; }
+    } catch {
+      const field = document.createElement('textarea');
+      field.value = pairingUrl;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand('copy');
+      field.remove();
+      if (!copied) { errorText.textContent = 'Copy failed. Open the link directly or scan the QR code.'; return; }
+      copyButton.setAttribute('aria-label', 'Link copied');
+      copyButton.title = 'Copied';
+      copyButton.innerHTML = '<span aria-hidden="true">✓</span>';
+      window.setTimeout(() => {
+        copyButton.setAttribute('aria-label', 'Copy device link');
+        copyButton.title = 'Copy link';
+        copyButton.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="2"></rect><path d="M12 6V4.8A1.8 1.8 0 0 0 10.2 3H5.8A1.8 1.8 0 0 0 4 4.8v8.4A1.8 1.8 0 0 0 5.8 15H7"></path></svg>';
+      }, 1400);
+    }
   }
 
   openButton.addEventListener('click', openDialog);

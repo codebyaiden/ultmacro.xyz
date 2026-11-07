@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
   <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=1">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-notifications.js?v=1" defer></script>
+  <script src="/src/dashboard-notifications.js?v=2" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -44,10 +44,15 @@
         <span class="push-status-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span>
         <div class="push-status-copy">
           <strong>Phone alerts</strong>
-          <span>Delivery will be available when phone push is connected.</span>
-          <span class="push-local-note">Preferences save on this device for now.</span>
+          <span data-push-status role="status" aria-live="polite">Checking this device…</span>
+          <span class="push-install-note" data-install-help hidden>On iPhone: Share → Add to Home Screen, open Dashboard, then enable alerts.</span>
         </div>
-        <a href="/dashboard/devices/">Devices</a>
+        <div class="push-actions">
+          <button type="button" data-install-app hidden>Install Dashboard</button>
+          <button type="button" data-enable-push>Enable alerts</button>
+          <button type="button" data-test-push hidden>Send test</button>
+          <button type="button" data-disable-push hidden>Turn off</button>
+        </div>
       </section>
 
       <div class="notification-preferences" data-notification-preferences>

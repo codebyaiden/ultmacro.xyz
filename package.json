@@ -6,6 +6,7 @@
   },
   "scripts": {
     "start": "node server.mjs",
+    "build:dashboard-devices": "esbuild src/dashboard-devices.js --bundle --minify --format=iife --outfile=assets/dashboard-devices.bundle.js",
     "test": "node --test tests/*.test.mjs tests/strategy-network.test.js",
     "migrate": "node scripts/migrate.mjs",
     "seed": "node scripts/seed-strategies.mjs",
@@ -17,6 +18,11 @@
     "wiki:deployment-check": "node scripts/check-wiki-deployment.mjs"
   },
   "dependencies": {
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
+    "web-push": "^4.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }
