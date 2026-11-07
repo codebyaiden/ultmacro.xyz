@@ -1,5 +1,6 @@
 const ACCESS_COOKIE = 'um_dashboard_preview';
 const ACCESS_MS = 7 * 24 * 60 * 60 * 1000;
+const PAIRED_ACCESS_MS = 180 * 24 * 60 * 60 * 1000;
 const API_ORIGIN = 'https://api-origin.ultmacro.xyz';
 const encoder = new TextEncoder();
 
@@ -36,7 +37,7 @@ async function hasAccess(request, env) {
   const [expiryText, nonce, suppliedText, extra] = cookieValue(request).split('.');
   if (!expiryText || !nonce || !suppliedText || extra) return false;
   const expires = Number(expiryText), now = Date.now();
-  if (!Number.isSafeInteger(expires) || expires <= now || expires > now + ACCESS_MS + 60_000) return false;
+  if (!Number.isSafeInteger(expires) || expires <= now || expires > now + PAIRED_ACCESS_MS + 60_000) return false;
   const expected = await signature(key, `${expiryText}.${nonce}`);
   const supplied = decodeBase64Url(suppliedText);
   if (supplied.length !== expected.length) return false;
@@ -65,6 +66,13 @@ function html(body, status = 200, headers = {}) {
 function cookie(request, value, maxAge) {
   const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
   return `${ACCESS_COOKIE}=${encodeURIComponent(value)}; Max-Age=${maxAge}; Path=/; HttpOnly; SameSite=Strict${secure}`;
+}
+
+async function accessCookie(request, env, lifetime = ACCESS_MS) {
+  const expires = Date.now() + lifetime;
+  const payload = `${expires}.${base64Url(crypto.getRandomValues(new Uint8Array(24)))}`;
+  const signed = `${payload}.${base64Url(await signature(password(env), payload))}`;
+  return cookie(request, signed, lifetime / 1000);
 }
 
 async function readLoginBody(request) {
@@ -101,10 +109,8 @@ async function login(request, env) {
     valid = difference === 0;
   }
   if (!valid) return html(accessPage(true), 401);
-  const expires = Date.now() + ACCESS_MS;
-  const payload = `${expires}.${base64Url(crypto.getRandomValues(new Uint8Array(24)))}`;
-  const signed = `${payload}.${base64Url(await signature(key, payload))}`;
-  return new Response(null, { status: 303, headers: { location: '/dashboard/overview/', 'set-cookie': cookie(request, signed, ACCESS_MS / 1000), 'cache-control': 'no-store' } });
+  const signedCookie = await accessCookie(request, env);
+  return new Response(null, { status: 303, headers: { location: '/dashboard/overview/', 'set-cookie': signedCookie, 'cache-control': 'no-store' } });
 }
 
 function isDesktopEndpoint(pathname) {
@@ -121,11 +127,27 @@ async function proxyDashboardApi(request) {
   return fetch(forwarded);
 }
 
+async function claimBrowserLink(request, env) {
+  if (request.method !== 'POST') return new Response('Method not allowed.', { status: 405, headers: { Allow: 'POST' } });
+  const origin = request.headers.get('origin');
+  if (origin !== new URL(request.url).origin) return new Response('Cross-site request rejected.', { status: 403 });
+  if (!password(env)) return new Response('Private dashboard access is not configured.', { status: 503, headers: { 'cache-control': 'no-store' } });
+
+  const upstream = await proxyDashboardApi(request);
+  if (!upstream.ok) return upstream;
+  const headers = new Headers(upstream.headers);
+  headers.append('set-cookie', await accessCookie(request, env, PAIRED_ACCESS_MS));
+  headers.set('cache-control', 'no-store');
+  return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers });
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   const pathname = new URL(request.url).pathname;
 
   if (pathname === '/dashboard/access/login') return login(request, env);
+
+  if (pathname === '/api/dashboard/v1/browser-links/claim') return claimBrowserLink(request, env);
 
   if (pathname === '/dashboard/access' || pathname === '/dashboard/access/') {
     if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed.', { status: 405, headers: { Allow: 'GET, HEAD' } });
@@ -134,7 +156,7 @@ export async function onRequest(context) {
   }
 
   if (pathname === '/api/dashboard/v1' || pathname.startsWith('/api/dashboard/v1/')) {
-    if (!isDesktopEndpoint(pathname) && !await hasAccess(request, env)) return new Response('Not found.', { status: 404, headers: { 'cache-control': 'no-store' } });
+    if (!isDesktopEndpoint(pathname) && pathname !== '/api/dashboard/v1/browser-links/claim' && !await hasAccess(request, env)) return new Response('Not found.', { status: 404, headers: { 'cache-control': 'no-store' } });
     return proxyDashboardApi(request);
   }
 

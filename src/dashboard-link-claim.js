@@ -25,6 +25,6 @@
     if (!response.ok) throw new Error(data.error || 'Ask the device that created it to make a new one.');
     title.textContent = 'Device connected';
     message.textContent = 'Opening your Dashboard…';
-    location.replace('/dashboard/devices/');
+    location.replace('/dashboard/overview/');
   }).catch(error => fail(error.message || 'Ask the device that created it to make a new one.'));
 })();

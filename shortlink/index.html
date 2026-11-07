@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Connect device · Ultimate Macro</title>
+  <style>
+    @font-face{font-family:Geist;src:url('/assets/fonts/geist-latin-wght-normal.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#09090b;color:#f4f4f5;font:15px/1.5 Geist,Inter,system-ui,sans-serif}
+    main{width:min(100%,420px);padding:34px 30px 30px;border:1px solid #29292e;border-radius:24px;background:linear-gradient(145deg,#141416,#0d0d0f 72%);text-align:center;box-shadow:0 30px 90px #0007}
+    .mark{width:42px;height:42px;object-fit:contain;margin:0 auto 20px}
+    .spinner{width:25px;height:25px;margin:25px auto 0;border:2px solid #39363f;border-top-color:#b495ee;border-radius:50%;animation:spin .8s linear infinite}
+    .spinner[hidden]{display:none}
+    h1{margin:0;font-size:23px;line-height:1.2;letter-spacing:-.04em;font-weight:650}
+    p{margin:10px 0 0;color:#a1a1aa}
+    a{display:inline-flex;justify-content:center;align-items:center;min-height:44px;margin-top:24px;padding:0 20px;border-radius:999px;background:#f4f4f5;color:#141416;text-decoration:none;font-weight:600;transition:background .18s ease,transform .18s ease}
+    a:hover{background:#fff;transform:translateY(-1px)}
+    a:active{transform:scale(.985)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <main aria-live="polite">
+    <img class="mark" src="/assets/ultimate-logo.png" alt="" width="42" height="42">
+    <h1 data-link-title>Connecting this device…</h1>
+    <p data-link-message>Checking your one-time device link.</p>
+    <div class="spinner" data-link-spinner role="status" aria-label="Connecting"></div>
+    <a data-link-return href="/" hidden>Return to Ultimate Macro</a>
+  </main>
+  <script src="/src/dashboard-link-claim.js?v=dashboard-shortlink-20261107" defer></script>
+</body>
+</html>
