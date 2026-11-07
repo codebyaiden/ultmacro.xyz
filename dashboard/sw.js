@@ -7,8 +7,8 @@ self.addEventListener('push', event => {
   const title = typeof payload.title === 'string' && payload.title ? payload.title : 'Ultimate Macro';
   const options = {
     body: typeof payload.body === 'string' ? payload.body : '',
-    icon: '/assets/pwa/dashboard-192.png',
-    badge: '/assets/pwa/dashboard-192.png',
+    icon: '/assets/pwa/dashboard-192.png?v=20261108',
+    badge: '/assets/pwa/dashboard-192.png?v=20261108',
     tag: typeof payload.tag === 'string' ? payload.tag : undefined,
     data: { url: typeof payload.url === 'string' && payload.url.startsWith('/dashboard/') ? payload.url : '/dashboard/notifications/' }
   };

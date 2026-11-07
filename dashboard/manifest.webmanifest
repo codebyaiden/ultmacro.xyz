@@ -1,7 +1,7 @@
 {
   "id": "/dashboard/",
-  "name": "Ultimate Macro Dashboard",
-  "short_name": "Dashboard",
+  "name": "Ultimate Macro",
+  "short_name": "Ultimate Macro",
   "description": "Monitor and manage Ultimate Macro.",
   "start_url": "/dashboard/overview/",
   "scope": "/dashboard/",
