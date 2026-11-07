@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100" color="#A5D6D9" role="img" aria-label="Tower placed">
+  <path d="M25 15h9v11h9V15h10v11h9V15h9v20h-8l6 33h8v11H19V68h8l6-33h-8z" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M34 60h32M35 36h30" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+</svg>

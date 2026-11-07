@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Connected Devices — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
+  <link rel="stylesheet" href="/styles/dashboard-devices.css?v=2">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/assets/dashboard-devices.bundle.js?v=2" defer></script>
+  <script src="/src/dashboard-preferences.js?v=1" defer></script>
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
+</head>
+<body class="dashboard-app-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/" ><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/" ><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/" ><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/" ><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/devices/" aria-current="page"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/" ><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom">
+        <a href="/dashboard/settings/" ><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a>
+      </div>
+    </aside>
+    <div class="dashboard-app-content">
+      <header class="dashboard-app-heading devices-heading">
+        <h1>Connected Devices</h1>
+        <button class="devices-add-button" type="button" data-open-devices>Add a Device</button>
+      </header>
+      <section class="devices-list" aria-label="Connected devices" data-devices-list aria-live="polite">
+        <p class="devices-loading">Loading devices…</p>
+      </section>
+      <p class="dashboard-feedback" data-devices-feedback role="status" aria-live="polite"></p>
+    </div>
+  </main>
+  <div class="devices-modal-backdrop" data-devices-backdrop hidden>
+    <section class="devices-modal" role="dialog" aria-modal="true" aria-labelledby="devices-modal-title" tabindex="-1" data-devices-modal>
+      <button class="devices-modal-close" type="button" aria-label="Close" data-close-devices>×</button>
+      <h2 id="devices-modal-title">Connect another device</h2>
+      <div class="devices-pairing-options">
+        <section class="pairing-option pairing-qr" aria-labelledby="pair-qr-title">
+          <h3 id="pair-qr-title">Scan a QR Code</h3>
+          <div class="pairing-qr-frame" data-qr-frame><span class="pairing-spinner" aria-hidden="true"></span></div>
+        </section>
+        <div class="pairing-either" aria-hidden="true"><span>Either</span></div>
+        <section class="pairing-option pairing-browser" aria-labelledby="pair-browser-title">
+          <h3 id="pair-browser-title">Via Browser</h3>
+          <p>Paste this into your preferred browser:</p>
+          <div class="pairing-link-row">
+            <code data-short-link>ultmacro.xyz/shortlink</code>
+            <button type="button" class="pairing-copy" data-copy-link aria-label="Copy device link" title="Copy link"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="2"></rect><path d="M12 6V4.8A1.8 1.8 0 0 0 10.2 3H5.8A1.8 1.8 0 0 0 4 4.8v8.4A1.8 1.8 0 0 0 5.8 15H7"></path></svg></button>
+          </div>
+          <p class="pairing-expiry" data-link-expiry></p>
+        </section>
+      </div>
+      <p class="pairing-safety">This link works once and expires in 15 minutes. Only share it with a device you trust.</p>
+      <p class="pairing-error" data-pairing-error role="status" aria-live="polite"></p>
+    </section>
+  </div>
+  <div class="devices-confirm-backdrop" data-remove-backdrop hidden>
+    <section class="devices-confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="remove-dialog-title" aria-describedby="remove-dialog-message" tabindex="-1" data-remove-dialog>
+      <button class="devices-modal-close" type="button" aria-label="Close" data-close-remove>×</button>
+      <h2 id="remove-dialog-title">Log out this device?</h2>
+      <p id="remove-dialog-message" data-remove-message>This device will lose access to your Dashboard. You can connect it again later.</p>
+      <p class="remove-dialog-error" data-remove-error role="status" aria-live="polite"></p>
+      <div class="remove-dialog-actions">
+        <button class="remove-confirm-button" type="button" data-confirm-remove>Yes, log out</button>
+        <button class="remove-cancel-button" type="button" data-cancel-remove>Nope, cancel</button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Review recent Ultimate Macro activity.">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Activity — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
+  <link rel="stylesheet" href="/styles/dashboard-activity.css?v=4">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-activity.js?v=1" defer></script>
+  <script src="/src/dashboard-preferences.js?v=1" defer></script>
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
+</head>
+<body class="dashboard-app-page dashboard-activity-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/" aria-current="page"><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/"><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/"><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/"><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/devices/"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/"><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom">
+        <a href="/dashboard/settings/"><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a>
+      </div>
+    </aside>
+
+    <div class="dashboard-app-content activity-content">
+      <header class="activity-heading">
+        <div class="activity-title-wrap"><h1>Activity</h1><span class="sample-label">Examples</span></div>
+        <div class="activity-filter-wrap">
+          <button class="activity-filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="activity-filters">
+            <img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/filter.svg" alt="">
+            <span>Filters</span>
+            <img class="filter-chevron" src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/expand_collapse.svg" alt="">
+          </button>
+          <section class="activity-filter-panel" id="activity-filters" data-filter-panel data-open="false" aria-label="Activity filters" aria-hidden="true" inert>
+            <div class="filter-panel-top">
+              <label class="exclude-toggle"><input type="checkbox" data-exclude-mode><span>Don't Show</span></label>
+              <button class="filter-clear" type="button" data-clear-filters>Clear</button>
+            </div>
+
+            <section class="filter-group" data-filter-group="Startup" data-open="false">
+              <button class="filter-group-toggle" type="button" aria-expanded="false"><span>Startup</span><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/expand_collapse.svg" alt=""></button>
+              <div class="filter-options"><div class="filter-options-inner">
+                <label class="filter-option"><input type="checkbox" data-everything="Startup"><span>Everything</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="joined_roblox"><span>Joined Roblox</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="mode_selected"><span>Mode selected</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="map_joined"><span>Map joined</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="match_started"><span>Match started</span></label>
+              </div></div>
+            </section>
+
+            <section class="filter-group" data-filter-group="Strategy" data-open="false">
+              <button class="filter-group-toggle" type="button" aria-expanded="false"><span>Strategy</span><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/expand_collapse.svg" alt=""></button>
+              <div class="filter-options"><div class="filter-options-inner">
+                <label class="filter-option"><input type="checkbox" data-everything="Strategy"><span>Everything</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="tower_placed"><span>Tower placed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="tower_upgraded"><span>Tower upgraded</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="tower_sold"><span>Tower sold</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="target_mode_changed"><span>Target mode changed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="ability_used"><span>Ability used</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="wave_started"><span>Wave started</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="wave_cleared"><span>Wave cleared</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="boss_appeared"><span>Boss appeared</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="boss_defeated"><span>Boss defeated</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="victory"><span>Victory</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="loss"><span>Loss</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="match_ended"><span>Match ended</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_loaded"><span>Strategy loaded</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_switched"><span>Strategy switched</span></label>
+              </div></div>
+            </section>
+
+            <section class="filter-group" data-filter-group="Misc" data-open="false">
+              <button class="filter-group-toggle" type="button" aria-expanded="false"><span>Misc</span><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/expand_collapse.svg" alt=""></button>
+              <div class="filter-options"><div class="filter-options-inner">
+                <label class="filter-option"><input type="checkbox" data-everything="Misc"><span>Everything</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="desktop_connected"><span>Desktop connected</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="desktop_disconnected"><span>Desktop disconnected</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="desktop_reconnected"><span>Desktop reconnected</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="phone_paired"><span>Phone paired</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="warning"><span>Warning</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="error"><span>Error</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="recording_started"><span>Recording started</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="recording_saved"><span>Recording saved</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="replay_started"><span>Replay started</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_imported"><span>Strategy imported</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_exported"><span>Strategy exported</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="run_started"><span>Run started</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="run_paused"><span>Run paused</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="run_resumed"><span>Run resumed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="run_stopped"><span>Run stopped</span></label>
+              </div></div>
+            </section>
+          </section>
+        </div>
+      </header>
+
+      <div class="activity-list-top"><span data-result-count>10 examples</span></div>
+      <ol class="activity-list" aria-label="Activity examples">
+        <li class="activity-row" data-category="Startup" data-type="joined_roblox" style="--event-color:#335FFF">
+          <span class="activity-event-icon roblox-icon"><img src="/assets/dashboard-icons/brand/roblox-blue.png" alt=""></span>
+          <span class="activity-event-copy"><strong>Joined Roblox</strong><span>Roblox Player</span></span>
+          <time>1m ago</time>
+        </li>
+        <li class="activity-row" data-category="Startup" data-type="mode_selected" style="--event-color:#A9C9E8">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/match_started.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Mode selected</strong><span>Fallen</span></span>
+          <time>2m ago</time>
+        </li>
+        <li class="activity-row" data-category="Startup" data-type="map_joined" style="--event-color:#A9C9E8">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/match_started.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Map joined</strong><span>Fallen</span></span>
+          <time>2m ago</time>
+        </li>
+        <li class="activity-row" data-category="Strategy" data-type="tower_placed" style="--event-color:#A5D6D9">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_placed.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Tower placed</strong><span>Scout</span></span>
+          <time>4m ago</time>
+        </li>
+        <li class="activity-row" data-category="Strategy" data-type="tower_upgraded" style="--event-color:#A8D5B5">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_upgraded.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Tower upgraded</strong><span>DJ Booth · Upgrade 3</span></span>
+          <time>5m ago</time>
+        </li>
+        <li class="activity-row" data-category="Strategy" data-type="target_mode_changed" style="--event-color:#A9C9E8">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/target_mode_changed.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Target mode changed</strong><span>Commander · First</span></span>
+          <time>6m ago</time>
+        </li>
+        <li class="activity-row" data-category="Strategy" data-type="boss_appeared" style="--event-color:#E6B98B">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/boss_appeared.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Boss appeared</strong><span>Fallen King · Wave 40</span></span>
+          <time>12m ago</time>
+        </li>
+        <li class="activity-row" data-category="Strategy" data-type="victory" style="--event-color:#E8D79D">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/victory.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Victory</strong><span>Fallen · Wave 40</span></span>
+          <time>18m ago</time>
+        </li>
+        <li class="activity-row" data-category="Misc" data-type="desktop_reconnected" style="--event-color:#A8D5B5">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/desktop_reconnected.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Desktop reconnected</strong><span>Windows PC</span></span>
+          <time>1h ago</time>
+        </li>
+        <li class="activity-row" data-category="Misc" data-type="recording_saved" style="--event-color:#A8D5B5">
+          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/recording_saved.svg" alt=""></span>
+          <span class="activity-event-copy"><strong>Recording saved</strong><span>Fallen Down</span></span>
+          <time>2h ago</time>
+        </li>
+      </ol>
+      <p class="activity-empty" data-empty-state hidden>No matching activity</p>
+      <p class="dashboard-feedback" data-feedback role="status" aria-live="polite"></p>
+    </div>
+  </main>
+</body>
+</html>

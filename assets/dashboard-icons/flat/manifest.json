@@ -1,0 +1,457 @@
+[
+  {
+    "category": "Main_Navigation",
+    "name": "manage",
+    "file": "Main_Navigation/manage.png",
+    "vector": "SVG_Source/Main_Navigation/manage.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "activity",
+    "file": "Main_Navigation/activity.png",
+    "vector": "SVG_Source/Main_Navigation/activity.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "remote",
+    "file": "Main_Navigation/remote.png",
+    "vector": "SVG_Source/Main_Navigation/remote.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "earnings",
+    "file": "Main_Navigation/earnings.png",
+    "vector": "SVG_Source/Main_Navigation/earnings.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "strategies",
+    "file": "Main_Navigation/strategies.png",
+    "vector": "SVG_Source/Main_Navigation/strategies.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "devices",
+    "file": "Main_Navigation/devices.png",
+    "vector": "SVG_Source/Main_Navigation/devices.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "settings",
+    "file": "Main_Navigation/settings.png",
+    "vector": "SVG_Source/Main_Navigation/settings.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "laptop",
+    "file": "Devices_And_Connections/laptop.png",
+    "vector": "SVG_Source/Devices_And_Connections/laptop.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "desktop_pc",
+    "file": "Devices_And_Connections/desktop_pc.png",
+    "vector": "SVG_Source/Devices_And_Connections/desktop_pc.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "phone",
+    "file": "Devices_And_Connections/phone.png",
+    "vector": "SVG_Source/Devices_And_Connections/phone.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "tablet",
+    "file": "Devices_And_Connections/tablet.png",
+    "vector": "SVG_Source/Devices_And_Connections/tablet.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "connected",
+    "file": "Devices_And_Connections/connected.png",
+    "vector": "SVG_Source/Devices_And_Connections/connected.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "pairing_connecting",
+    "file": "Devices_And_Connections/pairing_connecting.png",
+    "vector": "SVG_Source/Devices_And_Connections/pairing_connecting.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "offline_disconnected",
+    "file": "Devices_And_Connections/offline_disconnected.png",
+    "vector": "SVG_Source/Devices_And_Connections/offline_disconnected.svg",
+    "hex": "#9A9AA2"
+  },
+  {
+    "category": "Devices_And_Connections",
+    "name": "connection_error",
+    "file": "Devices_And_Connections/connection_error.png",
+    "vector": "SVG_Source/Devices_And_Connections/connection_error.svg",
+    "hex": "#E2A2A2"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "start",
+    "file": "Remote_Controls/start.png",
+    "vector": "SVG_Source/Remote_Controls/start.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "pause",
+    "file": "Remote_Controls/pause.png",
+    "vector": "SVG_Source/Remote_Controls/pause.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "resume",
+    "file": "Remote_Controls/resume.png",
+    "vector": "SVG_Source/Remote_Controls/resume.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "stop",
+    "file": "Remote_Controls/stop.png",
+    "vector": "SVG_Source/Remote_Controls/stop.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "switch_strategy",
+    "file": "Remote_Controls/switch_strategy.png",
+    "vector": "SVG_Source/Remote_Controls/switch_strategy.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Remote_Controls",
+    "name": "send_command",
+    "file": "Remote_Controls/send_command.png",
+    "vector": "SVG_Source/Remote_Controls/send_command.svg",
+    "hex": "#C2A8EA"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "run_started",
+    "file": "Activity_Feed/run_started.png",
+    "vector": "SVG_Source/Activity_Feed/run_started.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "run_paused",
+    "file": "Activity_Feed/run_paused.png",
+    "vector": "SVG_Source/Activity_Feed/run_paused.svg",
+    "hex": "#E8D79D"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "run_resumed",
+    "file": "Activity_Feed/run_resumed.png",
+    "vector": "SVG_Source/Activity_Feed/run_resumed.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "run_stopped",
+    "file": "Activity_Feed/run_stopped.png",
+    "vector": "SVG_Source/Activity_Feed/run_stopped.svg",
+    "hex": "#9A9AA2"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "warning",
+    "file": "Activity_Feed/warning.png",
+    "vector": "SVG_Source/Activity_Feed/warning.svg",
+    "hex": "#E6B98B"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "error",
+    "file": "Activity_Feed/error.png",
+    "vector": "SVG_Source/Activity_Feed/error.svg",
+    "hex": "#E2A2A2"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "strategy_loaded",
+    "file": "Activity_Feed/strategy_loaded.png",
+    "vector": "SVG_Source/Activity_Feed/strategy_loaded.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "strategy_switched",
+    "file": "Activity_Feed/strategy_switched.png",
+    "vector": "SVG_Source/Activity_Feed/strategy_switched.svg",
+    "hex": "#C2A8EA"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "recording_started",
+    "file": "Activity_Feed/recording_started.png",
+    "vector": "SVG_Source/Activity_Feed/recording_started.svg",
+    "hex": "#E1ADC4"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "recording_saved",
+    "file": "Activity_Feed/recording_saved.png",
+    "vector": "SVG_Source/Activity_Feed/recording_saved.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "replay_started",
+    "file": "Activity_Feed/replay_started.png",
+    "vector": "SVG_Source/Activity_Feed/replay_started.svg",
+    "hex": "#A5D6D9"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "strategy_imported",
+    "file": "Activity_Feed/strategy_imported.png",
+    "vector": "SVG_Source/Activity_Feed/strategy_imported.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "strategy_exported",
+    "file": "Activity_Feed/strategy_exported.png",
+    "vector": "SVG_Source/Activity_Feed/strategy_exported.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "tower_placed",
+    "file": "Activity_Feed/tower_placed.png",
+    "vector": "SVG_Source/Activity_Feed/tower_placed.svg",
+    "hex": "#A5D6D9"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "tower_upgraded",
+    "file": "Activity_Feed/tower_upgraded.png",
+    "vector": "SVG_Source/Activity_Feed/tower_upgraded.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "tower_sold",
+    "file": "Activity_Feed/tower_sold.png",
+    "vector": "SVG_Source/Activity_Feed/tower_sold.svg",
+    "hex": "#E6B98B"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "ability_used",
+    "file": "Activity_Feed/ability_used.png",
+    "vector": "SVG_Source/Activity_Feed/ability_used.svg",
+    "hex": "#C2A8EA"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "target_mode_changed",
+    "file": "Activity_Feed/target_mode_changed.png",
+    "vector": "SVG_Source/Activity_Feed/target_mode_changed.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "match_started",
+    "file": "Activity_Feed/match_started.png",
+    "vector": "SVG_Source/Activity_Feed/match_started.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "wave_started",
+    "file": "Activity_Feed/wave_started.png",
+    "vector": "SVG_Source/Activity_Feed/wave_started.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "wave_cleared",
+    "file": "Activity_Feed/wave_cleared.png",
+    "vector": "SVG_Source/Activity_Feed/wave_cleared.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "boss_appeared",
+    "file": "Activity_Feed/boss_appeared.png",
+    "vector": "SVG_Source/Activity_Feed/boss_appeared.svg",
+    "hex": "#E6B98B"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "boss_defeated",
+    "file": "Activity_Feed/boss_defeated.png",
+    "vector": "SVG_Source/Activity_Feed/boss_defeated.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "victory",
+    "file": "Activity_Feed/victory.png",
+    "vector": "SVG_Source/Activity_Feed/victory.svg",
+    "hex": "#E8D79D"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "loss",
+    "file": "Activity_Feed/loss.png",
+    "vector": "SVG_Source/Activity_Feed/loss.svg",
+    "hex": "#E2A2A2"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "match_ended",
+    "file": "Activity_Feed/match_ended.png",
+    "vector": "SVG_Source/Activity_Feed/match_ended.svg",
+    "hex": "#9A9AA2"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "desktop_connected",
+    "file": "Activity_Feed/desktop_connected.png",
+    "vector": "SVG_Source/Activity_Feed/desktop_connected.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "desktop_disconnected",
+    "file": "Activity_Feed/desktop_disconnected.png",
+    "vector": "SVG_Source/Activity_Feed/desktop_disconnected.svg",
+    "hex": "#9A9AA2"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "desktop_reconnected",
+    "file": "Activity_Feed/desktop_reconnected.png",
+    "vector": "SVG_Source/Activity_Feed/desktop_reconnected.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Activity_Feed",
+    "name": "phone_paired",
+    "file": "Activity_Feed/phone_paired.png",
+    "vector": "SVG_Source/Activity_Feed/phone_paired.svg",
+    "hex": "#A5D6D9"
+  },
+  {
+    "category": "Earnings",
+    "name": "tower_xp",
+    "file": "Earnings/tower_xp.png",
+    "vector": "SVG_Source/Earnings/tower_xp.svg",
+    "hex": "#A5D6D9"
+  },
+  {
+    "category": "General_Controls",
+    "name": "add_device",
+    "file": "General_Controls/add_device.png",
+    "vector": "SVG_Source/General_Controls/add_device.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "refresh_connection",
+    "file": "General_Controls/refresh_connection.png",
+    "vector": "SVG_Source/General_Controls/refresh_connection.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "more_options",
+    "file": "General_Controls/more_options.png",
+    "vector": "SVG_Source/General_Controls/more_options.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "expand_collapse",
+    "file": "General_Controls/expand_collapse.png",
+    "vector": "SVG_Source/General_Controls/expand_collapse.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "close",
+    "file": "General_Controls/close.png",
+    "vector": "SVG_Source/General_Controls/close.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "search",
+    "file": "General_Controls/search.png",
+    "vector": "SVG_Source/General_Controls/search.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "General_Controls",
+    "name": "filter",
+    "file": "General_Controls/filter.png",
+    "vector": "SVG_Source/General_Controls/filter.svg",
+    "hex": "#F2F2F4"
+  },
+  {
+    "category": "Future_Features",
+    "name": "ai_assistant",
+    "file": "Future_Features/ai_assistant.png",
+    "vector": "SVG_Source/Future_Features/ai_assistant.svg",
+    "hex": "#C2A8EA"
+  },
+  {
+    "category": "Future_Features",
+    "name": "ai_provider",
+    "file": "Future_Features/ai_provider.png",
+    "vector": "SVG_Source/Future_Features/ai_provider.svg",
+    "hex": "#A9C9E8"
+  },
+  {
+    "category": "Future_Features",
+    "name": "notification",
+    "file": "Future_Features/notification.png",
+    "vector": "SVG_Source/Future_Features/notification.svg",
+    "hex": "#E8D79D"
+  },
+  {
+    "category": "Future_Features",
+    "name": "trusted_device_security",
+    "file": "Future_Features/trusted_device_security.png",
+    "vector": "SVG_Source/Future_Features/trusted_device_security.svg",
+    "hex": "#A8D5B5"
+  },
+  {
+    "category": "Future_Features",
+    "name": "sync",
+    "file": "Future_Features/sync.png",
+    "vector": "SVG_Source/Future_Features/sync.svg",
+    "hex": "#A5D6D9"
+  },
+  {
+    "category": "Main_Navigation",
+    "name": "notifications",
+    "file": "Main_Navigation/notifications.svg",
+    "vector": "SVG_Source/Main_Navigation/notifications.svg",
+    "hex": "#F2F2F4"
+  }
+]

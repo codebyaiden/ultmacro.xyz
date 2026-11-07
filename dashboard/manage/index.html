@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Manage your connected Ultimate Macro devices.">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Manage — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-app.js?v=5" defer></script>
+  <script src="/src/dashboard-preferences.js?v=1" defer></script>
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
+</head>
+<body class="dashboard-app-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/" aria-current="page"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/"><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/"><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/"><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/"><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/devices/"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/"><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom">
+        <a href="/dashboard/settings/"><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a>
+      </div>
+    </aside>
+
+    <div class="dashboard-app-content">
+      <header class="dashboard-app-heading" id="manage">
+        <h1>Manage</h1>
+        <div class="heading-actions">
+          <span class="connection-indicator" data-connection-tag data-state="checking"><i></i><span data-connection-label>Checking</span></span>
+          <button class="dashboard-refresh" type="button" data-refresh aria-label="Refresh connection"><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/refresh_connection.svg" alt=""></button>
+        </div>
+      </header>
+
+      <section class="dashboard-overview" aria-label="Macro overview">
+        <div class="overview-device">
+          <span class="device-orb" aria-hidden="true"><img src="/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/desktop_pc.svg" alt=""></span>
+          <div><strong data-device-name>Windows PC</strong><span data-device-version></span></div>
+        </div>
+        <div class="overview-divider"></div>
+        <div class="overview-metrics">
+          <div><span>Run</span><strong data-macro-state>—</strong></div>
+          <div><span>Strategy</span><strong>—</strong></div>
+          <div><span>Map</span><strong>—</strong></div>
+          <div><span>Session</span><strong>—</strong></div>
+        </div>
+      </section>
+
+      <div class="dashboard-main-grid">
+        <section class="dashboard-section-panel activity-panel" id="activity" aria-labelledby="activity-title">
+          <div class="section-title"><span class="section-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><h2 id="activity-title">Activity</h2></div>
+          <div class="activity-empty"><span>No recent activity</span></div>
+        </section>
+
+        <section class="dashboard-section-panel remote-panel" id="remote" aria-labelledby="remote-title">
+          <div class="section-title"><span class="section-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><h2 id="remote-title">Remote</h2></div>
+          <div class="remote-actions" aria-label="Remote controls">
+            <button type="button" disabled><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/start.svg" alt="">Start</button><button type="button" disabled><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/pause.svg" alt="">Pause</button><button type="button" disabled><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/stop.svg" alt="">Stop</button>
+          </div>
+        </section>
+        <section class="dashboard-section-panel earnings-panel" id="earnings" aria-labelledby="earnings-title">
+          <div class="section-title"><span class="section-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><h2 id="earnings-title">Earnings</h2></div>
+          <div class="earnings-values"><div><span>Coins</span><strong>—</strong></div><div><span>Gems</span><strong>—</strong></div><div><span>Tower XP</span><strong>—</strong></div></div>
+        </section>
+        <section class="dashboard-section-panel strategies-panel" id="strategies" aria-labelledby="strategies-title">
+          <div class="section-title"><span class="section-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><h2 id="strategies-title">Strategies</h2></div>
+          <span class="quiet-value">—</span>
+        </section>
+      </div>
+
+      <section class="device-panel" id="devices" aria-labelledby="devices-title">
+        <div class="device-panel-heading"><div class="section-title"><span class="section-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><h2 id="devices-title">Devices</h2></div><a class="add-device-link" href="/dashboard/"><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/add_device.svg" alt="">Add device</a></div>
+        <div class="device-row"><span class="device-row-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/desktop_pc.svg')" aria-hidden="true"></span><div class="device-copy"><strong data-device-row-name>Windows PC</strong><span data-device-row-version></span></div><span class="device-online-state" data-device-status>Connected</span><button class="device-disconnect" type="button" data-device-disconnect hidden>Disconnect</button></div>
+      </section>
+
+      <section class="notifications-summary" id="notifications" aria-labelledby="notifications-title">
+        <div class="section-title"><span class="section-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><h2 id="notifications-title">Notifications</h2></div>
+        <span class="notification-empty">No notifications</span>
+      </section>
+      <span id="settings" class="settings-anchor" aria-hidden="true"></span>
+      <p class="dashboard-feedback" data-feedback role="status" aria-live="polite"></p>
+    </div>
+  </main>
+</body>
+</html>

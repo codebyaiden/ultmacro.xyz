@@ -1,0 +1,36 @@
+.notifications-heading { margin-bottom: 24px; }
+.notifications-heading > div { display: grid; gap: 5px; }
+.notifications-heading p { color: var(--app-muted); font-size: 13px; }
+.push-status { display: flex; align-items: center; gap: 14px; padding: 17px 19px; border: 1px solid var(--app-line); border-radius: 15px; background: linear-gradient(110deg,rgba(255,255,255,.035),rgba(255,255,255,.012)); }
+.push-status-icon { width: 21px; height: 21px; flex: 0 0 auto; color: var(--app-text); }
+.push-status-copy { display: grid; min-width: 0; gap: 3px; flex: 1; }
+.push-status-copy strong { font-size: 13px; font-weight: 550; }
+.push-status-copy span { color: var(--app-muted); font-size: 11px; }
+.push-status-copy .push-local-note { color: var(--app-quiet); }
+.push-status > a { display: inline-flex; min-height: 34px; align-items: center; padding: 0 13px; border: 1px solid var(--app-line); border-radius: 999px; color: var(--app-text); font-size: 11px; transition: background .16s ease,border-color .16s ease; }
+.push-status > a:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+.notification-preferences { margin-top: 25px; border-top: 1px solid var(--app-line); }
+.notification-group { display: grid; grid-template-columns: minmax(0,1fr) minmax(330px,390px); align-items: center; gap: 28px; min-height: 100px; padding: 20px 2px; border-bottom: 1px solid var(--app-line); }
+.notification-group-copy { display: grid; gap: 5px; min-width: 0; }
+.notification-group-copy h2 { font-size: 14px; font-weight: 550; letter-spacing: -.02em; }
+.notification-group-copy p { color: var(--app-muted); font-size: 12px; line-height: 1.45; }
+.notification-choice { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 3px; padding: 3px; border: 1px solid rgba(255,255,255,.085); border-radius: 12px; background: rgba(255,255,255,.025); }
+.notification-choice button { min-height: 34px; padding: 0 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--app-muted); font-size: 11px!important; white-space: nowrap; cursor: pointer; transition: color .16s ease,background .16s ease,border-color .16s ease,transform .16s ease; }
+.notification-choice button:hover { color: var(--app-text); background: rgba(255,255,255,.045); }
+.notification-choice button[aria-pressed="true"] { border-color: rgba(255,255,255,.11); background: #28282d; color: #f5f5f7; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.notification-choice button:active { transform: scale(.98); }
+.notification-save-status { min-height: 20px; margin-top: 12px!important; color: var(--app-quiet); font-size: 11px; }
+.notification-save-status:empty { display: none; }
+@media (max-width: 760px) {
+  .notifications-heading { margin-bottom: 19px; }
+  .push-status { align-items: flex-start; gap: 11px; padding: 14px; }
+  .push-status-icon { margin-top: 2px; }
+  .push-status > a { align-self: center; min-height: 32px; padding-inline: 11px; }
+  .notification-preferences { margin-top: 19px; }
+  .notification-group { grid-template-columns: minmax(0,1fr); gap: 13px; min-height: 0; padding: 17px 0; }
+  .notification-choice { width: 100%; }
+}
+@media (max-width: 390px) {
+  .notification-choice button { padding-inline: 5px; font-size: 10px!important; }
+  .push-status-copy span { font-size: 10px; }
+}

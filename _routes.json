@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "include": ["/assets/adcash-library"],
+  "include": ["/assets/adcash-library", "/dashboard", "/dashboard/*", "/api/dashboard/v1", "/api/dashboard/v1/*"],
   "exclude": []
 }

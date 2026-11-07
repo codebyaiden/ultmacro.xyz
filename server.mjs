@@ -9,6 +9,7 @@ import pollTeam from './api/poll-team.mjs';
 import wikiApi from './api/wiki.mjs';
 import automatedLogs from './api/automated-logs.mjs';
 import bugReports, { MAX_BUG_REPORT_BYTES } from './api/bug-reports.mjs';
+import dashboardPairing from './api/dashboard-pairing.mjs';
 
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 3000);
@@ -78,6 +79,7 @@ async function handleApi(req, res, body) {
   else if (pathname === '/api/health') response = await health(request);
   else if (pathname === '/api/bug-reports/v1' || pathname.startsWith('/api/bug-reports/v1/')) response = await bugReports(request);
   else if (pathname === '/api/automated-logs/v1' || pathname.startsWith('/api/automated-logs/v1/')) response = await automatedLogs(request);
+  else if (pathname === '/api/dashboard/v1' || pathname.startsWith('/api/dashboard/v1/')) response = await dashboardPairing(request);
   else if (pathname === '/api/strategies' || pathname.startsWith('/api/strategies/')) response = await strategies(request);
   else if (pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/')) response = await pollTeam(request);
   else if (pathname === '/api/poll' || pathname.startsWith('/api/poll/')) response = await poll(request);
@@ -126,7 +128,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!['GET', 'HEAD', 'POST', 'OPTIONS'].includes(req.method)) return send(res, 405, 'method not allowed\n', { allow: 'GET, HEAD, POST, OPTIONS' });
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const body = req.method === 'POST' ? await requestBody(req, pathname === '/api/automated-logs/v1/reports' ? 140000 : pathname === '/api/bug-reports/v1/reports' ? MAX_BUG_REPORT_BYTES : pathname === '/api/wiki/v1/ask' ? 2048 : pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/') || pathname.startsWith('/poll/team/') ? 1024 : pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
+    const body = req.method === 'POST' ? await requestBody(req, pathname.startsWith('/api/dashboard/v1/') ? 4096 : pathname === '/api/automated-logs/v1/reports' ? 140000 : pathname === '/api/bug-reports/v1/reports' ? MAX_BUG_REPORT_BYTES : pathname === '/api/wiki/v1/ask' ? 2048 : pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/') || pathname.startsWith('/poll/team/') ? 1024 : pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
     if (pathname.startsWith('/api/')) await handleApi(req, res, body);
     else await serveStatic(req, res, body);
   } catch (caught) { send(res, Number(caught.status || 500), Number(caught.status) === 413 ? 'request too large\n' : 'internal server error\n'); }

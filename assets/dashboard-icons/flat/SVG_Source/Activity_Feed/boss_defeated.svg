@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100" color="#A8D5B5" role="img" aria-label="Boss defeated">
+  <path d="M50 13c-18 0-31 13-31 31 0 12 6 22 16 28v12h30V72c10-6 16-16 16-28 0-18-13-31-31-31z" fill="currentColor"/>
+  <circle cx="39" cy="44" r="6.5" fill="#101013"/>
+  <circle cx="61" cy="44" r="6.5" fill="#101013"/>
+  <path d="m50 53-5 9h10z" fill="#101013"/>
+  <path d="M35 66h30M40 66v9m10-9v9m10-9v9" fill="none" stroke="#101013" stroke-width="4" stroke-linecap="round"/>
+</svg>

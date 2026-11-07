@@ -7,6 +7,7 @@
   const active = guide || /^\/wiki(?:\/|$)/.test(pathname) ? 'wiki'
     : /^\/strategies(?:\/|$)/.test(pathname) ? 'strategies'
     : /^\/early-access(?:\/|$)/.test(pathname) ? 'early'
+    : /^\/dashboard(?:\/|$)/.test(pathname) ? 'dashboard'
     : /^\/download(?:\/|$)/.test(pathname) ? 'download' : '';
   const guideLabel = {
     requirements:'Requirements',install:'Install',display:'Display settings',
@@ -26,6 +27,7 @@
     { id:'wiki',label:'Wiki',href:'/wiki/' },
     { id:'strategies',label:'Strategy Network',href:'/strategies/' },
     { id:'early',label:'Early Access',href:'/early-access/' },
+    { id:'dashboard',label:'Dashboard',href:'/dashboard/' },
     { id:'download',label:'Download',href:'/download/' }
   ];
   const el = (tag, cls, text) => {

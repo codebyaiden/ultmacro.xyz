@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 100 100" color="#A8D5B5" role="img" aria-label="Tower upgraded">
+  <path d="M22 19h8v10h9V19h9v10h9V19h8v18h-7l5 30h8v11H20V67h8l5-30h-11z" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M34 59h32M35 37h30" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="79" cy="22" r="13" fill="#101013" stroke="currentColor" stroke-width="4"/>
+  <path d="M79 15v14M72 22h14" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+</svg>

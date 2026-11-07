@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Overview — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
+  <link rel="stylesheet" href="/styles/dashboard-overview.css?v=6">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-overview.js?v=5" defer></script>
+  <script src="/src/dashboard-preferences.js?v=1" defer></script>
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
+</head>
+<body class="dashboard-app-page dashboard-overview-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/" aria-current="page"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/"><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/"><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/"><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/"><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/devices/"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/"><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom">
+        <a href="/dashboard/settings/"><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a>
+      </div>
+    </aside>
+
+    <div class="dashboard-app-content overview-content">
+      <header class="overview-welcome">
+        <div>
+          <h1 data-overview-greeting>Good evening!</h1>
+          <p data-overview-state>Your macro is stopped right now.</p>
+        </div>
+        <div class="overview-welcome-actions">
+          <span class="overview-sample-label">Sample data</span>
+          <button class="overview-edit-button" type="button" data-open-overview-editor>Edit layout</button>
+        </div>
+      </header>
+
+      <section class="overview-metrics" aria-label="Today's snapshot">
+        <article class="overview-metric overview-metric-state" data-overview-widget="macro">
+          <span class="overview-metric-label">Macro</span>
+          <strong data-overview-macro>Stopped</strong>
+          <span class="overview-metric-note">Ready when you are</span>
+        </article>
+        <article class="overview-metric" data-overview-widget="runtime">
+          <span class="overview-metric-label">Run time</span>
+          <strong>3h 42m</strong>
+          <span class="overview-metric-note">Today</span>
+        </article>
+        <a class="overview-metric overview-metric-resource" data-overview-widget="coins" href="/dashboard/earnings/">
+          <span class="overview-metric-label">Coins</span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/coins.png" alt="" width="30" height="30"><strong>18,420</strong></span>
+          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="overview-metric overview-metric-resource" data-overview-widget="gems" href="/dashboard/earnings/">
+          <span class="overview-metric-label">Gems</span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/gems.png" alt="" width="30" height="30"><strong>2,860</strong></span>
+          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="overview-metric overview-metric-resource" data-overview-widget="towerXp" href="/dashboard/earnings/">
+          <span class="overview-metric-label">Tower XP</span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/tower-xp-dashboard.png" alt="" width="30" height="30"><strong>6,250</strong></span>
+          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+        </a>
+      </section>
+
+      <section class="overview-lower-grid" aria-label="Run overview">
+        <article class="overview-panel overview-chart-panel" data-overview-widget="chart">
+          <div class="overview-panel-heading">
+            <div><h2>Run time</h2><p data-chart-summary>Last 7 days <span>·</span> 18h 26m</p></div>
+            <div class="overview-range" role="group" aria-label="Run time range">
+              <button type="button" data-range="7d" aria-pressed="true">7 days</button>
+              <button type="button" data-range="30d" aria-pressed="false">30 days</button>
+            </div>
+          </div>
+          <div class="overview-chart" role="img" aria-label="Sample run time chart for the last seven days">
+            <div class="overview-chart-bars" data-chart-bars>
+              <div class="overview-bar-column"><span class="overview-bar-value">2.1h</span><div class="overview-bar-track"><i style="--bar-size:48%"></i></div><span class="overview-bar-label">Mon</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">3.4h</span><div class="overview-bar-track"><i style="--bar-size:72%"></i></div><span class="overview-bar-label">Tue</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">1.8h</span><div class="overview-bar-track"><i style="--bar-size:40%"></i></div><span class="overview-bar-label">Wed</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">4.2h</span><div class="overview-bar-track"><i style="--bar-size:88%"></i></div><span class="overview-bar-label">Thu</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">2.7h</span><div class="overview-bar-track"><i style="--bar-size:59%"></i></div><span class="overview-bar-label">Fri</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">3.1h</span><div class="overview-bar-track"><i style="--bar-size:66%"></i></div><span class="overview-bar-label">Sat</span></div>
+              <div class="overview-bar-column"><span class="overview-bar-value">1.2h</span><div class="overview-bar-track"><i style="--bar-size:30%"></i></div><span class="overview-bar-label">Sun</span></div>
+            </div>
+          </div>
+          <a class="overview-panel-link" href="/dashboard/earnings/">View earnings <span aria-hidden="true">↗</span></a>
+        </article>
+
+        <article class="overview-panel overview-activity-panel" data-overview-widget="activity">
+          <div class="overview-panel-heading"><div><h2>Recent activity</h2><p>Latest from your runs</p></div><a class="overview-text-link" href="/dashboard/activity/">All activity <span aria-hidden="true">↗</span></a></div>
+          <ol class="overview-activity-list">
+            <li class="overview-event event-victory"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/victory.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Victory</strong><small>Fallen · Wave 40</small></span><time>8m</time></li>
+            <li class="overview-event event-upgrade"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_upgraded.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Tower upgraded</strong><small>DJ Booth · Upgrade 3</small></span><time>14m</time></li>
+            <li class="overview-event event-boss"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/boss_appeared.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Boss appeared</strong><small>Fallen King · Wave 40</small></span><time>19m</time></li>
+            <li class="overview-event event-placed"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_placed.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Tower placed</strong><small>Scout</small></span><time>22m</time></li>
+          </ol>
+        </article>
+      </section>
+    </div>
+
+    <dialog class="overview-editor" data-overview-editor aria-labelledby="overview-editor-title">
+      <div class="overview-editor-head">
+        <div><h2 id="overview-editor-title">Customize overview</h2></div>
+        <button class="overview-editor-close" type="button" data-close-overview-editor aria-label="Close editor">×</button>
+      </div>
+      <section class="overview-layout-presets" aria-labelledby="overview-layout-title">
+        <h3 id="overview-layout-title">Layouts</h3>
+        <div class="overview-preset-list" role="group" aria-label="Choose a layout">
+          <button type="button" data-layout-preset="balanced" aria-pressed="true"><span class="preset-preview preset-balanced" aria-hidden="true"><i></i><i></i><i></i><i></i></span><strong>Balanced</strong></button>
+          <button type="button" data-layout-preset="compact" aria-pressed="false"><span class="preset-preview preset-compact" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><strong>Compact</strong></button>
+          <button type="button" data-layout-preset="wide" aria-pressed="false"><span class="preset-preview preset-wide" aria-hidden="true"><i></i><i></i></span><strong>Wide</strong></button>
+        </div>
+      </section>
+      <section class="overview-widget-settings" aria-labelledby="overview-widget-title">
+        <h3 id="overview-widget-title">Widget size</h3>
+        <div class="overview-widget-list">
+          <div class="overview-widget-row" data-editor-widget="macro"><span>Macro state</span><div class="overview-size-control" role="group" aria-label="Macro state size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="runtime"><span>Run time</span><div class="overview-size-control" role="group" aria-label="Run time size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="coins"><span>Coins</span><div class="overview-size-control" role="group" aria-label="Coins size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="gems"><span>Gems</span><div class="overview-size-control" role="group" aria-label="Gems size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="towerXp"><span>Tower XP</span><div class="overview-size-control" role="group" aria-label="Tower XP size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="chart"><span>Run time chart</span><div class="overview-size-control" role="group" aria-label="Run time chart size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="activity"><span>Recent activity</span><div class="overview-size-control" role="group" aria-label="Recent activity size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+        </div>
+      </section>
+      <div class="overview-editor-footer"><button class="overview-layout-reset" type="button" data-reset-overview-layout>Reset</button><div><button class="overview-layout-cancel" type="button" data-cancel-overview-editor>Cancel</button><button class="overview-layout-save" type="button" data-save-overview-layout>Save layout</button></div></div>
+      <p class="overview-layout-status" data-layout-status role="status" aria-live="polite"></p>
+    </dialog>
+  </main>
+</body>
+</html>
