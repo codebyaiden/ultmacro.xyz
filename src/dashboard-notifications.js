@@ -10,6 +10,7 @@
   const installHelp = document.querySelector('[data-install-help]');
   let registration = null;
   let installPrompt = null;
+  let vapidPublicKey = '';
 
   const api = async (url, options = {}) => {
     const response = await fetch(url, {
@@ -52,6 +53,14 @@
       registration = await navigator.serviceWorker.register('/dashboard/sw.js', { scope: '/dashboard/' });
       const subscription = await registration.pushManager.getSubscription();
       updatePushControls(Boolean(subscription));
+      try {
+        ({ publicKey: vapidPublicKey } = await api('/api/dashboard/v1/notifications/vapid-public-key', { method: 'POST', body: '{}' }));
+      } catch (error) {
+        setPushStatus(error.message || 'Phone notifications are not configured yet.');
+        if (!subscription && enablePush) enablePush.disabled = true;
+        if (testPush) testPush.disabled = true;
+        return;
+      }
       if (subscription) setPushStatus('Alerts are on for this device.');
       else if (Notification.permission === 'denied') setPushStatus('Notifications are blocked in this browser’s settings.');
       else setPushStatus('Alerts are off on this device.');
@@ -69,9 +78,8 @@
       if (!registration) registration = await navigator.serviceWorker.register('/dashboard/sw.js', { scope: '/dashboard/' });
       const permission = await permissionRequest;
       if (permission !== 'granted') throw new Error(permission === 'denied' ? 'Allow notifications in this browser’s settings, then try again.' : 'Notification permission was not granted.');
-      const { publicKey } = await api('/api/dashboard/v1/notifications/vapid-public-key', { method: 'POST', body: '{}' });
-      if (!publicKey) throw new Error('Phone notifications are not configured yet.');
-      const subscription = await registration.pushManager.getSubscription() || await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64UrlBytes(publicKey) });
+      if (!vapidPublicKey) throw new Error('Phone notifications are not configured yet.');
+      const subscription = await registration.pushManager.getSubscription() || await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64UrlBytes(vapidPublicKey) });
       await api('/api/dashboard/v1/notifications/subscriptions', { method: 'POST', body: JSON.stringify({ subscription: subscription.toJSON() }) });
       updatePushControls(true);
       setPushStatus('Alerts are on for this device.');
