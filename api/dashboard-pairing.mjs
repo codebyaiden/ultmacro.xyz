@@ -1,8 +1,11 @@
 import { randomInt, randomUUID } from 'node:crypto';
-import webpush from 'web-push';
+import { createRequire } from 'node:module';
 import { clientIp, json } from './_lib/http.mjs';
 import { databaseConfigured, sql } from './_lib/db.mjs';
 import { indexedHash, parseCookies, rateLimit, sha256, token } from './_lib/security.mjs';
+
+const require = createRequire(import.meta.url);
+const webpush = require('web-push');
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const CODE_TTL_MS = 15 * 60 * 1000;
