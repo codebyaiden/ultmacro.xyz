@@ -10,7 +10,8 @@ const webpush = require('web-push');
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const ACTIVITY_EVENT_TYPES = new Set([
   'run.started', 'run.stopped', 'run.paused', 'run.resumed',
-  'strategy.action.requested', 'strategy.action.succeeded', 'reward.claimed'
+  'strategy.action.requested', 'strategy.action.succeeded', 'reward.claimed',
+  'mode.selected', 'game.joined', 'match.started'
 ]);
 const ACTIVITY_ACTIONS = new Set([
   'spawntower', 'upgradetower', 'selltower', 'clonetower', 'changetargets',
@@ -31,6 +32,7 @@ const localActivityEvents = new Map();
 const localPushSubscriptions = new Map();
 const localNotificationPreferences = new Map();
 const localNotifications = new Map();
+const localRemoteCommands = new Map();
 const NOTIFICATION_TTL_MS = 12 * 60 * 60 * 1000;
 const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'all', runEvents: 'runs', connection: 'offline' });
 const NOTIFICATION_ALLOWED = Object.freeze({
@@ -291,6 +293,91 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop']);
+
+async function requestRemoteCommand(ownerHash, deviceId, command) {
+  if (!REMOTE_COMMANDS.has(command)) return { error: 'invalid' };
+  if (localStore()) {
+    const device = localDevices.get(deviceId);
+    if (!device || device.ownerHash !== ownerHash || device.revokedAt) return { error: 'device' };
+    if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
+    const state = device.snapshot.runState;
+    if (command === 'start' && !device.snapshot.strategySlots?.length) return { error: 'strategy' };
+    if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') ||
+        (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
+    if ([...localRemoteCommands.values()].some(item => item.deviceId === deviceId && ['pending', 'delivered'].includes(item.status) && item.expiresAt > Date.now())) return { error: 'pending' };
+    const item = { id: randomUUID(), ownerHash, deviceId, command, status: 'pending', requestedAt: Date.now(), expiresAt: Date.now() + 30000 };
+    localRemoteCommands.set(item.id, item);
+    return { command: item };
+  }
+  await sql().query("update dashboard_remote_commands set status = 'expired' where status in ('pending','delivered') and expires_at <= now()");
+  let result;
+  try { result = await sql().query(`insert into dashboard_remote_commands (owner_hash, device_id, command, expires_at)
+    select $1, d.id, $3, now() + interval '30 seconds'
+    from dashboard_devices d
+    where d.id = $2 and d.owner_hash = $1 and d.revoked_at is null
+      and d.last_seen_at > now() - interval '60 seconds'
+      and d.state_snapshot is not null
+      and ($3 <> 'start' or jsonb_array_length(coalesce(d.state_snapshot->'strategySlots', '[]'::jsonb)) > 0)
+      and (($3 = 'start' and d.state_snapshot->>'runState' = 'stopped')
+        or ($3 = 'pause' and d.state_snapshot->>'runState' = 'running')
+        or ($3 = 'resume' and d.state_snapshot->>'runState' = 'paused')
+        or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused')))
+      and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
+    returning id, command, status, expires_at`, [ownerHash, deviceId, command]); }
+  catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
+  if (result.rows[0]) return { command: result.rows[0] };
+  const device = await sql().query(`select id, last_seen_at, state_snapshot from dashboard_devices where id = $1 and owner_hash = $2 and revoked_at is null`, [deviceId, ownerHash]);
+  if (!device.rows[0]) return { error: 'device' };
+  if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
+  const state = device.rows[0].state_snapshot.runState;
+  if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
+  if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
+  return { error: 'pending' };
+}
+
+async function pollRemoteCommands(deviceToken) {
+  const tokenHash = sha256(deviceToken);
+  if (localStore()) {
+    const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
+    if (!device) return null;
+    const item = [...localRemoteCommands.values()].find(command => command.deviceId === device.id && command.status === 'pending' && command.expiresAt > Date.now());
+    if (!item) return [];
+    item.status = 'delivered';
+    return [{ id: item.id, action: item.command, expiresAt: new Date(item.expiresAt).toISOString() }];
+  }
+  const result = await sql().query(`with device as (
+      select id from dashboard_devices where token_hash = $1 and revoked_at is null
+    ), picked as (
+      select c.id from dashboard_remote_commands c join device d on d.id = c.device_id
+      where c.status = 'pending' and c.expires_at > now()
+      order by c.requested_at asc limit 1 for update skip locked
+    )
+    update dashboard_remote_commands c set status = 'delivered', delivered_at = now()
+    from picked where c.id = picked.id
+    returning c.id, c.command, c.expires_at`, [tokenHash]);
+  const valid = await sql().query('select id from dashboard_devices where token_hash = $1 and revoked_at is null', [tokenHash]);
+  if (!valid.rows[0]) return null;
+  return result.rows.map(row => ({ id: row.id, action: row.command, expiresAt: new Date(row.expires_at).toISOString() }));
+}
+
+async function completeRemoteCommand(deviceToken, id, result, message) {
+  const tokenHash = sha256(deviceToken);
+  if (localStore()) {
+    const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
+    const command = localRemoteCommands.get(id);
+    if (!device || !command || command.deviceId !== device.id || command.status !== 'delivered') return false;
+    command.status = result;
+    command.result = message;
+    command.completedAt = Date.now();
+    return true;
+  }
+  const updated = await sql().query(`update dashboard_remote_commands c set status = $3, result = $4, completed_at = now()
+    from dashboard_devices d where c.id = $1 and c.device_id = d.id and d.token_hash = $2
+      and d.revoked_at is null and c.status = 'delivered' returning c.id`, [id, tokenHash, result, message]);
+  return Boolean(updated.rows[0]);
+}
+
 async function revokeDevice(ownerHash, deviceId) {
   if (localStore()) {
     const device = localDevices.get(deviceId);
@@ -323,9 +410,10 @@ function normalizeActivityEvent(value) {
       !['confirmed', 'observed'].includes(value.confidence) || !value.data || typeof value.data !== 'object' || Array.isArray(value.data)) return null;
 
   const dataKeys = Object.keys(value.data);
-  if (dataKeys.some(key => !['action', 'rewardType'].includes(key)) ||
+  if (dataKeys.some(key => !['action', 'rewardType', 'map', 'mode'].includes(key)) ||
       (value.data.action !== undefined && !ACTIVITY_ACTIONS.has(value.data.action)) ||
-      (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime')) return null;
+      (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime') ||
+      ['map', 'mode'].some(key => value.data[key] !== undefined && (typeof value.data[key] !== 'string' || value.data[key].length > 64 || /[\r\n\0]/.test(value.data[key])))) return null;
   if (value.type.startsWith('strategy.action.') && !value.data.action) return null;
   if (value.type === 'reward.claimed' && value.data.rewardType !== 'playtime') return null;
 
@@ -333,7 +421,12 @@ function normalizeActivityEvent(value) {
     eventId: value.eventId.toLowerCase(), sequence: value.sequence, type: value.type,
     occurredAt: new Date(value.occurredAt).toISOString(), appVersion: value.appVersion,
     runId: value.runId.toLowerCase(), source: value.source, confidence: value.confidence,
-    data: { ...(value.data.action ? { action: value.data.action } : {}), ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}) }
+    data: {
+      ...(value.data.action ? { action: value.data.action } : {}),
+      ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}),
+      ...(value.data.map ? { map: value.data.map.trim() } : {}),
+      ...(value.data.mode ? { mode: value.data.mode.trim() } : {})
+    }
   };
 }
 
@@ -917,6 +1010,43 @@ export default async function dashboardPairing(request) {
       if (events.some(event => !event)) return json({ error: 'An activity event is invalid.' }, 400);
       const accepted = await uploadActivityEvents(match[1], events);
       return accepted === null ? json({ error: 'Device credential is invalid or revoked.' }, 401) : json({ ok: true, accepted, received: events.length });
+    }
+
+    if (route === '/remote/commands') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
+      const body = await bodyJson(request);
+      if (!body || Object.keys(body).some(key => !['deviceId', 'command'].includes(key)) ||
+          typeof body.deviceId !== 'string' || body.deviceId.length > 64 || !REMOTE_COMMANDS.has(body.command))
+        return json({ error: 'Choose a valid device and action.' }, 400);
+      const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command);
+      if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
+      const status = { device: 404, offline: 409, state: 409, strategy: 409, pending: 409, invalid: 400 }[issued.error] || 409;
+      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'That action does not match the macro’s current state.', strategy: 'Choose a strategy in Ultimate Macro before starting.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
+      return json({ error: message }, status, { 'cache-control': 'no-store' });
+    }
+
+    if (route === '/remote/commands/poll') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
+      const body = await bodyJson(request);
+      if (!match || !body || Object.keys(body).length) return json({ error: 'Invalid device request.' }, 400);
+      const commands = await pollRemoteCommands(match[1]);
+      return commands === null ? json({ error: 'Device credential is invalid or revoked.' }, 401) : json({ commands }, 200, { 'cache-control': 'no-store' });
+    }
+
+    if (route === '/remote/commands/result') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
+      const body = await bodyJson(request);
+      if (!match || !body || Object.keys(body).some(key => !['id', 'status', 'message'].includes(key)) ||
+          typeof body.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(body.id) || !['succeeded', 'failed'].includes(body.status) ||
+          (body.message !== undefined && (typeof body.message !== 'string' || body.message.length > 120)))
+        return json({ error: 'Invalid command result.' }, 400);
+      const updated = await completeRemoteCommand(match[1], body.id, body.status, body.message || '');
+      return updated ? json({ ok: true }) : json({ error: 'Command is no longer active.' }, 409);
     }
 
     if (route === '/browser-links') {

@@ -26,6 +26,9 @@
     'run.paused': ['run_paused', 'Run paused', 'run_paused', '#c3b5de'],
     'run.resumed': ['run_resumed', 'Run resumed', 'run_resumed', '#b4d7c1'],
     'run.stopped': ['run_stopped', 'Run stopped', 'run_stopped', '#c7c7cd'],
+    'mode.selected': ['mode_selected', 'Mode selected', 'mode_selected', '#b8c9dc'],
+    'game.joined': ['map_joined', 'Map joined', 'map_joined', '#9bd9ec'],
+    'match.started': ['match_started', 'Match started', 'match_started', '#b4d7c1'],
     'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d']
   };
 
@@ -79,7 +82,11 @@
     copy.append(heading);
     const detailText = event.data?.action && filterType === 'action_completed'
       ? event.data.action
-      : event.data?.rewardType ? 'Playtime reward' : '';
+      : event.data?.rewardType ? 'Playtime reward'
+        : filterType === 'map_joined' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
+          : filterType === 'mode_selected' ? event.data?.mode || ''
+            : filterType === 'match_started' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
+              : '';
     if (detailText) {
       const detail = document.createElement('span');
       detail.textContent = detailText;
