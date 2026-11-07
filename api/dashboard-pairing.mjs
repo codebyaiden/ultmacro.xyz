@@ -652,9 +652,10 @@ export default async function dashboardPairing(request) {
           (body.appVersion !== undefined && (typeof body.appVersion !== 'string' || body.appVersion.length > 32)))
         return json({ error: 'Invalid heartbeat.' }, 401);
       const snapshot = body.snapshot === undefined ? null : normalizeMacroSnapshot(body.snapshot);
-      if (body.snapshot !== undefined && !snapshot) return json({ error: 'Invalid macro state snapshot.' }, 400);
       const accepted = await heartbeat(match[1], body.appVersion || '', snapshot);
-      return accepted ? json({ ok: true, receivedAt: new Date().toISOString() }) : json({ error: 'Device credential is invalid or revoked.' }, 401);
+      return accepted
+        ? json({ ok: true, snapshotAccepted: body.snapshot === undefined || Boolean(snapshot), receivedAt: new Date().toISOString() })
+        : json({ error: 'Device credential is invalid or revoked.' }, 401);
     }
 
     if (route === '/device/disconnect') {
