@@ -9,9 +9,9 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=12">
-  <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=1">
+  <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-notifications.js?v=3" defer></script>
+  <script src="/src/dashboard-notifications.js?v=4" defer></script>
   <script src="/src/dashboard-preferences.js?v=3" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -56,10 +56,20 @@
       </section>
 
       <div class="notification-preferences" data-notification-preferences>
+        <div class="notification-scope" aria-label="Notification preference scope">
+          <span>Settings for</span>
+          <div class="notification-scope-actions">
+            <div role="group" aria-label="Choose where preferences apply">
+              <button type="button" data-pref-scope="account" aria-pressed="true">All devices</button>
+              <button type="button" data-pref-scope="device" aria-pressed="false" disabled>This device</button>
+            </div>
+            <button type="button" class="notification-reset-device" data-reset-device hidden>Use all-device settings</button>
+          </div>
+        </div>
         <section class="notification-group" aria-labelledby="results-title">
           <div class="notification-group-copy">
             <h2 id="results-title">Run results</h2>
-            <p>Victory, defeat, and runs stopped by an error.</p>
+            <p>Win, loss, and error alerts will be available when the macro reports confirmed results.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="Run result alerts" data-preference="results">
             <button type="button" role="radio" data-value="all" aria-checked="false" tabindex="-1">Every result</button>
@@ -70,11 +80,11 @@
 
         <section class="notification-group" aria-labelledby="run-events-title">
           <div class="notification-group-copy">
-            <h2 id="run-events-title">During a run</h2>
-            <p>Bosses, tower actions, and wave changes.</p>
+            <h2 id="run-events-title">Run activity</h2>
+            <p>Run changes, with confirmed tower actions included when you choose all activity.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="During run alerts" data-preference="runEvents">
-            <button type="button" role="radio" data-value="bosses" aria-checked="false" tabindex="-1">Bosses only</button>
+            <button type="button" role="radio" data-value="runs" aria-checked="false" tabindex="-1">Run changes</button>
             <button type="button" role="radio" data-value="all" aria-checked="false" tabindex="-1">All activity</button>
             <button type="button" role="radio" data-value="off" aria-checked="false" tabindex="-1">Off</button>
           </div>

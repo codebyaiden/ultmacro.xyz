@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Notification — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=12">
+  <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=2">
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-notification-detail.js?v=1" defer></script>
+</head>
+<body class="dashboard-app-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/"><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/"><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/"><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/"><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/devices/"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/" aria-current="page"><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom"><a href="/dashboard/settings/"><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a></div>
+    </aside>
+    <div class="dashboard-app-content notification-detail-content">
+      <header class="dashboard-app-heading"><div><h1 data-detail-title>Notification</h1></div></header>
+      <article class="notification-detail-card" data-notification-detail aria-live="polite">
+        <p>Loading alert…</p>
+      </article>
+      <a class="notification-detail-back" href="/dashboard/activity/">View activity</a>
+    </div>
+  </main>
+</body>
+</html>

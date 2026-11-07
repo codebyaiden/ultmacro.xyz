@@ -29,6 +29,15 @@ const localBrowserSessions = new Map();
 const localBrowserLinks = new Map();
 const localActivityEvents = new Map();
 const localPushSubscriptions = new Map();
+const localNotificationPreferences = new Map();
+const localNotifications = new Map();
+const NOTIFICATION_TTL_MS = 12 * 60 * 60 * 1000;
+const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'all', runEvents: 'runs', connection: 'offline' });
+const NOTIFICATION_ALLOWED = Object.freeze({
+  results: new Set(['all', 'errors', 'off']),
+  runEvents: new Set(['runs', 'all', 'off']),
+  connection: new Set(['all', 'offline', 'off'])
+});
 
 function pairingCode() {
   const raw = Array.from({ length: 8 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join('');
@@ -176,17 +185,25 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
   if (localStore()) {
     const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
     if (!device) return false;
+    const reconnected = Boolean(device.offlineAt);
+    const offlineAt = device.offlineAt;
+    device.offlineAt = 0;
     device.lastSeenAt = Date.now();
     if (appVersion) device.appVersion = appVersion;
     if (snapshot) {
       device.snapshot = snapshot;
       device.snapshotUpdatedAt = Date.now();
     }
+    if (reconnected) void sendConnectionPush(device.ownerHash, device.id, 'connection.restored', 'Your PC is back', 'The Dashboard connection has been restored.', offlineAt, new Date(device.lastSeenAt)).catch(() => {});
     return true;
   }
+  const before = await sql().query(`select id, owner_hash, notification_offline_at from dashboard_devices
+    where token_hash = $1 and revoked_at is null`, [tokenHash]);
+  if (!before.rows[0]) return false;
+  const reconnected = Boolean(before.rows[0].notification_offline_at);
   let result;
   try {
-    result = await sql().query(`update dashboard_devices set last_seen_at = now(),
+    result = await sql().query(`update dashboard_devices set last_seen_at = now(), notification_offline_at = null,
         app_version = coalesce($2, app_version),
         state_snapshot = coalesce($3::jsonb, state_snapshot),
         state_updated_at = case when $3::jsonb is null then state_updated_at else now() end
@@ -198,6 +215,7 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
         app_version = coalesce($2, app_version)
       where token_hash = $1 and revoked_at is null returning id`, [tokenHash, appVersion || null]);
   }
+  if (result.rows[0] && reconnected) void sendConnectionPush(before.rows[0].owner_hash, before.rows[0].id, 'connection.restored', 'Your PC is back', 'The Dashboard connection has been restored.', before.rows[0].notification_offline_at, new Date()).catch(() => {});
   return Boolean(result.rows[0]);
 }
 
@@ -330,6 +348,7 @@ async function uploadActivityEvents(deviceToken, events) {
       const duplicate = [...localActivityEvents.values()].some(item => item.deviceId === device.id && (item.eventId === event.eventId || (item.runId === event.runId && item.sequence === event.sequence)));
       if (duplicate) continue;
       localActivityEvents.set(key, { ...event, deviceId: device.id, deviceName: device.deviceName, ownerHash: device.ownerHash });
+      void sendActivityPush(device.ownerHash, device.id, event).catch(() => {});
       accepted++;
     }
     return accepted;
@@ -349,8 +368,12 @@ async function uploadActivityEvents(deviceToken, events) {
   const inserted = await sql().query(`insert into dashboard_activity_events
       (device_id, owner_hash, event_id, run_id, sequence, event_type, source, confidence, app_version, occurred_at, data)
     values ${values.join(',')}
-    on conflict do nothing returning event_id`, params);
+    on conflict do nothing returning event_id, event_type, run_id, sequence, occurred_at, data`, params);
   await sql().query("delete from dashboard_activity_events where owner_hash = $1 and occurred_at < now() - interval '30 days'", [device.owner_hash]);
+  for (const event of inserted.rows) {
+    const normalized = events.find(item => item.eventId === event.event_id);
+    if (normalized) void sendActivityPush(device.owner_hash, device.id, normalized).catch(() => {});
+  }
   return inserted.rows.length;
 }
 
@@ -498,6 +521,11 @@ async function claimBrowserLink(rawLink, request) {
 
 function unavailable() { return json({ error: 'Pairing is temporarily unavailable.' }, 503); }
 
+const notificationExpiryTimer = setInterval(() => { void cleanupExpiredNotifications().catch(() => {}); }, 15 * 60 * 1000);
+notificationExpiryTimer.unref?.();
+const notificationConnectionTimer = setInterval(() => { void scanOfflineDevices().catch(() => {}); }, 15 * 1000);
+notificationConnectionTimer.unref?.();
+
 function pushReady() {
   const { DASHBOARD_VAPID_PUBLIC_KEY, DASHBOARD_VAPID_PRIVATE_KEY, DASHBOARD_VAPID_SUBJECT } = process.env;
   if (!DASHBOARD_VAPID_PUBLIC_KEY || !DASHBOARD_VAPID_PRIVATE_KEY || !DASHBOARD_VAPID_SUBJECT) return false;
@@ -529,27 +557,135 @@ async function savePushSubscription(ownerHash, subscription) {
   [endpointHash, ownerHash, subscription.endpoint, subscription.keys.p256dh, subscription.keys.auth]);
 }
 
-async function removePushSubscription(ownerHash, endpoint) {
-  const endpointHash = sha256(endpoint);
-  if (localStore()) {
-    const row = localPushSubscriptions.get(endpointHash);
-    if (row?.ownerHash === ownerHash) localPushSubscriptions.delete(endpointHash);
-    return;
-  }
-  await sql().query('delete from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [endpointHash, ownerHash]);
+function validNotificationPreferences(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.keys(value).length === Object.keys(NOTIFICATION_ALLOWED).length &&
+    Object.entries(NOTIFICATION_ALLOWED).every(([key, values]) => values.has(value[key]));
 }
 
-async function sendTestPush(ownerHash) {
-  const rows = localStore()
-    ? [...localPushSubscriptions.values()].filter(row => row.ownerHash === ownerHash).map(row => row.subscription)
-    : (await sql().query('select endpoint, p256dh, auth_secret from dashboard_push_subscriptions where owner_hash = $1', [ownerHash])).rows
-      .map(row => ({ endpoint: row.endpoint, keys: { p256dh: row.p256dh, auth: row.auth_secret } }));
-  if (!rows.length) return { sent: 0, removed: 0 };
-  const payload = JSON.stringify({ title: 'Ultimate Macro', body: 'Phone notifications are working.', tag: 'um-push-test', url: '/dashboard/notifications/' });
+async function notificationPreferences(ownerHash, deviceHash = '') {
+  let rows;
+  if (localStore()) {
+    rows = [...localNotificationPreferences.values()].filter(row => row.ownerHash === ownerHash);
+  } else {
+    rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection
+      from dashboard_notification_preferences where owner_hash = $1 and device_hash = any($2::text[])`,
+    [ownerHash, deviceHash ? ['account', deviceHash] : ['account']])).rows;
+  }
+  const account = rows.find(row => row.device_hash === 'account' || row.deviceHash === 'account');
+  const device = deviceHash && rows.find(row => (row.device_hash || row.deviceHash) === deviceHash);
+  const normalize = row => row ? ({ results: row.results, runEvents: row.runEvents ?? row.run_events, connection: row.connection }) : { ...NOTIFICATION_DEFAULTS };
+  const accountPreferences = normalize(account);
+  const devicePreferences = device ? normalize(device) : null;
+  return {
+    account: accountPreferences, device: devicePreferences, effective: devicePreferences || accountPreferences,
+    accountConfigured: Boolean(account), deviceConfigured: Boolean(device)
+  };
+}
+
+async function notificationPreferencesForDevices(ownerHash, deviceHashes) {
+  const hashes = [...new Set(deviceHashes)];
+  let rows;
+  if (localStore()) rows = [...localNotificationPreferences.values()].filter(row => row.ownerHash === ownerHash && (row.deviceHash === 'account' || hashes.includes(row.deviceHash)));
+  else rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection
+    from dashboard_notification_preferences where owner_hash = $1 and device_hash = any($2::text[])`, [ownerHash, ['account', ...hashes]])).rows;
+  const accountRow = rows.find(row => row.device_hash === 'account' || row.deviceHash === 'account');
+  const account = accountRow ? { results: accountRow.results, runEvents: accountRow.runEvents ?? accountRow.run_events, connection: accountRow.connection } : { ...NOTIFICATION_DEFAULTS };
+  return new Map(hashes.map(hash => {
+    const override = rows.find(row => (row.device_hash || row.deviceHash) === hash);
+    return [hash, override ? { results: override.results, runEvents: override.runEvents ?? override.run_events, connection: override.connection } : account];
+  }));
+}
+
+async function saveNotificationPreferences(ownerHash, deviceHash, preferences) {
+  if (localStore()) {
+    localNotificationPreferences.set(`${ownerHash}:${deviceHash}`, { ownerHash, deviceHash, ...preferences });
+    return;
+  }
+  await sql().query(`insert into dashboard_notification_preferences (owner_hash, device_hash, results, run_events, connection)
+    values ($1, $2, $3, $4, $5)
+    on conflict (owner_hash, device_hash) do update set results = excluded.results,
+      run_events = excluded.run_events, connection = excluded.connection, updated_at = now()`,
+  [ownerHash, deviceHash, preferences.results, preferences.runEvents, preferences.connection]);
+}
+
+async function cleanupExpiredNotifications() {
+  if (localStore()) {
+    const now = Date.now();
+    for (const [id, row] of localNotifications) if (row.expiresAt <= now) localNotifications.delete(id);
+    return;
+  }
+  await sql().query('delete from dashboard_notifications where expires_at <= now()');
+}
+
+async function saveNotification(ownerHash, eventId, eventType, title, body, category, details, occurredAt = new Date()) {
+  const id = randomUUID();
+  const createdAt = Date.now();
+  if (localStore()) {
+    const duplicate = [...localNotifications.values()].find(row => row.ownerHash === ownerHash && row.eventId === eventId && row.eventType === eventType);
+    if (duplicate) return duplicate.id;
+    localNotifications.set(id, { id, ownerHash, eventId, eventType, title, body, category, details, occurredAt: new Date(occurredAt).toISOString(), expiresAt: createdAt + NOTIFICATION_TTL_MS });
+    return id;
+  }
+  const result = await sql().query(`insert into dashboard_notifications
+      (id, owner_hash, event_id, event_type, title, body, category, details, occurred_at, expires_at)
+    values ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,now() + interval '12 hours')
+    on conflict (owner_hash, event_id, event_type) do nothing returning id`,
+  [id, ownerHash, eventId, eventType, title, body, category, JSON.stringify(details), occurredAt]);
+  return result.rows[0]?.id || null;
+}
+
+async function getNotification(ownerHash, id) {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  if (localStore()) {
+    const row = localNotifications.get(id);
+    return row && row.ownerHash === ownerHash && row.expiresAt > Date.now() ? row : null;
+  }
+  const result = await sql().query(`select id, event_type as "eventType", title, body, category, details,
+      occurred_at as "occurredAt", expires_at as "expiresAt"
+    from dashboard_notifications where id = $1 and owner_hash = $2 and expires_at > now()`, [id, ownerHash]);
+  return result.rows[0] || null;
+}
+
+function activityNotification(event) {
+  const names = {
+    'run.started': ['Run started', 'Your macro started a run.'],
+    'run.paused': ['Run paused', 'Your macro paused the current run.'],
+    'run.resumed': ['Run resumed', 'Your macro resumed the current run.'],
+    'run.stopped': ['Run stopped', 'Your macro stopped the current run.'],
+    'strategy.action.succeeded': ({
+      spawntower: ['Tower placed', 'A tower was placed successfully.'],
+      upgradetower: ['Tower upgraded', 'A tower upgrade was confirmed.'],
+      selltower: ['Tower sold', 'A tower sale was confirmed.']
+    })[event.data.action]
+  };
+  const message = names[event.type];
+  if (!message) return null;
+  return { title: message[0], body: message[1], category: 'runEvents', details: { eventId: event.eventId, eventType: event.type, action: event.data.action || null, occurredAt: event.occurredAt } };
+}
+
+async function sendStoredPush(ownerHash, recordId, eventId, category, onlyDeviceHash = '') {
+  let subscriptions;
+  if (localStore()) {
+    subscriptions = [...localPushSubscriptions.entries()].filter(([, row]) => row.ownerHash === ownerHash && (!onlyDeviceHash || rowHashMatches(row, onlyDeviceHash)))
+      .map(([deviceHash, row]) => ({ deviceHash, subscription: row.subscription }));
+  } else {
+    const rows = (await sql().query(`select endpoint_hash as "deviceHash", endpoint, p256dh, auth_secret as "authSecret"
+      from dashboard_push_subscriptions where owner_hash = $1 and ($2 = '' or endpoint_hash = $2)`, [ownerHash, onlyDeviceHash])).rows;
+    subscriptions = rows.map(row => ({ deviceHash: row.deviceHash, subscription: { endpoint: row.endpoint, keys: { p256dh: row.p256dh, auth: row.authSecret } } }));
+  }
+  if (!subscriptions.length) return { sent: 0, removed: 0, failed: 0 };
+  const payload = JSON.stringify({ title: recordId.title, body: recordId.body, tag: `um-${eventId}`, url: `/dashboard/notification/?id=${encodeURIComponent(recordId.id)}` });
+  const preferences = await notificationPreferencesForDevices(ownerHash, subscriptions.map(row => row.deviceHash));
   let sent = 0, removed = 0, failed = 0;
-  for (const subscription of rows) {
+  for (const { deviceHash, subscription } of subscriptions) {
+    const selected = preferences.get(deviceHash) || NOTIFICATION_DEFAULTS;
+    const allowed = category === 'results' ? (selected.results === 'all' || (selected.results === 'errors' && recordId.eventType === 'run.error'))
+      : category === 'connection' ? (selected.connection === 'all' || (selected.connection === 'offline' && String(recordId.eventType || '').endsWith('.offline')))
+      : selected.runEvents === 'all' || (selected.runEvents === 'runs' && String(recordId.eventType || '').startsWith('run.'));
+    if (!allowed) continue;
     try {
-      await webpush.sendNotification(subscription, payload, { TTL: 60 });
+      await webpush.sendNotification(subscription, payload, { TTL: 43200 });
       sent++;
     } catch (error) {
       const status = Number(error?.statusCode);
@@ -562,12 +698,130 @@ async function sendTestPush(ownerHash) {
   return { sent, removed, failed };
 }
 
+function rowHashMatches(row, hash) { return sha256(row.subscription.endpoint) === hash; }
+
+async function sendActivityPush(ownerHash, deviceId, event) {
+  const notification = activityNotification(event);
+  if (!notification) return;
+  const recordId = await saveNotification(ownerHash, event.eventId, event.type, notification.title, notification.body, notification.category,
+    { ...notification.details, deviceId }, event.occurredAt);
+  if (!recordId) return;
+  const record = localStore() ? localNotifications.get(recordId) : { id: recordId, title: notification.title, body: notification.body, eventType: event.type };
+  void sendStoredPush(ownerHash, record, event.eventId, notification.category).catch(() => {});
+}
+
+async function sendConnectionPush(ownerHash, deviceId, type, title, body, occurredAt, restoredAt = null) {
+  const eventId = `${type}:${deviceId}:${new Date(occurredAt || Date.now()).toISOString()}`;
+  const notificationId = await saveNotification(ownerHash, eventId, type, title, body, 'connection', {
+    deviceId, occurredAt: new Date(occurredAt || Date.now()).toISOString(), ...(restoredAt ? { restoredAt: new Date(restoredAt).toISOString() } : {})
+  }, occurredAt || new Date());
+  if (!notificationId) return;
+  const record = localStore() ? localNotifications.get(notificationId) : { id: notificationId, title, body, eventType: type };
+  void sendStoredPush(ownerHash, record, eventId, 'connection').catch(() => {});
+}
+
+async function scanOfflineDevices() {
+  if (localStore()) {
+    const cutoff = Date.now() - HEARTBEAT_FRESH_MS;
+    for (const device of localDevices.values()) {
+      if (device.revokedAt || !device.lastSeenAt || device.lastSeenAt >= cutoff || device.offlineAt) continue;
+      device.offlineAt = device.lastSeenAt;
+      void sendConnectionPush(device.ownerHash, device.id, 'connection.offline', 'Your PC went offline', 'The Dashboard lost its connection to your PC.', device.lastSeenAt).catch(() => {});
+    }
+    return;
+  }
+  const rows = await sql().query(`update dashboard_devices set notification_offline_at = last_seen_at
+    where revoked_at is null and last_seen_at is not null and last_seen_at < now() - interval '60 seconds'
+      and (notification_offline_at is null or notification_offline_at < last_seen_at)
+    returning id, owner_hash, device_name, last_seen_at`);
+  for (const row of rows.rows) void sendConnectionPush(row.owner_hash, row.id, 'connection.offline', 'Your PC went offline', 'The Dashboard lost its connection to your PC.', row.last_seen_at).catch(() => {});
+}
+
+async function removePushSubscription(ownerHash, endpoint) {
+  const endpointHash = sha256(endpoint);
+  if (localStore()) {
+    const row = localPushSubscriptions.get(endpointHash);
+    if (row?.ownerHash === ownerHash) localPushSubscriptions.delete(endpointHash);
+    return;
+  }
+  await sql().query('delete from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [endpointHash, ownerHash]);
+}
+
+async function sendTestPush(ownerHash, endpoint) {
+  const deviceHash = sha256(endpoint);
+  let subscription = null;
+  if (localStore()) subscription = localPushSubscriptions.get(deviceHash)?.ownerHash === ownerHash ? localPushSubscriptions.get(deviceHash).subscription : null;
+  else {
+    const row = (await sql().query('select endpoint, p256dh, auth_secret from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [deviceHash, ownerHash])).rows[0];
+    if (row) subscription = { endpoint: row.endpoint, keys: { p256dh: row.p256dh, auth: row.auth_secret } };
+  }
+  if (!subscription) return { sent: 0, removed: 0, failed: 0 };
+  const eventId = randomUUID();
+  const notificationId = await saveNotification(ownerHash, eventId, 'notification.test', 'Test alert', 'Your phone notifications are working.', 'test', { test: true });
+  if (!notificationId) return { sent: 0, removed: 0, failed: 1 };
+  const record = localStore() ? localNotifications.get(notificationId) : { id: notificationId, title: 'Test alert', body: 'Your phone notifications are working.' };
+  const payload = JSON.stringify({ title: record.title, body: record.body, tag: 'um-push-test', url: `/dashboard/notification/?id=${encodeURIComponent(notificationId)}` });
+  try {
+    await webpush.sendNotification(subscription, payload, { TTL: 43200 });
+    return { sent: 1, removed: 0, failed: 0, notificationId };
+  } catch (error) {
+    const status = Number(error?.statusCode);
+    if (status === 404 || status === 410) { await removePushSubscription(ownerHash, endpoint); return { sent: 0, removed: 1, failed: 0, notificationId }; }
+    return { sent: 0, removed: 0, failed: 1, notificationId };
+  }
+}
+
 export default async function dashboardPairing(request) {
   if (!secureApiMode()) return unavailable();
   const path = new URL(request.url).pathname;
   const route = path.replace(/^\/api\/dashboard\/v1/, '') || '/';
 
   try {
+    if (route === '/notifications/preferences') {
+      if (!['GET', 'PUT', 'DELETE'].includes(request.method)) return json({ error: 'Method not allowed.' }, 405, { allow: 'GET, PUT, DELETE' });
+      if (request.method !== 'GET' && !sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      if (request.method === 'GET') {
+        const deviceHash = new URL(request.url).searchParams.get('device') || '';
+        if (deviceHash && !/^[a-f0-9]{64}$/i.test(deviceHash)) return json({ error: 'Invalid notification device.' }, 400);
+        if (deviceHash) {
+          const exists = localStore() ? localPushSubscriptions.get(deviceHash)?.ownerHash === owner.hash
+            : Boolean((await sql().query('select 1 from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [deviceHash, owner.hash])).rows[0]);
+          if (!exists) return json({ error: 'Notification device not found.' }, 404);
+        }
+        return json(await notificationPreferences(owner.hash, deviceHash), 200, { 'cache-control': 'no-store', vary: 'Cookie' });
+      }
+      const body = await bodyJson(request);
+      if (!body || Object.keys(body).some(key => !['scope', 'deviceId', 'preferences'].includes(key)) ||
+          (request.method === 'PUT' && (!validNotificationPreferences(body.preferences) || !['account', 'device'].includes(body.scope))) ||
+          (request.method === 'DELETE' && (Object.keys(body).length !== 2 || body.scope !== 'device' || typeof body.deviceId !== 'string' || !/^[a-f0-9]{64}$/i.test(body.deviceId))))
+        return json({ error: 'Invalid notification preferences.' }, 400);
+      if (request.method === 'PUT' && body.scope === 'account' && body.deviceId !== undefined) return json({ error: 'Invalid notification preference scope.' }, 400);
+      const deviceHash = body.scope === 'device' ? body.deviceId : 'account';
+      if (deviceHash !== 'account') {
+        const exists = localStore() ? localPushSubscriptions.get(deviceHash)?.ownerHash === owner.hash
+          : Boolean((await sql().query('select 1 from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [deviceHash, owner.hash])).rows[0]);
+        if (!exists) return json({ error: 'Notification device not found.' }, 404);
+      }
+      if (request.method === 'DELETE') {
+        if (localStore()) localNotificationPreferences.delete(`${owner.hash}:${deviceHash}`);
+        else await sql().query('delete from dashboard_notification_preferences where owner_hash = $1 and device_hash = $2', [owner.hash, deviceHash]);
+      } else await saveNotificationPreferences(owner.hash, deviceHash, body.preferences);
+      return json({ ok: true, ...(await notificationPreferences(owner.hash, deviceHash === 'account' ? '' : deviceHash)) }, 200, { 'cache-control': 'no-store' });
+    }
+
+    if (route === '/notifications/detail') {
+      if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405, { allow: 'GET' });
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      const id = new URL(request.url).searchParams.get('id') || '';
+      if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: 'Invalid notification.' }, 400, { 'cache-control': 'no-store' });
+      const notification = await getNotification(owner.hash, id);
+      return notification ? json({ notification }, 200, { 'cache-control': 'no-store', vary: 'Cookie' })
+        : json({ error: 'This alert has expired. You can still check Activity for recent macro events.' }, 410, { 'cache-control': 'no-store' });
+    }
+
     if (route === '/notifications/vapid-public-key') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
@@ -584,12 +838,18 @@ export default async function dashboardPairing(request) {
       if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
       if (request.method === 'POST') {
         const body = await bodyJson(request);
+        if (body && Object.keys(body).length === 1 && typeof body.endpoint === 'string' && body.endpoint.length <= 2048) {
+          const deviceHash = sha256(body.endpoint);
+          const exists = localStore() ? localPushSubscriptions.get(deviceHash)?.ownerHash === owner.hash
+            : Boolean((await sql().query('select 1 from dashboard_push_subscriptions where endpoint_hash = $1 and owner_hash = $2', [deviceHash, owner.hash])).rows[0]);
+          return exists ? json({ ok: true, deviceId: deviceHash }, 200, { 'cache-control': 'no-store' }) : json({ error: 'This device has not enabled alerts.' }, 404);
+        }
         if (!body || Object.keys(body).length !== 1 || !validPushSubscription(body.subscription))
           return json({ error: 'This browser returned an invalid push subscription.' }, 400);
         const limit = await limited(`dashboard-push-subscribe:${owner.hash}`, 10, 3600);
         if (!limit.allowed) return json({ error: 'Too many notification changes. Try again later.' }, 429, { 'retry-after': String(limit.retryAfter) });
         await savePushSubscription(owner.hash, body.subscription);
-        return json({ ok: true }, 201, { 'cache-control': 'no-store' });
+        return json({ ok: true, deviceId: sha256(body.subscription.endpoint) }, 201, { 'cache-control': 'no-store' });
       }
       if (request.method === 'DELETE') {
         const body = await bodyJson(request);
@@ -604,13 +864,15 @@ export default async function dashboardPairing(request) {
     if (route === '/notifications/test') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
-      if (!await bodyJson(request)) return json({ error: 'Use a JSON request.' }, 415);
+      const body = await bodyJson(request);
+      if (!body) return json({ error: 'Use a JSON request.' }, 415);
+      if (Object.keys(body).length !== 1 || typeof body.endpoint !== 'string' || body.endpoint.length > 2048) return json({ error: 'Enable phone notifications on this device first.' }, 409);
       const owner = await ownerFrom(request);
       if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
       if (!pushReady()) return json({ error: 'Phone notifications are not configured yet.' }, 503);
       const limit = await limited(`dashboard-push-test:${owner.hash}`, 3, 3600);
       if (!limit.allowed) return json({ error: 'You have sent enough test alerts for now.' }, 429, { 'retry-after': String(limit.retryAfter) });
-      const result = await sendTestPush(owner.hash);
+      const result = await sendTestPush(owner.hash, body.endpoint);
       if (!result.sent && !result.removed && !result.failed) return json({ error: 'Enable phone notifications on this device first.' }, 409);
       if (!result.sent && result.failed) return json({ error: 'Could not deliver the test alert. Reconnect phone notifications and try again.' }, 502);
       return json(result, 200, { 'cache-control': 'no-store' });
