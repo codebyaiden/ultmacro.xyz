@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
   <link rel="stylesheet" href="/styles/dashboard-devices.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/assets/dashboard-devices.bundle.js?v=2" defer></script>
+  <script src="/assets/dashboard-devices.bundle.js?v=3" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -50,7 +50,17 @@
     <section class="devices-modal" role="dialog" aria-modal="true" aria-labelledby="devices-modal-title" tabindex="-1" data-devices-modal>
       <button class="devices-modal-close" type="button" aria-label="Close" data-close-devices>×</button>
       <h2 id="devices-modal-title">Connect another device</h2>
-      <div class="devices-pairing-options">
+      <div class="devices-connect-tabs" role="tablist" aria-label="Device type">
+        <button type="button" role="tab" aria-selected="true" data-connect-tab="desktop">Windows PC</button>
+        <button type="button" role="tab" aria-selected="false" data-connect-tab="browser">Phone or browser</button>
+      </div>
+      <section class="desktop-pairing-pane" role="tabpanel" data-connect-pane="desktop" aria-label="Connect a Windows PC">
+        <p>Enter this one-time code in Ultimate Macro on your PC.</p>
+        <div class="desktop-pairing-code"><output data-desktop-code>••••-••••</output><button type="button" data-copy-code aria-label="Copy pairing code" title="Copy code">Copy</button></div>
+        <button type="button" class="desktop-new-code" data-new-desktop-code>Get a pairing code</button>
+        <p class="desktop-code-expiry" data-desktop-expiry role="status" aria-live="polite"></p>
+      </section>
+      <div class="devices-pairing-options" data-connect-pane="browser" hidden>
         <section class="pairing-option pairing-qr" aria-labelledby="pair-qr-title">
           <h3 id="pair-qr-title">Scan a QR Code</h3>
           <div class="pairing-qr-frame" data-qr-frame><span class="pairing-spinner" aria-hidden="true"></span></div>
@@ -66,7 +76,7 @@
           <p class="pairing-expiry" data-link-expiry></p>
         </section>
       </div>
-      <p class="pairing-safety">This link works once and expires in 15 minutes. Only share it with a device you trust.</p>
+      <p class="pairing-safety">Codes and links expire after 15 minutes. Only use them with devices you trust.</p>
       <p class="pairing-error" data-pairing-error role="status" aria-live="polite"></p>
     </section>
   </div>

@@ -21,6 +21,21 @@
 .devices-modal { position: relative; width: min(100%,720px); padding: 34px 36px 26px; border: 1px solid rgba(255,255,255,.12); border-radius: 22px; background: #111114; box-shadow: 0 28px 90px rgba(0,0,0,.55); opacity: 0; transform: translateY(8px) scale(.99); transition: opacity .22s ease, transform .22s cubic-bezier(.2,.75,.25,1); }
 .devices-modal-backdrop:not([hidden]):not(.is-closing) .devices-modal { opacity: 1; transform: none; }
 .devices-modal h2 { margin: 0 40px 25px; text-align: center; font-size: 22px; font-weight: 560; letter-spacing: -.035em; }
+.devices-connect-tabs { display: flex; width: fit-content; max-width: 100%; gap: 4px; padding: 4px; margin: -7px auto 22px; border: 1px solid rgba(255,255,255,.08); border-radius: 999px; background: #0b0b0e; }
+.devices-connect-tabs button { min-height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; color: var(--app-muted); font: 12px "Geist","Segoe UI",sans-serif; cursor: pointer; transition: color .16s ease,background .16s ease; }
+.devices-connect-tabs button[aria-selected="true"] { background: #f1f1f3; color: #151518; }
+.devices-connect-tabs button:focus-visible,.desktop-new-code:focus-visible,.desktop-pairing-code button:focus-visible { outline: 2px solid #c2a5ef; outline-offset: 3px; }
+.devices-modal [data-connect-pane][hidden] { display: none!important; }
+.desktop-pairing-pane { display: grid; min-height: 230px; align-content: center; justify-items: center; text-align: center; }
+.desktop-pairing-pane > p:first-child { margin: 0 0 14px; color: var(--app-muted); font-size: 12px; }
+.desktop-pairing-code { display: flex; min-width: min(100%,310px); min-height: 68px; align-items: center; justify-content: center; gap: 17px; padding: 8px 10px 8px 20px; border: 1px solid var(--app-line); border-radius: 18px; background: linear-gradient(115deg,rgba(255,255,255,.045),rgba(255,255,255,.015)); }
+.desktop-pairing-code output { color: var(--app-text); font-size: 27px; font-weight: 570; font-variant-numeric: tabular-nums; letter-spacing: .12em; }
+.desktop-pairing-code button { min-height: 34px; padding: 0 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(255,255,255,.07); color: var(--app-text); font-size: 11px; cursor: pointer; }
+.desktop-pairing-code button:hover { background: rgba(255,255,255,.12); }
+.desktop-new-code { min-height: 38px; margin-top: 12px; padding: 0 16px; border: 0; border-radius: 999px; background: #f1f1f3; color: #151518; font-size: 12px; font-weight: 550; cursor: pointer; transition: background .16s ease,transform .16s ease; }
+.desktop-new-code:hover { background: #fff; transform: translateY(-1px); }
+.desktop-new-code:disabled { cursor: wait; opacity: .6; }
+.desktop-code-expiry { min-height: 16px; margin: 9px 0 0!important; color: var(--app-quiet); font-size: 10px; font-variant-numeric: tabular-nums; }
 .devices-modal-close { position: absolute; top: 14px; right: 16px; display: grid; width: 34px; height: 34px; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--app-muted); font-size: 24px!important; cursor: pointer; }
 .devices-modal-close:hover { background: rgba(255,255,255,.07); color: var(--app-text); }
 .devices-pairing-options { display: grid; grid-template-columns: minmax(0,1fr) 64px minmax(0,1fr); align-items: stretch; min-height: 230px; }
@@ -72,6 +87,11 @@
   .devices-modal-backdrop { align-items: end; padding: 12px; }
   .devices-modal { max-height: calc(100dvh - 24px); overflow: auto; padding: 29px 18px 18px; border-radius: 20px; }
   .devices-modal h2 { margin: 0 34px 20px; font-size: 20px; }
+  .devices-connect-tabs { margin-bottom: 18px; }
+  .devices-connect-tabs button { padding-inline: 11px; font-size: 11px; }
+  .desktop-pairing-pane { min-height: 200px; }
+  .desktop-pairing-code { min-width: min(100%,290px); min-height: 62px; gap: 11px; padding-left: 14px; }
+  .desktop-pairing-code output { font-size: 23px; }
   .devices-pairing-options { grid-template-columns: minmax(0,1fr); gap: 16px; }
   .pairing-option h3 { margin-bottom: 11px; }
   .pairing-qr-frame { width: 146px; height: 146px; border-radius: 14px; }

@@ -74,7 +74,6 @@ async function issueCode(ownerHash) {
       if (device.ownerHash === ownerHash && !device.revokedAt && !device.lastSeenAt && Date.now() - device.pairedAt > HEARTBEAT_FRESH_MS)
         device.revokedAt = Date.now();
     }
-    if ([...localDevices.values()].some(device => device.ownerHash === ownerHash && !device.revokedAt)) return { alreadyPaired: true };
     for (const entry of localCodes.values()) if (entry.ownerHash === ownerHash && !entry.claimedAt) entry.revokedAt = Date.now();
     localCodes.set(codeHash, { ownerHash, createdAt: Date.now(), expiresAt: expiresAt.getTime(), claimedAt: 0, revokedAt: 0, deviceId: '' });
     return { code, expiresAt: expiresAt.toISOString() };
@@ -87,11 +86,6 @@ async function issueCode(ownerHash) {
     await client.query(`update dashboard_devices set revoked_at = now()
       where owner_hash = $1 and revoked_at is null and last_seen_at is null
         and paired_at < now() - interval '60 seconds'`, [ownerHash]);
-    const paired = await client.query('select id from dashboard_devices where owner_hash = $1 and revoked_at is null limit 1', [ownerHash]);
-    if (paired.rows[0]) {
-      await client.query('rollback');
-      return { alreadyPaired: true };
-    }
     await client.query('update dashboard_pairing_codes set revoked_at = now() where owner_hash = $1 and claimed_at is null and revoked_at is null', [ownerHash]);
     await client.query('insert into dashboard_pairing_codes (code_hash, owner_hash, expires_at) values ($1, $2, $3)', [codeHash, ownerHash, expiresAt]);
     await client.query('commit');
@@ -178,7 +172,7 @@ async function heartbeat(deviceToken, appVersion) {
   const result = await sql().query(`update dashboard_devices set last_seen_at = now(),
       app_version = coalesce($2, app_version)
     where token_hash = $1 and revoked_at is null returning id`, [tokenHash, appVersion || null]);
-  return Boolean(result[0]);
+  return Boolean(result.rows[0]);
 }
 
 async function disconnectDevice(deviceToken) {
@@ -190,7 +184,7 @@ async function disconnectDevice(deviceToken) {
     return true;
   }
   const result = await sql().query('update dashboard_devices set revoked_at = now() where token_hash = $1 and revoked_at is null returning id', [tokenHash]);
-  return Boolean(result[0]);
+  return Boolean(result.rows[0]);
 }
 
 async function revokeDevice(ownerHash, deviceId) {
@@ -201,7 +195,7 @@ async function revokeDevice(ownerHash, deviceId) {
     return true;
   }
   const result = await sql().query('update dashboard_devices set revoked_at = now() where id = $1 and owner_hash = $2 and revoked_at is null returning id', [deviceId, ownerHash]);
-  return Boolean(result[0]);
+  return Boolean(result.rows[0]);
 }
 
 async function bodyJson(request) {
@@ -508,7 +502,7 @@ export default async function dashboardPairing(request) {
       } else {
         const rows = await sql().query(`update dashboard_browser_sessions set revoked_at = now()
           where token_hash = $1 and owner_hash = $2 and revoked_at is null returning token_hash`, [body.id, owner.hash]);
-        removed = Boolean(rows[0]);
+        removed = Boolean(rows.rows[0]);
       }
       return removed ? json({ ok: true }) : json({ error: 'Device not found.' }, 404);
     }
@@ -525,7 +519,6 @@ export default async function dashboardPairing(request) {
       const ownerLimit = await limited(`dashboard-code-owner:${ownerHash}`, 10, 3600);
       if (!ownerLimit.allowed) return json({ error: 'Too many codes requested. Try again later.' }, 429, { 'retry-after': String(ownerLimit.retryAfter) });
       const issued = await issueCode(ownerHash);
-      if (issued.alreadyPaired) return json({ error: 'A desktop is already paired. Disconnect it before pairing another one.' }, 409);
       await saveBrowserSession(ownerHash, sha256(ownerRaw), existing?.session?.device_name || existing?.session?.name || browserName(request));
       return json({ code: issued.code, expiresAt: issued.expiresAt, lifetimeSeconds: CODE_TTL_MS / 1000 }, 201, {
         'set-cookie': ownerSessionCookie(ownerRaw),

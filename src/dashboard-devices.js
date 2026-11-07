@@ -14,6 +14,11 @@ import QRCode from 'qrcode';
   const copyButton = page.querySelector('[data-copy-link]');
   const expiryText = page.querySelector('[data-link-expiry]');
   const errorText = page.querySelector('[data-pairing-error]');
+  const connectTabs = [...page.querySelectorAll('[data-connect-tab]')];
+  const desktopCode = page.querySelector('[data-desktop-code]');
+  const newDesktopCode = page.querySelector('[data-new-desktop-code]');
+  const copyCode = page.querySelector('[data-copy-code]');
+  const desktopExpiry = page.querySelector('[data-desktop-expiry]');
   const removeBackdrop = page.querySelector('[data-remove-backdrop]');
   const removeDialog = page.querySelector('[data-remove-dialog]');
   const removeMessage = page.querySelector('[data-remove-message]');
@@ -24,6 +29,8 @@ import QRCode from 'qrcode';
   let pairingUrl = '';
   let expiresAt = 0;
   let expiryTimer = 0;
+  let statusTimer = 0;
+  let desktopCodeValue = '';
   let closeTimer = 0;
   let previousFocus = null;
   let removeFocus = null;
@@ -160,6 +167,87 @@ import QRCode from 'qrcode';
     }
   }
 
+  function setConnectMode(mode) {
+    for (const tab of connectTabs) {
+      const selected = tab.dataset.connectTab === mode;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+    }
+    for (const pane of page.querySelectorAll('[data-connect-pane]')) pane.hidden = pane.dataset.connectPane !== mode;
+    if (mode === 'browser' && !pairingUrl) createPairingLink();
+    if (mode === 'desktop' && !desktopCodeValue) createDesktopCode();
+  }
+
+  async function checkDesktopPairing() {
+    if (!desktopCodeValue || backdrop.hidden) return;
+    try {
+      const response = await fetch('/api/dashboard/v1/pairing-status', { credentials: 'same-origin', cache: 'no-store', headers: { accept: 'application/json' } });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not check pairing.');
+      if (data.state === 'connected') {
+        desktopExpiry.textContent = 'PC connected.';
+        clearInterval(statusTimer);
+        await loadDevices();
+      } else if (data.state === 'connecting') desktopExpiry.textContent = 'Code accepted. Waiting for the PC to come online…';
+      else if (data.state === 'offline') desktopExpiry.textContent = 'PC paired; waiting for its next heartbeat…';
+      else if (data.state === 'expired' || data.state === 'revoked') {
+        desktopExpiry.textContent = 'Code expired. Get a new one to try again.';
+        desktopCodeValue = '';
+        clearInterval(statusTimer);
+      }
+    } catch (error) {
+      desktopExpiry.textContent = error.message || 'Could not check pairing.';
+    }
+  }
+
+  async function createDesktopCode() {
+    clearInterval(statusTimer);
+    desktopCodeValue = '';
+    desktopCode.textContent = '••••-••••';
+    desktopExpiry.textContent = 'Creating code…';
+    newDesktopCode.disabled = true;
+    try {
+      const data = await post('pairing-codes');
+      desktopCodeValue = data.code;
+      desktopCode.textContent = data.code;
+      expiresAt = Date.parse(data.expiresAt);
+      clearInterval(expiryTimer);
+      setDesktopExpiry();
+      expiryTimer = window.setInterval(setDesktopExpiry, 1000);
+      await checkDesktopPairing();
+      statusTimer = window.setInterval(checkDesktopPairing, 2000);
+    } catch (error) {
+      desktopExpiry.textContent = error.message || 'Could not create a pairing code.';
+    } finally {
+      newDesktopCode.disabled = false;
+    }
+  }
+
+  function setDesktopExpiry() {
+    if (!expiresAt || !desktopCodeValue) return;
+    const seconds = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+    if (!seconds) {
+      desktopExpiry.textContent = 'Code expired. Get a new one to try again.';
+      desktopCodeValue = '';
+      desktopCode.textContent = '••••-••••';
+      clearInterval(expiryTimer);
+      clearInterval(statusTimer);
+      return;
+    }
+    desktopExpiry.textContent = `Expires in ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+  }
+
+  async function copyDesktopCode() {
+    if (!desktopCodeValue) return;
+    try {
+      await navigator.clipboard.writeText(desktopCodeValue);
+      copyCode.textContent = 'Copied';
+      window.setTimeout(() => { copyCode.textContent = 'Copy'; }, 1200);
+    } catch {
+      desktopExpiry.textContent = 'Copy failed. Select the code and copy it manually.';
+    }
+  }
+
   async function createPairingLink() {
     errorText.textContent = '';
     pairingUrl = '';
@@ -190,15 +278,20 @@ import QRCode from 'qrcode';
   function openDialog() {
     previousFocus = document.activeElement;
     clearTimeout(closeTimer);
+    clearInterval(expiryTimer);
+    clearInterval(statusTimer);
+    pairingUrl = '';
+    desktopCodeValue = '';
     backdrop.hidden = false;
     requestAnimationFrame(() => dialog.focus());
-    createPairingLink();
+    setConnectMode('desktop');
   }
 
   function closeDialog() {
     if (backdrop.hidden) return;
     backdrop.classList.add('is-closing');
     clearTimeout(expiryTimer);
+    clearInterval(statusTimer);
     closeTimer = window.setTimeout(() => {
       backdrop.hidden = true;
       backdrop.classList.remove('is-closing');
@@ -241,6 +334,9 @@ import QRCode from 'qrcode';
   }
 
   openButton.addEventListener('click', openDialog);
+  for (const tab of connectTabs) tab.addEventListener('click', () => setConnectMode(tab.dataset.connectTab));
+  newDesktopCode.addEventListener('click', createDesktopCode);
+  copyCode.addEventListener('click', copyDesktopCode);
   closeButton.addEventListener('click', closeDialog);
   backdrop.addEventListener('click', event => { if (event.target === backdrop) closeDialog(); });
   copyButton.addEventListener('click', copyLink);
