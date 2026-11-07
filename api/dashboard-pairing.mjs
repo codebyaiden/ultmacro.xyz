@@ -8,6 +8,16 @@ const require = createRequire(import.meta.url);
 const webpush = require('web-push');
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ACTIVITY_EVENT_TYPES = new Set([
+  'run.started', 'run.stopped', 'run.paused', 'run.resumed',
+  'strategy.action.requested', 'strategy.action.succeeded', 'reward.claimed'
+]);
+const ACTIVITY_ACTIONS = new Set([
+  'spawntower', 'upgradetower', 'selltower', 'clonetower', 'changetargets',
+  'toggleautoskip', 'activateraisethedead', 'activateenforcervan',
+  'brawlerreposition', 'enforcerreposition', 'setdjtrack', 'click', 'send',
+  'sleep', 'commander', 'other'
+]);
 const CODE_TTL_MS = 15 * 60 * 1000;
 const OWNER_COOKIE = 'um_dashboard_owner';
 const OWNER_COOKIE_AGE = 180 * 24 * 60 * 60;
@@ -17,6 +27,7 @@ const localDevices = new Map();
 const localLimits = new Map();
 const localBrowserSessions = new Map();
 const localBrowserLinks = new Map();
+const localActivityEvents = new Map();
 const localPushSubscriptions = new Map();
 
 function pairingCode() {
@@ -273,14 +284,89 @@ async function revokeDevice(ownerHash, deviceId) {
   return Boolean(result.rows[0]);
 }
 
-async function bodyJson(request) {
+async function bodyJson(request, maxBytes = 4096) {
   if (!/^application\/json(?:;|$)/i.test(request.headers.get('content-type') || '')) return null;
   const text = await request.text();
-  if (Buffer.byteLength(text) > 4096) return null;
+  if (Buffer.byteLength(text) > maxBytes) return null;
   try {
     const value = JSON.parse(text);
     return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
   } catch { return null; }
+}
+
+function normalizeActivityEvent(value) {
+  const keys = ['eventId', 'sequence', 'type', 'occurredAt', 'appVersion', 'runId', 'source', 'confidence', 'data'];
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => !keys.includes(key)) ||
+      !/^[a-f0-9]{32}$/i.test(value.eventId || '') || !Number.isSafeInteger(value.sequence) || value.sequence < 1 ||
+      !ACTIVITY_EVENT_TYPES.has(value.type) || typeof value.occurredAt !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value.occurredAt) || !Number.isFinite(Date.parse(value.occurredAt)) ||
+      typeof value.appVersion !== 'string' || value.appVersion.length < 1 || value.appVersion.length > 32 ||
+      !/^[a-f0-9]{32}$/i.test(value.runId || '') || !['macro', 'screen'].includes(value.source) ||
+      !['confirmed', 'observed'].includes(value.confidence) || !value.data || typeof value.data !== 'object' || Array.isArray(value.data)) return null;
+
+  const dataKeys = Object.keys(value.data);
+  if (dataKeys.some(key => !['action', 'rewardType'].includes(key)) ||
+      (value.data.action !== undefined && !ACTIVITY_ACTIONS.has(value.data.action)) ||
+      (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime')) return null;
+  if (value.type.startsWith('strategy.action.') && !value.data.action) return null;
+  if (value.type === 'reward.claimed' && value.data.rewardType !== 'playtime') return null;
+
+  return {
+    eventId: value.eventId.toLowerCase(), sequence: value.sequence, type: value.type,
+    occurredAt: new Date(value.occurredAt).toISOString(), appVersion: value.appVersion,
+    runId: value.runId.toLowerCase(), source: value.source, confidence: value.confidence,
+    data: { ...(value.data.action ? { action: value.data.action } : {}), ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}) }
+  };
+}
+
+async function uploadActivityEvents(deviceToken, events) {
+  const tokenHash = sha256(deviceToken);
+  if (localStore()) {
+    const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
+    if (!device) return null;
+    let accepted = 0;
+    for (const event of events) {
+      const key = `${device.id}:${event.eventId}`;
+      const duplicate = [...localActivityEvents.values()].some(item => item.deviceId === device.id && (item.eventId === event.eventId || (item.runId === event.runId && item.sequence === event.sequence)));
+      if (duplicate) continue;
+      localActivityEvents.set(key, { ...event, deviceId: device.id, deviceName: device.deviceName, ownerHash: device.ownerHash });
+      accepted++;
+    }
+    return accepted;
+  }
+
+  const deviceResult = await sql().query('select id, owner_hash from dashboard_devices where token_hash = $1 and revoked_at is null', [tokenHash]);
+  const device = deviceResult.rows[0];
+  if (!device) return null;
+  const values = [];
+  const params = [];
+  for (const event of events) {
+    const offset = params.length;
+    params.push(device.id, device.owner_hash, event.eventId, event.runId, event.sequence, event.type,
+      event.source, event.confidence, event.appVersion, event.occurredAt, JSON.stringify(event.data));
+    values.push(`($${offset + 1},$${offset + 2},$${offset + 3},$${offset + 4},$${offset + 5},$${offset + 6},$${offset + 7},$${offset + 8},$${offset + 9},$${offset + 10},$${offset + 11}::jsonb)`);
+  }
+  const inserted = await sql().query(`insert into dashboard_activity_events
+      (device_id, owner_hash, event_id, run_id, sequence, event_type, source, confidence, app_version, occurred_at, data)
+    values ${values.join(',')}
+    on conflict do nothing returning event_id`, params);
+  await sql().query("delete from dashboard_activity_events where owner_hash = $1 and occurred_at < now() - interval '30 days'", [device.owner_hash]);
+  return inserted.rows.length;
+}
+
+async function listActivityEvents(ownerHash, limit = 100) {
+  if (localStore()) {
+    return [...localActivityEvents.values()].filter(event => event.ownerHash === ownerHash && Date.now() - Date.parse(event.occurredAt) <= 30 * 86400000)
+      .sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt) || b.sequence - a.sequence)
+      .slice(0, limit).map(({ ownerHash: _ownerHash, ...event }) => event);
+  }
+  const result = await sql().query(`select event_id as "eventId", device_id as "deviceId", run_id as "runId",
+      sequence, event_type as type, occurred_at as "occurredAt", app_version as "appVersion",
+      source, confidence, data, device_name as "deviceName"
+    from dashboard_activity_events e join dashboard_devices d on d.id = e.device_id
+    where e.owner_hash = $1 and e.occurred_at > now() - interval '30 days'
+    order by e.occurred_at desc, e.sequence desc limit $2`, [ownerHash, limit]);
+  return result.rows;
 }
 
 async function ownerFrom(request) {
@@ -295,7 +381,7 @@ async function ownerFrom(request) {
       return { raw, hash: session.ownerHash, sessionHash, session };
     }
   } else {
-    const rows = await sql().query(`select owner_hash, device_name, created_at, last_seen_at, expires_at, revoked_at
+    const rows = await sql().query(`select owner_hash, device_name, device_type, created_at, last_seen_at, expires_at, revoked_at
       from dashboard_browser_sessions where token_hash = $1`, [sessionHash]);
     if (rows.rows[0]) {
       if (rows.rows[0].revoked_at || new Date(rows.rows[0].expires_at).getTime() <= Date.now()) return null;
@@ -311,60 +397,67 @@ async function ownerFrom(request) {
 
 function browserName(request) {
   const agent = request.headers.get('user-agent') || '';
-  const os = /Android/i.test(agent) ? 'Android' : /iPhone|iPad/i.test(agent) ? 'iOS' : /Windows/i.test(agent) ? 'Windows' : /Macintosh|Mac OS/i.test(agent) ? 'Mac' : /Linux/i.test(agent) ? 'Linux' : 'Browser';
-  const browser = /Edg\//i.test(agent) ? 'Edge' : /Firefox\//i.test(agent) ? 'Firefox' : /Chrome\//i.test(agent) ? 'Chrome' : /Safari\//i.test(agent) ? 'Safari' : 'Browser';
-  return `${browser} on ${os}`;
+  if (/iPad/i.test(agent) || (/Macintosh/i.test(agent) && /Mobile/i.test(agent))) return { name: 'iPad', type: 'tablet' };
+  if (/iPhone|iPod/i.test(agent)) return { name: 'iPhone', type: 'phone' };
+  if (/Android/i.test(agent)) return /Mobile/i.test(agent) ? { name: 'Android phone', type: 'phone' } : { name: 'Android tablet', type: 'tablet' };
+  if (/Windows/i.test(agent)) return { name: 'Windows PC', type: 'device' };
+  if (/Macintosh|Mac OS/i.test(agent)) return { name: 'Mac', type: 'device' };
+  if (/Linux/i.test(agent)) return { name: 'Linux device', type: 'device' };
+  return { name: 'Device', type: 'device' };
 }
 
-async function saveBrowserSession(ownerHash, sessionHash, name) {
+async function saveBrowserSession(ownerHash, sessionHash, name, type = 'device') {
   const expiresAt = Date.now() + OWNER_COOKIE_AGE * 1000;
   if (localStore()) {
     const existing = localBrowserSessions.get(sessionHash);
-    localBrowserSessions.set(sessionHash, existing || { ownerHash, name, createdAt: Date.now(), lastSeenAt: Date.now(), expiresAt, revokedAt: 0 });
+    localBrowserSessions.set(sessionHash, existing || { ownerHash, name, type, createdAt: Date.now(), lastSeenAt: Date.now(), expiresAt, revokedAt: 0 });
     return;
   }
-  await sql().query(`insert into dashboard_browser_sessions (token_hash, owner_hash, device_name, expires_at)
-    values ($1, $2, $3, now() + interval '180 days')
-    on conflict (token_hash) do update set last_seen_at = now()
-    where dashboard_browser_sessions.revoked_at is null`, [sessionHash, ownerHash, name]);
+  await sql().query(`insert into dashboard_browser_sessions (token_hash, owner_hash, device_name, device_type, expires_at)
+    values ($1, $2, $3, $4, now() + interval '180 days')
+    on conflict (token_hash) do update set last_seen_at = now(), device_name = excluded.device_name, device_type = excluded.device_type
+    where dashboard_browser_sessions.revoked_at is null`, [sessionHash, ownerHash, name, type]);
 }
 
 async function bootstrapSession(request) {
   const existing = await ownerFrom(request);
   if (existing) {
-    await saveBrowserSession(existing.hash, existing.sessionHash, existing.session?.device_name || existing.session?.name || browserName(request));
+    const identity = browserName(request);
+    await saveBrowserSession(existing.hash, existing.sessionHash, existing.session?.device_name || existing.session?.name || identity.name,
+      existing.session?.device_type || existing.session?.type || identity.type);
     return { owner: existing, cookie: null };
   }
   const raw = token(32);
   const ownerHash = sha256(raw);
   const sessionHash = sha256(raw);
-  await saveBrowserSession(ownerHash, sessionHash, browserName(request));
+  const identity = browserName(request);
+  await saveBrowserSession(ownerHash, sessionHash, identity.name, identity.type);
   return { owner: { raw, hash: ownerHash, sessionHash }, cookie: ownerSessionCookie(raw) };
 }
 
 async function listDevices(owner) {
   if (localStore()) {
     const browsers = [...localBrowserSessions.entries()].filter(([, item]) => item.ownerHash === owner.hash && !item.revokedAt && item.expiresAt > Date.now())
-      .map(([id, item]) => ({ id, type: 'browser', name: item.name, state: 'connected', lastSeenAt: new Date(item.lastSeenAt).toISOString(), isCurrent: id === owner.sessionHash }));
+      .map(([id, item]) => ({ id, type: item.type || 'device', name: item.name, state: 'connected', lastSeenAt: new Date(item.lastSeenAt).toISOString(), isCurrent: id === owner.sessionHash }));
     const desktops = [...localDevices.values()].filter(item => item.ownerHash === owner.hash && !item.revokedAt)
       .map(item => ({ id: item.id, type: 'desktop', name: item.deviceName, version: item.appVersion, state: !item.lastSeenAt ? (Date.now() - item.pairedAt <= HEARTBEAT_FRESH_MS ? 'connecting' : 'offline') : Date.now() - item.lastSeenAt <= HEARTBEAT_FRESH_MS ? 'connected' : 'offline', lastSeenAt: item.lastSeenAt ? new Date(item.lastSeenAt).toISOString() : null }));
     return [...browsers, ...desktops].sort((a, b) => String(b.lastSeenAt || '').localeCompare(String(a.lastSeenAt || '')));
   }
-  const rows = await sql().query(`select id, device_name as name, app_version as version, paired_at, last_seen_at
+  const rows = await sql().query(`select id, device_name as name, 'desktop'::text as type, app_version as version, paired_at, last_seen_at
       from dashboard_devices where owner_hash = $1 and revoked_at is null
     union all
-    select token_hash as id, device_name as name, null as version, created_at as paired_at, last_seen_at
+    select token_hash as id, device_name as name, device_type as type, null::text as version, created_at as paired_at, last_seen_at
       from dashboard_browser_sessions where owner_hash = $1 and revoked_at is null and expires_at > now()
     order by last_seen_at desc nulls last, paired_at desc`, [owner.hash]);
   return rows.rows.map(row => {
-    const type = row.version ? 'desktop' : 'browser';
-    const state = type === 'browser' ? 'connected' : row.last_seen_at && Date.now() - new Date(row.last_seen_at).getTime() <= HEARTBEAT_FRESH_MS ? 'connected' : row.last_seen_at ? 'offline' : Date.now() - new Date(row.paired_at).getTime() <= HEARTBEAT_FRESH_MS ? 'connecting' : 'offline';
+    const type = row.version ? 'desktop' : row.type || 'device';
+    const state = type !== 'desktop' ? 'connected' : row.last_seen_at && Date.now() - new Date(row.last_seen_at).getTime() <= HEARTBEAT_FRESH_MS ? 'connected' : row.last_seen_at ? 'offline' : Date.now() - new Date(row.paired_at).getTime() <= HEARTBEAT_FRESH_MS ? 'connecting' : 'offline';
     return { id: row.id, type, name: row.name, version: row.version || null, state, lastSeenAt: row.last_seen_at ? new Date(row.last_seen_at).toISOString() : null, isCurrent: row.id === owner.sessionHash };
   });
 }
 
 async function issueBrowserLink(ownerHash) {
-  const raw = token(32);
+  const raw = Array.from({ length: 12 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join('');
   const hash = sha256(raw);
   const expiresAt = new Date(Date.now() + CODE_TTL_MS);
   if (localStore()) {
@@ -378,7 +471,7 @@ async function issueBrowserLink(ownerHash) {
       where owner_hash = $1 and used_at is null and revoked_at is null`, [ownerHash]);
     await sql().query(`insert into dashboard_browser_links (token_hash, owner_hash, expires_at) values ($1, $2, $3)`, [hash, ownerHash, expiresAt]);
   }
-  return { token: raw, expiresAt: expiresAt.toISOString() };
+  return { shortCode: raw, expiresAt: expiresAt.toISOString() };
 }
 
 async function claimBrowserLink(rawLink, request) {
@@ -393,12 +486,13 @@ async function claimBrowserLink(rawLink, request) {
     const rows = await sql().query(`update dashboard_browser_links set used_at = now()
       where token_hash = $1 and used_at is null and revoked_at is null and expires_at > now()
       returning owner_hash`, [hash]);
-    if (!rows[0]) return false;
-    ownerHash = rows[0].owner_hash;
+    if (!rows.rows[0]) return false;
+    ownerHash = rows.rows[0].owner_hash;
   }
   const rawSession = token(32);
   const sessionHash = sha256(rawSession);
-  await saveBrowserSession(ownerHash, sessionHash, browserName(request));
+  const identity = browserName(request);
+  await saveBrowserSession(ownerHash, sessionHash, identity.name, identity.type);
   return { cookie: ownerSessionCookie(rawSession) };
 }
 
@@ -543,6 +637,26 @@ export default async function dashboardPairing(request) {
       return json({ devices: await getMacroState(owner.hash) }, 200, { 'cache-control': 'no-store', vary: 'Cookie' });
     }
 
+    if (route === '/events') {
+      if (request.method === 'GET') {
+        const owner = await ownerFrom(request);
+        if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+        const requested = Number(new URL(request.url).searchParams.get('limit') || 100);
+        const limit = Number.isSafeInteger(requested) ? Math.max(1, Math.min(requested, 200)) : 100;
+        return json({ events: await listActivityEvents(owner.hash, limit) }, 200, { 'cache-control': 'no-store', vary: 'Cookie' });
+      }
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'GET, POST' });
+      if (request.headers.has('origin') && !sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
+      const body = await bodyJson(request, 32768);
+      if (!match || !body || Object.keys(body).some(key => key !== 'events') || !Array.isArray(body.events) || body.events.length > 25)
+        return json({ error: 'Invalid activity batch.' }, 400);
+      const events = body.events.map(normalizeActivityEvent);
+      if (events.some(event => !event)) return json({ error: 'An activity event is invalid.' }, 400);
+      const accepted = await uploadActivityEvents(match[1], events);
+      return accepted === null ? json({ error: 'Device credential is invalid or revoked.' }, 401) : json({ ok: true, accepted, received: events.length });
+    }
+
     if (route === '/browser-links') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
@@ -559,11 +673,12 @@ export default async function dashboardPairing(request) {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
       const body = await bodyJson(request);
-      if (!body || Object.keys(body).length !== 1 || typeof body.token !== 'string' || !/^[A-Za-z0-9_-]{40,64}$/.test(body.token))
+      const secret = body && Object.keys(body).length === 1 ? (body.code || body.token || '') : '';
+      if (typeof secret !== 'string' || !(/^[A-HJ-NP-Z2-9]{12}$/i.test(secret) || /^[A-Za-z0-9_-]{40,64}$/.test(secret)))
         return json({ error: 'This device link is invalid or expired.' }, 400);
       const limit = await limited(`dashboard-link-claim:${clientIp(request)}`, 12, 600);
       if (!limit.allowed) return json({ error: 'Too many attempts. Try again later.' }, 429, { 'retry-after': String(limit.retryAfter) });
-      const claimed = await claimBrowserLink(body.token, request);
+      const claimed = await claimBrowserLink(/^[A-HJ-NP-Z2-9]{12}$/i.test(secret) ? secret.toUpperCase() : secret, request);
       if (!claimed) return json({ error: 'This device link is expired or has already been used.' }, 410);
       return json({ ok: true }, 200, { 'set-cookie': claimed.cookie, 'cache-control': 'no-store' });
     }
@@ -601,7 +716,9 @@ export default async function dashboardPairing(request) {
       const ownerLimit = await limited(`dashboard-code-owner:${ownerHash}`, 10, 3600);
       if (!ownerLimit.allowed) return json({ error: 'Too many codes requested. Try again later.' }, 429, { 'retry-after': String(ownerLimit.retryAfter) });
       const issued = await issueCode(ownerHash);
-      await saveBrowserSession(ownerHash, sha256(ownerRaw), existing?.session?.device_name || existing?.session?.name || browserName(request));
+      const identity = browserName(request);
+      await saveBrowserSession(ownerHash, sha256(ownerRaw), existing?.session?.device_name || existing?.session?.name || identity.name,
+        existing?.session?.device_type || existing?.session?.type || identity.type);
       return json({ code: issued.code, expiresAt: issued.expiresAt, lifetimeSeconds: CODE_TTL_MS / 1000 }, 201, {
         'set-cookie': ownerSessionCookie(ownerRaw),
         'vary': 'Cookie'

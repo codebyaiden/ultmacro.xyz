@@ -128,7 +128,7 @@ const server = http.createServer(async (req, res) => {
   try {
     if (!['GET', 'HEAD', 'POST', 'OPTIONS'].includes(req.method)) return send(res, 405, 'method not allowed\n', { allow: 'GET, HEAD, POST, OPTIONS' });
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const body = req.method === 'POST' ? await requestBody(req, pathname.startsWith('/api/dashboard/v1/') ? 4096 : pathname === '/api/automated-logs/v1/reports' ? 140000 : pathname === '/api/bug-reports/v1/reports' ? MAX_BUG_REPORT_BYTES : pathname === '/api/wiki/v1/ask' ? 2048 : pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/') || pathname.startsWith('/poll/team/') ? 1024 : pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
+    const body = req.method === 'POST' ? await requestBody(req, pathname === '/api/dashboard/v1/events' ? 32768 : pathname.startsWith('/api/dashboard/v1/') ? 4096 : pathname === '/api/automated-logs/v1/reports' ? 140000 : pathname === '/api/bug-reports/v1/reports' ? MAX_BUG_REPORT_BYTES : pathname === '/api/wiki/v1/ask' ? 2048 : pathname === '/api/poll-team' || pathname.startsWith('/api/poll-team/') || pathname.startsWith('/poll/team/') ? 1024 : pathname === '/api/poll' || pathname.startsWith('/api/poll/') ? MAX_POLL_BYTES : maxRequestBytes) : Buffer.alloc(0);
     if (pathname.startsWith('/api/')) await handleApi(req, res, body);
     else await serveStatic(req, res, body);
   } catch (caught) { send(res, Number(caught.status || 500), Number(caught.status) === 413 ? 'request too large\n' : 'internal server error\n'); }

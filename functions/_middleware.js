@@ -113,8 +113,9 @@ async function login(request, env) {
   return new Response(null, { status: 303, headers: { location: '/dashboard/overview/', 'set-cookie': signedCookie, 'cache-control': 'no-store' } });
 }
 
-function isDesktopEndpoint(pathname) {
-  return pathname === '/api/dashboard/v1/pairing/claim' || pathname === '/api/dashboard/v1/heartbeat' || pathname === '/api/dashboard/v1/device/disconnect';
+function isUnauthenticatedApiEndpoint(request, pathname) {
+  return pathname === '/api/dashboard/v1/pairing/claim' || pathname === '/api/dashboard/v1/heartbeat' || pathname === '/api/dashboard/v1/device/disconnect'
+    || (pathname === '/api/dashboard/v1/events' && request.method === 'POST');
 }
 
 async function proxyDashboardApi(request) {
@@ -156,7 +157,7 @@ export async function onRequest(context) {
   }
 
   if (pathname === '/api/dashboard/v1' || pathname.startsWith('/api/dashboard/v1/')) {
-    if (!isDesktopEndpoint(pathname) && pathname !== '/api/dashboard/v1/browser-links/claim' && !await hasAccess(request, env)) return new Response('Not found.', { status: 404, headers: { 'cache-control': 'no-store' } });
+    if (!isUnauthenticatedApiEndpoint(request, pathname) && pathname !== '/api/dashboard/v1/browser-links/claim' && !await hasAccess(request, env)) return new Response('Not found.', { status: 404, headers: { 'cache-control': 'no-store' } });
     return proxyDashboardApi(request);
   }
 

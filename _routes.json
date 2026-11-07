@@ -1,5 +1,9 @@
 {
   "version": 1,
-  "include": ["/assets/adcash-library", "/dashboard", "/dashboard/*", "/api/dashboard/v1", "/api/dashboard/v1/*"],
-  "exclude": []
+  "include": ["/*"],
+  "exclude": [
+    "/assets/fonts/*", "/assets/dashboard-icons/*", "/assets/releases/*", "/assets/strategy-maps/*", "/assets/ui/*", "/assets/pwa/*", "/assets/community-impact/*",
+    "/src/*", "/styles/*", "/data/*",
+    "/aboutus/*", "/coming/*", "/download/*", "/early-access/*", "/faq/*", "/features/*", "/guide/*", "/how-it-works/*", "/interestcalculator/*", "/memberships/*", "/moderatorapplication/*", "/p/*", "/poll/*", "/privacy/*", "/report/*", "/strategies/*", "/terms/*", "/wiki/*"
+  ]
 }

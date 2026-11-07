@@ -48,7 +48,7 @@ import QRCode from 'qrcode';
   };
 
   function deviceIcon(device) {
-    const mobile = /Android|iOS/i.test(device.name || '');
+    const mobile = device.type === 'phone' || device.type === 'tablet';
     return mobile ? '/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/phone.svg'
       : device.type === 'desktop' ? '/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/desktop_pc.svg'
       : '/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/laptop.svg';
@@ -75,15 +75,15 @@ import QRCode from 'qrcode';
       const copy = document.createElement('div');
       copy.className = 'connected-device-copy';
       const name = document.createElement('strong');
-      name.textContent = device.name || (device.type === 'desktop' ? 'Windows PC' : 'Browser');
+      name.textContent = device.name || (device.type === 'desktop' ? 'Windows PC' : 'Device');
       const detail = document.createElement('span');
-      detail.textContent = device.version ? `Ultimate Macro ${device.version}` : device.type === 'desktop' ? 'Macro device' : 'Dashboard access';
+      detail.textContent = device.version ? `Ultimate Macro ${device.version}` : '';
       copy.append(name, detail);
       row.append(icon, copy);
       if (device.isCurrent) {
         const current = document.createElement('span');
         current.className = 'connected-device-current';
-        current.textContent = 'Current browser';
+        current.textContent = 'This device';
         row.append(current);
       } else {
         const remove = document.createElement('button');
@@ -121,7 +121,7 @@ import QRCode from 'qrcode';
     removeError.textContent = '';
     removeMessage.textContent = device.type === 'desktop'
       ? `${device.name || 'This PC'} will be disconnected from your Dashboard. You can reconnect it from Ultimate Macro.`
-      : `${device.name || 'This browser'} will be signed out of your Dashboard. You can connect it again with a new device link.`;
+      : `${device.name || 'This device'} will be signed out of your Dashboard. You can connect it again with a new device link.`;
     removeBackdrop.hidden = false;
     requestAnimationFrame(() => removeDialog.focus());
   }
@@ -258,7 +258,7 @@ import QRCode from 'qrcode';
     qrFrame.append(spinner);
     try {
       const data = await post('browser-links');
-      pairingUrl = new URL(`/shortlink/?token=${encodeURIComponent(data.token)}`, location.origin).href;
+      pairingUrl = new URL(`/${encodeURIComponent(data.shortCode)}`, location.origin).href;
       expiresAt = Date.parse(data.expiresAt);
       const canvas = document.createElement('canvas');
       await QRCode.toCanvas(canvas, pairingUrl, { width: 148, margin: 1, errorCorrectionLevel: 'M', color: { dark: '#121216', light: '#f5f5f6' } });

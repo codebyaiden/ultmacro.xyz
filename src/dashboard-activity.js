@@ -6,23 +6,97 @@
   const panel = page.querySelector('[data-filter-panel]');
   const clear = page.querySelector('[data-clear-filters]');
   const exclude = page.querySelector('[data-exclude-mode]');
-  const rows = [...page.querySelectorAll('.activity-row')];
+  const list = page.querySelector('.activity-list');
   const options = [...page.querySelectorAll('[data-filter-type]')];
   const groups = [...page.querySelectorAll('[data-filter-group]')];
   const resultCount = page.querySelector('[data-result-count]');
   const emptyState = page.querySelector('[data-empty-state]');
+  const feedback = page.querySelector('[data-feedback]');
   const everythingOptions = [...page.querySelectorAll('[data-everything]')];
   const selected = new Set();
+  let loading = false;
 
-  const groupTypes = new Map(groups.map((group) => [
+  const groupTypes = new Map(groups.map(group => [
     group.dataset.filterGroup,
-    [...group.querySelectorAll('[data-filter-type]')].map((input) => input.dataset.filterType)
+    [...group.querySelectorAll('[data-filter-type]')].map(input => input.dataset.filterType)
   ]));
 
+  const definitions = {
+    'run.started': ['run_started', 'Run started', 'run_started', '#b8a1e8'],
+    'run.paused': ['run_paused', 'Run paused', 'run_paused', '#c3b5de'],
+    'run.resumed': ['run_resumed', 'Run resumed', 'run_resumed', '#b4d7c1'],
+    'run.stopped': ['run_stopped', 'Run stopped', 'run_stopped', '#c7c7cd'],
+    'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d']
+  };
+
+  function eventDefinition(event) {
+    if (definitions[event.type]) return definitions[event.type];
+    if (event.type !== 'strategy.action.succeeded') return null;
+    const action = String(event.data?.action || '').toLowerCase();
+    const actions = {
+      spawntower: ['tower_placed', 'Tower placed', 'tower_placed', '#9bd9ec'],
+      upgradetower: ['tower_upgraded', 'Tower upgraded', 'tower_upgraded', '#a6d8b3'],
+      selltower: ['tower_sold', 'Tower sold', 'tower_sold', '#d4b9a4'],
+      changetargets: ['target_mode_changed', 'Target mode changed', 'target_mode_changed', '#a8c8e8'],
+      activateraisethedead: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9'],
+      activateenforcervan: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9'],
+      commander: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9']
+    };
+    return actions[action] || ['action_completed', 'Action completed', 'recording_saved', '#c7c7cd'];
+  }
+
+  function relativeTime(value) {
+    const seconds = Math.max(0, Math.floor((Date.now() - Date.parse(value)) / 1000));
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return `${Math.floor(seconds / 86400)}d ago`;
+  }
+
+  function createRow(event) {
+    const definition = eventDefinition(event);
+    if (!definition) return null;
+    const [filterType, title, iconName, color] = definition;
+    const row = document.createElement('li');
+    row.className = 'activity-row';
+    row.dataset.type = filterType;
+    row.style.setProperty('--event-color', color);
+
+    const iconWrap = document.createElement('span');
+    iconWrap.className = 'activity-event-icon';
+    const icon = document.createElement('img');
+    icon.src = iconName.includes('/')
+      ? `/assets/dashboard-icons/flat/${iconName}.svg`
+      : `/assets/dashboard-icons/flat/Activity_Feed/${iconName}.svg`;
+    icon.alt = '';
+    icon.loading = 'lazy';
+    iconWrap.append(icon);
+
+    const copy = document.createElement('span');
+    copy.className = 'activity-event-copy';
+    const heading = document.createElement('strong');
+    heading.textContent = title;
+    copy.append(heading);
+    const detailText = event.data?.action && filterType === 'action_completed'
+      ? event.data.action
+      : event.data?.rewardType ? 'Playtime reward' : '';
+    if (detailText) {
+      const detail = document.createElement('span');
+      detail.textContent = detailText;
+      copy.append(detail);
+    }
+
+    const time = document.createElement('time');
+    time.dateTime = event.occurredAt;
+    time.textContent = relativeTime(event.occurredAt);
+    time.title = new Date(event.occurredAt).toLocaleString();
+    row.append(iconWrap, copy, time);
+    return row;
+  }
+
   function syncGroup(group) {
-    const name = group.dataset.filterGroup;
-    const types = groupTypes.get(name) || [];
-    const chosen = types.filter((type) => selected.has(type));
+    const types = groupTypes.get(group.dataset.filterGroup) || [];
+    const chosen = types.filter(type => selected.has(type));
     const everything = group.querySelector('[data-everything]');
     if (!everything) return;
     everything.checked = types.length > 0 && chosen.length === types.length;
@@ -30,18 +104,47 @@
     everything.closest('.filter-option')?.toggleAttribute('data-partial', everything.indeterminate);
   }
 
-  function render() {
+  function renderFilters() {
+    const rows = [...list.querySelectorAll('.activity-row')];
     let visible = 0;
-    rows.forEach((row) => {
+    for (const row of rows) {
       const isSelected = selected.has(row.dataset.type);
       const show = selected.size === 0 || (exclude.checked ? !isSelected : isSelected);
       row.hidden = !show;
-      if (show) visible += 1;
-    });
-    if (resultCount) resultCount.textContent = `${visible} ${visible === 1 ? 'event' : 'events'}`;
-    if (emptyState) {
-      emptyState.hidden = visible !== 0;
-      emptyState.textContent = rows.length === 0 || selected.size === 0 ? 'No activity yet.' : 'No activity matches these filters.';
+      if (show) visible++;
+    }
+    resultCount.textContent = `${visible} ${visible === 1 ? 'event' : 'events'}`;
+    emptyState.hidden = visible !== 0;
+    if (!rows.length) emptyState.textContent = 'No activity yet.';
+    else if (!visible) emptyState.textContent = 'No activity matches these filters.';
+  }
+
+  async function loadEvents() {
+    if (loading || document.visibilityState === 'hidden') return;
+    loading = true;
+    try {
+      await fetch('/api/dashboard/v1/session/bootstrap', {
+        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'content-type': 'application/json', accept: 'application/json' }, body: '{}'
+      });
+      const response = await fetch('/api/dashboard/v1/events?limit=200', {
+        credentials: 'same-origin', cache: 'no-store', headers: { accept: 'application/json' }
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not load activity.');
+      const fragment = document.createDocumentFragment();
+      for (const event of data.events || []) {
+        const row = createRow(event);
+        if (row) fragment.append(row);
+      }
+      list.replaceChildren(fragment);
+      feedback.textContent = '';
+      renderFilters();
+    } catch {
+      if (!list.children.length) emptyState.textContent = 'Could not load activity. Try again in a moment.';
+      feedback.textContent = 'Could not refresh activity.';
+    } finally {
+      loading = false;
     }
   }
 
@@ -54,17 +157,17 @@
   }
 
   toggle.addEventListener('click', () => setPanel(toggle.getAttribute('aria-expanded') !== 'true'));
-  page.addEventListener('click', (event) => {
+  page.addEventListener('click', event => {
     if (toggle.getAttribute('aria-expanded') === 'true' && !panel.contains(event.target) && !toggle.contains(event.target)) setPanel(false);
   });
-  page.addEventListener('keydown', (event) => {
+  page.addEventListener('keydown', event => {
     if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
       event.preventDefault();
       setPanel(false, { restoreFocus: true });
     }
   });
 
-  groups.forEach((group) => {
+  groups.forEach(group => {
     const button = group.querySelector('.filter-group-toggle');
     button.addEventListener('click', () => {
       const open = group.dataset.open !== 'true';
@@ -73,28 +176,28 @@
     });
     syncGroup(group);
   });
-
-  options.forEach((input) => input.addEventListener('change', () => {
+  options.forEach(input => input.addEventListener('change', () => {
     input.checked ? selected.add(input.dataset.filterType) : selected.delete(input.dataset.filterType);
     groups.forEach(syncGroup);
-    render();
+    renderFilters();
   }));
-
-  everythingOptions.forEach((input) => input.addEventListener('change', () => {
+  everythingOptions.forEach(input => input.addEventListener('change', () => {
     const types = groupTypes.get(input.dataset.everything) || [];
-    types.forEach((type) => input.checked ? selected.add(type) : selected.delete(type));
-    options.forEach((option) => { option.checked = selected.has(option.dataset.filterType); });
+    types.forEach(type => input.checked ? selected.add(type) : selected.delete(type));
+    options.forEach(option => { option.checked = selected.has(option.dataset.filterType); });
     groups.forEach(syncGroup);
-    render();
+    renderFilters();
   }));
-
-  exclude.addEventListener('change', render);
+  exclude.addEventListener('change', renderFilters);
   clear.addEventListener('click', () => {
     selected.clear();
     exclude.checked = false;
-    options.forEach((input) => { input.checked = false; });
+    options.forEach(input => { input.checked = false; });
     groups.forEach(syncGroup);
-    render();
+    renderFilters();
   });
-  render();
+
+  loadEvents();
+  window.setInterval(loadEvents, 20000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadEvents(); });
 })();

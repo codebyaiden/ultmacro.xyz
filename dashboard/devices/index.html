@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
   <link rel="stylesheet" href="/styles/dashboard-devices.css?v=3">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/assets/dashboard-devices.bundle.js?v=3" defer></script>
+  <script src="/assets/dashboard-devices.bundle.js?v=4" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -52,7 +52,7 @@
       <h2 id="devices-modal-title">Connect another device</h2>
       <div class="devices-connect-tabs" role="tablist" aria-label="Device type">
         <button type="button" role="tab" aria-selected="true" data-connect-tab="desktop">Windows PC</button>
-        <button type="button" role="tab" aria-selected="false" data-connect-tab="browser">Phone or browser</button>
+        <button type="button" role="tab" aria-selected="false" data-connect-tab="browser">Phone or device</button>
       </div>
       <section class="desktop-pairing-pane" role="tabpanel" data-connect-pane="desktop" aria-label="Connect a Windows PC">
         <p>Enter this one-time code in Ultimate Macro on your PC.</p>
@@ -67,8 +67,8 @@
         </section>
         <div class="pairing-either" aria-hidden="true"><span>Either</span></div>
         <section class="pairing-option pairing-browser" aria-labelledby="pair-browser-title">
-          <h3 id="pair-browser-title">Via Browser</h3>
-          <p>Paste this into your preferred browser:</p>
+          <h3 id="pair-browser-title">On your phone or device</h3>
+          <p>Open this link on the device you want to connect:</p>
           <div class="pairing-link-row">
             <a data-short-link href="#" aria-label="Open this one-time device link">Creating secure link…</a>
             <button type="button" class="pairing-copy" data-copy-link aria-label="Copy device link" title="Copy link"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="6" width="9" height="11" rx="2"></rect><path d="M12 6V4.8A1.8 1.8 0 0 0 10.2 3H5.8A1.8 1.8 0 0 0 4 4.8v8.4A1.8 1.8 0 0 0 5.8 15H7"></path></svg></button>
