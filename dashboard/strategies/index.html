@@ -9,7 +9,10 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
+  <link rel="stylesheet" href="/styles/dashboard-strategies.css?v=1">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-state.js?v=1" defer></script>
+  <script src="/src/dashboard-strategies.js?v=1" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -33,8 +36,11 @@
         <a href="/dashboard/settings/" ><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a>
       </div>
     </aside>
-    <div class="dashboard-app-content">
+    <div class="dashboard-app-content dashboard-strategies-content">
       <header class="dashboard-app-heading"><h1>Strategies</h1></header>
+      <div class="strategy-device-list" data-strategy-device-list aria-live="polite">
+        <p class="strategy-empty-state">Waiting for macro data.</p>
+      </div>
     </div>
   </main>
 </body>

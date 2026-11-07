@@ -9,9 +9,10 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
-  <link rel="stylesheet" href="/styles/dashboard-overview.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-overview.css?v=7">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-overview.js?v=5" defer></script>
+  <script src="/src/dashboard-state.js?v=1" defer></script>
+  <script src="/src/dashboard-overview.js?v=6" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -40,10 +41,9 @@
       <header class="overview-welcome">
         <div>
           <h1 data-overview-greeting>Good evening!</h1>
-          <p data-overview-state>Your macro is stopped right now.</p>
+          <p data-overview-state>Waiting for macro data.</p>
         </div>
         <div class="overview-welcome-actions">
-          <span class="overview-sample-label">Sample data</span>
           <button class="overview-edit-button" type="button" data-open-overview-editor>Edit layout</button>
         </div>
       </header>
@@ -51,61 +51,50 @@
       <section class="overview-metrics" aria-label="Today's snapshot">
         <article class="overview-metric overview-metric-state" data-overview-widget="macro">
           <span class="overview-metric-label">Macro</span>
-          <strong data-overview-macro>Stopped</strong>
-          <span class="overview-metric-note">Ready when you are</span>
+          <strong data-overview-macro>—</strong>
+          <span class="overview-metric-note" data-overview-macro-detail>No live data</span>
         </article>
         <article class="overview-metric" data-overview-widget="runtime">
           <span class="overview-metric-label">Run time</span>
-          <strong>3h 42m</strong>
-          <span class="overview-metric-note">Today</span>
+          <strong>—</strong>
+          <span class="overview-metric-note">Run time</span>
         </article>
         <a class="overview-metric overview-metric-resource" data-overview-widget="coins" href="/dashboard/earnings/">
           <span class="overview-metric-label">Coins</span>
-          <span class="overview-metric-value"><img src="/assets/community-impact/coins.png" alt="" width="30" height="30"><strong>18,420</strong></span>
-          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/coins.png" alt="" width="30" height="30"><strong>—</strong></span>
+          <span class="overview-metric-note">Coins earned <span aria-hidden="true">↗</span></span>
         </a>
         <a class="overview-metric overview-metric-resource" data-overview-widget="gems" href="/dashboard/earnings/">
           <span class="overview-metric-label">Gems</span>
-          <span class="overview-metric-value"><img src="/assets/community-impact/gems.png" alt="" width="30" height="30"><strong>2,860</strong></span>
-          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/gems.png" alt="" width="30" height="30"><strong>—</strong></span>
+          <span class="overview-metric-note">Gems earned <span aria-hidden="true">↗</span></span>
         </a>
         <a class="overview-metric overview-metric-resource" data-overview-widget="towerXp" href="/dashboard/earnings/">
           <span class="overview-metric-label">Tower XP</span>
-          <span class="overview-metric-value"><img src="/assets/community-impact/tower-xp-dashboard.png" alt="" width="30" height="30"><strong>6,250</strong></span>
-          <span class="overview-metric-note">Today <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-value"><img src="/assets/community-impact/tower-xp-dashboard.png" alt="" width="30" height="30"><strong>—</strong></span>
+          <span class="overview-metric-note">Tower XP earned <span aria-hidden="true">↗</span></span>
         </a>
       </section>
 
       <section class="overview-lower-grid" aria-label="Run overview">
         <article class="overview-panel overview-chart-panel" data-overview-widget="chart">
           <div class="overview-panel-heading">
-            <div><h2>Run time</h2><p data-chart-summary>Last 7 days <span>·</span> 18h 26m</p></div>
+            <div><h2>Run time</h2><p data-chart-summary>No run data yet</p></div>
             <div class="overview-range" role="group" aria-label="Run time range">
-              <button type="button" data-range="7d" aria-pressed="true">7 days</button>
-              <button type="button" data-range="30d" aria-pressed="false">30 days</button>
+              <button type="button" data-range="7d" disabled>7 days</button>
+              <button type="button" data-range="30d" disabled>30 days</button>
             </div>
           </div>
-          <div class="overview-chart" role="img" aria-label="Sample run time chart for the last seven days">
-            <div class="overview-chart-bars" data-chart-bars>
-              <div class="overview-bar-column"><span class="overview-bar-value">2.1h</span><div class="overview-bar-track"><i style="--bar-size:48%"></i></div><span class="overview-bar-label">Mon</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">3.4h</span><div class="overview-bar-track"><i style="--bar-size:72%"></i></div><span class="overview-bar-label">Tue</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">1.8h</span><div class="overview-bar-track"><i style="--bar-size:40%"></i></div><span class="overview-bar-label">Wed</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">4.2h</span><div class="overview-bar-track"><i style="--bar-size:88%"></i></div><span class="overview-bar-label">Thu</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">2.7h</span><div class="overview-bar-track"><i style="--bar-size:59%"></i></div><span class="overview-bar-label">Fri</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">3.1h</span><div class="overview-bar-track"><i style="--bar-size:66%"></i></div><span class="overview-bar-label">Sat</span></div>
-              <div class="overview-bar-column"><span class="overview-bar-value">1.2h</span><div class="overview-bar-track"><i style="--bar-size:30%"></i></div><span class="overview-bar-label">Sun</span></div>
-            </div>
+          <div class="overview-chart" aria-label="Run time chart">
+            <p class="overview-data-empty">No run data yet.</p>
           </div>
           <a class="overview-panel-link" href="/dashboard/earnings/">View earnings <span aria-hidden="true">↗</span></a>
         </article>
 
         <article class="overview-panel overview-activity-panel" data-overview-widget="activity">
-          <div class="overview-panel-heading"><div><h2>Recent activity</h2><p>Latest from your runs</p></div><a class="overview-text-link" href="/dashboard/activity/">All activity <span aria-hidden="true">↗</span></a></div>
+          <div class="overview-panel-heading"><div><h2>Recent activity</h2></div><a class="overview-text-link" href="/dashboard/activity/">All activity <span aria-hidden="true">↗</span></a></div>
           <ol class="overview-activity-list">
-            <li class="overview-event event-victory"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/victory.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Victory</strong><small>Fallen · Wave 40</small></span><time>8m</time></li>
-            <li class="overview-event event-upgrade"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_upgraded.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Tower upgraded</strong><small>DJ Booth · Upgrade 3</small></span><time>14m</time></li>
-            <li class="overview-event event-boss"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/boss_appeared.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Boss appeared</strong><small>Fallen King · Wave 40</small></span><time>19m</time></li>
-            <li class="overview-event event-placed"><span class="overview-event-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_placed.svg')" aria-hidden="true"></span><span class="overview-event-copy"><strong>Tower placed</strong><small>Scout</small></span><time>22m</time></li>
+            <li class="overview-data-empty">No activity yet.</li>
           </ol>
         </article>
       </section>

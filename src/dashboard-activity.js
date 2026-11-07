@@ -38,10 +38,11 @@
       row.hidden = !show;
       if (show) visible += 1;
     });
-    if (resultCount) resultCount.textContent = exclude.checked && selected.size === 0
-      ? `${visible} examples`
-      : selected.size === 0 ? `${visible} examples` : `${visible} of ${rows.length} examples`;
-    if (emptyState) emptyState.hidden = visible !== 0;
+    if (resultCount) resultCount.textContent = `${visible} ${visible === 1 ? 'event' : 'events'}`;
+    if (emptyState) {
+      emptyState.hidden = visible !== 0;
+      emptyState.textContent = rows.length === 0 || selected.size === 0 ? 'No activity yet.' : 'No activity matches these filters.';
+    }
   }
 
   function setPanel(open, { restoreFocus = false } = {}) {

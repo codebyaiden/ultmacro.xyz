@@ -9,9 +9,9 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
-  <link rel="stylesheet" href="/styles/dashboard-earnings.css?v=1">
+  <link rel="stylesheet" href="/styles/dashboard-earnings.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-earnings.js?v=3" defer></script>
+  <script src="/src/dashboard-earnings.js?v=4" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -38,7 +38,6 @@
     <div class="dashboard-app-content earnings-content">
       <header class="earnings-heading">
         <h1>Earnings</h1>
-        <span class="earnings-sample-label">Sample data</span>
       </header>
 
       <section class="earnings-summary" aria-label="Earnings by resource">
@@ -63,21 +62,18 @@
         <div class="earnings-chart-heading">
           <div class="earnings-chart-title-group">
             <h2 id="earnings-chart-title" data-chart-title>Coins</h2>
-            <span data-chart-cadence>Each bar = 1 hour</span>
+            <span data-chart-cadence></span>
           </div>
           <div class="earnings-ranges" role="group" aria-label="Chart time range">
-            <button type="button" data-range="hour">1 hour</button>
-            <button type="button" data-range="day" aria-pressed="true">24 hours</button>
-            <button type="button" data-range="week">7 days</button>
-            <button type="button" data-range="month">30 days</button>
-            <button type="button" data-range="all">All time</button>
+            <button type="button" data-range="hour" disabled>1 hour</button>
+            <button type="button" data-range="day" disabled>24 hours</button>
+            <button type="button" data-range="week" disabled>7 days</button>
+            <button type="button" data-range="month" disabled>30 days</button>
+            <button type="button" data-range="all" disabled>All time</button>
           </div>
         </div>
         <div class="earnings-chart-wrap">
-          <svg class="earnings-chart" viewBox="0 0 900 300" preserveAspectRatio="none" role="img" aria-label="Sample earnings chart">
-            <g class="earnings-chart-grid" data-chart-grid aria-hidden="true"></g>
-            <g class="earnings-chart-bars" data-chart-bars aria-hidden="true"></g>
-          </svg>
+          <p class="earnings-empty-state" role="status">No earnings data yet.</p>
         </div>
         <div class="earnings-chart-xlabels" data-chart-labels aria-hidden="true"></div>
       </section>
@@ -86,12 +82,8 @@
         <div class="earnings-latest-heading">
           <h2 id="earnings-latest-title">Latest</h2>
         </div>
-        <ul class="earnings-event-list" data-event-list>
-          <li><span class="earnings-event-source"><img src="/assets/community-impact/coins.png" alt=""><span>Coins</span></span><strong>+1,240</strong><time>3m ago</time></li>
-          <li><span class="earnings-event-source"><img src="/assets/community-impact/tower-xp-dashboard.png" alt=""><span>Tower XP</span></span><strong>+180</strong><time>14m ago</time></li>
-          <li><span class="earnings-event-source"><img src="/assets/community-impact/gems.png" alt=""><span>Gems</span></span><strong>+32</strong><time>21m ago</time></li>
-          <li><span class="earnings-event-source"><img src="/assets/community-impact/coins.png" alt=""><span>Coins</span></span><strong>+2,060</strong><time>38m ago</time></li>
-        </ul>
+        <ul class="earnings-event-list" data-event-list></ul>
+        <p class="earnings-empty-state earnings-latest-empty" role="status">No earnings yet.</p>
       </section>
     </div>
   </main>

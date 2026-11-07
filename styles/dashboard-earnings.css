@@ -1,7 +1,6 @@
 .dashboard-earnings-page .earnings-content { width: min(100%,1000px); padding: 0 0 20px; }
 .earnings-heading { display: flex; align-items: center; gap: 13px; margin: 0 0 21px; }
 .earnings-heading h1 { color: var(--app-text); font-size: clamp(27px,3vw,34px); }
-.earnings-sample-label { display: inline-flex; min-height: 25px; align-items: center; padding: 0 9px; border: 1px solid rgba(167,139,221,.25); border-radius: 999px; color: #c8b4e7; font-size: 10px; }
 .earnings-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin-bottom: 16px; }
 .earnings-resource { display: flex; min-width: 0; min-height: 79px; align-items: center; gap: 13px; padding: 13px 16px; border: 1px solid var(--app-line); border-radius: 14px; background: rgba(255,255,255,.025); color: var(--app-text); text-align: left; cursor: pointer; transition: background .18s ease,border-color .18s ease,transform .18s ease; }
 .earnings-resource:hover { transform: translateY(-1px); background: rgba(255,255,255,.045); border-color: rgba(255,255,255,.17); }
@@ -18,7 +17,10 @@
 .earnings-ranges button { min-height: 30px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #92909a; font-size: 10px; cursor: pointer; transition: background .16s ease,color .16s ease,border-color .16s ease; }
 .earnings-ranges button:hover { color: #f3f3f5; background: rgba(255,255,255,.045); }
 .earnings-ranges button[aria-pressed="true"] { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.09); color: #f5f4f7; }
-.earnings-chart-wrap { width: 100%; height: 245px; }
+.earnings-ranges button:disabled { color: #65636c; cursor: not-allowed; }
+.earnings-chart-wrap { display: grid; width: 100%; min-height: 165px; place-items: center; }
+.earnings-empty-state { margin: 0; color: #85838d; font-size: 12px; text-align: center; }
+.earnings-latest-empty { padding: 16px 0; border-top: 1px solid var(--app-line); text-align: left; }
 .earnings-chart { display: block; width: 100%; height: 100%; overflow: visible; }
 .earnings-chart-grid line { stroke: rgba(255,255,255,.075); stroke-width: 1; }
 .earnings-chart-grid text { fill: #74727c; font: 10px "Geist", "Segoe UI", sans-serif; text-anchor: start; }
@@ -47,7 +49,7 @@
   .earnings-chart-heading { align-items: flex-start; flex-direction: column; gap: 11px; padding-bottom: 10px; }
   .earnings-ranges { width: 100%; justify-content: flex-start; gap: 3px; }
   .earnings-ranges button { padding-inline: 8px; }
-  .earnings-chart-wrap { height: 205px; }
+  .earnings-chart-wrap { min-height: 145px; }
   .earnings-chart-grid text { font-size: 11px; }
   .earnings-chart-xlabels { margin-left: 42px; font-size: 9px; }
   .earnings-latest { margin-top: 18px; }

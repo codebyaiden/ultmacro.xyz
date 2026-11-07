@@ -106,7 +106,7 @@ async function claimCode(code, deviceName, appVersion) {
   if (localStore()) {
     const pairing = localCodes.get(codeHash);
     if (!pairing || pairing.revokedAt || pairing.claimedAt || pairing.expiresAt <= now) return null;
-    const device = { id: deviceId, ownerHash: pairing.ownerHash, tokenHash, deviceName, appVersion, pairedAt: now, lastSeenAt: 0, revokedAt: 0 };
+    const device = { id: deviceId, ownerHash: pairing.ownerHash, tokenHash, deviceName, appVersion, pairedAt: now, lastSeenAt: 0, revokedAt: 0, snapshot: null, snapshotUpdatedAt: 0 };
     localDevices.set(deviceId, device);
     pairing.claimedAt = now;
     pairing.deviceId = deviceId;
@@ -160,19 +160,94 @@ async function getPairingStatus(ownerHash) {
   return { state, device: { id: row.device_id, name: row.device_name, version: row.app_version, lastSeenAt: lastSeen?.toISOString() || null } };
 }
 
-async function heartbeat(deviceToken, appVersion) {
+async function heartbeat(deviceToken, appVersion, snapshot = null) {
   const tokenHash = sha256(deviceToken);
   if (localStore()) {
     const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
     if (!device) return false;
     device.lastSeenAt = Date.now();
     if (appVersion) device.appVersion = appVersion;
+    if (snapshot) {
+      device.snapshot = snapshot;
+      device.snapshotUpdatedAt = Date.now();
+    }
     return true;
   }
-  const result = await sql().query(`update dashboard_devices set last_seen_at = now(),
-      app_version = coalesce($2, app_version)
-    where token_hash = $1 and revoked_at is null returning id`, [tokenHash, appVersion || null]);
+  let result;
+  try {
+    result = await sql().query(`update dashboard_devices set last_seen_at = now(),
+        app_version = coalesce($2, app_version),
+        state_snapshot = coalesce($3::jsonb, state_snapshot),
+        state_updated_at = case when $3::jsonb is null then state_updated_at else now() end
+      where token_hash = $1 and revoked_at is null returning id`, [tokenHash, appVersion || null, snapshot ? JSON.stringify(snapshot) : null]);
+  } catch (error) {
+    // Keep older deployments paired until migration 017 has been applied.
+    if (error?.code !== '42703') throw error;
+    result = await sql().query(`update dashboard_devices set last_seen_at = now(),
+        app_version = coalesce($2, app_version)
+      where token_hash = $1 and revoked_at is null returning id`, [tokenHash, appVersion || null]);
+  }
   return Boolean(result.rows[0]);
+}
+
+function normalizeMacroSnapshot(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots'];
+  if (Object.keys(value).some(key => !allowed.includes(key)) ||
+      !['stopped', 'running', 'paused'].includes(value.runState) ||
+      ![1, 2].includes(value.activeSlot) || typeof value.rotationEnabled !== 'boolean' ||
+      !Array.isArray(value.strategySlots) || value.strategySlots.length > 2 ||
+      (value.activeStrategy !== null && (typeof value.activeStrategy !== 'string' || value.activeStrategy.length > 80)) ||
+      (value.map !== '' && (typeof value.map !== 'string' || value.map.length > 64)) ||
+      (value.mode !== '' && (typeof value.mode !== 'string' || value.mode.length > 32))) return null;
+
+  const slots = [];
+  const seen = new Set();
+  for (const item of value.strategySlots) {
+    if (!item || typeof item !== 'object' || Array.isArray(item) ||
+        Object.keys(item).some(key => !['slot', 'name'].includes(key)) ||
+        ![1, 2].includes(item.slot) || seen.has(item.slot) ||
+        typeof item.name !== 'string' || !item.name.trim() || item.name.length > 80 || /[\r\n\0]/.test(item.name)) return null;
+    seen.add(item.slot);
+    slots.push({ slot: item.slot, name: item.name.trim() });
+  }
+  return {
+    runState: value.runState,
+    activeStrategy: value.activeStrategy?.trim() || null,
+    activeSlot: value.activeSlot,
+    rotationEnabled: value.rotationEnabled,
+    map: value.map.trim(),
+    mode: value.mode.trim(),
+    strategySlots: slots
+  };
+}
+
+async function getMacroState(ownerHash) {
+  if (localStore()) {
+    return [...localDevices.values()].filter(device => device.ownerHash === ownerHash && !device.revokedAt)
+      .sort((a, b) => (b.lastSeenAt || b.pairedAt) - (a.lastSeenAt || a.pairedAt))
+      .map(device => ({
+        id: device.id,
+        name: device.deviceName,
+        version: device.appVersion,
+        state: device.lastSeenAt && Date.now() - device.lastSeenAt <= HEARTBEAT_FRESH_MS ? 'connected' : 'offline',
+        lastSeenAt: device.lastSeenAt ? new Date(device.lastSeenAt).toISOString() : null,
+        snapshotUpdatedAt: device.snapshotUpdatedAt ? new Date(device.snapshotUpdatedAt).toISOString() : null,
+        snapshot: device.snapshot || null
+      }));
+  }
+  const rows = await sql().query(`select id, device_name, app_version, last_seen_at, state_snapshot, state_updated_at
+      from dashboard_devices where owner_hash = $1 and revoked_at is null
+      order by last_seen_at desc nulls last, paired_at desc`, [ownerHash]);
+  return rows.rows.map(row => ({
+    id: row.id,
+    name: row.device_name,
+    version: row.app_version,
+    state: row.last_seen_at && Date.now() - new Date(row.last_seen_at).getTime() <= HEARTBEAT_FRESH_MS ? 'connected' : 'offline',
+    lastSeenAt: row.last_seen_at ? new Date(row.last_seen_at).toISOString() : null,
+    snapshotUpdatedAt: row.state_updated_at ? new Date(row.state_updated_at).toISOString() : null,
+    snapshot: row.state_snapshot && Object.keys(row.state_snapshot).length ? row.state_snapshot : null
+  }));
 }
 
 async function disconnectDevice(deviceToken) {
@@ -461,6 +536,13 @@ export default async function dashboardPairing(request) {
       return json({ devices: owner ? await listDevices(owner) : [] }, 200, { 'cache-control': 'no-store' });
     }
 
+    if (route === '/state') {
+      if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405, { allow: 'GET' });
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      return json({ devices: await getMacroState(owner.hash) }, 200, { 'cache-control': 'no-store', vary: 'Cookie' });
+    }
+
     if (route === '/browser-links') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
@@ -566,10 +648,12 @@ export default async function dashboardPairing(request) {
       if (request.headers.has('origin') && !sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
       const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
       const body = await bodyJson(request);
-      if (!match || !body || Object.keys(body).some(key => key !== 'appVersion') ||
+      if (!match || !body || Object.keys(body).some(key => !['appVersion', 'snapshot'].includes(key)) ||
           (body.appVersion !== undefined && (typeof body.appVersion !== 'string' || body.appVersion.length > 32)))
         return json({ error: 'Invalid heartbeat.' }, 401);
-      const accepted = await heartbeat(match[1], body.appVersion || '');
+      const snapshot = body.snapshot === undefined ? null : normalizeMacroSnapshot(body.snapshot);
+      if (body.snapshot !== undefined && !snapshot) return json({ error: 'Invalid macro state snapshot.' }, 400);
+      const accepted = await heartbeat(match[1], body.appVersion || '', snapshot);
       return accepted ? json({ ok: true, receivedAt: new Date().toISOString() }) : json({ error: 'Device credential is invalid or revoked.' }, 401);
     }
 

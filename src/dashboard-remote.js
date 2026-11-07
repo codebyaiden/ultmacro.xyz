@@ -1,4 +1,25 @@
 (() => {
+  const deviceName = document.querySelector('[data-remote-device-name]');
+  const deviceState = document.querySelector('[data-remote-device-state]');
+  const currentRun = document.querySelector('[data-current-run]');
+  window.UMDashboardState?.subscribe((state) => {
+    const device = window.UMDashboardState.activeDesktop(state);
+    const snapshot = device?.snapshot;
+    if (deviceName) deviceName.textContent = device?.name || 'Windows PC';
+    if (!device || device.state !== 'connected' || !snapshot) {
+      if (deviceState) deviceState.textContent = device?.state === 'offline' ? 'Offline' : '';
+      if (currentRun) currentRun.textContent = state.unavailable ? 'Macro data is unavailable.' : 'No live macro data.';
+      return;
+    }
+
+    const runLabels = { running: 'Running', paused: 'Paused', stopped: 'Stopped' };
+    if (deviceState) deviceState.textContent = runLabels[snapshot.runState] || '';
+    const details = [snapshot.activeStrategy, snapshot.map, snapshot.mode].filter(Boolean);
+    if (currentRun) currentRun.textContent = snapshot.runState === 'stopped'
+      ? `Stopped${details.length ? ` · ${details.join(' · ')}` : ''}`
+      : `${runLabels[snapshot.runState] || '—'}${details.length ? ` · ${details.join(' · ')}` : ''}`;
+  });
+
   const settings = document.querySelector('[data-remote-preferences]');
   if (!settings) return;
 

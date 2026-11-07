@@ -4,6 +4,7 @@
 .remote-device-link:hover { color: #fff; }
 .remote-device-icon { width: 17px; height: 17px; flex: 0 0 auto; background: #96939e; -webkit-mask: var(--icon-url) center / contain no-repeat; mask: var(--icon-url) center / contain no-repeat; transition: background-color .16s ease; }
 .remote-device-link:hover .remote-device-icon { background: #fff; }
+.remote-device-state { color: var(--app-quiet); font-size: 10px; }
 .remote-controls { margin: 0 0 23px; }
 .remote-control-actions { display: grid; width: min(100%,780px); grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-inline: auto; }
 .remote-control-actions button { display: inline-flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; gap: 8px; padding: 0 14px; border: 1px solid var(--app-line); border-radius: 12px; font-size: 11px!important; font-weight: 540; white-space: nowrap; cursor: not-allowed; transition: background .16s ease,opacity .16s ease,transform .16s ease; }

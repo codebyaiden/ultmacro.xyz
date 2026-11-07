@@ -1,0 +1,20 @@
+.dashboard-strategies-content { width: min(100%, 920px); }
+.strategy-device-list { display: grid; gap: 14px; }
+.strategy-device { min-width: 0; padding: 18px 20px; border: 1px solid var(--app-line); border-radius: 15px; background: #101013; }
+.strategy-device-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 13px; border-bottom: 1px solid var(--app-line); }
+.strategy-device-heading h2 { overflow: hidden; color: var(--app-text); font-size: 14px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.strategy-device-state { flex: 0 0 auto; color: var(--app-quiet); font-size: 11px; }
+.strategy-device-state.is-connected { color: #d6d4dc; }
+.strategy-run-state { display: flex; flex-wrap: wrap; align-items: baseline; gap: 9px; padding: 15px 0 10px; }
+.strategy-run-state strong { color: #f1f0f3; font-size: 13px; font-weight: 550; }
+.strategy-run-state span { color: var(--app-muted); font-size: 11px; }
+.strategy-slot-list { display: grid; margin: 0; padding: 0; list-style: none; }
+.strategy-slot-list li { display: grid; min-height: 46px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
+.strategy-slot-label { color: var(--app-quiet); font-size: 11px; }
+.strategy-slot-name { overflow: hidden; color: #e8e7eb; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.strategy-slot-active { color: #bdbbc4; font-size: 10px; }
+.strategy-empty-state { margin: 0; padding: 22px 4px; color: var(--app-muted); font-size: 12px; }
+@media (max-width: 680px) {
+  .strategy-device { padding: 15px 14px; }
+  .strategy-slot-list li { grid-template-columns: 50px minmax(0,1fr) auto; gap: 8px; }
+}

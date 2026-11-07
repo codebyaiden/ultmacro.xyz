@@ -10,9 +10,9 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=11">
-  <link rel="stylesheet" href="/styles/dashboard-activity.css?v=4">
+  <link rel="stylesheet" href="/styles/dashboard-activity.css?v=5">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-activity.js?v=1" defer></script>
+  <script src="/src/dashboard-activity.js?v=2" defer></script>
   <script src="/src/dashboard-preferences.js?v=1" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png">
@@ -39,7 +39,7 @@
 
     <div class="dashboard-app-content activity-content">
       <header class="activity-heading">
-        <div class="activity-title-wrap"><h1>Activity</h1><span class="sample-label">Examples</span></div>
+        <div class="activity-title-wrap"><h1>Activity</h1></div>
         <div class="activity-filter-wrap">
           <button class="activity-filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="activity-filters">
             <img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/filter.svg" alt="">
@@ -109,60 +109,10 @@
         </div>
       </header>
 
-      <div class="activity-list-top"><span data-result-count>10 examples</span></div>
-      <ol class="activity-list" aria-label="Activity examples">
-        <li class="activity-row" data-category="Startup" data-type="joined_roblox" style="--event-color:#335FFF">
-          <span class="activity-event-icon roblox-icon"><img src="/assets/dashboard-icons/brand/roblox-blue.png" alt=""></span>
-          <span class="activity-event-copy"><strong>Joined Roblox</strong><span>Roblox Player</span></span>
-          <time>1m ago</time>
-        </li>
-        <li class="activity-row" data-category="Startup" data-type="mode_selected" style="--event-color:#A9C9E8">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/match_started.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Mode selected</strong><span>Fallen</span></span>
-          <time>2m ago</time>
-        </li>
-        <li class="activity-row" data-category="Startup" data-type="map_joined" style="--event-color:#A9C9E8">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/match_started.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Map joined</strong><span>Fallen</span></span>
-          <time>2m ago</time>
-        </li>
-        <li class="activity-row" data-category="Strategy" data-type="tower_placed" style="--event-color:#A5D6D9">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_placed.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Tower placed</strong><span>Scout</span></span>
-          <time>4m ago</time>
-        </li>
-        <li class="activity-row" data-category="Strategy" data-type="tower_upgraded" style="--event-color:#A8D5B5">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/tower_upgraded.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Tower upgraded</strong><span>DJ Booth · Upgrade 3</span></span>
-          <time>5m ago</time>
-        </li>
-        <li class="activity-row" data-category="Strategy" data-type="target_mode_changed" style="--event-color:#A9C9E8">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/target_mode_changed.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Target mode changed</strong><span>Commander · First</span></span>
-          <time>6m ago</time>
-        </li>
-        <li class="activity-row" data-category="Strategy" data-type="boss_appeared" style="--event-color:#E6B98B">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/boss_appeared.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Boss appeared</strong><span>Fallen King · Wave 40</span></span>
-          <time>12m ago</time>
-        </li>
-        <li class="activity-row" data-category="Strategy" data-type="victory" style="--event-color:#E8D79D">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/victory.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Victory</strong><span>Fallen · Wave 40</span></span>
-          <time>18m ago</time>
-        </li>
-        <li class="activity-row" data-category="Misc" data-type="desktop_reconnected" style="--event-color:#A8D5B5">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/desktop_reconnected.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Desktop reconnected</strong><span>Windows PC</span></span>
-          <time>1h ago</time>
-        </li>
-        <li class="activity-row" data-category="Misc" data-type="recording_saved" style="--event-color:#A8D5B5">
-          <span class="activity-event-icon"><img src="/assets/dashboard-icons/flat/SVG_Source/Activity_Feed/recording_saved.svg" alt=""></span>
-          <span class="activity-event-copy"><strong>Recording saved</strong><span>Fallen Down</span></span>
-          <time>2h ago</time>
-        </li>
+      <div class="activity-list-top"><span data-result-count>0 events</span></div>
+      <ol class="activity-list" aria-label="Activity events">
       </ol>
-      <p class="activity-empty" data-empty-state hidden>No matching activity</p>
+      <p class="activity-empty" data-empty-state>No activity yet.</p>
       <p class="dashboard-feedback" data-feedback role="status" aria-live="polite"></p>
     </div>
   </main>
