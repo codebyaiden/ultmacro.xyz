@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
   <link rel="stylesheet" href="/styles/dashboard-activity.css?v=6">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-activity.js?v=5" defer></script>
+  <script src="/src/dashboard-activity.js?v=6" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
@@ -68,19 +68,16 @@
               <div class="filter-options"><div class="filter-options-inner">
                 <label class="filter-option"><input type="checkbox" data-everything="Strategy"><span>Everything</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="tower_placed"><span>Tower placed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="tower_cloned"><span>Tower cloned</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="tower_upgraded"><span>Tower upgraded</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="tower_sold"><span>Tower sold</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="target_mode_changed"><span>Target mode changed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="tower_repositioned"><span>Tower repositioned</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="auto_skip_changed"><span>Auto skip changed</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="dj_track_changed"><span>DJ track changed</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="ability_used"><span>Ability used</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="wave_started"><span>Wave started</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="wave_cleared"><span>Wave cleared</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="boss_appeared"><span>Boss appeared</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="boss_defeated"><span>Boss defeated</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="victory"><span>Victory</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="loss"><span>Loss</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="match_ended"><span>Match ended</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_loaded"><span>Strategy loaded</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_switched"><span>Strategy switched</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="wave_skip_clicked"><span>Wave skip clicked</span></label>
+                <label class="filter-option"><input type="checkbox" data-filter-type="strategy_action_failed"><span>Action failed</span></label>
               </div></div>
             </section>
 
@@ -88,7 +85,6 @@
               <button class="filter-group-toggle" type="button" aria-expanded="false"><span>Misc</span><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/expand_collapse.svg" alt=""></button>
               <div class="filter-options"><div class="filter-options-inner">
                 <label class="filter-option"><input type="checkbox" data-everything="Misc"><span>Everything</span></label>
-                <label class="filter-option"><input type="checkbox" data-filter-type="action_completed"><span>Other action completed</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="reward_claimed"><span>Reward claimed</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="run_started"><span>Run started</span></label>
                 <label class="filter-option"><input type="checkbox" data-filter-type="run_paused"><span>Run paused</span></label>

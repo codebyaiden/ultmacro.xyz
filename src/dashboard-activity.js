@@ -29,31 +29,42 @@
     'mode.selected': ['mode_selected', 'Mode selected', 'mode_selected', '#b8c9dc'],
     'game.joined': ['joined_roblox', 'Joined Roblox', 'brand/roblox-blue.png', '#4f7cff'],
     'match.started': ['match_started', 'Match started', 'match_started', '#b4d7c1'],
-    'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d']
+    'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d'],
+    'wave.skip_clicked': ['wave_skip_clicked', 'Wave skip clicked', 'wave_started', '#a8c8e8']
   };
 
   function eventDefinition(event) {
     if (definitions[event.type]) return definitions[event.type];
-    if (event.type !== 'strategy.action.succeeded') return null;
+    if (!['strategy.action.succeeded', 'strategy.action.failed'].includes(event.type)) return null;
     const action = String(event.data?.action || '').toLowerCase();
     const actions = {
       spawntower: ['tower_placed', 'Tower placed', 'tower_placed', '#9bd9ec'],
+      clonetower: ['tower_cloned', 'Tower cloned', 'tower_placed', '#9bd9ec'],
       upgradetower: ['tower_upgraded', 'Tower upgraded', 'tower_upgraded', '#a6d8b3'],
       selltower: ['tower_sold', 'Tower sold', 'tower_sold', '#d4b9a4'],
       changetargets: ['target_mode_changed', 'Target mode changed', 'target_mode_changed', '#a8c8e8'],
-      activateraisethedead: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9'],
-      activateenforcervan: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9'],
-      commander: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9']
+      toggleautoskip: ['auto_skip_changed', 'Auto skip changed', 'wave_started', '#c6b0e9'],
+      brawlerreposition: ['tower_repositioned', 'Tower repositioned', 'ability_used', '#c6b0e9'],
+      enforcerreposition: ['tower_repositioned', 'Tower repositioned', 'ability_used', '#c6b0e9'],
+      setdjtrack: ['dj_track_changed', 'DJ track changed', 'ability_used', '#c6b0e9'],
+      activateraisethedead: ['ability_used', 'Raise the Dead key sent', 'ability_used', '#c6b0e9'],
+      activateenforcervan: ['ability_used', 'SWAT Van key sent', 'ability_used', '#c6b0e9']
     };
-    const otherActions = {
-      clonetower: 'Tower cloned',
-      toggleautoskip: 'Auto skip changed',
-      brawlerreposition: 'Brawler repositioned',
-      enforcerreposition: 'Enforcer repositioned',
-      setdjtrack: 'DJ track changed'
-    };
-    if (actions[action]) return actions[action];
-    return ['action_completed', otherActions[action] || 'Action completed', 'Main_Navigation/activity', '#c7c7cd'];
+    if (action === 'commander' || ['click', 'send', 'sleep', 'other'].includes(action)) return null;
+    const definition = actions[action];
+    if (!definition) return null;
+    if (event.type === 'strategy.action.failed') {
+      const failureTitles = {
+        spawntower: 'Tower placement failed', clonetower: 'Tower clone failed',
+        upgradetower: 'Tower upgrade failed', selltower: 'Tower sale failed',
+        changetargets: 'Target change failed', toggleautoskip: 'Auto skip change failed',
+        brawlerreposition: 'Tower reposition failed', enforcerreposition: 'Tower reposition failed',
+        setdjtrack: 'DJ track change failed', activateraisethedead: 'Ability could not be sent',
+        activateenforcervan: 'SWAT Van unavailable'
+      };
+      return ['strategy_action_failed', failureTitles[action], 'error', '#e69b9b'];
+    }
+    return definition;
   }
 
   function relativeTime(value) {
@@ -90,13 +101,11 @@
     const heading = document.createElement('strong');
     heading.textContent = title;
     copy.append(heading);
-    const detailText = event.data?.action && filterType === 'action_completed' && title === 'Action completed'
-      ? ({ click: 'Input action', send: 'Input action', sleep: 'Wait', other: '' })[event.data.action] || ''
-      : event.data?.rewardType ? 'Playtime reward'
-        : filterType === 'joined_roblox' ? 'Roblox Player'
+    const detailText = event.data?.detail || (event.data?.rewardType ? 'Playtime reward'
+        : filterType === 'joined_roblox' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
           : filterType === 'mode_selected' ? event.data?.mode || ''
             : filterType === 'match_started' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
-              : '';
+              : '');
     if (detailText) {
       const detail = document.createElement('span');
       detail.textContent = detailText;

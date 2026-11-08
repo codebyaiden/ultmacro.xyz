@@ -10,7 +10,7 @@ const webpush = require('web-push');
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const ACTIVITY_EVENT_TYPES = new Set([
   'run.started', 'run.stopped', 'run.paused', 'run.resumed',
-  'strategy.action.requested', 'strategy.action.succeeded', 'reward.claimed',
+  'strategy.action.requested', 'strategy.action.succeeded', 'strategy.action.failed', 'wave.skip_clicked', 'reward.claimed',
   'mode.selected', 'game.joined', 'match.started'
 ]);
 const ACTIVITY_ACTIONS = new Set([
@@ -410,9 +410,10 @@ function normalizeActivityEvent(value) {
       !['confirmed', 'observed'].includes(value.confidence) || !value.data || typeof value.data !== 'object' || Array.isArray(value.data)) return null;
 
   const dataKeys = Object.keys(value.data);
-  if (dataKeys.some(key => !['action', 'rewardType', 'map', 'mode'].includes(key)) ||
+  if (dataKeys.some(key => !['action', 'detail', 'rewardType', 'map', 'mode'].includes(key)) ||
       (value.data.action !== undefined && !ACTIVITY_ACTIONS.has(value.data.action)) ||
       (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime') ||
+      (value.data.detail !== undefined && (typeof value.data.detail !== 'string' || value.data.detail.length > 64 || /[\r\n\0]/.test(value.data.detail))) ||
       ['map', 'mode'].some(key => value.data[key] !== undefined && (typeof value.data[key] !== 'string' || value.data[key].length > 64 || /[\r\n\0]/.test(value.data[key])))) return null;
   if (value.type.startsWith('strategy.action.') && !value.data.action) return null;
   if (value.type === 'reward.claimed' && value.data.rewardType !== 'playtime') return null;
@@ -423,6 +424,7 @@ function normalizeActivityEvent(value) {
     runId: value.runId.toLowerCase(), source: value.source, confidence: value.confidence,
     data: {
       ...(value.data.action ? { action: value.data.action } : {}),
+      ...(value.data.detail ? { detail: value.data.detail.trim() } : {}),
       ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}),
       ...(value.data.map ? { map: value.data.map.trim() } : {}),
       ...(value.data.mode ? { mode: value.data.mode.trim() } : {})
