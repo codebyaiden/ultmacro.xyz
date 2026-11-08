@@ -29,6 +29,10 @@
     'mode.selected': ['mode_selected', 'Mode selected', 'mode_selected', '#b8c9dc'],
     'game.joined': ['joined_roblox', 'Joined Roblox', 'brand/roblox-blue.png', '#4f7cff'],
     'match.started': ['match_started', 'Match started', 'match_started', '#b4d7c1'],
+    'boss.appeared': ['boss_appeared', 'Boss appeared', 'boss_appeared', '#e6b98b'],
+    'boss.defeated': ['boss_defeated', 'Boss defeated', 'boss_defeated', '#a8d5b5'],
+    'match.victory': ['match_victory', 'Victory', 'victory', '#e8d79d'],
+    'match.loss': ['match_loss', 'Loss', 'loss', '#e2a2a2'],
     'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d'],
     'wave.skip_clicked': ['wave_skip_clicked', 'Wave skip clicked', 'wave_started', '#a8c8e8']
   };

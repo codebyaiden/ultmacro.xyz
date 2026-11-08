@@ -11,7 +11,8 @@ const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const ACTIVITY_EVENT_TYPES = new Set([
   'run.started', 'run.stopped', 'run.paused', 'run.resumed',
   'strategy.action.requested', 'strategy.action.succeeded', 'strategy.action.failed', 'wave.skip_clicked', 'reward.claimed',
-  'mode.selected', 'game.joined', 'match.started'
+  'mode.selected', 'game.joined', 'match.started',
+  'boss.appeared', 'boss.defeated', 'match.victory', 'match.loss'
 ]);
 const ACTIVITY_ACTIONS = new Set([
   'spawntower', 'upgradetower', 'selltower', 'clonetower', 'changetargets',
