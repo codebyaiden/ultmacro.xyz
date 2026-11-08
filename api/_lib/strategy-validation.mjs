@@ -3,7 +3,8 @@ export const MAX_STRATEGY_BYTES = 2 * 1024 * 1024;
 export const SUPPORTED_COMMANDS = new Set([
   'SpawnTower', 'UpgradeTower', 'UpgradeBottom', 'SellTower', 'ChangeTarget', 'ChangeTargets',
   'ChangeDJTrack', 'SetDJTrack', 'UseAbility', 'Move', 'CloneTower', 'Reposition',
-  'BrawlerReposition', 'Click', 'Send', 'Sleep', 'ToggleAutoskip', 'AutoSkip'
+  'BrawlerReposition', 'EnforcerReposition', 'ActivateRaiseTheDead', 'ActivateEnforcerVan',
+  'Click', 'Send', 'Sleep', 'ToggleAutoskip', 'AutoSkip'
 ]);
 
 const ALLOWED_SECTIONS = new Set(['Info', 'Placement', 'Settings', 'DO NOT EDIT', 'Steps']);
@@ -87,6 +88,11 @@ function commandError(name, args, malformed) {
     case 'Reposition':
     case 'BrawlerReposition':
       return args.length !== 3 || !tower() || !numeric(1) ? `${name} needs a tower id and numeric coordinates.` : '';
+    case 'EnforcerReposition':
+      return args.length !== 4 || !tower() || !isSafeToken(args[1]) || !numeric(2) || !numeric(3) ? 'EnforcerReposition needs a tower id, target name, and numeric coordinates.' : '';
+    case 'ActivateRaiseTheDead':
+    case 'ActivateEnforcerVan':
+      return count(0, 1) || (args[0] && !isNumeric(args[0])) ? `${name} takes no argument or one numeric option.` : '';
     case 'CloneTower':
       return count(3, 4) || !tower() || !numeric(1) ? 'CloneTower needs a tower id and numeric coordinates.' : '';
     case 'Click':

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { clientIp, json } from './_lib/http.mjs';
 import { databaseConfigured, sql } from './_lib/db.mjs';
 import { indexedHash, parseCookies, rateLimit, sha256, token } from './_lib/security.mjs';
+import { MAX_STRATEGY_BYTES, parseStrategy } from './_lib/strategy-validation.mjs';
 
 const require = createRequire(import.meta.url);
 const webpush = require('web-push');
@@ -294,30 +295,36 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
-const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2']);
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit']);
 
-async function requestRemoteCommand(ownerHash, deviceId, command) {
+async function requestRemoteCommand(ownerHash, deviceId, command, payload = null) {
   if (!REMOTE_COMMANDS.has(command)) return { error: 'invalid' };
   if (localStore()) {
+    for (const item of localRemoteCommands.values()) {
+      if (item.expiresAt <= Date.now()) { item.payload = null; item.resultData = null; if (['pending', 'delivered'].includes(item.status)) item.status = 'expired'; }
+    }
     const device = localDevices.get(deviceId);
     if (!device || device.ownerHash !== ownerHash || device.revokedAt) return { error: 'device' };
     if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
     const state = device.snapshot.runState;
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
+    const payloadSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
     if (selectedSlot && state !== 'stopped') return { error: 'state' };
     if (selectedSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
+    if (payloadSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === payloadSlot)) return { error: 'strategy' };
     if (command === 'start' && !device.snapshot.strategySlots?.length) return { error: 'strategy' };
     if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') ||
         (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
     if ([...localRemoteCommands.values()].some(item => item.deviceId === deviceId && ['pending', 'delivered'].includes(item.status) && item.expiresAt > Date.now())) return { error: 'pending' };
-    const item = { id: randomUUID(), ownerHash, deviceId, command, status: 'pending', requestedAt: Date.now(), expiresAt: Date.now() + 30000 };
+    const item = { id: randomUUID(), ownerHash, deviceId, command, payload, status: 'pending', requestedAt: Date.now(), expiresAt: Date.now() + 30000 };
     localRemoteCommands.set(item.id, item);
     return { command: item };
   }
-  await sql().query("update dashboard_remote_commands set status = 'expired' where status in ('pending','delivered') and expires_at <= now()");
+  await sql().query("update dashboard_remote_commands set status = 'expired', payload = null where status in ('pending','delivered') and expires_at <= now()");
+  await sql().query('update dashboard_remote_commands set payload = null, result_data = null where expires_at <= now() and (payload is not null or result_data is not null)');
   let result;
-  try { result = await sql().query(`insert into dashboard_remote_commands (owner_hash, device_id, command, expires_at)
-    select $1, d.id, $3, now() + interval '30 seconds'
+  try { result = await sql().query(`insert into dashboard_remote_commands (owner_hash, device_id, command, payload, expires_at)
+    select $1, d.id, $3, $4::jsonb, now() + interval '30 seconds'
     from dashboard_devices d
     where d.id = $2 and d.owner_hash = $1 and d.revoked_at is null
       and d.last_seen_at > now() - interval '60 seconds'
@@ -328,9 +335,12 @@ async function requestRemoteCommand(ownerHash, deviceId, command) {
         or ($3 = 'resume' and d.state_snapshot->>'runState' = 'paused')
         or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused'))
         or ($3 = 'select_strategy_1' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
-        or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb))
+        or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
+        or ($3 = 'read_strategy_1' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
+        or ($3 = 'read_strategy_2' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
+        or ($3 = 'stage_strategy_edit' and d.state_snapshot->'strategySlots' @> jsonb_build_array(jsonb_build_object('slot', ($4::jsonb->>'slot')::int))))
       and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
-    returning id, command, status, expires_at`, [ownerHash, deviceId, command]); }
+    returning id, command, status, expires_at`, [ownerHash, deviceId, command, payload ? JSON.stringify(payload) : null]); }
   catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
   if (result.rows[0]) return { command: result.rows[0] };
   const device = await sql().query(`select id, last_seen_at, state_snapshot from dashboard_devices where id = $1 and owner_hash = $2 and revoked_at is null`, [deviceId, ownerHash]);
@@ -338,8 +348,9 @@ async function requestRemoteCommand(ownerHash, deviceId, command) {
   if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
   const state = device.rows[0].state_snapshot.runState;
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
+  const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
   if (selectedSlot && state !== 'stopped') return { error: 'state' };
-  if (selectedSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
+  if (requiredSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === requiredSlot)) return { error: 'strategy' };
   if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
   if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
   return { error: 'pending' };
@@ -353,7 +364,7 @@ async function pollRemoteCommands(deviceToken) {
     const item = [...localRemoteCommands.values()].find(command => command.deviceId === device.id && command.status === 'pending' && command.expiresAt > Date.now());
     if (!item) return [];
     item.status = 'delivered';
-    return [{ id: item.id, action: item.command, expiresAt: new Date(item.expiresAt).toISOString() }];
+    return [{ id: item.id, action: item.command, payload: item.payload, expiresAt: new Date(item.expiresAt).toISOString() }];
   }
   const result = await sql().query(`with device as (
       select id from dashboard_devices where token_hash = $1 and revoked_at is null
@@ -364,13 +375,13 @@ async function pollRemoteCommands(deviceToken) {
     )
     update dashboard_remote_commands c set status = 'delivered', delivered_at = now()
     from picked where c.id = picked.id
-    returning c.id, c.command, c.expires_at`, [tokenHash]);
+    returning c.id, c.command, c.payload, c.expires_at`, [tokenHash]);
   const valid = await sql().query('select id from dashboard_devices where token_hash = $1 and revoked_at is null', [tokenHash]);
   if (!valid.rows[0]) return null;
-  return result.rows.map(row => ({ id: row.id, action: row.command, expiresAt: new Date(row.expires_at).toISOString() }));
+  return result.rows.map(row => ({ id: row.id, action: row.command, payload: row.payload, expiresAt: new Date(row.expires_at).toISOString() }));
 }
 
-async function completeRemoteCommand(deviceToken, id, result, message) {
+async function completeRemoteCommand(deviceToken, id, result, message, data = null) {
   const tokenHash = sha256(deviceToken);
   if (localStore()) {
     const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
@@ -378,13 +389,35 @@ async function completeRemoteCommand(deviceToken, id, result, message) {
     if (!device || !command || command.deviceId !== device.id || command.status !== 'delivered') return false;
     command.status = result;
     command.result = message;
+    command.resultData = data;
+    command.payload = null;
     command.completedAt = Date.now();
     return true;
   }
-  const updated = await sql().query(`update dashboard_remote_commands c set status = $3, result = $4, completed_at = now()
+  const updated = await sql().query(`update dashboard_remote_commands c set status = $3, result = $4, result_data = $5, payload = null, completed_at = now()
     from dashboard_devices d where c.id = $1 and c.device_id = d.id and d.token_hash = $2
-      and d.revoked_at is null and c.status = 'delivered' returning c.id`, [id, tokenHash, result, message]);
+      and d.revoked_at is null and c.status = 'delivered' returning c.id`, [id, tokenHash, result, message, data]);
   return Boolean(updated.rows[0]);
+}
+
+async function getRemoteCommand(ownerHash, id, consume = false) {
+  if (localStore()) {
+    const command = localRemoteCommands.get(id);
+    if (!command || command.ownerHash !== ownerHash) return null;
+    const response = { id, status: command.status, message: command.result || '', data: command.resultData || null };
+    if (consume && command.command.startsWith('read_strategy_')) command.resultData = null;
+    return response;
+  }
+  const result = await sql().query(`select c.id, c.command, c.status, c.result, c.result_data
+    from dashboard_remote_commands c join dashboard_devices d on d.id = c.device_id
+    where c.id = $1 and c.owner_hash = $2 and d.owner_hash = $2 and d.revoked_at is null`, [id, ownerHash]);
+  const row = result.rows[0];
+  if (!row) return null;
+  const data = row.result_data || null;
+  if (consume && row.command.startsWith('read_strategy_') && data) {
+    await sql().query(`update dashboard_remote_commands set result_data = null where id = $1 and owner_hash = $2 and status in ('succeeded','failed')`, [id, ownerHash]);
+  }
+  return { id, status: row.status, message: row.result || '', data };
 }
 
 async function revokeDevice(ownerHash, deviceId) {
@@ -1028,11 +1061,24 @@ export default async function dashboardPairing(request) {
       if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
       const owner = await ownerFrom(request);
       if (!owner) return json({ error: 'Dashboard session expired.' }, 401);
-      const body = await bodyJson(request);
-      if (!body || Object.keys(body).some(key => !['deviceId', 'command'].includes(key)) ||
+      const body = await bodyJson(request, MAX_STRATEGY_BYTES * 6 + 8192);
+      if (!body || Object.keys(body).some(key => !['deviceId', 'command', 'payload'].includes(key)) ||
           typeof body.deviceId !== 'string' || body.deviceId.length > 64 || !REMOTE_COMMANDS.has(body.command))
         return json({ error: 'Choose a valid device and action.' }, 400);
-      const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command);
+      let payload = null;
+      if (body.command === 'stage_strategy_edit') {
+        const value = body.payload;
+        if (!value || Object.keys(value).some(key => !['slot', 'strategyText', 'baseModified', 'baseSize'].includes(key)) ||
+            ![1, 2].includes(value.slot) || typeof value.strategyText !== 'string' ||
+            Buffer.byteLength(value.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
+            typeof value.baseModified !== 'string' || !/^\d{14}$/.test(value.baseModified) ||
+            !Number.isSafeInteger(value.baseSize) || value.baseSize < 0 || value.baseSize > MAX_STRATEGY_BYTES)
+          return json({ error: 'The strategy edit is incomplete or too large.' }, 400);
+        const parsed = parseStrategy(value.strategyText);
+        if (!parsed.ok) return json({ error: parsed.errors[0] || 'This strategy could not be validated.' }, 422);
+        payload = { slot: value.slot, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize };
+      } else if (body.payload !== undefined) return json({ error: 'This action does not accept strategy data.' }, 400);
+      const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command, payload);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
       const status = { device: 404, offline: 409, state: 409, strategy: 409, pending: 409, invalid: 400 }[issued.error] || 409;
       const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'Stop the macro before changing its strategy.', strategy: 'That strategy is no longer configured on the PC.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
@@ -1051,13 +1097,28 @@ export default async function dashboardPairing(request) {
     if (route === '/remote/commands/result') {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
-      const body = await bodyJson(request);
-      if (!match || !body || Object.keys(body).some(key => !['id', 'status', 'message'].includes(key)) ||
+      const body = await bodyJson(request, MAX_STRATEGY_BYTES * 6 + 8192);
+      if (!match || !body || Object.keys(body).some(key => !['id', 'status', 'message', 'data'].includes(key)) ||
           typeof body.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(body.id) || !['succeeded', 'failed'].includes(body.status) ||
-          (body.message !== undefined && (typeof body.message !== 'string' || body.message.length > 120)))
+          (body.message !== undefined && (typeof body.message !== 'string' || body.message.length > 120)) ||
+          (body.data !== undefined && (!body.data || typeof body.data !== 'object' || Array.isArray(body.data) ||
+            Object.keys(body.data).some(key => !['slot', 'strategyText', 'modified', 'size'].includes(key)) ||
+            ![1, 2].includes(body.data.slot) || typeof body.data.strategyText !== 'string' ||
+            Buffer.byteLength(body.data.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
+            typeof body.data.modified !== 'string' || !/^\d{14}$/.test(body.data.modified) ||
+            !Number.isSafeInteger(body.data.size) || body.data.size < 0 || body.data.size > MAX_STRATEGY_BYTES)))
         return json({ error: 'Invalid command result.' }, 400);
-      const updated = await completeRemoteCommand(match[1], body.id, body.status, body.message || '');
+      const updated = await completeRemoteCommand(match[1], body.id, body.status, body.message || '', body.data || null);
       return updated ? json({ ok: true }) : json({ error: 'Command is no longer active.' }, 409);
+    }
+
+    const commandResultMatch = route.match(/^\/remote\/commands\/([a-f0-9-]{36})$/i);
+    if (commandResultMatch) {
+      if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405, { allow: 'GET' });
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      const command = await getRemoteCommand(owner.hash, commandResultMatch[1], true);
+      return command ? json(command, 200, { 'cache-control': 'no-store' }) : json({ error: 'Command not found.' }, 404, { 'cache-control': 'no-store' });
     }
 
     if (route === '/browser-links') {

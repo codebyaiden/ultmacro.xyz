@@ -12,6 +12,7 @@
 .strategy-run-state span { color: var(--app-muted); font-size: 11px; }
 .strategy-slot-list { display: grid; margin: 0; padding: 0; list-style: none; }
 .strategy-slot-list li { display: grid; min-height: 50px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
+.strategy-slot-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .strategy-slot-label { color: var(--app-quiet); font-size: 11px; }
 .strategy-slot-name { overflow: hidden; color: #e8e7eb; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .strategy-slot-active { color: #bdbbc4; font-size: 10px; }
@@ -20,8 +21,22 @@
 .strategy-select-button:active:not(:disabled) { transform: scale(.97); }
 .strategy-select-button:disabled { opacity: .42; cursor: not-allowed; }
 .strategy-select-button:focus-visible { outline: 2px solid #b49be7; outline-offset: 3px; }
+.strategy-edit-button { min-height: 32px; padding: 0 13px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; background: transparent; color: #e8e7eb; font: inherit; font-size: 11px; cursor: pointer; transition: background-color .16s ease, border-color .16s ease; }
+.strategy-edit-button:hover:not(:disabled) { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.28); }
+.strategy-edit-button:disabled { opacity: .42; cursor: not-allowed; }
+.strategy-edit-button:focus-visible { outline: 2px solid #b49be7; outline-offset: 3px; }
+.strategy-editor-row { min-height: 0 !important; grid-template-columns: minmax(0,1fr) !important; padding: 0 0 14px; }
+.strategy-editor { display: grid; gap: 10px; min-width: 0; padding: 12px; border: 1px solid rgba(255,255,255,.09); border-radius: 12px; background: #0b0b0d; animation: strategy-editor-in .18s ease-out both; }
+.strategy-code-input { box-sizing: border-box; width: 100%; min-height: 260px; max-height: 52vh; resize: vertical; padding: 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; background: #09090b; color: #e9e8ed; font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; tab-size: 4; white-space: pre; overflow: auto; }
+.strategy-code-input:focus-visible { outline: 2px solid #a990db; outline-offset: 2px; }
+.strategy-editor-controls { display: flex; justify-content: flex-end; gap: 8px; }
+@keyframes strategy-editor-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 .strategy-empty-state { margin: 0; padding: 22px 4px; color: var(--app-muted); font-size: 12px; }
 @media (max-width: 680px) {
   .strategy-device { padding: 15px 14px; }
   .strategy-slot-list li { grid-template-columns: 50px minmax(0,1fr) auto; gap: 8px; }
+  .strategy-slot-actions { flex-wrap: wrap; gap: 6px; }
+  .strategy-edit-button, .strategy-select-button { min-height: 34px; padding-inline: 10px; }
+  .strategy-code-input { min-height: 220px; font-size: 11px; }
 }
+@media (prefers-reduced-motion: reduce) { .strategy-editor { animation: none; } }
