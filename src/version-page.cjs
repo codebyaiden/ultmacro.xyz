@@ -40,8 +40,10 @@ function documentPage({ tag, latest, content, release }) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles/base.css?v=28">
   <link rel="stylesheet" href="/styles/releases.css?v=${ASSET_VERSION}">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=8">
   ${schema ? `<script type="application/ld+json">${schema}</script>` : ''}
   <script src="/src/download.js?v=${ASSET_VERSION}" defer></script>
+  <script src="/src/unified-shell.js?v=shared-header-20261108-a" defer></script>
 </head>
 <body class="download-page">
   <div class="download-atmosphere" aria-hidden="true"><div class="ambient-light ambient-primary"></div><div class="ambient-light ambient-secondary"></div><div class="ambient-grid"></div></div>
