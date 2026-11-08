@@ -27,7 +27,7 @@
     'run.resumed': ['run_resumed', 'Run resumed', 'run_resumed', '#b4d7c1'],
     'run.stopped': ['run_stopped', 'Run stopped', 'run_stopped', '#c7c7cd'],
     'mode.selected': ['mode_selected', 'Mode selected', 'mode_selected', '#b8c9dc'],
-    'game.joined': ['map_joined', 'Map joined', 'map_joined', '#9bd9ec'],
+    'game.joined': ['joined_roblox', 'Joined Roblox', 'brand/roblox-blue.png', '#4f7cff'],
     'match.started': ['match_started', 'Match started', 'match_started', '#b4d7c1'],
     'reward.claimed': ['reward_claimed', 'Reward claimed', 'Earnings/tower_xp', '#e7d48d']
   };
@@ -45,7 +45,15 @@
       activateenforcervan: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9'],
       commander: ['ability_used', 'Ability used', 'ability_used', '#c6b0e9']
     };
-    return actions[action] || ['action_completed', 'Action completed', 'recording_saved', '#c7c7cd'];
+    const otherActions = {
+      clonetower: 'Tower cloned',
+      toggleautoskip: 'Auto skip changed',
+      brawlerreposition: 'Brawler repositioned',
+      enforcerreposition: 'Enforcer repositioned',
+      setdjtrack: 'DJ track changed'
+    };
+    if (actions[action]) return actions[action];
+    return ['action_completed', otherActions[action] || 'Action completed', 'Main_Navigation/activity', '#c7c7cd'];
   }
 
   function relativeTime(value) {
@@ -68,9 +76,11 @@
     const iconWrap = document.createElement('span');
     iconWrap.className = 'activity-event-icon';
     const icon = document.createElement('img');
-    icon.src = iconName.includes('/')
-      ? `/assets/dashboard-icons/flat/${iconName}.svg`
-      : `/assets/dashboard-icons/flat/Activity_Feed/${iconName}.svg`;
+    icon.src = iconName.startsWith('brand/')
+      ? `/assets/dashboard-icons/${iconName}`
+      : iconName.includes('/')
+        ? `/assets/dashboard-icons/flat/${iconName}.svg`
+        : `/assets/dashboard-icons/flat/Activity_Feed/${iconName}.svg`;
     icon.alt = '';
     icon.loading = 'lazy';
     iconWrap.append(icon);
@@ -80,10 +90,10 @@
     const heading = document.createElement('strong');
     heading.textContent = title;
     copy.append(heading);
-    const detailText = event.data?.action && filterType === 'action_completed'
-      ? event.data.action
+    const detailText = event.data?.action && filterType === 'action_completed' && title === 'Action completed'
+      ? ({ click: 'Input action', send: 'Input action', sleep: 'Wait', other: '' })[event.data.action] || ''
       : event.data?.rewardType ? 'Playtime reward'
-        : filterType === 'map_joined' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
+        : filterType === 'joined_roblox' ? 'Roblox Player'
           : filterType === 'mode_selected' ? event.data?.mode || ''
             : filterType === 'match_started' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
               : '';

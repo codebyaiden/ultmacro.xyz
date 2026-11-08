@@ -20,29 +20,6 @@
   if (sidebar && sectionNav) {
     const mobileNav = document.createElement('div');
     mobileNav.className = 'dashboard-mobile-navigation';
-    const menuButton = document.createElement('button');
-    menuButton.className = 'dashboard-mobile-menu-button';
-    menuButton.type = 'button';
-    menuButton.setAttribute('aria-label', 'Open dashboard navigation');
-    menuButton.setAttribute('aria-expanded', 'false');
-    menuButton.setAttribute('aria-controls', 'dashboard-mobile-menu');
-    menuButton.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"></path></svg>';
-
-    const menu = document.createElement('div');
-    menu.className = 'dashboard-mobile-menu';
-    menu.id = 'dashboard-mobile-menu';
-    menu.dataset.open = 'false';
-    menu.setAttribute('aria-label', 'Dashboard pages');
-    menu.setAttribute('aria-hidden', 'true');
-    menu.inert = true;
-    const menuInner = document.createElement('div');
-    menuInner.className = 'dashboard-mobile-menu-inner';
-    [...sectionNav.querySelectorAll('a'), ...(settingsLink ? [settingsLink] : [])].forEach((link) => {
-      const item = link.cloneNode(true);
-      item.classList.add('dashboard-mobile-menu-link');
-      menuInner.append(item);
-    });
-    menu.append(menuInner);
 
     const startSpace = document.createElement('span');
     const endSpace = document.createElement('span');
@@ -56,17 +33,8 @@
       sectionNav.append(mobileSettings);
     }
     sectionNav.append(endSpace);
-    mobileNav.append(sectionNav, menuButton, menu);
+    mobileNav.append(sectionNav);
     sidebar.prepend(mobileNav);
-
-    const closeMenu = ({ focus = false } = {}) => {
-      menuButton.setAttribute('aria-expanded', 'false');
-      menuButton.setAttribute('aria-label', 'Open dashboard navigation');
-      menu.dataset.open = 'false';
-      menu.setAttribute('aria-hidden', 'true');
-      menu.inert = true;
-      if (focus) menuButton.focus();
-    };
     const centerItem = (item, behavior = 'smooth') => {
       if (!item || !window.matchMedia('(max-width: 920px)').matches) return;
       const links = [...sectionNav.querySelectorAll('a')];
@@ -106,26 +74,6 @@
     });
     window.addEventListener('pagehide', saveCurrentSection, { once: true });
 
-    menuButton.addEventListener('click', () => {
-      const open = menuButton.getAttribute('aria-expanded') !== 'true';
-      menuButton.setAttribute('aria-expanded', String(open));
-      menuButton.setAttribute('aria-label', open ? 'Close dashboard navigation' : 'Open dashboard navigation');
-      menu.dataset.open = String(open);
-      menu.setAttribute('aria-hidden', String(!open));
-      menu.inert = !open;
-    });
-    menuInner.addEventListener('click', (event) => {
-      if (event.target.closest('a')) {
-        saveCurrentSection();
-        closeMenu();
-      }
-    });
-    document.addEventListener('click', (event) => {
-      if (menuButton.getAttribute('aria-expanded') === 'true' && !mobileNav.contains(event.target)) closeMenu();
-    });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && menuButton.getAttribute('aria-expanded') === 'true') closeMenu({ focus: true });
-    });
     window.addEventListener('resize', () => centerItem(sectionNav.querySelector('a[aria-current="page"]'), 'auto'), { passive: true });
     if (window.matchMedia('(max-width: 920px)').matches) {
       centerItem(previousItem || activeItem, 'auto');
