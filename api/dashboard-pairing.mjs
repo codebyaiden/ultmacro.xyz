@@ -294,7 +294,7 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
-const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop']);
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2']);
 
 async function requestRemoteCommand(ownerHash, deviceId, command) {
   if (!REMOTE_COMMANDS.has(command)) return { error: 'invalid' };
@@ -303,6 +303,9 @@ async function requestRemoteCommand(ownerHash, deviceId, command) {
     if (!device || device.ownerHash !== ownerHash || device.revokedAt) return { error: 'device' };
     if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
     const state = device.snapshot.runState;
+    const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
+    if (selectedSlot && state !== 'stopped') return { error: 'state' };
+    if (selectedSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
     if (command === 'start' && !device.snapshot.strategySlots?.length) return { error: 'strategy' };
     if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') ||
         (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
@@ -323,7 +326,9 @@ async function requestRemoteCommand(ownerHash, deviceId, command) {
       and (($3 = 'start' and d.state_snapshot->>'runState' = 'stopped')
         or ($3 = 'pause' and d.state_snapshot->>'runState' = 'running')
         or ($3 = 'resume' and d.state_snapshot->>'runState' = 'paused')
-        or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused')))
+        or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused'))
+        or ($3 = 'select_strategy_1' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
+        or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb))
       and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
     returning id, command, status, expires_at`, [ownerHash, deviceId, command]); }
   catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
@@ -332,6 +337,9 @@ async function requestRemoteCommand(ownerHash, deviceId, command) {
   if (!device.rows[0]) return { error: 'device' };
   if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
   const state = device.rows[0].state_snapshot.runState;
+  const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
+  if (selectedSlot && state !== 'stopped') return { error: 'state' };
+  if (selectedSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
   if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
   if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
   return { error: 'pending' };
@@ -479,9 +487,9 @@ async function listActivityEvents(ownerHash, limit = 100) {
       .sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt) || b.sequence - a.sequence)
       .slice(0, limit).map(({ ownerHash: _ownerHash, ...event }) => event);
   }
-  const result = await sql().query(`select event_id as "eventId", device_id as "deviceId", run_id as "runId",
-      sequence, event_type as type, occurred_at as "occurredAt", app_version as "appVersion",
-      source, confidence, data, device_name as "deviceName"
+  const result = await sql().query(`select e.event_id as "eventId", e.device_id as "deviceId", e.run_id as "runId",
+      e.sequence, e.event_type as type, e.occurred_at as "occurredAt", e.app_version as "appVersion",
+      e.source, e.confidence, e.data, d.device_name as "deviceName"
     from dashboard_activity_events e join dashboard_devices d on d.id = e.device_id
     where e.owner_hash = $1 and e.occurred_at > now() - interval '30 days'
     order by e.occurred_at desc, e.sequence desc limit $2`, [ownerHash, limit]);
@@ -1027,7 +1035,7 @@ export default async function dashboardPairing(request) {
       const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
       const status = { device: 404, offline: 409, state: 409, strategy: 409, pending: 409, invalid: 400 }[issued.error] || 409;
-      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'That action does not match the macro’s current state.', strategy: 'Choose a strategy in Ultimate Macro before starting.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
+      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'Stop the macro before changing its strategy.', strategy: 'That strategy is no longer configured on the PC.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
       return json({ error: message }, status, { 'cache-control': 'no-store' });
     }
 

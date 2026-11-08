@@ -1,4 +1,6 @@
 .dashboard-strategies-content { width: min(100%, 920px); }
+.strategy-feedback { min-height: 18px; margin: -4px 0 10px; color: var(--app-muted); font-size: 12px; }
+.strategy-feedback[data-error] { color: #e5a5a5; }
 .strategy-device-list { display: grid; gap: 14px; }
 .strategy-device { min-width: 0; padding: 18px 20px; border: 1px solid var(--app-line); border-radius: 15px; background: #101013; }
 .strategy-device-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 13px; border-bottom: 1px solid var(--app-line); }
@@ -9,10 +11,15 @@
 .strategy-run-state strong { color: #f1f0f3; font-size: 13px; font-weight: 550; }
 .strategy-run-state span { color: var(--app-muted); font-size: 11px; }
 .strategy-slot-list { display: grid; margin: 0; padding: 0; list-style: none; }
-.strategy-slot-list li { display: grid; min-height: 46px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
+.strategy-slot-list li { display: grid; min-height: 50px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
 .strategy-slot-label { color: var(--app-quiet); font-size: 11px; }
 .strategy-slot-name { overflow: hidden; color: #e8e7eb; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .strategy-slot-active { color: #bdbbc4; font-size: 10px; }
+.strategy-select-button { min-width: 82px; min-height: 32px; padding: 0 13px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; background: #f1f0f3; color: #111114; font: inherit; font-size: 11px; font-weight: 550; cursor: pointer; transition: background-color .16s ease, transform .16s ease, opacity .16s ease; }
+.strategy-select-button:hover:not(:disabled) { background: #fff; transform: translateY(-1px); }
+.strategy-select-button:active:not(:disabled) { transform: scale(.97); }
+.strategy-select-button:disabled { opacity: .42; cursor: not-allowed; }
+.strategy-select-button:focus-visible { outline: 2px solid #b49be7; outline-offset: 3px; }
 .strategy-empty-state { margin: 0; padding: 22px 4px; color: var(--app-muted); font-size: 12px; }
 @media (max-width: 680px) {
   .strategy-device { padding: 15px 14px; }
