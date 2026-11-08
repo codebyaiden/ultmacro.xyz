@@ -10,7 +10,7 @@ const sidebar = $('sidebar');
 const scrim = $('mobile-scrim');
 const navToggle = $('nav-toggle');
 const mobileNavigation = window.matchMedia('(max-width: 1110px)');
-const expandedGroups = new Set(['Start here', 'Troubleshooting']);
+const expandedGroups = new Set(['Start here']);
 let sectionObserver;
 const overlay = $('search-overlay');
 const searchInput = $('search-field');
@@ -36,13 +36,14 @@ function categoryURL(name) { return './?category=' + encodeURIComponent(name); }
 function topicURL(slug) { return './?topic=' + encodeURIComponent(slug); }
 function libraryURL() { return './?library=1'; }
 function topicLink(t, cls = '') { const a = link(t.title, topicURL(t.slug), cls); a.dataset.topic = t.slug; return a; }
+function categoryLabel(name) { return name === 'Start here' ? 'Getting started' : name; }
 function articleLink(a, className = '') {
   const el = link(a.title, articleURL(a.slug), className);
   el.dataset.article = a.slug;
   return el;
 }
 function categoryLink(name, className = '') {
-  const el = link(name, categoryURL(name), className);
+  const el = link(categoryLabel(name), categoryURL(name), className);
   el.dataset.category = name;
   return el;
 }
@@ -98,9 +99,9 @@ function nav() {
       else expandedGroups.delete(name);
     });
     const summary = node('summary');
-    summary.setAttribute('aria-label', 'Toggle ' + name + ' articles');
+    summary.setAttribute('aria-label', 'Toggle ' + categoryLabel(name) + ' guides');
     const groupArticles = articles.filter(x => x.category === name);
-    summary.append(node('span', 'nav-group-label', name), node('span', 'nav-count', String(groupArticles.length)));
+    summary.append(node('span', 'nav-group-label', categoryLabel(name)));
     group.append(summary);
     const items = node('div', 'nav-items');
     const visible = groupArticles.slice(0, 7);
@@ -113,7 +114,7 @@ function nav() {
     }
     if (groupArticles.length > visible.length) {
       const more = categoryLink(name, 'sidebar-more');
-      more.textContent = 'All ' + groupArticles.length + ' guides →';
+      more.textContent = 'View all guides →';
       items.append(more);
     }
     group.append(items);
@@ -121,7 +122,7 @@ function nav() {
   }
 }
 const categoryDetails = {
-  'Start here': 'Install and run your first match',
+  'Start here': 'Install Ultimate Macro and prepare for your first run',
   'Setup & settings': 'Windows, Roblox and TDS',
   'Strategies': 'Recording, editing and sharing',
   'Sessions & tools': 'Long runs, parties and utilities',
@@ -135,63 +136,33 @@ function sectionHeading(title, subtitle = '') {
   return section;
 }
 function home() {
-  document.title = 'Ultimate Macro Wiki · Setup, strategies and fixes';
-  const hero = node('section', 'home-hero');
-  const copy = node('div', 'hero-content');
-  const heading = node('h1');
-  heading.append(document.createTextNode('Your guide to '), node('em', '', 'Ultimate Macro.'));
-  copy.append(heading);
-  copy.append(node('p', '', 'Set up Roblox and TDS, record a strategy, or find out why a run stopped working.'));
-  const actions = node('div', 'hero-actions');
-  const start = articleLink(docs.get('install'), 'hero-action');
-  start.textContent = 'Get started ↗';
-  const fix = categoryLink('Troubleshooting', 'hero-secondary');
-  fix.textContent = 'Find a fix →';
-  actions.append(start, fix);
-  copy.append(actions);
-  hero.append(copy);
-  const image = node('div', 'hero-device');
-  const frame = node('div', 'device-frame');
-  const screenshot = node('img');
-  screenshot.src = '../assets/ui/ultimate-macro-main-new.png';
-  screenshot.alt = 'Ultimate Macro desktop app main screen';
-  screenshot.width = 702;
-  screenshot.height = 567;
-  screenshot.loading = 'lazy';
-  frame.append(screenshot);
-  image.append(frame);
-  hero.append(image);
-  view.append(hero);
-
-  const searchButton = node('button', 'hero-search');
-  searchButton.type = 'button';
-  searchButton.setAttribute('aria-label', 'Search all wiki articles');
-  const icon = node('span', 'search-glyph');
-  icon.setAttribute('aria-hidden', 'true');
-  searchButton.append(icon, node('span', '', 'Search setup, hotkeys, errors, strategies…'), node('kbd', '', '/'));
-  searchButton.addEventListener('click', () => openSearch());
-  view.append(searchButton);
+  document.title = 'Ultimate Macro Wiki · Guides and troubleshooting';
+  const intro = node('header', 'wiki-home-intro');
+  intro.append(node('h1', '', 'Ultimate Macro Wiki'));
+  intro.append(node('p', '', 'Install, configure, run, and troubleshoot Ultimate Macro.'));
+  view.append(intro);
 
   const entry = node('div', 'home-entry');
   const groups = [
     {
       className: 'home-lane',
-      title: 'Set up Ultimate Macro',
+      title: 'Set up and run',
       entries: [
-        ['install', '01', 'Install the macro', 'Download and open Main.ahk'],
-        ['windows-display', '02', 'Configure Windows', 'Resolution, scaling and OCR'],
-        ['tds-settings', '03', 'Configure TDS', 'UI Scale, upgrades and screen shake'],
-        ['first-run', '04', 'Run a strategy', 'Watch the first match']
+        ['install', 'Install Ultimate Macro', 'Download and open the app'],
+        ['windows-display', 'Prepare Windows', 'Resolution, scaling, and OCR'],
+        ['tds-settings', 'Set up Tower Defense Simulator', 'UI scale, upgrades, and screen shake'],
+        ['record-strategy', 'Record a strategy', 'Capture placements, upgrades, and actions'],
+        ['first-run', 'Run your first strategy', 'Start a match and check the first run']
       ]
     },
     {
       className: 'home-lane issue-lane',
-      title: 'Something not working?',
+      title: 'Fix a problem',
       entries: [
-        ['launch-fails', '', "Main.ahk won't open", ''],
-        ['wrong-clicks', '', "Towers won't place", ''],
-        ['upgrade-not-working', '', 'Upgrades get skipped', ''],
-        ['ocr-errors', '', 'Wrong wave or cash detection', '']
+        ['launch-fails', "Main.ahk won't open", 'Check AutoHotkey and startup errors'],
+        ['wrong-clicks', "Towers won't place", 'Check display scale and click alignment'],
+        ['upgrade-not-working', 'Tower upgrades are skipped', 'Check upgrade settings and target behavior'],
+        ['ocr-errors', 'Wave or cash is detected incorrectly', 'Check Roblox UI scale and image recognition']
       ]
     }
   ];
@@ -201,10 +172,9 @@ function home() {
     head.append(node('h2', '', group.title));
     section.append(head);
     const list = node('div', 'lane-list');
-    for (const [slug, number, title, subtitle] of group.entries) {
+    for (const [slug, title, subtitle] of group.entries) {
       const a = articleLink(docs.get(slug), 'lane-link');
       a.textContent = '';
-      if (number) a.append(node('span', 'number', number));
       const label = node('span', 'label');
       label.append(node('strong', '', title));
       if (subtitle) label.append(node('small', '', subtitle));
@@ -217,24 +187,24 @@ function home() {
   view.append(entry);
 
   const browse = node('section', 'home-section');
-  browse.append(sectionHeading('Explore the wiki'));
+  browse.append(sectionHeading('Browse by topic'));
   const topics = node('div', 'topic-list');
   for (const name of categories) {
     const a = categoryLink(name, 'topic-link');
     a.textContent = '';
-    a.append(node('span', 'topic-name', name), node('span', 'topic-arrow', '↗'));
+    const label = node('span', 'topic-label');
+    label.append(node('strong', 'topic-name', categoryLabel(name)), node('small', 'topic-summary', categoryDetails[name] || ''));
+    a.append(label, node('span', 'topic-arrow', '↗'));
     topics.append(a);
   }
   browse.append(topics);
-  const apiLink = link('Building a bot? Use the Wiki API →', './api/', 'catalog-home-link');
-  browse.append(apiLink);
   view.append(browse);
 }
 function categoryView(name) {
-  document.title = name + ' · Ultimate Macro Wiki';
+  document.title = categoryLabel(name) + ' · Ultimate Macro Wiki';
   view.append(breadcrumb(name));
   const head = node('header','article-header');
-  head.append(node('span','article-category','Articles'),node('h1','',name),node('p','article-summary',categoryDetails[name]));
+  head.append(node('h1','',categoryLabel(name)),node('p','article-summary',categoryDetails[name]));
   view.append(head);
   const list = node('div','category-articles');
   for(const a of articles.filter(x => x.category === name)) {
@@ -331,7 +301,7 @@ function topicView(topic) {
   view.append(breadcrumb('Research backlog'));
   const guidance = resolveTopicGuidance(topic, docs);
   const head = node('header', 'article-header');
-  head.append(node('span', 'article-category', topic.category));
+  head.append(node('span', 'article-category', categoryLabel(topic.category)));
   head.append(node('h1', '', topic.title));
   head.append(node('p', 'article-summary', guidance.kind === 'related'
     ? 'Relevant documented steps are shown below. This exact topic has not been independently tested as a standalone guide.'
@@ -403,7 +373,7 @@ function breadcrumb(category, articleTitle) {
   if(articleTitle) {
     b.append(categoryLink(category),node('span','','/'),node('span','',articleTitle));
   } else {
-    b.append(node('span','',category));
+    b.append(node('span','',categoryLabel(category)));
   }
   return b;
 }
@@ -411,8 +381,7 @@ function articleView(article) {
   document.title=article.title+' · Ultimate Macro Wiki';
   view.append(breadcrumb(article.category,article.title));
   const header=node('header','article-header');
-  header.append(node('span','article-category',article.category),node('h1','',article.title),node('p','article-summary',article.summary));
-  if (article.version) header.append(node('p','article-version','Documented for '+article.version));
+  header.append(node('h1','',article.title),node('p','article-summary',article.summary));
   if(article.illustration){
     const figure=node('figure','article-figure');
     const img=node('img');img.src=article.illustration.src;img.alt=article.illustration.alt;img.loading='lazy';
@@ -483,7 +452,6 @@ function articleView(article) {
       ['Download Ultimate Macro', '/download/'],
       ['Get AutoHotkey v2', 'https://www.autohotkey.com/v2/']
     ],
-    'community-strategies': [['Browse Strategy Network', '/strategies/']],
     'discord-community': [['Join Discord', 'https://discord.gg/ultmacro']],
     'how-to-get-early-access': [
       ['Get Early Access on Ko-fi', 'https://ko-fi.com/summary/9ed0c1ae-4c8e-4c6e-8875-2549f25384c5'],
@@ -619,7 +587,7 @@ function showResults(q) {
   for (const article of hits) {
     const item = articleLink(article,'search-hit');
     item.textContent = '';
-    item.append(node('span','group',article.category),node('strong','',article.title),node('small','',article.summary));
+    item.append(node('span','group',categoryLabel(article.category)),node('strong','',article.title),node('small','',article.summary));
     searchResults.append(item);
   }
 }

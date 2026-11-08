@@ -4,8 +4,8 @@
   <script src="/src/advertising.js?v=adcash-selfhost-20261021" defer></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#081625">
-  <meta name="description" content="Integrate the Ultimate Macro Wiki into JavaScript, Python, Discord bots and AI agents with a direct source-backed Ask API. Copy code and get cited answers.">
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="Search published Ultimate Macro Wiki guides and return cited answers with the versioned read-only Wiki API.">
   <meta property="og:title" content="Wiki API · Ultimate Macro">
   <meta property="og:description" content="One question, one HTTPS request, real Wiki citations. JavaScript, Python, Discord and AI tool examples.">
   <link rel="canonical" href="https://ultmacro.xyz/wiki/api/">
@@ -13,10 +13,11 @@
   <link rel="describedby" href="../llms.txt" type="text/plain">
   <link rel="stylesheet" href="./site.css?v=2">
   <title>Wiki API · Ultimate Macro Developer Docs</title>
-  <link rel="stylesheet" href="/styles/unified-shell.css?v=2">
-  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="./visual.css?v=1">
+  <script src="/src/unified-shell.js?v=shared-header-20261105-b" defer></script>
 </head>
-<body>
+<body class="api-docs">
   <a class="skip" href="#main">Skip to content</a>
   <header class="header">
     <div class="header-inner">
@@ -31,20 +32,14 @@
   <div class="layout">
     <aside class="sidebar" aria-label="Developer documentation navigation">
       <nav class="sidebar-nav">
-        <span class="sidebar-label">Getting started</span>
         <a href="#overview" class="side-link active">Overview</a>
         <a href="#quickstart" class="side-link">How it works</a>
         <a href="#integrations" class="side-link">Code examples</a>
-        <span class="sidebar-label">Reference</span>
         <a href="#response" class="side-link">Answer format</a>
         <a href="#fallback" class="side-link">Static fallback</a>
         <a href="#search-guides" class="side-link">Browse guides</a>
         <a href="#resources" class="side-link">Resources</a>
       </nav>
-      <div class="sidebar-note">
-        <span class="note-dot" aria-hidden="true"></span>
-        <span>Published Wiki guides only. No made-up answers.</span>
-      </div>
     </aside>
 
     <main id="main" tabindex="-1">
@@ -59,9 +54,8 @@
       </details>
 
       <section class="hero" id="overview" aria-labelledby="title">
-        <div class="eyebrow"><span class="eyebrow-rule"></span> Developer documentation <span class="api-version">v1</span></div>
-        <h1 id="title">Give your bot the <em>right answer.</em></h1>
-        <p class="lead">Ask Ultimate Macro questions directly from your code. Get a documented answer with citations, or a clear <code>not_found</code>. No cloud browser, separate knowledge store or paid AI model required.</p>
+        <h1 id="title">Use the Wiki API from your app.</h1>
+        <p class="lead">Search published Ultimate Macro guides and return cited answers. Unsupported questions return <code>not_found</code>.</p>
         <div class="endpoint">
           <div class="endpoint-path"><span class="method">POST</span><code>/api/wiki/v1/ask</code></div>
           <button id="copy-endpoint" class="copy-text" type="button" aria-label="Copy Ask API URL">Copy URL</button>
@@ -73,7 +67,7 @@
       </section>
 
       <section class="section" id="quickstart" aria-labelledby="quickstart-heading">
-        <div class="section-header"><span class="section-number">01</span><h2 id="quickstart-heading">How it works</h2></div>
+        <div class="section-header"><h2 id="quickstart-heading">How it works</h2></div>
         <p class="section-intro">It’s an ordinary HTTP API. Your application sends a question and receives JSON. The Wiki does the document lookup, not your bot.</p>
         <div class="step-grid">
           <div class="step"><span class="step-number">1</span><h3>Send a question</h3><p>Make a <code>POST</code> request with JSON and a <code>question</code> field.</p></div>
@@ -83,7 +77,7 @@
       </section>
 
       <section class="section" id="integrations" aria-labelledby="integrations-heading">
-        <div class="section-header"><span class="section-number">02</span><h2 id="integrations-heading">Add it to your project</h2></div>
+        <div class="section-header"><h2 id="integrations-heading">Add it to your project</h2></div>
         <p class="section-intro">Choose your platform. Each example calls the Wiki API directly, with no browser automation or Wiki-specific npm/pip package.</p>
         <div class="platform" id="platform">
           <div class="platform-tabs" role="tablist" aria-label="Integration platform" id="platform-tabs">
@@ -113,7 +107,7 @@
       </section>
 
       <section class="section" id="response" aria-labelledby="response-heading">
-        <div class="section-header"><span class="section-number">03</span><h2 id="response-heading">Know what comes back</h2></div>
+        <div class="section-header"><h2 id="response-heading">Know what comes back</h2></div>
         <p class="section-intro">The response is intentionally small. Answers cite published guides; unsupported questions stay unanswered.</p>
         <div class="response-grid">
           <div class="response-card"><span class="response-heading"><span class="response-indicator good"></span> Answered</span>
@@ -143,7 +137,7 @@
       </section>
 
       <section class="section" id="fallback" aria-labelledby="fallback-heading">
-        <div class="section-header"><span class="section-number">04</span><h2 id="fallback-heading">Need access today?</h2></div>
+        <div class="section-header"><h2 id="fallback-heading">Static guide data</h2></div>
         <p class="section-intro">The static index and Markdown guide files already work without the Node API. Your bot can fetch them over HTTP, still without a cloud browser. This is document retrieval, not <code>askWiki()</code>.</p>
         <div class="fallback-note"><strong>Available now</strong><span>Compact index + one guide at a time. No key, SDK or HTML scraping.</span></div>
         <div class="snippet">
@@ -154,7 +148,7 @@
       </section>
 
       <section class="section" id="search-guides" aria-labelledby="search-heading">
-        <div class="section-header"><span class="section-number">05</span><h2 id="search-heading">Browse published guides</h2></div>
+        <div class="section-header"><h2 id="search-heading">Browse published guides</h2></div>
         <p class="section-intro">For human browsing and testing the document index. Bots should use the API or the static JSON, not scrape this page.</p>
         <form class="search-form" id="search-form" role="search">
           <label for="query">Find a guide</label>
@@ -166,7 +160,7 @@
       </section>
 
       <section class="section resources" id="resources" aria-labelledby="resources-heading">
-        <div class="section-header"><span class="section-number">06</span><h2 id="resources-heading">Reference &amp; downloads</h2></div>
+        <div class="section-header"><h2 id="resources-heading">Reference</h2></div>
         <div class="resource-grid">
           <a href="./ASK.md"><strong>Full Ask API contract <span aria-hidden="true">↗</span></strong><span>Request validation, response fields and error handling</span></a>
           <a href="./v1/index.json"><strong>Compact article index <span aria-hidden="true">↗</span></strong><span>Working public list of published guides</span></a>

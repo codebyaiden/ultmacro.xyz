@@ -5,6 +5,27 @@
   var status = document.querySelector('[data-download-status]');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   document.querySelector('[data-year]').textContent = String(new Date().getFullYear());
+  var versionPicker = document.querySelector('.version-picker');
+  if (versionPicker) {
+    var pickerSummary = versionPicker.querySelector('summary');
+    var pickerMenu = versionPicker.querySelector('.version-picker-panel');
+    versionPicker.addEventListener('toggle', function () {
+      if (versionPicker.open) requestAnimationFrame(function () { pickerMenu.scrollIntoView({ block: 'nearest', behavior: reduced.matches ? 'auto' : 'smooth' }); });
+    });
+    document.addEventListener('pointerdown', function (event) {
+      if (versionPicker.open && !versionPicker.contains(event.target)) versionPicker.open = false;
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && versionPicker.open) {
+        versionPicker.open = false;
+        pickerSummary.focus();
+      }
+    });
+  }
+  var header = document.querySelector('.download-header');
+  var updateHeader = function () { if (header) header.classList.toggle('is-scrolled', window.scrollY > 12); };
+  updateHeader();
+  window.addEventListener('scroll', updateHeader, { passive: true });
 
   document.querySelectorAll('[data-download]').forEach(function (link) {
     var label = link.querySelector('[data-download-label]');
@@ -17,18 +38,11 @@
       clearTimeout(settle);
       label.textContent = 'Starting…';
       link.classList.add('is-starting');
-      var visual = document.querySelector('.release-visual');
-      if (visual && link.closest('.download-hero')) {
-        visual.classList.remove('is-starting');
-        void visual.offsetWidth;
-        visual.classList.add('is-starting');
-      }
       status.textContent = 'Starting download for ' + link.getAttribute('aria-label').replace(/^Download /, '') + '.';
       settle = setTimeout(function () { label.textContent = 'Started'; }, 180);
       timer = setTimeout(function () {
         label.textContent = original;
         link.classList.remove('is-starting');
-        if (visual) visual.classList.remove('is-starting');
       }, 480);
     });
   });
@@ -58,44 +72,6 @@
       }
     });
   }
-  var pointer = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1101px)');
-  var hero = document.querySelector('.download-hero');
-  var tilt = document.querySelector('.package-tilt');
-  var frame, position;
-  function resetPointer() {
-    cancelAnimationFrame(frame);
-    frame = null;
-    if (tilt) { tilt.style.removeProperty('--tilt-x'); tilt.style.removeProperty('--tilt-y'); }
-  }
-  if (hero && tilt) {
-    hero.addEventListener('pointermove', function (event) {
-      if (!pointer.matches || reduced.matches) return;
-      position = { x: event.clientX, y: event.clientY };
-      if (frame) return;
-      frame = requestAnimationFrame(function () {
-        var rect = hero.getBoundingClientRect();
-        var x = (position.x - rect.left) / rect.width - .5;
-        var y = (position.y - rect.top) / rect.height - .5;
-        tilt.style.setProperty('--tilt-x', (5 - y * 5).toFixed(2) + 'deg');
-        tilt.style.setProperty('--tilt-y', (-9 + x * 6).toFixed(2) + 'deg');
-        frame = null;
-      });
-    });
-    hero.addEventListener('pointerleave', resetPointer);
-    pointer.addEventListener('change', resetPointer);
-    reduced.addEventListener('change', resetPointer);
-  }
-  document.querySelectorAll('.hero-copy > .download-button').forEach(function (button) {
-    button.addEventListener('pointermove', function (event) {
-      if (!pointer.matches || reduced.matches) return;
-      var rect = button.getBoundingClientRect();
-      button.style.setProperty('--pointer-x', ((event.clientX - rect.left) / rect.width * 100).toFixed(1) + '%');
-      button.style.setProperty('--pointer-y', ((event.clientY - rect.top) / rect.height * 100).toFixed(1) + '%');
-    });
-    button.addEventListener('pointerleave', function () {
-      button.style.removeProperty('--pointer-x'); button.style.removeProperty('--pointer-y');
-    });
-  });
   document.querySelectorAll('[data-copy]').forEach(function (button) {
     var original = button.getAttribute('aria-label');
     var timer;

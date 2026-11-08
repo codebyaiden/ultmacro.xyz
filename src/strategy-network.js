@@ -1,6 +1,6 @@
 (function () {
 	'use strict';
-	const STRATEGY_NETWORK_ENABLED = true;
+	const STRATEGY_NETWORK_ENABLED = false;
 
 	const seed = Array.isArray(window.STRATEGY_NETWORK_SEED) ? window.STRATEGY_NETWORK_SEED : [];
 	const tdsCatalog = window.TDS_STRATEGY_CATALOG || {};
@@ -115,7 +115,7 @@
 	function setBackendStatus() {
 		if (!els.backendStatus) return;
 		els.backendStatus.className = `backend-${state.backend}`;
-		els.backendStatus.textContent = '';
+		els.backendStatus.textContent = state.backend === 'preview' ? 'Preview data · service unavailable' : '';
 	}
 
 	function renderLoading() {

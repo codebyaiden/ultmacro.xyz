@@ -4,12 +4,14 @@ A static, searchable wiki at \`/wiki/\`, served by the website's existing Node/s
 
 ## Design direction
 
-**Use the actual \`ultmacro.xyz\` homepage as the visual reference.** Its deep-navy hero, rich blue accents, serif display headings, clean typography, authentic product screenshot and carefully rounded buttons are the baseline. The wiki itself uses dark-blue reading surfaces throughout, including articles, tables, search and navigation. Strategy Network is the reference for functional browsing and search.
+**Use \`../DESIGN.md\` as the visual source of truth.** The wiki shares the site's near-black graphite surfaces, local Geist typography, compact shared header, fine borders, and restrained violet selection color. Keep article reading layouts calm and highly legible; the wiki's content density and browsing tools should remain tailored to documentation rather than mimic the marketing homepage.
 
 - The homepage hero uses the real \`assets/ui/ultimate-macro-main-new.png\` screenshot, not decorative generated artwork.
-- Keep information dense but legible on dark-blue editorial surfaces, with high-contrast text and lighter blue highlights. Do not switch to a white article background. Use structured tables, numbered steps, and compact related links on article pages.
+- Keep information dense but legible on dark graphite surfaces. Use structured tables, numbered steps, source links, and compact related links on article pages.
+- The guide sidebar uses plain collapsible category rows and indented article links. Show “Getting started” to visitors while preserving the existing `Start here` query key. Avoid count pills and duplicate marketing cards on the overview.
+- The Wiki API page uses the same local Geist/graphite system. Keep its endpoint, code examples, platform tabs, live status, published-guide search, and static fallback intact.
 - Rounded controls should feel related to the main site's buttons. Avoid both square system controls and giant randomly rounded icon circles.
-- On mobile, search and menu are simple, transparent icons without bubbles around them. Mobile navigation opens and closes as a drawer.
+- On mobile, search and menu remain compact and easy to tap. The article category navigation opens and closes as a drawer; article section navigation stays in a collapsible table of contents.
 - Animate functional hover and focus states subtly; respect \`prefers-reduced-motion\`.
 - Use content that is specific to the macro. Never fill space with meaningless labels such as "DOCUMENTATION", fake metrics, generic taglines, gradient blobs, or speculative screenshots.
 - Link to exact installation and troubleshooting resources. Don't advertise an AI assistant as operational until a real backend exists.

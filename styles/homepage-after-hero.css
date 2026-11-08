@@ -1,0 +1,187 @@
+/* Homepage hero device refinements. */
+.home-rework .hero-copy { align-items: flex-start; text-align: left; }
+.home-rework .hero-copy h1 { text-align: left; font-size: clamp(48px, 4.6vw, 66px); }
+.home-rework .hero-actions { justify-content: flex-start; }
+.home-rework .hero-device-emblem { position: absolute; z-index: -1; width: 66%; height: 66%; object-fit: contain; top: 5%; right: 0; opacity: .065; filter: grayscale(1); pointer-events: none; }
+.home-rework .laptop-viewport canvas { cursor: grab; }
+.home-rework .laptop-viewport canvas.is-dragging { cursor: grabbing; }
+.home-rework .hero-stage[data-mode="poster"] .laptop-controls { visibility: hidden; }
+/* Post-hero homepage: one product story, one useful setup interaction, then answers. */
+.home-rework .hero { grid-template-columns: minmax(0, .95fr) minmax(0, 1.15fr); grid-template-rows: auto; align-content: center; column-gap: 44px; }
+.home-rework .hero-stage { width: 100%; height: clamp(390px, 61vh, 580px); min-height: 0; margin: 0; }
+.home-rework .laptop-showcase { width: 100%; height: 100%; margin: 0; }
+.home-rework .laptop-viewport { inset: 0 0 31px; }
+.home-rework .laptop-controls { justify-content: center; gap: 14px; }
+.home-rework .laptop-controls span { color: var(--quiet); }
+.home-rework .laptop-controls button { pointer-events: auto; }
+@media (min-width: 701px) {
+  .home-rework .laptop-viewport canvas,
+  .home-rework .laptop-poster { transform: none; }
+}
+
+.home-rework .community-impact-section {
+  position: relative;
+  z-index: 1;
+  padding: clamp(54px, 6.5vw, 78px) var(--gutter);
+  border-top: 1px solid rgba(255,255,255,.085);
+  border-bottom: 1px solid rgba(255,255,255,.085);
+  background: linear-gradient(180deg, #0d0d10 0%, #0a0a0c 100%);
+  color: var(--ink);
+}
+.home-rework .impact-inner { width: min(100%, var(--page-width)); margin-inline: auto; }
+.home-rework .impact-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+.home-rework .impact-heading h2 { margin: 0; color: var(--ink); font: 520 clamp(27px, 3vw, 36px)/1.12 "Geist", "Segoe UI", sans-serif; letter-spacing: -.045em; }
+.home-rework .impact-heading p { margin: 0 0 3px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.home-rework .impact-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 28px; border-top: 1px solid var(--rule); }
+.home-rework .impact-stat { position: relative; min-width: 0; padding: 23px 22px 0 0; }
+.home-rework .impact-stat + .impact-stat { padding-left: 22px; border-left: 1px solid var(--rule); }
+.home-rework .impact-value-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 58px; }
+.home-rework .impact-value { color: #f1f0f3; font: 560 clamp(31px, 3.25vw, 43px)/1 "Geist", "Segoe UI", sans-serif; letter-spacing: -.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.home-rework .impact-value-row img { display: block; flex: none; width: clamp(42px, 4vw, 54px); height: clamp(42px, 4vw, 54px); object-fit: contain; }
+.home-rework .impact-stat h3 { margin: 13px 0 4px; color: #e7e6e9; font: 520 14px/1.3 "Geist", "Segoe UI", sans-serif; }
+.home-rework .impact-stat > p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.home-rework .impact-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.home-rework .impact-stat.reveal-visible:nth-child(2) { transition-delay: 55ms; }
+.home-rework .impact-stat.reveal-visible:nth-child(3) { transition-delay: 105ms; }
+.home-rework .impact-stat.reveal-visible:nth-child(4) { transition-delay: 155ms; }
+
+.home-rework .home-showcase-section,
+.home-rework .home-setup-section,
+.home-rework .home-faq-section,
+.home-rework .home-community-section,
+.home-rework .home-bottom-cta {
+  padding-block: clamp(66px, 8vw, 104px);
+  border-color: rgba(255,255,255,.085);
+}
+
+.home-rework .home-showcase-section {
+  background:
+    radial-gradient(ellipse 62% 72% at 76% 44%, rgba(127,106,157,.075), transparent 72%),
+    #09090b;
+}
+.home-rework .showcase-heading { margin-bottom: 30px; }
+.home-rework .showcase-heading h2,
+.home-rework .home-setup-head h2,
+.home-rework .home-faq-head h2,
+.home-rework .home-community-head h2 { font-size: clamp(29px, 3.2vw, 39px); }
+.home-rework .showcase-heading p { margin-top: 8px; }
+.home-rework .showcase-tabs { gap: 25px; margin-bottom: 16px; }
+.home-rework .showcase-slide { align-items: start; grid-template-columns: minmax(190px, .30fr) minmax(0, 1fr); gap: clamp(34px, 5.8vw, 80px); }
+.home-rework .showcase-copy { max-width: 290px; padding-top: clamp(20px, 3vw, 42px); }
+.home-rework .showcase-copy h3 { font-size: clamp(19px, 2vw, 23px); }
+.home-rework .showcase-copy p { font-size: 13px; line-height: 1.7; }
+.home-rework .showcase-frame { border-radius: 9px; background: #0b0b0e; }
+.home-rework .showcase-note { margin-top: 13px; font-size: 11px; }
+.home-rework .showcase-footer { justify-content: flex-end; margin-top: 18px; padding-top: 0; border: 0; }
+
+.home-rework .home-setup-section { display: block; }
+.home-rework .home-setup-head { align-items: center; margin-bottom: 25px; }
+.home-rework .home-setup {
+  width: min(100%, var(--page-width));
+  margin-inline: auto;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.home-rework .home-setup-tabs { display: flex; gap: clamp(22px, 5vw, 62px); }
+.home-rework .home-setup-tabs button {
+  position: relative;
+  min-height: 49px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: 500 13px/1 "Geist", "Segoe UI", sans-serif;
+  cursor: pointer;
+  transition: color .18s ease;
+}
+.home-rework .home-setup-tabs button::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: transparent; content: ""; }
+.home-rework .home-setup-tabs button:hover,
+.home-rework .home-setup-tabs button[aria-selected="true"] { color: var(--ink); }
+.home-rework .home-setup-tabs button[aria-selected="true"]::after { background: var(--violet); }
+.home-rework .home-setup-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 130px;
+  padding: 25px 0;
+  animation: setup-panel-in .24s cubic-bezier(.22,.61,.36,1) both;
+}
+.home-rework .home-setup-panel[hidden] { display: none; }
+.home-rework .home-setup-panel h3 { margin: 0; color: #e8e8eb; font: 520 19px/1.25 "Geist", "Segoe UI", sans-serif; letter-spacing: -.03em; }
+.home-rework .home-setup-panel p { max-width: 540px; margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.home-rework .home-setup-panel .home-inline-link { flex: none; }
+@keyframes setup-panel-in { from { opacity: .35; transform: translateX(7px); } to { opacity: 1; transform: translateX(0); } }
+
+.home-rework .home-faq-section,
+.home-rework .home-community-section { gap: clamp(34px, 7vw, 94px); }
+.home-rework .home-faq-head { position: static; }
+.home-rework .home-faq-list details { padding-block: 18px; }
+.home-rework .home-faq-list summary { display: flex; align-items: center; justify-content: space-between; gap: 18px; list-style: none; }
+.home-rework .home-faq-list summary::-webkit-details-marker { display: none; }
+.home-rework .home-faq-list summary::after { content: "+"; color: #92919a; font-size: 18px; font-weight: 350; transition: transform .2s ease, color .2s ease; }
+.home-rework .home-faq-list details[open] summary::after { color: var(--violet); transform: rotate(45deg); }
+.home-rework .home-faq-list details p { max-width: 620px; }
+.home-rework .home-community-section { align-items: center; }
+.home-rework .home-community-links { border-top-color: var(--rule); border-bottom-color: var(--rule); }
+.home-rework .home-community-links a { min-height: 90px; transition: background-color .18s ease; }
+.home-rework .home-community-links a:hover { background: rgba(255,255,255,.025); }
+.home-rework .home-community-links span { font-size: 13px; }
+.home-rework .home-community-links small { font-size: 11px; }
+.home-rework .home-bottom-cta { background: #0c0c0f; }
+.home-rework .home-bottom-cta h2 { font-size: clamp(25px, 3vw, 34px); }
+.home-rework .home-bottom-cta .button { min-height: 43px; padding-inline: 20px; }
+
+.home-rework :is(.home-showcase-section, .home-setup-section, .home-faq-section, .home-community-section, .home-bottom-cta) :focus-visible {
+  outline: 2px solid rgba(190,170,224,.85);
+  outline-offset: 4px;
+}
+
+@media (max-width: 700px) {
+  .home-rework .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 76px 22px 12px; }
+  .home-rework .hero-copy { flex: none; align-items: center; text-align: center; }
+  .home-rework .hero-copy h1 { text-align: center; font-size: clamp(43px, 11.8vw, 58px); }
+  .home-rework .hero-actions { justify-content: center; }
+  .home-rework .hero-stage { width: min(100%, 520px); height: clamp(240px, 36vh, 310px); margin: -2px -10px 0; }
+  .home-rework .laptop-viewport { inset: 0 0 30px; }
+  .home-rework .laptop-controls { right: 7px; left: 7px; gap: 11px; }
+  .home-rework .laptop-controls button { min-height: 28px; }
+  .home-rework .community-impact-section { padding-block: 48px; }
+  .home-rework .impact-heading { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .home-rework .impact-heading h2 { font-size: 29px; }
+  .home-rework .impact-heading p { font-size: 12px; }
+  .home-rework .impact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 22px; }
+  .home-rework .impact-stat { min-height: 142px; padding: 19px 15px 17px 0; }
+  .home-rework .impact-stat + .impact-stat { padding-left: 15px; }
+  .home-rework .impact-stat:nth-child(3) { padding-left: 0; border-left: 0; }
+  .home-rework .impact-stat:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .home-rework .impact-value { font-size: clamp(29px, 8vw, 36px); }
+  .home-rework .impact-value-row { min-height: 48px; }
+  .home-rework .impact-value-row img { width: 42px; height: 42px; }
+  .home-rework .impact-stat h3 { margin-top: 9px; }
+  .home-rework .home-showcase-section,
+  .home-rework .home-setup-section,
+  .home-rework .home-faq-section,
+  .home-rework .home-community-section,
+  .home-rework .home-bottom-cta { padding-block: 60px; }
+  .home-rework .showcase-heading { margin-bottom: 23px; }
+  .home-rework .showcase-slide { grid-template-columns: minmax(0, 1fr); gap: 15px; }
+  .home-rework .showcase-figure { order: -1; }
+  .home-rework .showcase-copy { padding-top: 4px; }
+  .home-rework .showcase-copy h3 { font-size: 18px; }
+  .home-rework .showcase-tabs { gap: 0 20px; }
+  .home-rework .home-setup-head { align-items: flex-start; margin-bottom: 22px; }
+  .home-rework .home-setup-tabs { justify-content: space-between; gap: 10px; }
+  .home-rework .home-setup-tabs button { min-height: 47px; font-size: 12px; }
+  .home-rework .home-setup-panel { align-items: flex-start; flex-direction: column; gap: 14px; min-height: 150px; padding-block: 21px; }
+  .home-rework .home-setup-panel h3 { font-size: 18px; }
+  .home-rework .home-setup-panel p { font-size: 12px; }
+  .home-rework .home-community-section { gap: 22px; }
+  .home-rework .home-community-links a,
+  .home-rework .home-community-links a + a { min-height: 65px; }
+  .home-rework .home-bottom-actions { flex-wrap: wrap; gap: 12px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-rework .home-setup-panel { animation: none; }
+}

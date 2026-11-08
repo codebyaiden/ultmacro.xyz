@@ -1,4 +1,5 @@
 /* Shared public-site chrome. Scoped so the guide, Wiki and download apps retain their own content styles. */
+@font-face{font-family:Geist;src:url("/assets/fonts/geist-latin-wght-normal.woff2") format("woff2");font-style:normal;font-weight:100 900;font-display:swap}
 body.um-unified-page{--um-bar:#07111f;--um-bar-line:rgba(174,202,236,.19);--um-on-dark:#f0f6ff;--um-quiet:#a8bed7}
 body.um-unified-page > header:not(.um-site-header){display:none!important}
 body.um-unified-page > nav.mobile-nav{display:none!important}
@@ -29,7 +30,7 @@ body.um-unified-page > nav.mobile-nav{display:none!important}
 .um-menu-panel a:hover,.um-menu-panel a:focus-visible{background:#1c3a58;color:#fff!important}
 .um-menu-panel a[aria-current="page"]{background:#20405e;color:#fff!important}
 .um-menu-panel .um-menu-cta{background:#eaf4ff;color:#0c243d!important;text-align:center;font-weight:730;margin-top:6px}
-.um-menu-backdrop{position:fixed;inset:68px 0 0;border:0;background:rgba(0,0,0,.4);z-index:139;cursor:pointer}
+.um-menu-backdrop{position:fixed;inset:68px 0 0;border:0;background:rgba(0,0,0,.48);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:139;cursor:pointer}
 body.um-nav-open{overflow:hidden}
 .um-atmosphere{position:absolute;top:68px;left:0;right:0;height:390px;pointer-events:none;z-index:6;overflow:hidden;opacity:.82;mask-image:linear-gradient(to bottom,#000 0%,#000 50%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 50%,transparent 100%)}
 .um-atmosphere::before,.um-atmosphere::after{content:"";position:absolute;display:block;width:2px;height:2px;border-radius:50%;background:#dcecff;left:8%;top:28px;box-shadow:13vw 36px #c1dafa88,22vw 85px #ffffff85,32vw 26px #b6d3ff99,44vw 125px #fff7,51vw 34px #b6d9ffad,65vw 98px #cfe5ff9c,73vw 18px #ffffff99,85vw 68px #bfd7ff8b,92vw 137px #ffffff80,8vw 157px #c9e2ff69,28vw 181px #ffffff77,57vw 204px #c8dcff66,80vw 220px #ffffff6c}
@@ -54,7 +55,7 @@ body.um-unified-page > main .guide-hero .btn{border-radius:8px}
 @media(max-width:600px){.um-wiki-search{font-size:11px;padding-inline:8px}}
 
 /* Interaction polish: one motion language, consistent hit areas, no ornamental movement. */
-:root{--um-motion-quick:150ms;--um-motion-menu:180ms;--um-motion-ease:cubic-bezier(.22,.65,.22,1)}
+:root{--um-motion-quick:150ms;--um-motion-menu:240ms;--um-motion-ease:cubic-bezier(.2,.75,.25,1)}
 .um-site-header .um-primary a,.um-site-header .um-cta,.um-site-header .um-wiki-search,.um-site-header .um-wiki-browse,.um-site-header .um-menu-toggle{transition:color var(--um-motion-quick) ease,background-color var(--um-motion-quick) ease,border-color var(--um-motion-quick) ease,box-shadow var(--um-motion-quick) ease}
 .um-primary a:focus-visible,.um-menu-panel a:focus-visible{box-shadow:inset 0 0 0 1px #b7dbff}
 .um-menu-panel{z-index:2;transform-origin:top right;will-change:transform,opacity}
@@ -62,8 +63,8 @@ body.um-unified-page > main .guide-hero .btn{border-radius:8px}
 .um-menu-panel[data-state="closing"]{animation:um-nav-out var(--um-motion-menu) ease-in both;pointer-events:none}
 .um-menu-backdrop[data-state="opening"]{animation:um-scrim-in var(--um-motion-menu) ease-out both}
 .um-menu-backdrop[data-state="closing"]{animation:um-scrim-out var(--um-motion-menu) ease-in both;pointer-events:none}
-@keyframes um-nav-in{from{opacity:0;transform:translateY(-8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes um-nav-out{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+@keyframes um-nav-in{from{opacity:0;filter:blur(1px);transform:translateY(-5px) scaleY(.985)}to{opacity:1;filter:blur(0);transform:translateY(0) scaleY(1)}}
+@keyframes um-nav-out{from{opacity:1;filter:blur(0);transform:translateY(0) scaleY(1)}to{opacity:0;filter:blur(1px);transform:translateY(-4px) scaleY(.99)}}
 @keyframes um-scrim-in{from{opacity:0}to{opacity:1}}
 @keyframes um-scrim-out{from{opacity:1}to{opacity:0}}
 .um-menu-toggle{gap:6px}
@@ -107,3 +108,61 @@ body.um-unified-page .wiki-header{display:none!important}
   .um-menu-toggle::after{transition:none!important}
   .um-site-header *{transition:none!important}
 }
+
+/* Match the homepage's floating, unboxed navigation on every route. */
+.um-site-header{position:sticky;top:22px;width:min(1280px,calc(100% - 72px));height:54px;margin:22px auto 0;border:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;color:#f2eff7;font-family:Geist,"Segoe UI",sans-serif}
+.um-site-header{transition:top .36s cubic-bezier(.2,.75,.2,1)}
+.um-site-header.is-scrolled{top:8px}
+.um-site-header .um-header-inner{position:relative;height:54px;max-width:none;padding:0;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:18px}
+.um-nav-loop-trace{position:absolute;z-index:0;top:35px;left:35%;width:30%;height:17px;overflow:visible;opacity:.44;pointer-events:none;transition:opacity .4s ease,transform .6s cubic-bezier(.2,.75,.2,1)}
+.um-nav-loop-base,.um-nav-loop-flow{fill:none;stroke-linecap:round}
+.um-nav-loop-base{stroke:rgba(194,182,214,.14);stroke-width:1}
+.um-nav-loop-flow{stroke:url(#um-nav-loop-light);stroke-width:1.35;stroke-dasharray:92 1450;filter:drop-shadow(0 0 4px rgba(167,139,221,.34));animation:um-nav-loop-travel 14s linear infinite}
+.um-site-header.is-scrolled .um-nav-loop-trace{opacity:.7;transform:translateY(-2px) scaleX(1.06)}
+.um-site-header.is-scrolled .um-brand{transform:scale(.96);transform-origin:left center}
+@keyframes um-nav-loop-travel{to{stroke-dashoffset:-1542px}}
+.um-site-header .um-context{display:none}
+.um-site-header .um-brand{gap:9px;color:#f2eff7!important;font-size:14px;font-weight:520;letter-spacing:-.04em}
+.um-site-header .um-brand img{width:38px;height:38px;border-radius:0;object-fit:contain;transition:transform .45s cubic-bezier(.2,.75,.2,1)}
+.um-site-header .um-brand:hover img{transform:rotate(-5deg) scale(1.06)}
+.um-site-header .um-brand b{color:#c6b0e7;font-weight:650;letter-spacing:-.045em}
+.um-primary{gap:2px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.um-primary a{padding:8px 12px;border-radius:0;background:transparent!important;color:#c4c1ca!important;font-size:12px;font-weight:480;transition:color .24s ease,transform .32s cubic-bezier(.2,.75,.2,1)}
+.um-primary a::after{position:absolute;right:12px;bottom:3px;left:12px;height:1px;background:rgba(255,255,255,.9);content:"";transform:scaleX(.12);transform-origin:center;opacity:0;transition:transform .28s cubic-bezier(.2,.7,.2,1),opacity .2s ease}
+.um-primary a:hover{color:#fff!important;transform:translateY(-2px)}
+.um-primary a:hover::after{transform:scaleX(1);opacity:.55}
+.um-primary a[aria-current="page"]{color:#fff!important;background:transparent!important}
+.um-primary a[aria-current="page"]::after{transform:scaleX(1);opacity:1}
+.um-header-actions{gap:14px}
+.um-header-actions .um-discord{display:none}
+.um-signin{color:#d4d0dc!important;font-size:12px;font-weight:520;white-space:nowrap;transition:color .2s ease}
+.um-signin:hover{color:#fff!important}
+.um-cta{min-height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.86);border-radius:999px;background:#eeedf1;color:#131216!important;font-size:11px;font-weight:620;transition:background-color .2s ease,border-color .2s ease,transform .2s ease}
+.um-cta[aria-current="page"]{position:relative}
+.um-cta[aria-current="page"]::after{position:absolute;right:14px;bottom:-5px;left:14px;height:1px;background:#fff;content:""}
+.um-cta:hover{transform:translateY(-2px);border-color:#fff;background:#fff}
+.um-menu-toggle{min-width:44px;min-height:38px;padding:0;border:0;border-bottom:1px solid rgba(214,199,237,.35);border-radius:0;background:transparent;color:#eeeaf4;font-size:12px;font-weight:520}
+.um-menu-toggle:hover,.um-menu-toggle[aria-expanded="true"]{transform:translateY(-1px);border-color:#cfb5f4;background:transparent;color:#fff}
+.um-menu-toggle::after{display:none}
+.um-menu-panel{top:calc(100% + 16px);border-color:rgba(255,255,255,.1);border-radius:14px;background:rgba(13,13,16,.97);box-shadow:0 24px 60px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.035)}
+.um-menu-panel a{color:#c4c1ca!important}
+.um-menu-panel a:hover,.um-menu-panel a[aria-current="page"]{background:rgba(255,255,255,.055);color:#fff!important}
+.um-menu-panel a[aria-current="page"]{box-shadow:inset 0 -1px rgba(255,255,255,.75)}
+.um-menu-panel .um-menu-cta{background:#eeedf1;color:#131216!important}
+@media(max-width:1130px){.um-header-inner{gap:12px}.um-header-actions{gap:12px}}
+@media(max-width:980px){.um-site-header{top:17px;width:calc(100% - 44px);height:48px;margin:17px auto 0}.um-site-header .um-header-inner{height:48px;grid-template-columns:minmax(0,1fr) auto;gap:12px}.um-site-header .um-brand{font-size:14px}.um-site-header .um-brand img{width:34px;height:34px}.um-menu-toggle{min-width:44px}.um-menu-panel{top:calc(100% + 12px);right:0;left:0}}
+@media(max-width:600px){.um-site-header{top:14px;width:calc(100% - 36px);height:46px;margin:14px auto 0}.um-site-header .um-header-inner{height:46px;padding:0;gap:8px}.um-site-header .um-brand{gap:7px;font-size:13px}.um-site-header .um-brand img{width:34px;height:34px}.um-header-actions{gap:6px}.um-header-actions .um-signin{display:none}.um-menu-panel{top:calc(100% + 6px);padding:7px;background:#0b0b0d;border-color:rgba(255,255,255,.12);transform-origin:top center}.um-menu-panel a{padding:11px 13px}.um-menu-panel .um-menu-cta{margin-top:4px}}
+@media(prefers-reduced-motion:reduce){.um-site-header *{transition:none!important}.um-site-header .um-brand:hover img,.um-primary a:hover{transform:none}}
+.um-nav-loop-flow{animation-duration:14s}
+@media(max-width:980px){.um-nav-loop-trace{top:31px;left:25%;width:50%;height:15px;opacity:.34}}
+@media(max-width:600px){.um-nav-loop-trace{top:30px;left:23%;width:54%;height:14px;opacity:.3}}
+.wiki-page-tools{display:flex;justify-content:flex-end;gap:8px;margin:10px 0 14px}
+.wiki-page-tools :is(button,a){display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(16,16,19,.7);color:#c9c6cf;font:500 12px/1 Geist,"Segoe UI",sans-serif;text-decoration:none;cursor:pointer;transition:color .18s ease,border-color .18s ease,background .18s ease}
+.wiki-page-tools :is(button,a):hover{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.05);color:#fff}
+.wiki-page-tools :is(button,a):focus-visible{outline:2px solid #a78bdd;outline-offset:3px}
+@media(min-width:1111px){.wiki-page-tools .wiki-browse-action{display:none}}
+@media(prefers-reduced-motion:reduce){.um-nav-loop-flow{animation:none}}
+body.home-rework .um-site-header{position:fixed;top:22px;left:50%;margin:0;transform:translateX(-50%)}
+body.home-rework .um-site-header.is-scrolled{top:8px}
+@media(max-width:980px){body.home-rework .um-site-header{top:17px}}
+@media(max-width:600px){body.home-rework .um-site-header{top:14px}}

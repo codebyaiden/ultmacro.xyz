@@ -36,3 +36,7 @@
 /download/v1.4.0.40 /download/v1.4.0.40/ 301
 /download/v1.4.0.40/index.html /download/v1.4.0.40/ 301
 # END DOWNLOAD REDIRECTS
+
+/aboutus /about/ 301
+/aboutus/ /about/ 301
+/aboutus/index.html /about/ 301

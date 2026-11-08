@@ -4,33 +4,81 @@
   <script src="/src/advertising.js?v=adcash-selfhost-20261021" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="The systems inside Ultimate Macro for repeatable Tower Defense Simulator runs.">
+    <meta name="description" content="Record and replay Tower Defense Simulator strategies, automate repeat runs, and manage sessions with Ultimate Macro for Windows.">
     <title>Features | Ultimate Macro</title>
     <link rel="canonical" href="https://ultmacro.xyz/features/">
-    <meta name="theme-color" content="#070a10">
+    <meta name="theme-color" content="#09090b">
     <link rel="icon" href="/assets/ultimate-logo.png">
     <link rel="stylesheet" href="../styles.css?v=17">
-  </head>
-  <body class="dark-page">
+    <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+    <link rel="stylesheet" href="/styles/features-page.css?v=4">
+  <script src="/src/unified-shell.js?v=shared-header-20261105-b" defer></script>
+</head>
+  <body class="dark-page features-body">
     <header class="nav-shell">
       <a class="brand" href="../"><img class="brand-mark" src="/assets/ultimate-logo.png" alt="" aria-hidden="true"><span>Ultimate <b>Macro</b></span></a>
       <button class="menu-button" data-menu-button aria-expanded="false" aria-controls="mobile-menu">Menu</button>
-      <nav aria-label="Primary navigation"><a href="../#features">Features</a><a href="../wiki/">Wiki</a><a href="../strategies/">Strategy Network</a><a href="../early-access/">Early Access</a><a href="../download/">Download</a></nav>
+      <nav aria-label="Primary navigation"><a href="../#features">Features</a><a href="../wiki/">Wiki</a><a href="../early-access/">Early Access</a><a href="../about/">About Us</a><a href="../dashboard/">Dashboard</a><a href="../download/">Download</a></nav>
       <div class="nav-actions"><a class="nav-link" href="https://discord.gg/ultmacro">Discord</a><a class="button button-small" href="../download/">Download</a></div>
-      <div class="mobile-menu" id="mobile-menu" data-mobile-menu><a href="../#features">Features</a><a href="../wiki/">Wiki</a><a href="../strategies/">Strategy Network</a><a href="../early-access/">Early Access</a><a href="../download/">Download</a></div>
+      <div class="mobile-menu" id="mobile-menu" data-mobile-menu><a href="../#features">Features</a><a href="../wiki/">Wiki</a><a href="../early-access/">Early Access</a><a href="../about/">About Us</a><a href="../dashboard/">Dashboard</a><a href="../download/">Download</a></div>
     </header>
-    <main>
-<section class="page-hero"><p class="eyebrow">THE SHORT VERSION</p><h1>The work you repeat<br><em>does not have to.</em></h1><p>Keep the parts worth saving. Let Ultimate Macro handle the rest.</p></section>
-      <section class="feature-grid-page">
-<article><span>01 · Record</span><h2>Keep the run<br>you already know.</h2><p>Capture placements, upgrades, abilities, selling, repositioning, target changes and other match actions in one reusable strategy file.</p></article>
-<article><span>02 · Repeat</span><h2>Keep the match<br>moving.</h2><p>Equip towers, check the map, handle match endings and use Restart or Play Again when the flow calls for it.</p></article>
-<article><span>03 · Report</span><h2>Know what happened<br><em>after the run.</em></h2><p>Send session statistics, debug information, result screenshots and progress updates to Discord.</p></article>
+    <main class="features-page">
+      <section class="features-opening" aria-labelledby="features-title">
+        <header class="features-intro"><h1 id="features-title">Here's what Ultimate Macro does</h1></header>
+        <section class="feature-spotlight" data-feature-carousel role="region" aria-roledescription="carousel" aria-label="Ultimate Macro features">
+          <div class="feature-slides" data-swipe-area>
+            <article class="feature-slide is-active" id="spotlight-record" role="tabpanel" aria-labelledby="tab-record" data-feature-slide>
+              <div class="spotlight-copy"><h2>Record a strategy.</h2><p>Capture placements, upgrades, sells, targeting and abilities. Save the run as a <code>.strat</code> file.</p></div>
+              <figure class="spotlight-image"><img src="/assets/ui/home-record-setup.png" alt="Ultimate Macro's Record tab, with map and mode selectors, tower loadout and recording options." width="825" height="558" draggable="false"></figure>
+            </article>
+            <article class="feature-slide" id="spotlight-play" role="tabpanel" aria-labelledby="tab-play" data-feature-slide hidden>
+              <div class="spotlight-copy"><h2>Play it back.</h2><p>Choose a saved strategy. Ultimate Macro follows its recorded actions through the match.</p></div>
+              <figure class="spotlight-image"><img src="/assets/ui/home-run-options.png" alt="Ultimate Macro's Run tab, with a saved strategy and repeat options." width="820" height="554" draggable="false"></figure>
+            </article>
+            <article class="feature-slide" id="spotlight-automate" role="tabpanel" aria-labelledby="tab-automate" data-feature-slide hidden>
+              <div class="spotlight-copy"><h2>Automate the routine.</h2><p>Auto Equip towers, skip waves, use supported abilities, and rotate two strategies by runs or minutes.</p></div>
+              <div class="spotlight-symbol" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M60 18a42 42 0 1 1-36 20"/><path d="M17 20v22h22"/><path d="M60 37v24l17 11"/><circle cx="60" cy="60" r="5"/></svg></div>
+            </article>
+            <article class="feature-slide" id="spotlight-together" role="tabpanel" aria-labelledby="tab-together" data-feature-slide hidden>
+              <div class="spotlight-copy"><h2>Run together.</h2><p>Set up a Party, use a VIP server, or connect optional Discord notifications and remote controls.</p></div>
+              <div class="spotlight-symbol" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="45" cy="43" r="15"/><circle cx="80" cy="48" r="11"/><path d="M17 94c2-17 13-27 28-27s27 10 29 27M72 70c15-2 27 7 31 22"/></svg></div>
+            </article>
+          </div>
+          <div class="spotlight-controls">
+            <div class="spotlight-tabs" role="tablist" aria-label="Choose a feature">
+              <button type="button" id="tab-record" role="tab" aria-selected="true" aria-controls="spotlight-record" tabindex="0" data-feature-tab="0">Record</button>
+              <button type="button" id="tab-play" role="tab" aria-selected="false" aria-controls="spotlight-play" tabindex="-1" data-feature-tab="1">Play</button>
+              <button type="button" id="tab-automate" role="tab" aria-selected="false" aria-controls="spotlight-automate" tabindex="-1" data-feature-tab="2">Automate</button>
+              <button type="button" id="tab-together" role="tab" aria-selected="false" aria-controls="spotlight-together" tabindex="-1" data-feature-tab="3">Together</button>
+            </div>
+            <button type="button" class="spotlight-pause" data-feature-pause aria-pressed="false" aria-label="Pause automatic feature rotation">Pause</button>
+          </div>
+        </section>
       </section>
-<section class="feature-band"><div><p class="eyebrow">INSIDE THE MACRO</p><h2>See the real<br><em>run flow.</em></h2><p>The selected strategy, current action, wave and session state stay visible while a run is ready or underway.</p></div><div class="feature-preview" aria-label="The Ultimate Macro run flow"><span class="preview-kicker">THE MACRO LOOP</span><strong>Ready when<br><em>you are.</em></strong><small>Record a run. Keep the useful parts.</small></div></section>
-      <section class="capability-rail"><div><b>01</b><span>Automatic tower equipping</span></div><div><b>02</b><span>Rotation by runs or minutes</span></div><div><b>03</b><span>1.5× and 2× timescale support</span></div><div><b>04</b><span>VIP and party server support</span></div><div><b>05</b><span>Playtime reward collection</span></div><div><b>06</b><span>Community <code>.strat</code> files</span></div><div><b>07</b><span>Auto Skip with recorded wave skips</span></div><div><b>08</b><span>OCR and image-based detection</span></div><div><b>09</b><span>Reconnection and game re-entry</span></div><div><b>10</b><span>Split upgrades and special tower handling</span></div></section>
 
+      <section class="feature-catalog" aria-labelledby="catalog-title" data-feature-reveal>
+        <h2 id="catalog-title">More features</h2>
+        <div class="feature-catalog-grid">
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5h10v15H5zM15 7h4v13h-9"/><path d="M8 8h4M8 11h4M8 14h3"/></svg><h3>Strategy library</h3><p>Search built-in and local strategies, then import a <code>.strat</code> file.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM7 9h4M7 13h10M7 16h6"/><circle cx="17" cy="9" r="1"/></svg><h3>Match setup</h3><p>Choose a map, mode, modifiers and required tower loadout.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM7 9h4M7 13h10M7 16h6"/><path d="m15 8 1.5 1.5L19 7"/></svg><h3>Game detection</h3><p>OCR and image matching read game state and help verify actions.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5v14M12 5v14M20 5v14"/><circle cx="4" cy="10" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="20" cy="8" r="2"/></svg><h3>Timescale and rewards</h3><p>Use 1.5× or 2× timescale tickets and collect playtime rewards.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><h3>Discord</h3><p>Send run notifications. With consent, link remote controls and share session stats.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h2m3 0h2m3 0h1M7 12h2m3 0h2m3 0h1M8 16h8"/></svg><h3>Controls and updates</h3><p>Set hotkeys, arrange the app beside Roblox, choose a language and check for verified updates.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20a5.5 5.5 0 0 1 11 0M14 15a4.5 4.5 0 0 1 7.5 3.5"/></svg><h3>Party and VIP servers</h3><p>Set host and member roles, party usernames and when to leave if someone is missing.</p></article>
+          <article class="feature-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/><path d="M3 5v14"/></svg><h3>Match recovery</h3><p>Handle match results, reconnect after disconnects and continue the session.</p></article>
+        </div>
+      </section>
+
+      <section class="features-download" aria-label="Download Ultimate Macro" data-feature-reveal><a class="features-download-link" href="/download/">Download for Windows</a></section>
     </main>
-<footer><a class="brand" href="../"><img class="brand-mark" src="/assets/ultimate-logo.png" alt="" aria-hidden="true"><span>Ultimate <b>Macro</b></span></a><p>A tool for recording and replaying TDS strategies.</p><div><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era">GitHub</a><a href="../coming/">What's Coming</a><a href="https://www.youtube.com/@UltimateMacro">YouTube</a><a href="https://discord.gg/ultmacro">Discord</a></div><small>© 2026 Ultimate Macro · Not affiliated with Roblox Corporation or Paradoxum Games.</small></footer>
+    <footer class="features-footer">
+      <a class="features-footer-brand" href="/"><img src="/assets/ultimate-macro-mascot.png" alt="" width="30" height="30"><span>Ultimate <b>Macro</b></span></a>
+      <p>A free macro for Tower Defense Simulator.</p>
+      <nav aria-label="Footer links"><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/report/">Report a bug</a><a href="/coming/">What's Coming</a><a href="/memberships/">Memberships</a><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.youtube.com/@UltimateMacro" target="_blank" rel="noopener noreferrer">YouTube</a><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a></nav>
+      <small>© 2026 Ultimate Macro · Not affiliated with Roblox Corporation or Paradoxum Games.</small>
+    </footer>
     <script src="../site.js?v=5"></script>
+    <script src="/src/features-page.js?v=2"></script>
   </body>
 </html>

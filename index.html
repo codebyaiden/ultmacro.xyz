@@ -5,110 +5,197 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Record and replay Tower Defense Simulator strategies on Windows. Download Ultimate Macro, load community strategies, and automate repeat runs." />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#09090b" />
     <title>Ultimate Macro | Record and replay TDS strategies</title>
-    <link rel="icon" type="image/png" href="/assets/ultimate-logo.png" />
+    <link rel="icon" type="image/png" href="/assets/ultimate-macro-mascot.png" />
     <link rel="stylesheet" href="styles/homepage.css?v=1" />
     <link rel="stylesheet" href="styles/coming.css?v=2" />
-    <link rel="stylesheet" href="styles/homepage-refinement.css?v=1" />
+    <link rel="stylesheet" href="styles/homepage-refinement.css?v=31" />
+    <link rel="stylesheet" href="styles/homepage-after-hero.css?v=6" />
+    <link rel="stylesheet" href="/styles/unified-shell.css?v=7" />
   </head>
   <body class="home-rework">
     <header class="nav-shell">
-      <a class="brand" href="#home" aria-label="Ultimate Macro home"><img class="brand-mark" src="/assets/ultimate-logo.png" alt="" aria-hidden="true"><span>Ultimate <b>Macro</b></span></a>
+      <a class="brand" href="#home" aria-label="Ultimate Macro home">
+        <img class="brand-mark" src="/assets/ultimate-macro-mascot.png" alt="" width="38" height="38" />
+        <span class="brand-wordmark"><span>Ultimate</span><b>Macro</b></span>
+      </a>
+      <svg class="nav-loop-trace" viewBox="0 0 800 50" aria-hidden="true" focusable="false">
+        <defs><linearGradient id="nav-loop-light" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9c91ae" stop-opacity="0"/><stop offset=".4" stop-color="#b8a7d7" stop-opacity=".52"/><stop offset=".52" stop-color="#e5d9f8" stop-opacity=".82"/><stop offset=".68" stop-color="#a98bd5" stop-opacity=".48"/><stop offset="1" stop-color="#9c91ae" stop-opacity="0"/></linearGradient></defs>
+        <path class="nav-loop-base" d="M8 25 C150 3 258 3 400 25 C542 47 650 47 792 25 C650 3 542 3 400 25 C258 47 150 47 8 25"/>
+        <path class="nav-loop-flow" d="M8 25 C150 3 258 3 400 25 C542 47 650 47 792 25 C650 3 542 3 400 25 C258 47 150 47 8 25"/>
+      </svg>
       <button class="menu-button" data-menu-button aria-expanded="false" aria-controls="mobile-menu">Menu</button>
-      <nav aria-label="Primary navigation"><a data-nav-link href="#features">Features</a><a data-nav-link href="wiki/">Wiki</a><a data-nav-link href="strategies/">Strategy Network</a><a data-nav-link href="early-access/">Early Access</a><a data-nav-link href="dashboard/">Dashboard</a><a data-nav-link href="coming/">Coming</a><a data-nav-link href="download/">Download</a></nav>
-      <div class="nav-actions"><a class="legacy-version-chip" data-latest-release href="/download/v1.4.0.40/" title="Latest stable release"><span aria-hidden="true"></span><b data-latest-version>v1.4.0.40</b></a><a class="nav-link" href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a><a class="button button-small" href="download/">Download</a></div>
-      <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden inert><a href="#features">Features</a><a href="wiki/">Wiki</a><a href="strategies/">Strategy Network</a><a href="early-access/">Early Access</a><a href="coming/">What's Coming</a><a href="/download/v1.4.0.40/" data-latest-release>Download <b data-latest-version>v1.4.0.40</b></a></div>
+      <nav aria-label="Primary navigation"><a data-nav-link href="/features/">Features</a><a data-nav-link href="/wiki/">Wiki</a><a data-nav-link href="/early-access/">Early Access</a><a data-nav-link href="/about/">About Us</a></nav>
+      <div class="nav-actions"><a class="button button-small" href="download/">Download</a></div>
+      <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden inert><a href="/features/">Features</a><a href="/wiki/">Wiki</a><a href="/early-access/">Early Access</a><a href="/about/">About Us</a><a href="/download/">Download</a></div>
     </header>
 
     <main id="home">
-      <section class="hero section-grid">
-        <button class="wish-star" type="button" id="wish-star" aria-label="Make a wish on a star" title="Make a wish">✦</button>
-        <span class="secret-toast" id="secret-toast" role="status" aria-live="polite" hidden></span>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-atmosphere" aria-hidden="true">
+          <svg class="hero-loop-art" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <defs>
+              <linearGradient id="loop-light" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#b9b2c9" stop-opacity="0" />
+                <stop offset=".24" stop-color="#9b8abf" stop-opacity=".24" />
+                <stop offset=".49" stop-color="#bba3e9" stop-opacity=".92" />
+                <stop offset=".68" stop-color="#777087" stop-opacity=".35" />
+                <stop offset="1" stop-color="#9d85ca" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="loop-edge" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0" stop-color="#77717f" stop-opacity="0" />
+                <stop offset=".36" stop-color="#aaa1ba" stop-opacity=".42" />
+                <stop offset=".56" stop-color="#c9b5f4" stop-opacity=".75" />
+                <stop offset="1" stop-color="#77717f" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="loop-metal" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#665e70" stop-opacity=".32" />
+                <stop offset=".34" stop-color="#aaa0bc" stop-opacity=".56" />
+                <stop offset=".49" stop-color="#e5d8ff" stop-opacity=".86" />
+                <stop offset=".62" stop-color="#9a82c1" stop-opacity=".62" />
+                <stop offset="1" stop-color="#4b4555" stop-opacity=".2" />
+              </linearGradient>
+              <filter id="loop-soft-glow" x="-40%" y="-80%" width="180%" height="260%">
+                <feGaussianBlur stdDeviation="23" />
+              </filter>
+              <path id="loop-path" d="M-120 455 C170 95 495 125 800 450 C1105 775 1430 805 1720 445 C1430 85 1105 125 800 450 C495 775 170 815 -120 455" />
+            </defs>
+            <g class="loop-orbit">
+              <use href="#loop-path" class="loop-aura" />
+              <use href="#loop-path" class="loop-depth" />
+              <use href="#loop-path" class="loop-underlay" />
+              <use href="#loop-path" class="loop-ribbon" />
+              <use href="#loop-path" class="loop-face" />
+              <use href="#loop-path" class="loop-seam" />
+              <use href="#loop-path" class="loop-trace loop-trace-one" />
+              <use href="#loop-path" class="loop-trace loop-trace-two" />
+            </g>
+            <path class="loop-horizon" d="M-60 700 C310 565 490 600 800 700 C1110 800 1290 835 1660 700" />
+          </svg>
+          <span class="hero-light-well"></span>
+        </div>
         <div class="hero-copy">
-          <p class="product-label">ULTIMATE MACRO · TOWER DEFENSE SIMULATOR</p>
-          <h1>Record a run.<br /><span>Replay it.</span></h1>
-          <p class="lede">A free Windows macro for Tower Defense Simulator. Record your placements, upgrades and abilities, then replay the strategy.</p>
-          <div class="hero-actions"><a class="button" href="download/"><span>Download for Windows</span><span>↗</span></a><a class="text-link" href="https://www.youtube.com/@UltimateMacro" target="_blank" rel="noopener noreferrer">Watch on YouTube <span>↗</span></a></div>
-          <div class="proof-line"><span>Free & open source</span><span>Windows · AutoHotkey v2</span></div><div class="hero-hotkeys" aria-label="Current v1.3.6 keyboard shortcuts"><span><kbd>F1</kbd> Start</span><span><kbd>F2</kbd> Pause / resume</span><span><kbd>F3</kbd> Stop</span></div>
+          <h1 id="hero-title"><span class="hero-headline-line">The grind doesn't</span><span class="hero-headline-line">need <span class="hero-you-wrap" aria-hidden="true"><span class="hero-you" data-you-word>you</span>.</span><span class="hero-you-sr">you.</span></span></h1>
+          <div class="hero-actions">
+            <a class="button hero-download" href="download/"><img src="assets/windows-logo.svg" alt="" aria-hidden="true" width="16" height="16"><span>Download for Windows</span></a>
+            <a class="button hero-learn" href="#features">Learn more</a>
+          </div>
         </div>
-        <div class="hero-demo media-showcase actual-ui-showcase" aria-label="Ultimate Macro app preview">
-          <figure class="showcase-player"><img class="hero-product-image" src="assets/ui/ultimate-macro-main-new.png" alt="Ultimate Macro strategy selection screen, from an earlier build" width="700" height="564" decoding="async" fetchpriority="high" /><figcaption class="showcase-caption">Real interface from an earlier build · current shortcuts shown alongside</figcaption></figure>
-        </div>
-      </section>
-
-      
-      <section id="features" class="home-value-section" aria-labelledby="home-value-title">
-        <div class="home-value-intro">
-          <p class="eyebrow">What it does</p>
-          <h2 id="home-value-title">What you can do</h2>
-          <p>Save your own strategies or use one shared by the community.</p>
-          <a class="home-inline-link" href="features/">Explore features <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="home-value-list">
-          <article><span class="home-value-index">01</span><div><h3>Replay a full run</h3><p>Placements, upgrades, abilities and targeting, saved in one <code>.strat</code> file.</p></div></article>
-          <article><span class="home-value-index">02</span><div><h3>Cut repetitive setup</h3><p>Equip towers, check maps and handle supported match restarts. Check your first run before leaving it unattended.</p></div></article>
-          <article><span class="home-value-index">03</span><div><h3>Use shared strategies</h3><p>Find a compatible community strategy instead of recording everything yourself.</p><a class="home-inline-link" href="strategies/">Browse strategies <span aria-hidden="true">↗</span></a></div></article>
+        <div class="hero-stage" data-laptop-showcase data-mode="poster">
+          <img class="hero-device-emblem" src="assets/ultimate-macro-mascot.png" alt="" aria-hidden="true">
+          <figure class="laptop-showcase">
+            <div class="laptop-viewport" data-laptop-viewport data-render-state="fallback">
+              <img class="laptop-poster" data-laptop-poster src="assets/laptop-showcase-poster.png?v=4" alt="Unbranded graphite laptop with a blank black display." width="1200" height="800" decoding="async">
+            </div>
+            <figcaption class="laptop-controls"><span data-laptop-hint>Drag to rotate</span></figcaption>
+          </figure>
         </div>
       </section>
 
-      <section id="how-it-works" class="home-setup-section" aria-labelledby="home-setup-title">
+
+
+      <section id="community-impact" class="community-impact-section" aria-labelledby="community-impact-title" data-impact-section>
+        <div class="impact-inner">
+          <header class="impact-heading" data-reveal>
+            <h2 id="community-impact-title">What players have earned.</h2>
+            <p>Combined totals from people using Ultimate Macro · Updated October 2026</p>
+          </header>
+          <div class="impact-grid" aria-label="Community totals and milestone">
+            <article class="impact-stat" data-reveal>
+              <div class="impact-value-row"><span class="impact-value" aria-hidden="true" data-impact-counter data-target="29300000" data-format="compact" data-suffix="+">0</span><img src="assets/community-impact/coins.png" alt="" aria-hidden="true" width="64" height="64" loading="lazy" decoding="async"></div>
+              <h3>Coins</h3><p>Earned across all users</p><span class="impact-sr-only">More than 29.3 million coins earned by Ultimate Macro users combined.</span>
+            </article>
+            <article class="impact-stat" data-reveal>
+              <div class="impact-value-row"><span class="impact-value" aria-hidden="true" data-impact-counter data-target="5500000" data-format="compact" data-suffix="+">0</span><img src="assets/community-impact/gems.png" alt="" aria-hidden="true" width="64" height="64" loading="lazy" decoding="async"></div>
+              <h3>Gems</h3><p>Earned across all users</p><span class="impact-sr-only">More than 5.5 million gems earned by Ultimate Macro users combined.</span>
+            </article>
+            <article class="impact-stat" data-reveal>
+              <div class="impact-value-row"><span class="impact-value" aria-hidden="true" data-impact-counter data-target="700" data-format="integer" data-suffix="+">0</span><img src="assets/community-impact/player-level.png" alt="" aria-hidden="true" width="64" height="64" loading="lazy" decoding="async"></div>
+              <h3>Player level</h3><p>Reached by many users</p><span class="impact-sr-only">Many Ultimate Macro users have reached level 700 or above.</span>
+            </article>
+            <article class="impact-stat" data-reveal>
+              <div class="impact-value-row"><span class="impact-value" aria-hidden="true" data-impact-counter data-target="123000" data-format="compact" data-suffix="+">0</span><img src="assets/community-impact/tower-xp.png" alt="" aria-hidden="true" width="64" height="64" loading="lazy" decoding="async"></div>
+              <h3>Tower XP</h3><p>Earned across all users</p><span class="impact-sr-only">More than 123 thousand tower XP earned by Ultimate Macro users combined.</span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="home-value-section home-showcase-section" aria-labelledby="home-value-title" data-reveal>
+        <div class="showcase-heading">
+          <h2 id="home-value-title">Record it once. Run it again.</h2>
+        </div>
+        <div class="product-showcase" data-showcase data-active="0">
+          <div class="showcase-tabs" role="tablist" aria-label="Ultimate Macro examples">
+            <button id="showcase-tab-record" type="button" role="tab" aria-selected="true" aria-controls="showcase-panel-record" tabindex="0" data-showcase-tab="0">Record</button>
+            <button id="showcase-tab-run" type="button" role="tab" aria-selected="false" aria-controls="showcase-panel-run" tabindex="-1" data-showcase-tab="1">Run</button>
+          </div>
+          <div class="showcase-viewport">
+            <div class="showcase-track" data-showcase-track>
+              <article class="showcase-slide" id="showcase-panel-record" role="tabpanel" aria-labelledby="showcase-tab-record" aria-hidden="false" tabindex="0" data-showcase-panel="0">
+                <div class="showcase-copy"><h3>Record a strategy.</h3><p>Choose a map, mode and equipped towers, then select which actions to capture.</p></div>
+                <figure class="showcase-figure"><div class="showcase-frame showcase-frame-actual"><img src="assets/ui/home-record-setup.png" alt="Ultimate Macro Record tab with map and mode selectors, equipped tower field and recording options." width="825" height="558" loading="eager" decoding="async"></div></figure>
+              </article>
+              <article class="showcase-slide" id="showcase-panel-run" role="tabpanel" aria-labelledby="showcase-tab-run" aria-hidden="true" tabindex="0" inert data-showcase-panel="1">
+                <div class="showcase-copy"><h3>Set up a repeatable run.</h3><p>Choose a saved strategy, then set tower auto-equip, strategy alternation and repeat after verified match results.</p></div>
+                <figure class="showcase-figure"><div class="showcase-frame showcase-frame-actual"><img src="assets/ui/home-run-options.png" alt="Ultimate Macro Run tab with the Fallen Down strategy selected and options for alternating strategies, auto equipping towers and repeating after verified match results." width="820" height="554" loading="lazy" decoding="async"></div></figure>
+              </article>
+            </div>
+          </div>
+        </div>
+        <div class="showcase-footer"><a class="home-inline-link" href="features/">See all features</a></div>
+      </section>
+
+      <section id="how-it-works" class="home-setup-section" aria-labelledby="home-setup-title" data-reveal>
         <div class="home-setup-head">
-          <div><p class="eyebrow">Get started</p><h2 id="home-setup-title">Set up your first run</h2></div>
-          <a class="home-inline-link" href="guide/">Full setup guide <span aria-hidden="true">↗</span></a>
+          <h2 id="home-setup-title">Get ready for a run.</h2>
+          <a class="home-inline-link" href="guide/">Open the setup guide <span aria-hidden="true">↗</span></a>
         </div>
-        <ol class="home-setup-steps">
-          <li><span class="home-step-index">01</span><div><h3>Download</h3><p>Get the official Windows ZIP and extract the whole folder.</p></div></li>
-          <li><span class="home-step-index">02</span><div><h3>Set up</h3><p>Install AutoHotkey v2 and match the required TDS settings.</p></div></li>
-          <li><span class="home-step-index">03</span><div><h3>Run</h3><p>Load a strategy and watch your first match.</p></div></li>
-        </ol>
+        <div class="home-setup" data-setup>
+          <div class="home-setup-tabs" role="tablist" aria-label="First run setup">
+            <button id="setup-tab-download" type="button" role="tab" aria-selected="true" aria-controls="setup-panel-download" tabindex="0" data-setup-tab="0">Download</button>
+            <button id="setup-tab-settings" type="button" role="tab" aria-selected="false" aria-controls="setup-panel-settings" tabindex="-1" data-setup-tab="1">Set up</button>
+            <button id="setup-tab-first-run" type="button" role="tab" aria-selected="false" aria-controls="setup-panel-first-run" tabindex="-1" data-setup-tab="2">First run</button>
+          </div>
+          <div class="home-setup-panel" id="setup-panel-download" role="tabpanel" aria-labelledby="setup-tab-download" data-setup-panel="0">
+            <div><h3>Get the official ZIP.</h3><p>Download the release and extract the whole folder before opening the app.</p></div><a class="home-inline-link" href="download/">Go to downloads <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="home-setup-panel" id="setup-panel-settings" role="tabpanel" aria-labelledby="setup-tab-settings" aria-hidden="true" inert data-setup-panel="1" hidden>
+            <div><h3>Match the setup.</h3><p>Install AutoHotkey v2 and follow the display and game settings in the guide.</p></div><a class="home-inline-link" href="guide/">Read setup steps <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="home-setup-panel" id="setup-panel-first-run" role="tabpanel" aria-labelledby="setup-tab-first-run" aria-hidden="true" inert data-setup-panel="2" hidden>
+            <div><h3>Watch one complete match.</h3><p>Load a strategy and confirm the run works before leaving it unattended.</p></div><a class="home-inline-link" href="guide/first-run/">Prepare your first run <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
       </section>
-
-      <section class="coming-preview" id="coming" aria-labelledby="coming-preview-title">
-  <div class="roadmap-inner">
-    <div class="roadmap-intro">
-      <h2 id="coming-preview-title">What’s Coming</h2>
-      <p>Planned features. Follow development in Discord.</p>
-    </div>
-    <div class="roadmap-group" aria-labelledby="home-coming-major">
-      <h3 class="roadmap-category" id="home-coming-major">MAJOR</h3>
-      <div class="roadmap-list">
-        <article class="roadmap-item" data-roadmap-feature="ai"><span class="roadmap-icon roadmap-icon-ai" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"/></svg></span><div class="roadmap-item-copy"><h3>AI Assistant Integration</h3><p>Help reading run reports and troubleshooting errors, with an AI provider you choose.</p></div></article>
-        <article class="roadmap-item" data-roadmap-feature="macos"><span class="roadmap-icon roadmap-icon-mac" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M1.5 20h21M9.5 20l.7-3h3.6l.7 3"/></svg></span><div class="roadmap-item-copy"><h3>macOS Support</h3><p>A separate Mac version. The current release supports Windows only.</p></div></article>
-        <article class="roadmap-item" data-roadmap-feature="record"><span class="roadmap-icon roadmap-icon-record" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M4 4l2 2m14-2-2 2m2 14-2-2m-14 2 2-2"/></svg></span><div class="roadmap-item-copy"><h3>Smart Recording System</h3><p>More reliable recording and easier review of captured runs.</p></div></article>
-        <article class="roadmap-item" data-roadmap-feature="goals"><span class="roadmap-icon roadmap-icon-target" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span><div class="roadmap-item-copy"><h3>AI-Powered Goals</h3><p>Plan supported runs around a goal, with limits and actions you approve.</p></div></article>
-      </div>
-    </div>
-    <div class="roadmap-more"><a href="coming/">See everything that's coming <span aria-hidden="true">↗</span></a></div>
-  </div>
-</section>
-
-      <section id="faq" class="home-faq-section" aria-labelledby="home-faq-title">
-        <div class="home-faq-head"><p class="eyebrow">Quick answers</p><h2 id="home-faq-title">Before you download.</h2></div>
+      <section id="faq" class="home-faq-section" aria-labelledby="home-faq-title" data-reveal>
+        <div class="home-faq-head"><h2 id="home-faq-title">Good to know.</h2></div>
         <div class="home-faq-list">
-          <details><summary>Is it free?</summary><p>Yes. Public releases are free and open source.</p></details>
+          <details data-reveal><summary>Is it free?</summary><p>Yes. Public releases are free and open source.</p></details>
           <details><summary>What do I need?</summary><p>Windows 10 or 11, AutoHotkey v2 and the required display, Roblox and OCR settings. <a href="guide/">See the setup guide</a>.</p></details>
           <details><summary>Can it run unattended?</summary><p>Some runs support restarts and reconnection, but screen detection can fail. Test your loadout and watch a full match before leaving it running.</p></details>
-          <details><summary>Where do I find strategies?</summary><p>Browse the <a href="strategies/">Strategy Network</a> or load a compatible <code>.strat</code> file in the app.</p></details>
+          <details><summary>Where do I find strategies?</summary><p>Browse the built-in strategy library or import a compatible <code>.strat</code> file in the app.</p></details>
         </div>
       </section>
 
-      <section id="community" class="home-community-section" aria-labelledby="home-community-title">
-        <div class="home-community-head"><p class="eyebrow">The community</p><h2 id="home-community-title">Community &amp; support</h2><p>Find strategies, get help and follow development.</p></div>
+      <section id="community" class="home-community-section" aria-labelledby="home-community-title" data-reveal>
+        <div class="home-community-head"><h2 id="home-community-title">Find your next run.</h2></div>
         <div class="home-community-links">
-          <a href="strategies/"><span>Strategy Network</span><small>Community files</small><b aria-hidden="true">↗</b></a>
-          <a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer"><span>Discord</span><small>Support &amp; updates</small><b aria-hidden="true">↗</b></a>
-          <a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank" rel="noopener noreferrer"><span>GitHub</span><small>Source &amp; releases</small><b aria-hidden="true">↗</b></a>
+          <a data-reveal href="/wiki/"><span>Browse strategy guides</span><small>Wiki</small><b aria-hidden="true">↗</b></a>
+          <a data-reveal href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer"><span>Ask the community</span><small>Discord</small><b aria-hidden="true">↗</b></a>
+          <a data-reveal href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank" rel="noopener noreferrer"><span>Follow development</span><small>GitHub</small><b aria-hidden="true">↗</b></a>
         </div>
       </section>
 
-      <section class="home-bottom-cta" aria-label="Download Ultimate Macro">
-        <div><p class="eyebrow">Free &amp; open source</p><h2>Get Ultimate Macro</h2></div>
-        <div class="home-bottom-actions"><a class="button" href="download/">Download Ultimate Macro <span aria-hidden="true">↗</span></a><a class="home-inline-link" href="guide/">Setup guide <span aria-hidden="true">↗</span></a></div>
+      <section class="home-bottom-cta" aria-label="Download Ultimate Macro" data-reveal>
+        <div><h2>Ready for your first run?</h2></div>
+        <div class="home-bottom-actions"><a class="button" href="download/">Download for Windows</a><a class="home-inline-link" href="guide/">Setup guide <span aria-hidden="true">↗</span></a></div>
       </section>
     </main>
-<footer><a class="brand" href="#home"><img class="brand-mark" src="/assets/ultimate-logo.png" alt="" aria-hidden="true"><span>Ultimate <b>Macro</b></span></a><p>A free macro for Tower Defense Simulator.</p><div><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/report/">Report a bug</a><a href="/coming/">What's Coming</a><a href="/memberships/">Memberships</a><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.youtube.com/@UltimateMacro" target="_blank" rel="noopener noreferrer">YouTube</a><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a></div><small>© 2026 Ultimate Macro · Not affiliated with Roblox Corporation or Paradoxum Games.</small></footer>
-    <script src="src/homepage.js?v=1"></script><script src="app.js?v=4"></script>
+<footer data-reveal><a class="brand" href="#home"><img class="brand-mark" src="/assets/ultimate-macro-mascot.png" alt="" aria-hidden="true"><span>Ultimate <b>Macro</b></span></a><p>A free macro for Tower Defense Simulator.</p><div><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/report/">Report a bug</a><a href="/coming/">What's Coming</a><a href="/memberships/">Memberships</a><a href="https://github.com/UltimateMacro/Ultimate-Macro-New-Era" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.youtube.com/@UltimateMacro" target="_blank" rel="noopener noreferrer">YouTube</a><a href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Discord</a></div><small>© 2026 Ultimate Macro · Not affiliated with Roblox Corporation or Paradoxum Games.</small></footer>
+    <script src="/src/unified-shell.js?v=shared-header-20261106-a"></script>
+    <script src="src/homepage.js?v=26"></script>
   </body>
 </html>
 

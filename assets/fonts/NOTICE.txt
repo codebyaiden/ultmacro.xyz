@@ -1,0 +1,1 @@
+@fontsource-variable/geist 5.3.0; subset: Latin; license: SIL Open Font License 1.1.

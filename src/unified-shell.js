@@ -4,31 +4,18 @@
   if (!legacyHeader || legacyHeader.classList.contains('um-site-header')) return;
   const pathname = location.pathname;
   const guide = /^\/guide(?:\/|$)/.test(pathname);
-  const active = guide || /^\/wiki(?:\/|$)/.test(pathname) ? 'wiki'
+  const active = /^\/features(?:\/|$)/.test(pathname) ? 'features'
+    : guide || /^\/wiki(?:\/|$)/.test(pathname) ? 'wiki'
     : /^\/strategies(?:\/|$)/.test(pathname) ? 'strategies'
+    : /^\/about(?:\/|$)/.test(pathname) ? 'about'
     : /^\/early-access(?:\/|$)/.test(pathname) ? 'early'
     : /^\/dashboard(?:\/|$)/.test(pathname) ? 'dashboard'
     : /^\/download(?:\/|$)/.test(pathname) ? 'download' : '';
-  const guideLabel = {
-    requirements:'Requirements',install:'Install',display:'Display settings',
-    'first-run':'First run',recording:'Recording',sessions:'Sessions',
-    discord:'Discord & profiles',tools:'Tools',troubleshooting:'Troubleshooting',safety:'Safety'
-  };
-  const segment = pathname.split('/').filter(Boolean);
-  const context = guide
-    ? (guideLabel[segment[1]] || 'Guide')
-    : pathname.startsWith('/wiki/api/') ? 'Wiki API'
-    : active === 'wiki' ? 'Wiki'
-    : active === 'strategies' ? 'Strategies'
-    : active === 'early' ? 'Early access'
-    : active === 'download' ? 'Download' : '';
   const destinations = [
-    { id:'features',label:'Features',href:'/#features' },
+    { id:'features',label:'Features',href:'/features/' },
     { id:'wiki',label:'Wiki',href:'/wiki/' },
-    { id:'strategies',label:'Strategy Network',href:'/strategies/' },
     { id:'early',label:'Early Access',href:'/early-access/' },
-    { id:'dashboard',label:'Dashboard',href:'/dashboard/' },
-    { id:'download',label:'Download',href:'/download/' }
+    { id:'about',label:'About Us',href:'/about/' },
   ];
   const el = (tag, cls, text) => {
     const node = document.createElement(tag);
@@ -39,73 +26,46 @@
   const makeLink = ({ id,label,href }) => {
     const a = el('a','',label);
     a.href = href;
-    if (active === id) a.setAttribute('aria-current','page');
+    if (active === id) {
+      a.setAttribute('aria-current','page');
+      a.addEventListener('click', event => event.preventDefault());
+    }
     return a;
   };
 
   const header = el('header','um-site-header');
   const inner = el('div','um-header-inner');
-  const left = el('div','um-brand-wrap');
   const brand = el('a','um-brand');
   brand.href = '/'; brand.setAttribute('aria-label','Ultimate Macro homepage');
   const image = el('img');
-  image.src = '/assets/ultimate-logo.png';image.alt = '';image.width=29;image.height=29;
+  image.src = '/assets/ultimate-macro-mascot.png';image.alt = '';image.width=38;image.height=38;
   const brandText = el('span','');
   brandText.append('Ultimate ',el('b','', 'Macro'));
   brand.append(image,brandText);
+  const left = el('div','um-brand-wrap');
   left.append(brand);
-  if (context) left.append(el('span','um-context',context));
+  const trace = el('svg','um-nav-loop-trace');
+  trace.setAttribute('viewBox','0 0 800 50');
+  trace.setAttribute('aria-hidden','true');
+  trace.setAttribute('focusable','false');
+  trace.innerHTML = '<defs><linearGradient id="um-nav-loop-light" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9c91ae" stop-opacity="0"/><stop offset=".4" stop-color="#b8a7d7" stop-opacity=".52"/><stop offset=".52" stop-color="#e5d9f8" stop-opacity=".82"/><stop offset=".68" stop-color="#a98bd5" stop-opacity=".48"/><stop offset="1" stop-color="#9c91ae" stop-opacity="0"/></linearGradient></defs><path class="um-nav-loop-base" d="M8 25 C150 3 258 3 400 25 C542 47 650 47 792 25 C650 3 542 3 400 25 C258 47 150 47 8 25"/><path class="um-nav-loop-flow" d="M8 25 C150 3 258 3 400 25 C542 47 650 47 792 25 C650 3 542 3 400 25 C258 47 150 47 8 25"/>';
   const desktop = el('nav','um-primary');
   desktop.setAttribute('aria-label','Primary navigation');
   destinations.forEach(link => desktop.append(makeLink(link)));
   const actions = el('div','um-header-actions');
-  const discord = el('a','um-discord','Discord');
-  discord.href='https://discord.gg/ultmacro';discord.target='_blank';discord.rel='noopener noreferrer';
-  if (pathname === '/wiki/' || pathname === '/wiki') {
-    const search = el('button','um-wiki-search','Search');
-    search.type='button';search.setAttribute('aria-label','Search wiki articles');
-    search.addEventListener('click',()=>{
-      if (menuOpen) setOpen(false);
-      document.getElementById('search-trigger')?.click();
-    });
-    actions.append(search);
-  } else if (pathname.startsWith('/wiki/api/')) {
-    const search=el('a','um-wiki-search','Search guides');
-    search.href='#search-guides';
-    search.addEventListener('click',()=>{ if (menuOpen) setOpen(false); });
-    actions.append(search);
-  }
-  // Wiki navigation belongs to the shared header when the original header is hidden.
-  if (pathname === '/wiki/' || pathname === '/wiki') {
-    const browse = el('button','um-wiki-browse','Guides');
-    browse.type='button';
-    browse.setAttribute('aria-label','Browse Wiki guides');
-    browse.setAttribute('aria-controls','sidebar');
-    browse.setAttribute('aria-expanded','false');
-    browse.addEventListener('click',()=>{
-      if (toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
-      document.getElementById('nav-toggle')?.click();
-    });
-    actions.append(browse);
-    const legacyBrowse = document.getElementById('nav-toggle');
-    if (legacyBrowse && 'MutationObserver' in window) {
-      new MutationObserver(()=>browse.setAttribute('aria-expanded',legacyBrowse.getAttribute('aria-expanded') || 'false'))
-        .observe(legacyBrowse,{attributes:true,attributeFilter:['aria-expanded']});
-    }
-  }
-  const cta = el('a','um-cta','Get the macro ↗');
-  cta.href='/download/';
+  const cta = makeLink({id:'download',label:'Download',href:'/download/'});
+  cta.className='um-cta';
   const toggle=el('button','um-menu-toggle','Menu');
   toggle.type='button';toggle.setAttribute('aria-label','Open navigation');
   toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-controls','um-menu-panel');
-  actions.append(discord,cta,toggle);
-  inner.append(left,desktop,actions);
+  actions.append(cta,toggle);
+  inner.append(left,trace,desktop,actions);
   const mobile = el('nav','um-menu-panel');
   mobile.id='um-menu-panel';mobile.setAttribute('aria-label','Mobile primary navigation');
   destinations.forEach(link => mobile.append(makeLink(link)));
-  const support = el('a','','Discord community ↗');
-  support.href='https://discord.gg/ultmacro';support.rel='noopener noreferrer';support.target='_blank';
-  mobile.append(support);
+  const mobileCta = makeLink({id:'download',label:'Download',href:'/download/'});
+  mobileCta.className='um-menu-cta';
+  mobile.append(mobileCta);
   header.append(inner,mobile);
 
   const scrim=el('button','um-menu-backdrop');
@@ -133,7 +93,6 @@
       scrim.hidden = false;
       mobile.dataset.state = 'opening';
       scrim.dataset.state = 'opening';
-      mobile.querySelector('a')?.focus();
     } else {
       mobile.dataset.state = 'closing';
       scrim.dataset.state = 'closing';
@@ -166,6 +125,38 @@
 
   document.body.insertBefore(header,legacyHeader);
   document.body.insertBefore(scrim,legacyHeader);
-  document.body.insertBefore(sky,legacyHeader);
+  if (!document.body.classList.contains('home-rework') && !document.querySelector('.night-sky,.site-sky')) document.body.insertBefore(sky,legacyHeader);
   document.body.classList.add('um-unified-page');
+  const updateScrollState = () => header.classList.toggle('is-scrolled', window.scrollY > 12);
+  window.addEventListener('scroll',updateScrollState,{passive:true});
+  updateScrollState();
+
+  if (pathname === '/wiki/' || pathname === '/wiki' || pathname.startsWith('/wiki/api/')) {
+    const main = document.getElementById('main');
+    if (main) {
+      const tools = el('div','wiki-page-tools');
+      tools.setAttribute('role','group');
+      tools.setAttribute('aria-label','Wiki tools');
+      if (pathname.startsWith('/wiki/api/')) {
+        const search = el('a','wiki-search-action','Search guides');
+        search.href='#search-guides';
+        tools.append(search);
+      } else {
+        const search = el('button','wiki-search-action','Search guides');
+        search.type='button';
+        search.setAttribute('aria-label','Search Wiki guides');
+        search.addEventListener('click',()=>document.getElementById('search-trigger')?.click());
+        const browse = el('button','wiki-browse-action','Browse guides');
+        browse.type='button';
+        browse.setAttribute('aria-controls','sidebar');
+        browse.addEventListener('click',()=>document.getElementById('nav-toggle')?.click());
+        const legacyBrowse = document.getElementById('nav-toggle');
+        const syncBrowseState = () => browse.setAttribute('aria-expanded',legacyBrowse?.getAttribute('aria-expanded') || 'false');
+        syncBrowseState();
+        if (legacyBrowse && 'MutationObserver' in window) new MutationObserver(syncBrowseState).observe(legacyBrowse,{attributes:true,attributeFilter:['aria-expanded']});
+        tools.append(search,browse);
+      }
+      main.insertBefore(tools,main.firstChild);
+    }
+  }
 })();

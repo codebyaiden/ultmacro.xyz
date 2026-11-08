@@ -112,7 +112,7 @@ const path = window.location.pathname.replace(/\/$/, "") || "/";
 const homeContext = document.createElement("span");
 homeContext.className = "home-context";
 const contextPath = window.location.pathname;
-homeContext.textContent = contextPath.includes("/features") ? "Features" : contextPath.includes("/how-it-works") ? "How it works" : contextPath.includes("/faq") ? "FAQ" : contextPath.includes("/aboutus") ? "About" : "Home";
+homeContext.textContent = contextPath.includes("/features") ? "Features" : contextPath.includes("/how-it-works") ? "How it works" : contextPath.includes("/faq") ? "FAQ" : contextPath.includes("/about") ? "About" : "Home";
 document.querySelector(".nav-shell .brand")?.after(homeContext);
 
 const legacyActions = document.querySelector(".nav-shell .nav-actions");
@@ -185,4 +185,3 @@ if (settingsHost) {
     link.setAttribute("aria-current", "page");
   }
 });
-
