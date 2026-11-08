@@ -11,6 +11,10 @@
 .strategy-run-state strong { color: #f1f0f3; font-size: 13px; font-weight: 550; }
 .strategy-run-state span { color: var(--app-muted); font-size: 11px; }
 .strategy-slot-list { display: grid; margin: 0; padding: 0; list-style: none; }
+.strategy-library-heading { margin: 24px 0 10px; color: #e8e7eb; font-size: 14px; font-weight: 600; }
+.strategy-library-list { max-height: 58vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.24) transparent; }
+.strategy-library-list::-webkit-scrollbar { width: 8px; }
+.strategy-library-list::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(255,255,255,.2); }
 .strategy-slot-list li { display: grid; min-height: 50px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
 .strategy-slot-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
 .strategy-slot-label { color: var(--app-quiet); font-size: 11px; }

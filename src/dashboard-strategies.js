@@ -127,6 +127,71 @@
         }
         card.append(slotList);
       }
+
+      const files = Array.isArray(snapshot.availableStrategies) ? snapshot.availableStrategies : [];
+      if (files.length) {
+        appendText(card, 'h3', 'strategy-library-heading', 'Saved strategies');
+        const fileList = document.createElement('ol');
+        fileList.className = 'strategy-slot-list strategy-library-list';
+        for (const file of [...files].sort((a, b) => b.modified.localeCompare(a.modified))) {
+          const key = `${device.id}:file:${file.id}`;
+          const row = document.createElement('li');
+          appendText(row, 'span', 'strategy-slot-label', 'File');
+          appendText(row, 'strong', 'strategy-slot-name', file.name);
+          const actions = document.createElement('div');
+          actions.className = 'strategy-slot-actions';
+          const edit = document.createElement('button');
+          edit.type = 'button';
+          edit.className = 'strategy-edit-button';
+          edit.textContent = editors.has(key) ? 'Close editor' : 'Edit code';
+          edit.dataset.strategyFileEdit = file.id;
+          edit.dataset.deviceId = device.id;
+          edit.disabled = busy || device.state !== 'connected';
+          actions.append(edit);
+          row.append(actions);
+          fileList.append(row);
+
+          if (editors.has(key)) {
+            const editorRow = document.createElement('li');
+            editorRow.className = 'strategy-editor-row';
+            const editor = document.createElement('section');
+            editor.className = 'strategy-editor';
+            const textarea = document.createElement('textarea');
+            textarea.className = 'strategy-code-input';
+            textarea.spellcheck = false;
+            textarea.setAttribute('aria-label', `Raw strategy code for ${file.name}`);
+            textarea.dataset.strategyFileCode = file.id;
+            textarea.dataset.deviceId = device.id;
+            textarea.value = editors.get(key).text || '';
+            textarea.placeholder = 'Load the strategy from the PC to edit its raw .strat code.';
+            textarea.disabled = busy;
+            editor.append(textarea);
+            const controls = document.createElement('div');
+            controls.className = 'strategy-editor-controls';
+            const load = document.createElement('button');
+            load.type = 'button';
+            load.className = 'strategy-edit-button';
+            load.textContent = 'Reload from PC';
+            load.dataset.strategyFileLoad = file.id;
+            load.dataset.deviceId = device.id;
+            load.disabled = busy;
+            const save = document.createElement('button');
+            save.type = 'button';
+            save.className = 'strategy-select-button';
+            save.textContent = editors.get(key).queued ? 'Saved for next game' : 'Save for next game';
+            save.dataset.strategyFileSave = file.id;
+            save.dataset.deviceId = device.id;
+            save.disabled = busy || !editors.get(key).base || editors.get(key).queued;
+            controls.append(load, save);
+            editor.append(controls);
+            editorRow.append(editor);
+            fileList.append(editorRow);
+          }
+        }
+        card.append(fileList);
+      } else {
+        appendText(card, 'p', 'strategy-empty-state', 'No saved strategy files.');
+      }
       list.append(card);
     }
   }
@@ -209,17 +274,17 @@
     throw new Error('The PC hasn’t replied yet. Keep Ultimate Macro open and try again.');
   }
 
-  async function loadCode(deviceId, slot) {
+  async function loadCode(deviceId, slot, strategyId = null) {
     const device = currentState.devices.find(item => item.id === deviceId);
     if (busy || device?.state !== 'connected') return;
     busy = true;
-    const key = `${deviceId}:${slot}`;
+    const key = strategyId ? `${deviceId}:file:${strategyId}` : `${deviceId}:${slot}`;
     editors.set(key, { ...(editors.get(key) || {}), text: '' });
     update(currentState);
     showFeedback('Loading strategy from the PC…');
     try {
-      const response = await command(deviceId, `read_strategy_${slot}`);
-      if (!response.data || response.data.slot !== Number(slot) || typeof response.data.strategyText !== 'string') throw new Error('The PC returned an incomplete strategy file.');
+      const response = await command(deviceId, `read_strategy_${slot}`, strategyId ? { strategyId } : null);
+      if (!response.data || (strategyId ? response.data.strategyId !== strategyId : response.data.slot !== Number(slot)) || typeof response.data.strategyText !== 'string') throw new Error('The PC returned an incomplete strategy file.');
       editors.set(key, { text: response.data.strategyText, base: { modified: response.data.modified, size: response.data.size } });
       showFeedback('Loaded from the PC.');
     } catch (error) {
@@ -231,8 +296,8 @@
     }
   }
 
-  async function saveCode(deviceId, slot, textarea) {
-    const key = `${deviceId}:${slot}`;
+  async function saveCode(deviceId, slot, textarea, strategyId = null) {
+    const key = strategyId ? `${deviceId}:file:${strategyId}` : `${deviceId}:${slot}`;
     const editor = editors.get(key);
     const device = currentState.devices.find(item => item.id === deviceId);
     if (busy || !editor?.base || device?.state !== 'connected') return;
@@ -246,7 +311,7 @@
     showFeedback('Checking and sending the strategy…');
     try {
       await command(deviceId, 'stage_strategy_edit', {
-        slot: Number(slot), strategyText: textarea.value,
+        ...(strategyId ? { strategyId } : { slot: Number(slot) }), strategyText: textarea.value,
         baseModified: editor.base.modified, baseSize: editor.base.size
       });
       editors.set(key, { ...editor, text: textarea.value, queued: true });
@@ -276,11 +341,27 @@
       const textarea = panel?.querySelector('.strategy-code-input');
       if (textarea) saveCode(save.dataset.deviceId, save.dataset.strategySave, textarea);
     }
+    const fileEdit = event.target.closest('[data-strategy-file-edit]');
+    if (fileEdit) {
+      const key = `${fileEdit.dataset.deviceId}:file:${fileEdit.dataset.strategyFileEdit}`;
+      if (editors.has(key)) { editors.delete(key); update(currentState); }
+      else { editors.set(key, { text: '' }); loadCode(fileEdit.dataset.deviceId, 1, fileEdit.dataset.strategyFileEdit); }
+    }
+    const fileLoad = event.target.closest('[data-strategy-file-load]');
+    if (fileLoad) loadCode(fileLoad.dataset.deviceId, 1, fileLoad.dataset.strategyFileLoad);
+    const fileSave = event.target.closest('[data-strategy-file-save]');
+    if (fileSave) {
+      const panel = fileSave.closest('.strategy-editor');
+      const textarea = panel?.querySelector('.strategy-code-input');
+      if (textarea) saveCode(fileSave.dataset.deviceId, 1, textarea, fileSave.dataset.strategyFileSave);
+    }
   });
   list.addEventListener('input', event => {
-    const textarea = event.target.closest('[data-strategy-code]');
+    const textarea = event.target.closest('[data-strategy-code], [data-strategy-file-code]');
     if (!textarea) return;
-    const key = `${textarea.dataset.deviceId}:${textarea.dataset.strategyCode}`;
+    const key = textarea.dataset.strategyFileCode
+      ? `${textarea.dataset.deviceId}:file:${textarea.dataset.strategyFileCode}`
+      : `${textarea.dataset.deviceId}:${textarea.dataset.strategyCode}`;
     const previous = editors.get(key);
     if (previous) editors.set(key, { ...previous, text: textarea.value });
   });

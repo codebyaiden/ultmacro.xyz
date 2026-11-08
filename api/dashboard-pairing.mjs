@@ -225,11 +225,12 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
 
 function normalizeMacroSnapshot(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots'];
+  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots', 'availableStrategies'];
   if (Object.keys(value).some(key => !allowed.includes(key)) ||
       !['stopped', 'running', 'paused'].includes(value.runState) ||
       ![1, 2].includes(value.activeSlot) || typeof value.rotationEnabled !== 'boolean' ||
       !Array.isArray(value.strategySlots) || value.strategySlots.length > 2 ||
+      (value.availableStrategies !== undefined && (!Array.isArray(value.availableStrategies) || value.availableStrategies.length > 200)) ||
       (value.activeStrategy !== null && (typeof value.activeStrategy !== 'string' || value.activeStrategy.length > 80)) ||
       (value.map !== '' && (typeof value.map !== 'string' || value.map.length > 64)) ||
       (value.mode !== '' && (typeof value.mode !== 'string' || value.mode.length > 32))) return null;
@@ -244,6 +245,18 @@ function normalizeMacroSnapshot(value) {
     seen.add(item.slot);
     slots.push({ slot: item.slot, name: item.name.trim() });
   }
+  const availableStrategies = [];
+  const fileIds = new Set();
+  for (const item of value.availableStrategies || []) {
+    if (!item || typeof item !== 'object' || Array.isArray(item) ||
+        Object.keys(item).some(key => !['id', 'name', 'modified', 'size'].includes(key)) ||
+        typeof item.id !== 'string' || item.id.length > 180 || !/^[^\\/:\0-\x1f]+\.strat$/i.test(item.id) ||
+        fileIds.has(item.id.toLowerCase()) || typeof item.name !== 'string' || !item.name.trim() || item.name.length > 80 || /[\r\n\0]/.test(item.name) ||
+        typeof item.modified !== 'string' || !/^\d{14}$/.test(item.modified) ||
+        !Number.isSafeInteger(item.size) || item.size < 0 || item.size > MAX_STRATEGY_BYTES) return null;
+    fileIds.add(item.id.toLowerCase());
+    availableStrategies.push({ id: item.id, name: item.name.trim(), modified: item.modified, size: item.size });
+  }
   return {
     runState: value.runState,
     activeStrategy: value.activeStrategy?.trim() || null,
@@ -251,7 +264,8 @@ function normalizeMacroSnapshot(value) {
     rotationEnabled: value.rotationEnabled,
     map: value.map.trim(),
     mode: value.mode.trim(),
-    strategySlots: slots
+    strategySlots: slots,
+    availableStrategies
   };
 }
 
@@ -308,10 +322,12 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
     const state = device.snapshot.runState;
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
-    const payloadSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
+    const payloadFileId = payload?.strategyId;
+    const payloadSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payloadFileId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
     if (selectedSlot && state !== 'stopped') return { error: 'state' };
     if (selectedSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
     if (payloadSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === payloadSlot)) return { error: 'strategy' };
+    if (payloadFileId && !device.snapshot.availableStrategies?.some((file) => file.id === payloadFileId)) return { error: 'strategy' };
     if (command === 'start' && !device.snapshot.strategySlots?.length) return { error: 'strategy' };
     if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') ||
         (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
@@ -336,9 +352,11 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
         or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused'))
         or ($3 = 'select_strategy_1' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
         or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
-        or ($3 = 'read_strategy_1' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
+        or ($3 = 'read_strategy_1' and (($4::jsonb is null and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
+          or d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId'))))
         or ($3 = 'read_strategy_2' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
-        or ($3 = 'stage_strategy_edit' and d.state_snapshot->'strategySlots' @> jsonb_build_array(jsonb_build_object('slot', ($4::jsonb->>'slot')::int))))
+        or ($3 = 'stage_strategy_edit' and (($4::jsonb->>'slot') is not null and d.state_snapshot->'strategySlots' @> jsonb_build_array(jsonb_build_object('slot', ($4::jsonb->>'slot')::int))
+          or ($4::jsonb->>'strategyId') is not null and d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId')))))
       and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
     returning id, command, status, expires_at`, [ownerHash, deviceId, command, payload ? JSON.stringify(payload) : null]); }
   catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
@@ -348,9 +366,11 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
   const state = device.rows[0].state_snapshot.runState;
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
-  const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
+  const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payload?.strategyId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
+  const requiredFileId = payload?.strategyId;
   if (selectedSlot && state !== 'stopped') return { error: 'state' };
   if (requiredSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === requiredSlot)) return { error: 'strategy' };
+  if (requiredFileId && !device.rows[0].state_snapshot.availableStrategies?.some((file) => file.id === requiredFileId)) return { error: 'strategy' };
   if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
   if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
   return { error: 'pending' };
@@ -1066,17 +1086,27 @@ export default async function dashboardPairing(request) {
           typeof body.deviceId !== 'string' || body.deviceId.length > 64 || !REMOTE_COMMANDS.has(body.command))
         return json({ error: 'Choose a valid device and action.' }, 400);
       let payload = null;
-      if (body.command === 'stage_strategy_edit') {
+      if (body.command === 'stage_strategy_edit' || (['read_strategy_1', 'read_strategy_2'].includes(body.command) && body.payload !== undefined)) {
         const value = body.payload;
-        if (!value || Object.keys(value).some(key => !['slot', 'strategyText', 'baseModified', 'baseSize'].includes(key)) ||
-            ![1, 2].includes(value.slot) || typeof value.strategyText !== 'string' ||
-            Buffer.byteLength(value.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
-            typeof value.baseModified !== 'string' || !/^\d{14}$/.test(value.baseModified) ||
-            !Number.isSafeInteger(value.baseSize) || value.baseSize < 0 || value.baseSize > MAX_STRATEGY_BYTES)
-          return json({ error: 'The strategy edit is incomplete or too large.' }, 400);
-        const parsed = parseStrategy(value.strategyText);
-        if (!parsed.ok) return json({ error: parsed.errors[0] || 'This strategy could not be validated.' }, 422);
-        payload = { slot: value.slot, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize };
+        if (body.command !== 'stage_strategy_edit') {
+          if (!value || Object.keys(value).some(key => key !== 'strategyId') || typeof value.strategyId !== 'string' ||
+              value.strategyId.length > 180 || !/^[^\\/:\0-\x1f]+\.strat$/i.test(value.strategyId))
+            return json({ error: 'Choose a saved strategy file.' }, 400);
+          payload = { strategyId: value.strategyId };
+        } else {
+          if (!value || Object.keys(value).some(key => !['slot', 'strategyId', 'strategyText', 'baseModified', 'baseSize'].includes(key)) ||
+              ((![1, 2].includes(value.slot)) === (typeof value.strategyId !== 'string')) ||
+              typeof value.strategyText !== 'string' || Buffer.byteLength(value.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
+              typeof value.baseModified !== 'string' || !/^\d{14}$/.test(value.baseModified) ||
+              !Number.isSafeInteger(value.baseSize) || value.baseSize < 0 || value.baseSize > MAX_STRATEGY_BYTES ||
+              (value.strategyId !== undefined && (value.strategyId.length > 180 || !/^[^\\/:\0-\x1f]+\.strat$/i.test(value.strategyId))))
+            return json({ error: 'The strategy edit is incomplete or too large.' }, 400);
+          const parsed = parseStrategy(value.strategyText);
+          if (!parsed.ok) return json({ error: parsed.errors[0] || 'This strategy could not be validated.' }, 422);
+          payload = value.strategyId !== undefined
+            ? { strategyId: value.strategyId, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize }
+            : { slot: value.slot, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize };
+        }
       } else if (body.payload !== undefined) return json({ error: 'This action does not accept strategy data.' }, 400);
       const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command, payload);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
@@ -1102,8 +1132,10 @@ export default async function dashboardPairing(request) {
           typeof body.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(body.id) || !['succeeded', 'failed'].includes(body.status) ||
           (body.message !== undefined && (typeof body.message !== 'string' || body.message.length > 120)) ||
           (body.data !== undefined && (!body.data || typeof body.data !== 'object' || Array.isArray(body.data) ||
-            Object.keys(body.data).some(key => !['slot', 'strategyText', 'modified', 'size'].includes(key)) ||
-            ![1, 2].includes(body.data.slot) || typeof body.data.strategyText !== 'string' ||
+            Object.keys(body.data).some(key => !['slot', 'strategyId', 'name', 'strategyText', 'modified', 'size'].includes(key)) ||
+            ((! [1, 2].includes(body.data.slot)) === (typeof body.data.strategyId !== 'string')) ||
+            (body.data.strategyId !== undefined && (typeof body.data.name !== 'string' || body.data.name.length > 80 || body.data.strategyId.length > 180 || !/^[^\\/:\0-\x1f]+\.strat$/i.test(body.data.strategyId))) ||
+            typeof body.data.strategyText !== 'string' ||
             Buffer.byteLength(body.data.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
             typeof body.data.modified !== 'string' || !/^\d{14}$/.test(body.data.modified) ||
             !Number.isSafeInteger(body.data.size) || body.data.size < 0 || body.data.size > MAX_STRATEGY_BYTES)))
@@ -1228,7 +1260,7 @@ export default async function dashboardPairing(request) {
       if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
       if (request.headers.has('origin') && !sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
       const match = /^Bearer ([A-Za-z0-9_-]{40,64})$/.exec(request.headers.get('authorization') || '');
-      const body = await bodyJson(request);
+      const body = await bodyJson(request, 131072);
       if (!match || !body || Object.keys(body).some(key => !['appVersion', 'snapshot'].includes(key)) ||
           (body.appVersion !== undefined && (typeof body.appVersion !== 'string' || body.appVersion.length > 32)))
         return json({ error: 'Invalid heartbeat.' }, 401);
