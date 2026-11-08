@@ -115,7 +115,7 @@
             const save = document.createElement('button');
             save.type = 'button';
             save.className = 'strategy-select-button';
-            save.textContent = editors.get(`${device.id}:${slot.slot}`).queued ? 'Queued for next game' : 'Save for next game';
+            save.textContent = editors.get(`${device.id}:${slot.slot}`).queued ? 'Saved for next game' : 'Save for next game';
             save.dataset.strategySave = String(slot.slot);
             save.dataset.deviceId = device.id;
             save.disabled = busy || !editors.get(`${device.id}:${slot.slot}`).base || editors.get(`${device.id}:${slot.slot}`).queued;
@@ -250,7 +250,7 @@
         baseModified: editor.base.modified, baseSize: editor.base.size
       });
       editors.set(key, { ...editor, text: textarea.value, queued: true });
-      showFeedback('Saved on the PC. It will apply before the next game starts.');
+      showFeedback('Saved to the strategy file. It will load for the next game.');
     } catch (error) {
       showFeedback(error.message || 'Could not save the strategy.', true);
     } finally {
