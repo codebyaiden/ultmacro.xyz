@@ -52,4 +52,21 @@ test('remote controls require a fresh PC state, deliver once, and accept an auth
   const feed = await call('/events?limit=10');
   assert.equal(feed.data.events[0].type, 'game.joined');
   assert.equal(feed.data.events[0].data.map, 'Fallen');
+
+  const resultEvent = {
+    eventId: 'c'.repeat(32), sequence: 2, type: 'match.victory',
+    occurredAt: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), appVersion: 'test-1',
+    runId: 'b'.repeat(32), source: 'screen', confidence: 'observed',
+    data: { map: 'Fallen', coins: 12345, gems: 25, towerXp: 450, durationSeconds: 494 }
+  };
+  const resultUpload = await call('/events', { method: 'POST', token: deviceToken, body: { events: [resultEvent] } });
+  assert.equal(resultUpload.response.status, 200);
+  const earnings = await call('/earnings?range=day');
+  assert.equal(earnings.response.status, 200);
+  assert.deepEqual(earnings.data.totals, { coins: 12345, gems: 25, towerXp: 450 });
+  assert.equal(earnings.data.latest[0].type, 'match.victory');
+  const retry = await call('/events', { method: 'POST', token: deviceToken, body: { events: [resultEvent] } });
+  assert.equal(retry.data.accepted, 0);
+  const anonymous = await handler(new Request('http://localhost/api/dashboard/v1/earnings?range=day'));
+  assert.equal(anonymous.status, 401);
 });

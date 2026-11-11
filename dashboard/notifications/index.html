@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
   <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-notifications.js?v=4" defer></script>
+  <script src="/src/dashboard-notifications.js?v=5" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
@@ -70,7 +70,7 @@
         <section class="notification-group" aria-labelledby="results-title">
           <div class="notification-group-copy">
             <h2 id="results-title">Run results</h2>
-            <p>Win, loss, and error alerts will be available when the macro reports confirmed results.</p>
+          <p>Victory and loss alerts are optional. Every result still appears in Activity and Earnings.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="Run result alerts" data-preference="results">
             <button type="button" role="radio" data-value="all" aria-checked="false" tabindex="-1">Every result</button>
@@ -82,7 +82,7 @@
         <section class="notification-group" aria-labelledby="run-events-title">
           <div class="notification-group-copy">
             <h2 id="run-events-title">Run activity</h2>
-            <p>Run changes, with confirmed tower actions included when you choose all activity.</p>
+          <p>Each run update can send a push. Off by default.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="During run alerts" data-preference="runEvents">
             <button type="button" role="radio" data-value="runs" aria-checked="false" tabindex="-1">Run changes</button>

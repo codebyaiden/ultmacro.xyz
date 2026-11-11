@@ -79,6 +79,17 @@
     return `${Math.floor(seconds / 86400)}d ago`;
   }
 
+  function matchDetail(data = {}) {
+    const details = [];
+    if (data.map) details.push(data.map);
+    const rewards = [];
+    if (Number.isSafeInteger(data.coins)) rewards.push(`${new Intl.NumberFormat().format(data.coins)} coins`);
+    if (Number.isSafeInteger(data.gems)) rewards.push(`${new Intl.NumberFormat().format(data.gems)} gems`);
+    if (Number.isSafeInteger(data.towerXp)) rewards.push(`${new Intl.NumberFormat().format(data.towerXp)} XP`);
+    if (rewards.length) details.push(`+${rewards.join(' · +')}`);
+    return details.join(' · ');
+  }
+
   function createRow(event) {
     const definition = eventDefinition(event);
     if (!definition) return null;
@@ -109,6 +120,7 @@
         : filterType === 'joined_roblox' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
           : filterType === 'mode_selected' ? event.data?.mode || ''
             : filterType === 'match_started' ? [event.data?.map, event.data?.mode].filter(Boolean).join(' · ')
+              : ['match.victory', 'match.loss'].includes(event.type) ? matchDetail(event.data)
               : '');
     if (detailText) {
       const detail = document.createElement('span');

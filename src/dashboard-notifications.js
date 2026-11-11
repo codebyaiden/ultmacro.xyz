@@ -11,7 +11,7 @@
   const installHelp = document.querySelector('[data-install-help]');
   const resetDevice = document.querySelector('[data-reset-device]');
   const scopeButtons = [...root.querySelectorAll('[data-pref-scope]')];
-  const defaults = { results: 'all', runEvents: 'runs', connection: 'offline' };
+  const defaults = { results: 'errors', runEvents: 'off', connection: 'offline' };
   const allowed = {
     results: new Set(['all', 'errors', 'off']),
     runEvents: new Set(['runs', 'all', 'off']),

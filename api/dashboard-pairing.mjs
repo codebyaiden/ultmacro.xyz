@@ -36,7 +36,7 @@ const localNotificationPreferences = new Map();
 const localNotifications = new Map();
 const localRemoteCommands = new Map();
 const NOTIFICATION_TTL_MS = 12 * 60 * 60 * 1000;
-const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'all', runEvents: 'runs', connection: 'offline' });
+const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'errors', runEvents: 'off', connection: 'offline' });
 const NOTIFICATION_ALLOWED = Object.freeze({
   results: new Set(['all', 'errors', 'off']),
   runEvents: new Set(['runs', 'all', 'off']),
@@ -472,13 +472,17 @@ function normalizeActivityEvent(value) {
       !['confirmed', 'observed'].includes(value.confidence) || !value.data || typeof value.data !== 'object' || Array.isArray(value.data)) return null;
 
   const dataKeys = Object.keys(value.data);
-  if (dataKeys.some(key => !['action', 'detail', 'rewardType', 'map', 'mode'].includes(key)) ||
+  if (dataKeys.some(key => !['action', 'detail', 'rewardType', 'map', 'mode', 'coins', 'gems', 'towerXp', 'durationSeconds'].includes(key)) ||
       (value.data.action !== undefined && !ACTIVITY_ACTIONS.has(value.data.action)) ||
       (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime') ||
       (value.data.detail !== undefined && (typeof value.data.detail !== 'string' || value.data.detail.length > 64 || /[\r\n\0]/.test(value.data.detail))) ||
-      ['map', 'mode'].some(key => value.data[key] !== undefined && (typeof value.data[key] !== 'string' || value.data[key].length > 64 || /[\r\n\0]/.test(value.data[key])))) return null;
+      ['map', 'mode'].some(key => value.data[key] !== undefined && (typeof value.data[key] !== 'string' || value.data[key].length > 64 || /[\r\n\0]/.test(value.data[key]))) ||
+      ['coins', 'gems', 'towerXp', 'durationSeconds'].some(key => value.data[key] !== undefined &&
+        (!Number.isSafeInteger(value.data[key]) || value.data[key] < 0 || value.data[key] > (key === 'durationSeconds' ? 86400 : 1000000000)))) return null;
   if (value.type.startsWith('strategy.action.') && !value.data.action) return null;
   if (value.type === 'reward.claimed' && value.data.rewardType !== 'playtime') return null;
+  if (['coins', 'gems', 'towerXp', 'durationSeconds'].some(key => value.data[key] !== undefined) &&
+      !['match.victory', 'match.loss'].includes(value.type)) return null;
 
   return {
     eventId: value.eventId.toLowerCase(), sequence: value.sequence, type: value.type,
@@ -489,7 +493,9 @@ function normalizeActivityEvent(value) {
       ...(value.data.detail ? { detail: value.data.detail.trim() } : {}),
       ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}),
       ...(value.data.map ? { map: value.data.map.trim() } : {}),
-      ...(value.data.mode ? { mode: value.data.mode.trim() } : {})
+      ...(value.data.mode ? { mode: value.data.mode.trim() } : {}),
+      ...Object.fromEntries(['coins', 'gems', 'towerXp', 'durationSeconds']
+        .filter(key => value.data[key] !== undefined).map(key => [key, value.data[key]]))
     }
   };
 }
@@ -547,6 +553,87 @@ async function listActivityEvents(ownerHash, limit = 100) {
     where e.owner_hash = $1 and e.occurred_at > now() - interval '30 days'
     order by e.occurred_at desc, e.sequence desc limit $2`, [ownerHash, limit]);
   return result.rows;
+}
+
+const EARNINGS_RANGES = Object.freeze({
+  hour: { ms: 60 * 60 * 1000, count: 12, step: 5 * 60 * 1000, sql: "date_trunc('hour', occurred_at) + floor(extract(minute from occurred_at) / 5) * interval '5 minutes'" },
+  day: { ms: 24 * 60 * 60 * 1000, count: 24, step: 60 * 60 * 1000, sql: "date_trunc('hour', occurred_at)" },
+  week: { ms: 7 * 24 * 60 * 60 * 1000, count: 7, step: 24 * 60 * 60 * 1000, sql: "date_trunc('day', occurred_at)" },
+  month: { ms: 30 * 24 * 60 * 60 * 1000, count: 30, step: 24 * 60 * 60 * 1000, sql: "date_trunc('day', occurred_at)" }
+});
+
+function earningsBucketStart(value, range) {
+  const date = new Date(value);
+  if (range === 'hour') date.setMinutes(Math.floor(date.getMinutes() / 5) * 5, 0, 0);
+  else if (range === 'day') date.setMinutes(0, 0, 0);
+  else date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function earningsResponse(range, rangeInfo, bucketRows, recentRows, now = Date.now()) {
+  const currentBucket = Math.floor(now / rangeInfo.step) * rangeInfo.step;
+  const firstBucket = currentBucket - (rangeInfo.count - 1) * rangeInfo.step;
+  const totals = { coins: 0, gems: 0, towerXp: 0 };
+  const valuesByBucket = new Map();
+  for (const row of bucketRows) {
+    const at = earningsBucketStart(row.bucket, range).getTime();
+    const values = {
+      coins: Number(row.coins) || 0,
+      gems: Number(row.gems) || 0,
+      towerXp: Number(row.towerXp ?? row.tower_xp) || 0
+    };
+    valuesByBucket.set(at, values);
+    totals.coins += values.coins;
+    totals.gems += values.gems;
+    totals.towerXp += values.towerXp;
+  }
+  const buckets = Array.from({ length: rangeInfo.count }, (_, index) => {
+    const start = firstBucket + index * rangeInfo.step;
+    return { start: new Date(start).toISOString(), ...(valuesByBucket.get(start) || { coins: 0, gems: 0, towerXp: 0 }) };
+  });
+  const latest = recentRows.map(row => ({
+    eventId: row.eventId ?? row.event_id,
+    type: row.type ?? row.event_type,
+    occurredAt: new Date(row.occurredAt ?? row.occurred_at).toISOString(),
+    map: row.data?.map || null,
+    coins: Number.isSafeInteger(row.data?.coins) ? row.data.coins : null,
+    gems: Number.isSafeInteger(row.data?.gems) ? row.data.gems : null,
+    towerXp: Number.isSafeInteger(row.data?.towerXp) ? row.data.towerXp : null
+  }));
+  return { range, totals, buckets, latest };
+}
+
+async function listEarnings(ownerHash, range) {
+  const rangeInfo = EARNINGS_RANGES[range];
+  const cutoff = Date.now() - rangeInfo.ms;
+  if (localStore()) {
+    const events = [...localActivityEvents.values()].filter(event => event.ownerHash === ownerHash &&
+      ['match.victory', 'match.loss'].includes(event.type) && Date.parse(event.occurredAt) >= cutoff);
+    const grouped = new Map();
+    for (const event of events) {
+      const key = earningsBucketStart(event.occurredAt, range).toISOString();
+      const row = grouped.get(key) || { bucket: key, coins: 0, gems: 0, towerXp: 0 };
+      row.coins += event.data.coins || 0;
+      row.gems += event.data.gems || 0;
+      row.towerXp += event.data.towerXp || 0;
+      grouped.set(key, row);
+    }
+    events.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt) || b.sequence - a.sequence);
+    return earningsResponse(range, rangeInfo, [...grouped.values()], events.slice(0, 20));
+  }
+
+  const buckets = await sql().query(`select ${rangeInfo.sql} as bucket,
+      coalesce(sum((data->>'coins')::bigint), 0) as coins,
+      coalesce(sum((data->>'gems')::bigint), 0) as gems,
+      coalesce(sum((data->>'towerXp')::bigint), 0) as "towerXp"
+    from dashboard_activity_events
+    where owner_hash = $1 and event_type in ('match.victory', 'match.loss') and occurred_at >= $2
+    group by 1 order by 1`, [ownerHash, new Date(cutoff)]);
+  const recent = await sql().query(`select event_id as "eventId", event_type as type, occurred_at as "occurredAt", data
+    from dashboard_activity_events
+    where owner_hash = $1 and event_type in ('match.victory', 'match.loss') and occurred_at >= $2
+    order by occurred_at desc, sequence desc limit 20`, [ownerHash, new Date(cutoff)]);
+  return earningsResponse(range, rangeInfo, buckets.rows, recent.rows);
 }
 
 async function ownerFrom(request) {
@@ -805,6 +892,20 @@ async function getNotification(ownerHash, id) {
 }
 
 function activityNotification(event) {
+  if (event.type === 'match.victory' || event.type === 'match.loss') {
+    const rewards = [];
+    if (Number.isSafeInteger(event.data.coins)) rewards.push(`+${event.data.coins.toLocaleString()} coins`);
+    if (Number.isSafeInteger(event.data.gems)) rewards.push(`+${event.data.gems.toLocaleString()} gems`);
+    if (Number.isSafeInteger(event.data.towerXp)) rewards.push(`+${event.data.towerXp.toLocaleString()} XP`);
+    const result = event.type === 'match.victory' ? 'Victory!' : 'Run ended';
+    const context = [event.data.map, ...rewards].filter(Boolean).join(' · ');
+    return {
+      title: result,
+      body: context || (event.type === 'match.victory' ? 'Your macro finished the match.' : 'Your macro reached the end of the match.'),
+      category: 'results',
+      details: { eventId: event.eventId, eventType: event.type, occurredAt: event.occurredAt }
+    };
+  }
   const names = {
     'run.started': ['Run started', 'Your macro started a run.'],
     'run.paused': ['Run paused', 'Your macro paused the current run.'],
@@ -1074,6 +1175,15 @@ export default async function dashboardPairing(request) {
       if (events.some(event => !event)) return json({ error: 'An activity event is invalid.' }, 400);
       const accepted = await uploadActivityEvents(match[1], events);
       return accepted === null ? json({ error: 'Device credential is invalid or revoked.' }, 401) : json({ ok: true, accepted, received: events.length });
+    }
+
+    if (route === '/earnings') {
+      if (request.method !== 'GET') return json({ error: 'Method not allowed.' }, 405, { allow: 'GET' });
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      const requested = new URL(request.url).searchParams.get('range') || 'day';
+      if (!Object.hasOwn(EARNINGS_RANGES, requested)) return json({ error: 'Choose a valid earnings range.' }, 400);
+      return json(await listEarnings(owner.hash, requested), 200, { 'cache-control': 'no-store', vary: 'Cookie' });
     }
 
     if (route === '/remote/commands') {

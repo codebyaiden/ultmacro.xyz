@@ -17,14 +17,15 @@
 .earnings-ranges button { min-height: 30px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #92909a; font-size: 10px; cursor: pointer; transition: background .16s ease,color .16s ease,border-color .16s ease; }
 .earnings-ranges button:hover { color: #f3f3f5; background: rgba(255,255,255,.045); }
 .earnings-ranges button[aria-pressed="true"] { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.09); color: #f5f4f7; }
-.earnings-ranges button:disabled { color: #65636c; cursor: not-allowed; }
 .earnings-chart-wrap { display: grid; width: 100%; min-height: 165px; place-items: center; }
 .earnings-empty-state { margin: 0; color: #85838d; font-size: 12px; text-align: center; }
 .earnings-latest-empty { padding: 16px 0; border-top: 1px solid var(--app-line); text-align: left; }
 .earnings-chart { display: block; width: 100%; height: 100%; overflow: visible; }
 .earnings-chart-grid line { stroke: rgba(255,255,255,.075); stroke-width: 1; }
 .earnings-chart-grid text { fill: #74727c; font: 10px "Geist", "Segoe UI", sans-serif; text-anchor: start; }
-.earnings-chart-bars rect { transition: fill .25s ease,opacity .25s ease; }
+.earnings-chart-bars rect { opacity: .86; transform-box: fill-box; transform-origin: center bottom; animation: earnings-bar-grow .56s cubic-bezier(.2,.7,.2,1) both; transition: opacity .18s ease,fill .2s ease; }
+.earnings-chart-bars rect:hover { opacity: 1; }
+@keyframes earnings-bar-grow { from { transform: scaleY(.06); opacity: .25; } to { transform: scaleY(1); opacity: .86; } }
 .earnings-chart-xlabels { display: flex; justify-content: space-between; gap: 8px; margin: 7px 1px 0 51px; color: #777780; font-size: 9px; font-variant-numeric: tabular-nums; }
 .earnings-latest { margin-top: 23px; }
 .earnings-latest-heading { display: flex; align-items: center; gap: 12px; padding: 0 1px 10px; }
@@ -33,6 +34,9 @@
 .earnings-event-list li { display: grid; min-height: 47px; grid-template-columns: minmax(0,1fr) minmax(80px,.4fr) 78px; align-items: center; gap: 12px; padding: 0 12px; border-top: 1px solid var(--app-line); }
 .earnings-event-source { display: flex; min-width: 0; align-items: center; gap: 9px; color: #c1bfc7; font-size: 11px; }
 .earnings-event-source img { width: 25px; height: 25px; flex: 0 0 auto; object-fit: contain; }
+.earnings-result-mark { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: #d6d3db; }
+.earnings-event-victory .earnings-result-mark { background: #a9d4b3; }
+.earnings-event-loss .earnings-result-mark { background: #d9a2a2; }
 .earnings-event-list strong { color: #f2f1f4; font-size: 12px; font-weight: 540; font-variant-numeric: tabular-nums; }
 .earnings-event-list time { color: var(--app-quiet); font-size: 10px; text-align: right; white-space: nowrap; }
 @media (max-width: 920px) {
@@ -56,5 +60,5 @@
   .earnings-event-list li { min-height: 44px; grid-template-columns: minmax(0,1fr) auto 61px; gap: 8px; padding-inline: 9px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .earnings-resource,.earnings-ranges button,.earnings-chart-bars rect { transition: none; }
+  .earnings-resource,.earnings-ranges button,.earnings-chart-bars rect { transition: none; animation: none; }
 }
