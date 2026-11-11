@@ -3,27 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Ultimate Macro Dashboard is in development. Follow our Discord for updates.">
+  <meta name="description" content="Connect Ultimate Macro to your private Dashboard.">
+  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#09090b">
   <meta name="apple-mobile-web-app-title" content="Ultimate Macro">
-  <title>Dashboard · Ultimate Macro</title>
+  <title>Connect Ultimate Macro · Dashboard</title>
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
-  <link rel="stylesheet" href="/styles/dashboard-coming.css?v=1">
+  <link rel="stylesheet" href="/styles/dashboard-entry.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-entry.js?v=dashboard-pairing-entry-20261110" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
 </head>
-<body class="dashboard-coming-page">
+<body class="dashboard-entry-page">
+  <a class="dashboard-skip" href="#main">Skip to content</a>
   <header class="legacy-dashboard-header">
     <a href="/" class="legacy-dashboard-brand"><img src="/assets/ultimate-logo.png" alt="">Ultimate Macro</a>
-    <nav aria-label="Primary navigation"><a href="/features/">Features</a><a href="/wiki/">Wiki</a><a href="/early-access/">Early Access</a><a href="/about/">About Us</a><a href="/dashboard/">Dashboard</a><a href="/download/">Download</a></nav>
   </header>
-  <main class="dashboard-coming-main" id="main">
-    <section class="dashboard-coming-content" aria-labelledby="dashboard-coming-title">
-      <h1 id="dashboard-coming-title">Sorry, the Dashboard is still under development.</h1>
-      <p>We’re working on it. Head over to our Discord server for news and updates.</p>
-      <a class="dashboard-coming-link" href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Follow updates on Discord <span aria-hidden="true">↗</span></a>
+  <main id="main">
+    <section class="dashboard-connect" aria-labelledby="connect-title">
+      <div class="dashboard-connect-copy">
+        <h1 id="connect-title">Hey! You haven’t connected your macro yet.</h1>
+        <p class="connect-instruction">Put this one-time code into Ultimate Macro on your PC.</p>
+
+        <div class="pairing-panel" aria-live="polite">
+          <div class="pairing-code"><output id="pairing-code" aria-label="One-time pairing code">••••-••••</output></div>
+          <button class="new-code-button" type="button">Getting your code…</button>
+          <p class="pairing-status" id="pairing-status" role="status" aria-live="polite">Requesting a secure code…</p>
+        </div>
+
+        <section class="connection-state" id="connection-state" data-state="connecting" role="status" aria-live="polite" hidden>
+          <span class="connection-spinner" aria-hidden="true"></span>
+          <div>
+            <h2 id="connection-title">Connecting to Ultimate Macro</h2>
+            <p id="connection-message">Waiting for the desktop app to confirm the connection.</p>
+          </div>
+        </section>
+        <a class="dashboard-open-link" id="dashboard-open-link" href="/dashboard/overview/" hidden>Open Dashboard</a>
+      </div>
+
+      <figure class="connection-guide" aria-labelledby="guide-title">
+        <h2 id="guide-title">Enter the code in Settings</h2>
+        <img class="connection-guide-image" src="/assets/dashboard/dashboard-connect-settings-141.png" alt="Ultimate Macro Settings showing the Connect to Dashboard code field" width="848" height="588">
+        <figcaption>Only for v1.4.1+</figcaption>
+      </figure>
     </section>
   </main>
 </body>

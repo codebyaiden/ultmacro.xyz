@@ -59,6 +59,12 @@ function accessPage(invalid = false) {
 </style></head><body><main class="panel"><a href="/">Ultimate Macro</a><h1>Private dashboard preview</h1><p>Enter the preview password to continue.</p>${error}<form method="post" action="/dashboard/access/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required autofocus><button type="submit">Open Dashboard</button></form></main></body></html>`;
 }
 
+function dashboardUnavailablePage() {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09090b"><meta name="robots" content="noindex,nofollow"><title>Dashboard · Ultimate Macro</title><style>
+@font-face{font-family:Geist;src:url('/assets/fonts/geist-latin-wght-normal.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#09090b;color:#f4f3f6;font:15px/1.6 Geist,Inter,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased}.panel{width:min(100%,580px);text-align:center}.brand{display:inline-flex;align-items:center;gap:9px;margin-bottom:38px;color:#f4f3f6;text-decoration:none;font-size:13px;font-weight:620}.brand img{width:29px;height:29px;border-radius:8px;object-fit:cover}h1{margin:0;font-size:clamp(32px,5vw,46px);font-weight:560;letter-spacing:-.06em;line-height:1.08}p{max-width:410px;margin:17px auto 0;color:#a9a6af}.discord{display:inline-flex;min-height:44px;align-items:center;justify-content:center;margin-top:25px;padding:0 19px;border-radius:999px;background:#f3f3f5;color:#151419;text-decoration:none;font-size:13px;font-weight:600;transition:transform .18s ease,background .18s ease}.discord:hover{transform:translateY(-1px);background:#fff}.discord:active{transform:scale(.985)}.discord:focus-visible{outline:2px solid #c6b1ed;outline-offset:4px}@media(prefers-reduced-motion:reduce){.discord{transition:none}}
+</style></head><body><main class="panel"><a class="brand" href="/"><img src="/assets/ultimate-logo.png" alt="">Ultimate Macro</a><h1>Sorry, the Dashboard is still under development.</h1><p>We’re working on it. Head over to our Discord server for news and updates.</p><a class="discord" href="https://discord.gg/ultmacro" target="_blank" rel="noopener noreferrer">Follow updates on Discord <span aria-hidden="true">↗</span></a></main></body></html>`;
+}
+
 function html(body, status = 200, headers = {}) {
   return new Response(body, { status, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', ...headers } });
 }
@@ -110,7 +116,7 @@ async function login(request, env) {
   }
   if (!valid) return html(accessPage(true), 401);
   const signedCookie = await accessCookie(request, env);
-  return new Response(null, { status: 303, headers: { location: '/dashboard/overview/', 'set-cookie': signedCookie, 'cache-control': 'no-store' } });
+  return new Response(null, { status: 303, headers: { location: '/dashboard/', 'set-cookie': signedCookie, 'cache-control': 'no-store' } });
 }
 
 function isUnauthenticatedApiEndpoint(request, pathname) {
@@ -163,10 +169,10 @@ export async function onRequest(context) {
 
   if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
     if (!password(env) || !await hasAccess(request, env)) {
-      if (pathname === '/dashboard' || pathname === '/dashboard/') return context.next();
+      if (pathname === '/dashboard' || pathname === '/dashboard/') return html(dashboardUnavailablePage());
       return Response.redirect(new URL('/dashboard/', request.url), 302);
     }
-    if (pathname === '/dashboard' || pathname === '/dashboard/') return Response.redirect(new URL('/dashboard/overview/', request.url), 302);
+    if (pathname === '/dashboard') return Response.redirect(new URL('/dashboard/', request.url), 308);
   }
 
   return context.next();
