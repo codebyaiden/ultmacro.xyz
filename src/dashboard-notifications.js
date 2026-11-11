@@ -11,11 +11,13 @@
   const installHelp = document.querySelector('[data-install-help]');
   const resetDevice = document.querySelector('[data-reset-device]');
   const scopeButtons = [...root.querySelectorAll('[data-pref-scope]')];
-  const defaults = { results: 'errors', runEvents: 'off', connection: 'offline' };
+  const defaults = { results: 'errors', runEvents: 'off', connection: 'offline', hourlySummary: 'off', milestones: 'off' };
   const allowed = {
     results: new Set(['all', 'errors', 'off']),
     runEvents: new Set(['runs', 'all', 'off']),
-    connection: new Set(['all', 'offline', 'off'])
+    connection: new Set(['all', 'offline', 'off']),
+    hourlySummary: new Set(['hourly', 'off']),
+    milestones: new Set(['on', 'off'])
   };
   const storageKey = 'um.dashboard.notifications.v1';
   let registration = null;

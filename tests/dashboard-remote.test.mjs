@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 process.env.NODE_ENV = 'test';
 process.env.DATABASE_URL = '';
-const { default: handler } = await import('../api/dashboard-pairing.mjs?remote-tests');
+const { default: handler, runHourlyEarningsSummary, crossedEarningsMilestone } = await import('../api/dashboard-pairing.mjs?remote-tests');
 const owner = `um_dashboard_owner=${'r'.repeat(48)}`;
 const call = async (route, { method = 'GET', body, token } = {}) => {
   const headers = new Headers({ cookie: owner, accept: 'application/json', origin: 'http://localhost' });
@@ -53,18 +53,24 @@ test('remote controls require a fresh PC state, deliver once, and accept an auth
   assert.equal(feed.data.events[0].type, 'game.joined');
   assert.equal(feed.data.events[0].data.map, 'Fallen');
 
+  const summaryBoundary = Math.floor(Date.now() / 3600000) * 3600000;
   const resultEvent = {
     eventId: 'c'.repeat(32), sequence: 2, type: 'match.victory',
-    occurredAt: new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), appVersion: 'test-1',
+    occurredAt: new Date(summaryBoundary - 1000).toISOString().replace(/\.\d{3}Z$/, 'Z'), appVersion: 'test-1',
     runId: 'b'.repeat(32), source: 'screen', confidence: 'observed',
-    data: { map: 'Fallen', coins: 12345, gems: 25, towerXp: 450, durationSeconds: 494 }
+    data: { map: 'Fallen', coins: 100000, gems: 25, towerXp: 1000, durationSeconds: 494 }
   };
   const resultUpload = await call('/events', { method: 'POST', token: deviceToken, body: { events: [resultEvent] } });
   assert.equal(resultUpload.response.status, 200);
   const earnings = await call('/earnings?range=day');
   assert.equal(earnings.response.status, 200);
-  assert.deepEqual(earnings.data.totals, { coins: 12345, gems: 25, towerXp: 450 });
+  assert.deepEqual(earnings.data.totals, { coins: 100000, gems: 25, towerXp: 1000 });
   assert.equal(earnings.data.latest[0].type, 'match.victory');
+  const hourly = await runHourlyEarningsSummary(summaryBoundary + 1000);
+  assert.equal(hourly.created, 1);
+  assert.equal((await runHourlyEarningsSummary(summaryBoundary + 1000)).created, 0);
+  assert.equal(crossedEarningsMilestone(99999, 100000, 100000), 100000);
+  assert.equal(crossedEarningsMilestone(100000, 100250, 100000), 0);
   const retry = await call('/events', { method: 'POST', token: deviceToken, body: { events: [resultEvent] } });
   assert.equal(retry.data.accepted, 0);
   const anonymous = await handler(new Request('http://localhost/api/dashboard/v1/earnings?range=day'));

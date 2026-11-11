@@ -35,12 +35,16 @@ const localPushSubscriptions = new Map();
 const localNotificationPreferences = new Map();
 const localNotifications = new Map();
 const localRemoteCommands = new Map();
+const localEarningsProgress = new Map();
+const localEarningsMilestones = new Set();
 const NOTIFICATION_TTL_MS = 12 * 60 * 60 * 1000;
-const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'errors', runEvents: 'off', connection: 'offline' });
+const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'errors', runEvents: 'off', connection: 'offline', hourlySummary: 'off', milestones: 'off' });
 const NOTIFICATION_ALLOWED = Object.freeze({
   results: new Set(['all', 'errors', 'off']),
   runEvents: new Set(['runs', 'all', 'off']),
-  connection: new Set(['all', 'offline', 'off'])
+  connection: new Set(['all', 'offline', 'off']),
+  hourlySummary: new Set(['hourly', 'off']),
+  milestones: new Set(['on', 'off'])
 });
 
 function pairingCode() {
@@ -506,14 +510,25 @@ async function uploadActivityEvents(deviceToken, events) {
     const device = [...localDevices.values()].find(item => item.tokenHash === tokenHash && !item.revokedAt);
     if (!device) return null;
     let accepted = 0;
+    const insertedEvents = [];
     for (const event of events) {
       const key = `${device.id}:${event.eventId}`;
       const duplicate = [...localActivityEvents.values()].some(item => item.deviceId === device.id && (item.eventId === event.eventId || (item.runId === event.runId && item.sequence === event.sequence)));
       if (duplicate) continue;
       localActivityEvents.set(key, { ...event, deviceId: device.id, deviceName: device.deviceName, ownerHash: device.ownerHash });
+      insertedEvents.push(event);
+      if (event.type === 'match.victory' || event.type === 'match.loss') {
+        const progress = localEarningsProgress.get(device.ownerHash) || { coins: 0, gems: 0, towerXp: 0, victories: 0 };
+        progress.coins += event.data.coins || 0;
+        progress.gems += event.data.gems || 0;
+        progress.towerXp += event.data.towerXp || 0;
+        if (event.type === 'match.victory') progress.victories += 1;
+        localEarningsProgress.set(device.ownerHash, progress);
+      }
       void sendActivityPush(device.ownerHash, device.id, event).catch(() => {});
       accepted++;
     }
+    if (insertedEvents.length) await processEarningsMilestones(device.ownerHash, insertedEvents).catch(() => {});
     return accepted;
   }
 
@@ -533,10 +548,15 @@ async function uploadActivityEvents(deviceToken, events) {
     values ${values.join(',')}
     on conflict do nothing returning event_id, event_type, run_id, sequence, occurred_at, data`, params);
   await sql().query("delete from dashboard_activity_events where owner_hash = $1 and occurred_at < now() - interval '30 days'", [device.owner_hash]);
+  const insertedEvents = [];
   for (const event of inserted.rows) {
     const normalized = events.find(item => item.eventId === event.event_id);
-    if (normalized) void sendActivityPush(device.owner_hash, device.id, normalized).catch(() => {});
+    if (normalized) {
+      insertedEvents.push(normalized);
+      void sendActivityPush(device.owner_hash, device.id, normalized).catch(() => {});
+    }
   }
+  if (insertedEvents.length) await processEarningsMilestones(device.owner_hash, insertedEvents).catch(() => {});
   return inserted.rows.length;
 }
 
@@ -812,13 +832,15 @@ async function notificationPreferences(ownerHash, deviceHash = '') {
   if (localStore()) {
     rows = [...localNotificationPreferences.values()].filter(row => row.ownerHash === ownerHash);
   } else {
-    rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection
+    rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection,
+        hourly_summary as "hourlySummary", milestones
       from dashboard_notification_preferences where owner_hash = $1 and device_hash = any($2::text[])`,
     [ownerHash, deviceHash ? ['account', deviceHash] : ['account']])).rows;
   }
   const account = rows.find(row => row.device_hash === 'account' || row.deviceHash === 'account');
   const device = deviceHash && rows.find(row => (row.device_hash || row.deviceHash) === deviceHash);
-  const normalize = row => row ? ({ results: row.results, runEvents: row.runEvents ?? row.run_events, connection: row.connection }) : { ...NOTIFICATION_DEFAULTS };
+  const normalize = row => row ? ({ results: row.results, runEvents: row.runEvents ?? row.run_events, connection: row.connection,
+    hourlySummary: row.hourlySummary ?? row.hourly_summary ?? 'off', milestones: row.milestones || 'off' }) : { ...NOTIFICATION_DEFAULTS };
   const accountPreferences = normalize(account);
   const devicePreferences = device ? normalize(device) : null;
   return {
@@ -831,13 +853,16 @@ async function notificationPreferencesForDevices(ownerHash, deviceHashes) {
   const hashes = [...new Set(deviceHashes)];
   let rows;
   if (localStore()) rows = [...localNotificationPreferences.values()].filter(row => row.ownerHash === ownerHash && (row.deviceHash === 'account' || hashes.includes(row.deviceHash)));
-  else rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection
+  else rows = (await sql().query(`select device_hash, results, run_events as "runEvents", connection,
+      hourly_summary as "hourlySummary", milestones
     from dashboard_notification_preferences where owner_hash = $1 and device_hash = any($2::text[])`, [ownerHash, ['account', ...hashes]])).rows;
   const accountRow = rows.find(row => row.device_hash === 'account' || row.deviceHash === 'account');
-  const account = accountRow ? { results: accountRow.results, runEvents: accountRow.runEvents ?? accountRow.run_events, connection: accountRow.connection } : { ...NOTIFICATION_DEFAULTS };
+  const normalize = row => ({ results: row.results, runEvents: row.runEvents ?? row.run_events, connection: row.connection,
+    hourlySummary: row.hourlySummary ?? row.hourly_summary ?? 'off', milestones: row.milestones || 'off' });
+  const account = accountRow ? normalize(accountRow) : { ...NOTIFICATION_DEFAULTS };
   return new Map(hashes.map(hash => {
     const override = rows.find(row => (row.device_hash || row.deviceHash) === hash);
-    return [hash, override ? { results: override.results, runEvents: override.runEvents ?? override.run_events, connection: override.connection } : account];
+    return [hash, override ? normalize(override) : account];
   }));
 }
 
@@ -846,11 +871,13 @@ async function saveNotificationPreferences(ownerHash, deviceHash, preferences) {
     localNotificationPreferences.set(`${ownerHash}:${deviceHash}`, { ownerHash, deviceHash, ...preferences });
     return;
   }
-  await sql().query(`insert into dashboard_notification_preferences (owner_hash, device_hash, results, run_events, connection)
-    values ($1, $2, $3, $4, $5)
+  await sql().query(`insert into dashboard_notification_preferences
+      (owner_hash, device_hash, results, run_events, connection, hourly_summary, milestones)
+    values ($1, $2, $3, $4, $5, $6, $7)
     on conflict (owner_hash, device_hash) do update set results = excluded.results,
-      run_events = excluded.run_events, connection = excluded.connection, updated_at = now()`,
-  [ownerHash, deviceHash, preferences.results, preferences.runEvents, preferences.connection]);
+      run_events = excluded.run_events, connection = excluded.connection, hourly_summary = excluded.hourly_summary,
+      milestones = excluded.milestones, updated_at = now()`,
+  [ownerHash, deviceHash, preferences.results, preferences.runEvents, preferences.connection, preferences.hourlySummary, preferences.milestones]);
 }
 
 async function cleanupExpiredNotifications() {
@@ -867,7 +894,7 @@ async function saveNotification(ownerHash, eventId, eventType, title, body, cate
   const createdAt = Date.now();
   if (localStore()) {
     const duplicate = [...localNotifications.values()].find(row => row.ownerHash === ownerHash && row.eventId === eventId && row.eventType === eventType);
-    if (duplicate) return duplicate.id;
+    if (duplicate) return null;
     localNotifications.set(id, { id, ownerHash, eventId, eventType, title, body, category, details, occurredAt: new Date(occurredAt).toISOString(), expiresAt: createdAt + NOTIFICATION_TTL_MS });
     return id;
   }
@@ -940,6 +967,8 @@ async function sendStoredPush(ownerHash, recordId, eventId, category, onlyDevice
     const selected = preferences.get(deviceHash) || NOTIFICATION_DEFAULTS;
     const allowed = category === 'results' ? (selected.results === 'all' || (selected.results === 'errors' && recordId.eventType === 'run.error'))
       : category === 'connection' ? (selected.connection === 'all' || (selected.connection === 'offline' && String(recordId.eventType || '').endsWith('.offline')))
+      : category === 'summary' ? selected.hourlySummary === 'hourly'
+      : category === 'milestone' ? selected.milestones === 'on'
       : selected.runEvents === 'all' || (selected.runEvents === 'runs' && String(recordId.eventType || '').startsWith('run.'));
     if (!allowed) continue;
     try {
@@ -967,6 +996,129 @@ async function sendActivityPush(ownerHash, deviceId, event) {
   const record = localStore() ? localNotifications.get(recordId) : { id: recordId, title: notification.title, body: notification.body, eventType: event.type };
   void sendStoredPush(ownerHash, record, event.eventId, notification.category).catch(() => {});
 }
+
+const EARNINGS_MILESTONES = Object.freeze({
+  coins: { step: 100000, label: 'coins earned' },
+  gems: { step: 10000, label: 'gems earned' },
+  towerXp: { step: 1000, label: 'Tower XP earned' },
+  victories: { step: 10, label: 'victories' }
+});
+
+export function crossedEarningsMilestone(previous, current, step) {
+  if (![previous, current, step].every(Number.isSafeInteger) || previous < 0 || current <= previous || step < 1) return 0;
+  const threshold = Math.floor(current / step) * step;
+  return threshold > previous ? threshold : 0;
+}
+
+async function currentEarningsProgress(ownerHash) {
+  if (localStore()) return localEarningsProgress.get(ownerHash) || { coins: 0, gems: 0, towerXp: 0, victories: 0 };
+  const row = (await sql().query(`select coins, gems, tower_xp as "towerXp", victories
+    from dashboard_earnings_progress where owner_hash = $1`, [ownerHash])).rows[0];
+  return row ? Object.fromEntries(Object.entries(row).map(([key, value]) => [key, Number(value) || 0]))
+    : { coins: 0, gems: 0, towerXp: 0, victories: 0 };
+}
+
+async function reserveEarningsMilestone(ownerHash, metric, threshold) {
+  const prefix = `${ownerHash}:${metric}:`;
+  if (localStore()) {
+    for (const key of localEarningsMilestones) {
+      if (key.startsWith(prefix) && Number(key.slice(prefix.length)) >= threshold) return false;
+    }
+    localEarningsMilestones.add(`${prefix}${threshold}`);
+    return true;
+  }
+  const inserted = await sql().query(`insert into dashboard_earnings_milestones (owner_hash, metric, threshold)
+    values ($1, $2, $3)
+    on conflict (owner_hash, metric) do update set threshold = excluded.threshold, reached_at = now()
+    where dashboard_earnings_milestones.threshold < excluded.threshold
+    returning threshold`, [ownerHash, metric, threshold]);
+  return inserted.rows.length > 0;
+}
+
+async function processEarningsMilestones(ownerHash, events) {
+  const delta = { coins: 0, gems: 0, towerXp: 0, victories: 0 };
+  for (const event of events) {
+    if (!['match.victory', 'match.loss'].includes(event.type)) continue;
+    delta.coins += event.data.coins || 0;
+    delta.gems += event.data.gems || 0;
+    delta.towerXp += event.data.towerXp || 0;
+    if (event.type === 'match.victory') delta.victories++;
+  }
+  if (!Object.values(delta).some(Boolean)) return;
+  const current = await currentEarningsProgress(ownerHash);
+  for (const [metric, definition] of Object.entries(EARNINGS_MILESTONES)) {
+    const threshold = Math.floor(current[metric] / definition.step) * definition.step;
+    if (!threshold || !await reserveEarningsMilestone(ownerHash, metric, threshold)) continue;
+    const eventId = `milestone:${metric}:${threshold}`;
+    const title = 'Milestone reached';
+    const body = `${new Intl.NumberFormat().format(threshold)} ${definition.label}.`;
+    const id = await saveNotification(ownerHash, eventId, 'earnings.milestone', title, body, 'milestone', {
+      metric, threshold, occurredAt: new Date().toISOString()
+    });
+    if (!id) continue;
+    const record = localStore() ? localNotifications.get(id) : { id, title, body, eventType: 'earnings.milestone' };
+    await sendStoredPush(ownerHash, record, eventId, 'milestone').catch(() => {});
+  }
+}
+
+function hourlySummaryRows(start, end) {
+  const grouped = new Map();
+  for (const event of localActivityEvents.values()) {
+    const occurredAt = Date.parse(event.occurredAt);
+    if (!['match.victory', 'match.loss'].includes(event.type) || occurredAt < start || occurredAt >= end) continue;
+    const row = grouped.get(event.ownerHash) || { ownerHash: event.ownerHash, coins: 0, gems: 0, towerXp: 0, victories: 0, losses: 0 };
+    row.coins += event.data.coins || 0;
+    row.gems += event.data.gems || 0;
+    row.towerXp += event.data.towerXp || 0;
+    if (event.type === 'match.victory') row.victories++;
+    else row.losses++;
+    grouped.set(event.ownerHash, row);
+  }
+  return [...grouped.values()];
+}
+
+export async function runHourlyEarningsSummary(now = Date.now()) {
+  const end = Math.floor(now / 3600000) * 3600000;
+  const start = end - 3600000;
+  let rows;
+  if (localStore()) rows = hourlySummaryRows(start, end);
+  else rows = (await sql().query(`select owner_hash as "ownerHash",
+      coalesce(sum(coalesce((data->>'coins')::bigint, 0)), 0) as coins,
+      coalesce(sum(coalesce((data->>'gems')::bigint, 0)), 0) as gems,
+      coalesce(sum(coalesce((data->>'towerXp')::bigint, 0)), 0) as "towerXp",
+      count(*) filter (where event_type = 'match.victory') as victories,
+      count(*) filter (where event_type = 'match.loss') as losses
+    from dashboard_activity_events
+    where event_type in ('match.victory', 'match.loss') and occurred_at >= $1 and occurred_at < $2
+    group by owner_hash`, [new Date(start), new Date(end)])).rows;
+
+  let created = 0;
+  for (const row of rows) {
+    const rewards = [];
+    if (Number(row.coins) > 0) rewards.push(`+${Number(row.coins).toLocaleString()} coins`);
+    if (Number(row.gems) > 0) rewards.push(`+${Number(row.gems).toLocaleString()} gems`);
+    if (Number(row.towerXp ?? row.tower_xp) > 0) rewards.push(`+${Number(row.towerXp ?? row.tower_xp).toLocaleString()} Tower XP`);
+    const runs = [Number(row.victories) ? `${Number(row.victories)} wins` : '', Number(row.losses) ? `${Number(row.losses)} losses` : ''].filter(Boolean);
+    const body = [...rewards, ...runs].join(' · ');
+    if (!body) continue;
+    const hourId = `hourly:${new Date(start).toISOString()}`;
+    const title = 'Hourly recap';
+    const occurredAt = new Date(start);
+    const id = await saveNotification(row.ownerHash, hourId, 'earnings.hourly', title, body, 'summary', {
+      start: occurredAt.toISOString(), end: new Date(end).toISOString(), coins: Number(row.coins) || 0,
+      gems: Number(row.gems) || 0, towerXp: Number(row.towerXp ?? row.tower_xp) || 0,
+      victories: Number(row.victories) || 0, losses: Number(row.losses) || 0
+    }, occurredAt);
+    if (!id) continue;
+    created++;
+    const record = localStore() ? localNotifications.get(id) : { id, title, body, eventType: 'earnings.hourly' };
+    await sendStoredPush(row.ownerHash, record, hourId, 'summary').catch(() => {});
+  }
+  return { start: new Date(start).toISOString(), end: new Date(end).toISOString(), created };
+}
+
+const hourlyEarningsTimer = setInterval(() => { void runHourlyEarningsSummary().catch(() => {}); }, 60 * 1000);
+hourlyEarningsTimer.unref?.();
 
 async function sendConnectionPush(ownerHash, deviceId, type, title, body, occurredAt, restoredAt = null) {
   const eventId = `${type}:${deviceId}:${new Date(occurredAt || Date.now()).toISOString()}`;

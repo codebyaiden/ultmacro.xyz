@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
   <link rel="stylesheet" href="/styles/dashboard-notifications.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-notifications.js?v=5" defer></script>
+  <script src="/src/dashboard-notifications.js?v=6" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
@@ -70,7 +70,7 @@
         <section class="notification-group" aria-labelledby="results-title">
           <div class="notification-group-copy">
             <h2 id="results-title">Run results</h2>
-          <p>Victory and loss alerts are optional. Every result still appears in Activity and Earnings.</p>
+            <p>Victory and loss alerts. Results still appear in Activity and Earnings.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="Run result alerts" data-preference="results">
             <button type="button" role="radio" data-value="all" aria-checked="false" tabindex="-1">Every result</button>
@@ -79,10 +79,32 @@
           </div>
         </section>
 
+        <section class="notification-group" aria-labelledby="hourly-title">
+          <div class="notification-group-copy">
+            <h2 id="hourly-title">Hourly recap</h2>
+            <p>A summary of rewards and wins from the previous hour.</p>
+          </div>
+          <div class="notification-choice" role="radiogroup" aria-label="Hourly earnings summaries" data-preference="hourlySummary">
+            <button type="button" role="radio" data-value="hourly" aria-checked="false" tabindex="-1">Every hour</button>
+            <button type="button" role="radio" data-value="off" aria-checked="false" tabindex="-1">Off</button>
+          </div>
+        </section>
+
+        <section class="notification-group" aria-labelledby="milestones-title">
+          <div class="notification-group-copy">
+            <h2 id="milestones-title">Milestones</h2>
+            <p>Coins every 100,000 · Gems every 10,000 · Tower XP every 1,000 · Wins every 10.</p>
+          </div>
+          <div class="notification-choice" role="radiogroup" aria-label="Earnings milestone alerts" data-preference="milestones">
+            <button type="button" role="radio" data-value="on" aria-checked="false" tabindex="-1">On</button>
+            <button type="button" role="radio" data-value="off" aria-checked="false" tabindex="-1">Off</button>
+          </div>
+        </section>
+
         <section class="notification-group" aria-labelledby="run-events-title">
           <div class="notification-group-copy">
             <h2 id="run-events-title">Run activity</h2>
-          <p>Each run update can send a push. Off by default.</p>
+            <p>Choose whether run changes or all tracked actions send a push.</p>
           </div>
           <div class="notification-choice" role="radiogroup" aria-label="During run alerts" data-preference="runEvents">
             <button type="button" role="radio" data-value="runs" aria-checked="false" tabindex="-1">Run changes</button>

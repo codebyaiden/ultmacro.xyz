@@ -22,21 +22,25 @@ test('notification preferences are owner-scoped and can inherit account settings
   const owner = freshOwner();
   const defaults = await request('/notifications/preferences', { owner });
   assert.equal(defaults.response.status, 200);
-  assert.equal(defaults.data.effective.runEvents, 'runs');
+  assert.equal(defaults.data.effective.runEvents, 'off');
+  assert.equal(defaults.data.effective.hourlySummary, 'off');
+  assert.equal(defaults.data.effective.milestones, 'off');
 
   const saved = await request('/notifications/preferences', {
-    owner, method: 'PUT', body: { scope: 'account', preferences: { results: 'errors', runEvents: 'all', connection: 'offline' } }
+    owner, method: 'PUT', body: { scope: 'account', preferences: { results: 'errors', runEvents: 'all', connection: 'offline', hourlySummary: 'hourly', milestones: 'on' } }
   });
   assert.equal(saved.response.status, 200);
   assert.equal(saved.data.account.runEvents, 'all');
+  assert.equal(saved.data.account.hourlySummary, 'hourly');
+  assert.equal(saved.data.account.milestones, 'on');
   const otherOwner = await request('/notifications/preferences', { owner: freshOwner() });
-  assert.equal(otherOwner.data.account.runEvents, 'runs');
+  assert.equal(otherOwner.data.account.runEvents, 'off');
 
   const subscribed = await request('/notifications/subscriptions', { owner, method: 'POST', body: { subscription: pushSubscription } });
   assert.equal(subscribed.response.status, 201);
   assert.match(subscribed.data.deviceId, /^[a-f0-9]{64}$/);
   const devicePrefs = await request('/notifications/preferences', {
-    owner, method: 'PUT', body: { scope: 'device', deviceId: subscribed.data.deviceId, preferences: { results: 'all', runEvents: 'runs', connection: 'all' } }
+    owner, method: 'PUT', body: { scope: 'device', deviceId: subscribed.data.deviceId, preferences: { results: 'all', runEvents: 'runs', connection: 'all', hourlySummary: 'off', milestones: 'off' } }
   });
   assert.equal(devicePrefs.data.effective.runEvents, 'runs');
   const reset = await request('/notifications/preferences', { owner, method: 'DELETE', body: { scope: 'device', deviceId: subscribed.data.deviceId } });
