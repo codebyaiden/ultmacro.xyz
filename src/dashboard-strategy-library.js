@@ -15,7 +15,9 @@
   const devicePicker = dialog.querySelector('[data-dialog-device]');
   const devicePickerWrap = dialog.querySelector('[data-dialog-device-wrap]');
   const dialogStatus = dialog.querySelector('[data-dialog-status]');
+  const dialogMetrics = dialog.querySelector('[data-dialog-metrics]');
   const installButton = dialog.querySelector('[data-dialog-install]');
+  const downloadButton = dialog.querySelector('[data-dialog-download]');
   const loadMore = document.createElement('button');
   let sort = 'recent';
   let term = '';
@@ -95,12 +97,18 @@
     const count = document.createElement('span');
     count.textContent = Number(item.likes).toLocaleString();
     likes.append(heart, count);
+    const installs = document.createElement('span');
+    installs.className = 'strategy-public-installs';
+    installs.textContent = `${Number(item.installCount || 0).toLocaleString()} installs`;
     const action = document.createElement('button');
     action.type = 'button';
     action.className = 'strategy-public-get';
     action.textContent = 'Get strategy';
     action.addEventListener('click', () => openWarning(item));
-    meta.append(author, likes);
+    const signals = document.createElement('span');
+    signals.className = 'strategy-public-signals';
+    signals.append(likes, installs);
+    meta.append(author, signals);
     body.append(title, description, meta, action);
     card.append(body);
     return card;
@@ -141,6 +149,7 @@
     const files = item.files?.length ? item.files : [{ id: item.id, fileName: item.fileName, downloadUrl: item.downloadUrl, bytes: item.bytes }];
     dialog.querySelector('[data-dialog-title]').textContent = item.title;
     dialog.querySelector('[data-dialog-byline]').textContent = `${item.author} · ${Number(item.likes).toLocaleString()} likes`;
+    updateDialogMetrics(item, files[0]);
     dialog.querySelector('[data-dialog-description]').textContent = item.description || item.fileName;
     const preview = dialog.querySelector('[data-dialog-preview]');
     preview.replaceChildren();
@@ -162,13 +171,22 @@
     dialogStatus.textContent = '';
     installButton.textContent = 'Add to macro';
     installButton.disabled = false;
+    downloadButton.disabled = false;
     updateInstallTarget();
     if (typeof dialog.showModal === 'function') dialog.showModal();
     else dialogStatus.textContent = 'Open this Library on a browser that supports dialogs to add strategies.';
   }
 
+  function updateDialogMetrics(item, file) {
+    dialogMetrics.textContent = `${Number(file?.installCount ?? item.installCount ?? 0).toLocaleString()} installs · ${Number(file?.downloadCount ?? item.downloadCount ?? 0).toLocaleString()} downloads`;
+  }
+
   function connectedDevices() {
-    return (currentState.devices || []).filter(device => device?.state === 'connected' && device.snapshot?.capabilities?.includes('strategy_library_install'));
+    return (currentState.devices || []).filter(device => device?.state === 'connected');
+  }
+
+  function canInstall(device) {
+    return Boolean(device?.snapshot?.capabilities?.includes('strategy_library_install'));
   }
 
   function updateInstallTarget() {
@@ -176,16 +194,18 @@
     devicePicker.replaceChildren(...devices.map(device => {
       const option = document.createElement('option');
       option.value = device.id;
-      option.textContent = device.name || device.deviceName || 'This PC';
+      const supported = canInstall(device);
+      option.textContent = `${device.name || device.deviceName || 'This PC'}${supported ? '' : ' · Update needed'}`;
       return option;
     }));
-    devicePickerWrap.hidden = devices.length < 2;
+    devicePickerWrap.hidden = devices.length === 0;
     if (!adding && currentItem) {
-      installButton.disabled = devices.length === 0;
-      const hasConnectedPc = (currentState.devices || []).some(device => device?.state === 'connected');
-      dialogStatus.textContent = devices.length ? '' : hasConnectedPc
-        ? 'Update Ultimate Macro to add strategies from the Library.'
-        : 'Connect a PC in Devices to add this strategy.';
+      const selected = devices.find(device => device.id === devicePicker.value) || devices[0];
+      if (selected && devicePicker.value !== selected.id) devicePicker.value = selected.id;
+      installButton.disabled = !canInstall(selected);
+      dialogStatus.textContent = !selected
+        ? currentState.unavailable ? 'Could not check the PC connection. You can download the file instead.' : 'Open Ultimate Macro and connect this PC to add the strategy directly.'
+        : canInstall(selected) ? '' : 'This PC is connected, but needs the newer macro build for direct installs. Download the file instead for now.';
     }
   }
 
@@ -227,13 +247,26 @@
     installButton.textContent = 'Adding…';
     dialogStatus.textContent = 'Sending the strategy to your PC…';
     try {
-      const response = await fetch(file.downloadUrl, { credentials: 'same-origin', cache: 'no-store' });
+      const response = await fetch(`${file.downloadUrl}?source=install`, { credentials: 'same-origin', cache: 'no-store' });
       if (!response.ok) throw new Error('That strategy file is no longer available.');
       const strategyText = await response.text();
       if (!strategyText.trim() || new TextEncoder().encode(strategyText).byteLength > 2 * 1024 * 1024)
         throw new Error('That strategy file is empty or too large.');
       await sendInstall(device.id, file.fileName, strategyText);
-      dialogStatus.textContent = `Added to ${device.name || device.deviceName || 'your PC'}.`;
+      const metric = await fetch('/api/dashboard/v1/library/installs', {
+        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ attachmentId: file.id })
+      }).then(response => response.ok ? response.json() : null).catch(() => null);
+      if (metric) {
+        file.installCount = Number(metric.installCount || 0);
+        currentItem.installCount = Number(metric.postInstallCount ?? currentItem.installCount ?? 0);
+        updateDialogMetrics(currentItem, file);
+        void load(true);
+      }
+      dialogStatus.textContent = metric
+        ? `Added to ${device.name || device.deviceName || 'your PC'}.`
+        : `Added to ${device.name || device.deviceName || 'your PC'}; install count could not sync.`;
       installButton.textContent = 'Added to macro';
       installButton.disabled = true;
       await window.UMDashboardState?.refresh();
@@ -243,6 +276,35 @@
       installButton.disabled = connectedDevices().length === 0;
     } finally {
       adding = false;
+    }
+  }
+
+  async function downloadSelected() {
+    if (!currentItem || downloadButton.disabled) return;
+    const files = JSON.parse(filePicker.dataset.files || '[]');
+    const file = files.find(item => item.id === filePicker.value) || files[0];
+    if (!file?.downloadUrl) return;
+    downloadButton.disabled = true;
+    const previousText = downloadButton.textContent;
+    downloadButton.textContent = 'Starting download…';
+    try {
+      const link = document.createElement('a');
+      link.href = file.downloadUrl;
+      link.download = file.fileName;
+      link.style.position = 'fixed';
+      link.style.left = '-9999px';
+      document.body.append(link);
+      link.click();
+      link.remove();
+      file.downloadCount = Number(file.downloadCount || 0) + 1;
+      currentItem.downloadCount = Number(currentItem.downloadCount || 0) + 1;
+      updateDialogMetrics(currentItem, file);
+      dialogStatus.textContent = 'Your strategy download should start now.';
+    } catch (error) {
+      dialogStatus.textContent = error.message || 'Could not download that strategy file.';
+    } finally {
+      downloadButton.disabled = false;
+      downloadButton.textContent = previousText;
     }
   }
 
@@ -262,6 +324,13 @@
   loadMore.addEventListener('click', () => void load());
   dialog.querySelector('[data-dialog-cancel]').addEventListener('click', () => dialog.close());
   installButton.addEventListener('click', addToMacro);
+  downloadButton.addEventListener('click', downloadSelected);
+  devicePicker.addEventListener('change', updateInstallTarget);
+  filePicker.addEventListener('change', () => {
+    const files = JSON.parse(filePicker.dataset.files || '[]');
+    updateDialogMetrics(currentItem, files.find(file => file.id === filePicker.value));
+    dialogStatus.textContent = '';
+  });
   dialog.addEventListener('click', event => {
     if (event.target === dialog) dialog.close();
   });

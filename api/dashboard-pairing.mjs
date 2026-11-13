@@ -37,6 +37,7 @@ const localNotifications = new Map();
 const localRemoteCommands = new Map();
 const localEarningsProgress = new Map();
 const localEarningsMilestones = new Set();
+const localLibraryInstalls = new Set();
 const NOTIFICATION_TTL_MS = 12 * 60 * 60 * 1000;
 const NOTIFICATION_DEFAULTS = Object.freeze({ results: 'errors', runEvents: 'off', connection: 'offline', hourlySummary: 'off', milestones: 'off' });
 const NOTIFICATION_ALLOWED = Object.freeze({
@@ -1342,6 +1343,33 @@ export default async function dashboardPairing(request) {
       const requested = new URL(request.url).searchParams.get('range') || 'day';
       if (!Object.hasOwn(EARNINGS_RANGES, requested)) return json({ error: 'Choose a valid earnings range.' }, 400);
       return json(await listEarnings(owner.hash, requested), 200, { 'cache-control': 'no-store', vary: 'Cookie' });
+    }
+
+    if (route === '/library/installs') {
+      if (request.method !== 'POST') return json({ error: 'Method not allowed.' }, 405, { allow: 'POST' });
+      if (!sameOrigin(request)) return json({ error: 'Cross-site request rejected.' }, 403);
+      const owner = await ownerFrom(request);
+      if (!owner) return json({ error: 'Dashboard session expired.' }, 401, { 'cache-control': 'no-store' });
+      const body = await bodyJson(request, 256);
+      if (!body || Object.keys(body).length !== 1 || typeof body.attachmentId !== 'string' || !/^\d{17,20}$/.test(body.attachmentId))
+        return json({ error: 'Choose a valid Library strategy.' }, 400);
+      const limit = await limited(`dashboard-library-install:${owner.hash}`, 100, 3600);
+      if (!limit.allowed) return json({ error: 'Too many strategy installs. Try again later.' }, 429, { 'retry-after': String(limit.retryAfter) });
+      if (localStore()) {
+        localLibraryInstalls.add(`${body.attachmentId}:${owner.hash}`);
+        return json({ ok: true });
+      }
+      const exists = await sql().query('select 1 from strategy_library_items where source_attachment_id=$1 and active=true', [body.attachmentId]);
+      if (!exists.rows[0]) return json({ error: 'That strategy is no longer in the Library.' }, 404);
+      await sql().query(`insert into strategy_library_installs (source_attachment_id, owner_hash)
+        values ($1, $2) on conflict (source_attachment_id, owner_hash) do nothing`, [body.attachmentId, owner.hash]);
+      const count = await sql().query(`select
+          (select count(*)::int from strategy_library_installs where source_attachment_id=$1) as file_installs,
+          (select count(distinct installs.owner_hash)::int from strategy_library_installs installs
+            join strategy_library_items installed_items using (source_attachment_id)
+            where installed_items.source_thread_id = (select source_thread_id from strategy_library_items where source_attachment_id=$1)
+              and installed_items.active=true) as post_installs`, [body.attachmentId]);
+      return json({ ok: true, installCount: Number(count.rows[0]?.file_installs || 0), postInstallCount: Number(count.rows[0]?.post_installs || 0) }, 200, { 'cache-control': 'no-store' });
     }
 
     if (route === '/remote/commands') {
