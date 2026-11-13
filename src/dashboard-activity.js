@@ -97,6 +97,7 @@
     const row = document.createElement('li');
     row.className = 'activity-row';
     row.dataset.type = filterType;
+    row.dataset.runId = event.runId || event.eventId;
     row.style.setProperty('--event-color', color);
 
     const iconWrap = document.createElement('span');
@@ -136,6 +137,75 @@
     return row;
   }
 
+  function runContext(events) {
+    const latest = [...events].reverse();
+    const map = latest.find(event => event.data?.map)?.data.map;
+    const mode = latest.find(event => event.data?.mode)?.data.mode;
+    return [map, mode].filter(Boolean).join(' · ');
+  }
+
+  function createRunGroup(runId, entries, openRunIds) {
+    const events = entries.map(entry => entry.event);
+    const lastEvent = events[events.length - 1];
+    const outcome = [...events].reverse().find(event => event.type === 'match.victory' || event.type === 'match.loss');
+    const summaryLabel = runContext(events) || 'Run';
+    const outcomeLabel = outcome?.type === 'match.victory' ? 'Victory' : outcome?.type === 'match.loss' ? 'Loss' : '';
+    const color = outcomeLabel === 'Victory' ? '#dfca80' : outcomeLabel === 'Loss' ? '#e2a2a2' : '#b8a1e8';
+
+    const item = document.createElement('li');
+    item.className = 'activity-run-item';
+    item.style.setProperty('--run-color', color);
+
+    const details = document.createElement('details');
+    details.className = 'activity-run-group';
+    details.dataset.runId = runId;
+    details.open = openRunIds.has(runId);
+    details.addEventListener('toggle', () => {
+      if (details.open) openRunIds.add(runId);
+      else openRunIds.delete(runId);
+    });
+
+    const summary = document.createElement('summary');
+    summary.className = 'activity-run-summary';
+    const icon = document.createElement('img');
+    icon.className = 'activity-run-icon';
+    icon.src = `/assets/dashboard-icons/flat/Activity_Feed/${outcomeLabel === 'Victory' ? 'victory' : outcomeLabel === 'Loss' ? 'loss' : 'run_started'}.svg`;
+    icon.alt = '';
+    icon.setAttribute('aria-hidden', 'true');
+
+    const copy = document.createElement('span');
+    copy.className = 'activity-run-copy';
+    const title = document.createElement('strong');
+    title.textContent = summaryLabel;
+    const subline = document.createElement('span');
+    subline.textContent = `${entries.length} ${entries.length === 1 ? 'event' : 'events'}`;
+    copy.append(title, subline);
+
+    if (outcomeLabel) {
+      const badge = document.createElement('span');
+      badge.className = `activity-run-outcome${outcomeLabel === 'Loss' ? ' is-loss' : ''}`;
+      badge.textContent = outcomeLabel;
+      summary.append(icon, copy, badge);
+    } else summary.append(icon, copy);
+
+    const time = document.createElement('time');
+    time.dateTime = lastEvent.occurredAt;
+    time.textContent = relativeTime(lastEvent.occurredAt);
+    time.title = new Date(lastEvent.occurredAt).toLocaleString();
+    summary.append(time);
+
+    const body = document.createElement('div');
+    body.className = 'activity-run-body';
+    const timeline = document.createElement('ol');
+    timeline.className = 'activity-run-events';
+    timeline.setAttribute('aria-label', `${summaryLabel} events`);
+    for (const entry of entries) timeline.append(entry.row);
+    body.append(timeline);
+    details.append(summary, body);
+    item.append(details);
+    return item;
+  }
+
   function syncGroup(group) {
     const types = groupTypes.get(group.dataset.filterGroup) || [];
     const chosen = types.filter(type => selected.has(type));
@@ -147,17 +217,22 @@
   }
 
   function renderFilters() {
-    const rows = [...list.querySelectorAll('.activity-row')];
     let visible = 0;
-    for (const row of rows) {
-      const isSelected = selected.has(row.dataset.type);
-      const show = selected.size === 0 || (exclude.checked ? !isSelected : isSelected);
-      row.hidden = !show;
-      if (show) visible++;
+    const runGroups = [...list.querySelectorAll('.activity-run-group')];
+    for (const group of runGroups) {
+      let groupVisible = 0;
+      for (const row of group.querySelectorAll('.activity-row')) {
+        const isSelected = selected.has(row.dataset.type);
+        const show = selected.size === 0 || (exclude.checked ? !isSelected : isSelected);
+        row.hidden = !show;
+        if (show) groupVisible++;
+      }
+      group.closest('.activity-run-item').hidden = groupVisible === 0;
+      visible += groupVisible;
     }
     resultCount.textContent = `${visible} ${visible === 1 ? 'event' : 'events'}`;
     emptyState.hidden = visible !== 0;
-    if (!rows.length) emptyState.textContent = 'No activity yet.';
+    if (!runGroups.length) emptyState.textContent = 'No activity yet.';
     else if (!visible) emptyState.textContent = 'No activity matches these filters.';
   }
 
@@ -174,12 +249,25 @@
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Could not load activity.');
-      const fragment = document.createDocumentFragment();
+      const grouped = new Map();
       for (const event of data.events || []) {
         const row = createRow(event);
-        if (row) fragment.append(row);
+        if (!row) continue;
+        const runId = event.runId || event.eventId;
+        if (!grouped.has(runId)) grouped.set(runId, []);
+        grouped.get(runId).push({ event, row });
       }
+
+      const openRunIds = new Set([...list.querySelectorAll('.activity-run-group[open]')].map(group => group.dataset.runId));
+      if (!list.querySelector('.activity-run-group') && grouped.size) openRunIds.add(grouped.keys().next().value);
+      const orderedGroups = [...grouped.entries()]
+        .map(([runId, entries]) => [runId, entries.sort((a, b) => Date.parse(a.event.occurredAt) - Date.parse(b.event.occurredAt) || a.event.sequence - b.event.sequence)])
+        .sort((a, b) => Date.parse(b[1][b[1].length - 1].event.occurredAt) - Date.parse(a[1][a[1].length - 1].event.occurredAt));
+      const fragment = document.createDocumentFragment();
+      for (const [runId, entries] of orderedGroups) fragment.append(createRunGroup(runId, entries, openRunIds));
+      const scrollTop = list.scrollTop;
       list.replaceChildren(fragment);
+      list.scrollTop = scrollTop;
       feedback.textContent = '';
       renderFilters();
     } catch {

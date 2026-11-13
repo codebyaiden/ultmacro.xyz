@@ -25,12 +25,9 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Could not check the desktop connection.');
 
-      // The local preview uses a connected visual state before the desktop bridge exists.
-      // Production continues to reflect the pairing API without preview data.
-      const localPreview = ['localhost', '127.0.0.1'].includes(location.hostname)
-        && !data.device
-        && ['none', 'not-connected', 'expired'].includes(data.state);
-      const state = localPreview ? 'connected' : ['connected', 'offline', 'connecting'].includes(data.state) ? data.state : 'not-connected';
+      const state = ['connected', 'offline', 'connecting'].includes(data.state)
+        ? data.state
+        : 'not-connected';
       page.dataset.connection = state;
       const tag = page.querySelector('[data-connection-tag]');
       if (tag) tag.dataset.state = state;

@@ -51,7 +51,14 @@
 .strategy-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
 .strategy-dialog-actions button, .strategy-dialog-actions a { display: flex; min-height: 40px; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; font: inherit; font-size: 11px; text-decoration: none; cursor: pointer; transition: transform .16s ease, background-color .16s ease; }
 .strategy-dialog-cancel { background: #242428; color: var(--app-text); }
-.strategy-dialog-download { border-color: #ecebf0 !important; background: #ecebf0; color: #111114; font-weight: 600 !important; }
+.strategy-dialog-picker { display: grid; gap: 6px; color: var(--app-muted); font-size: 11px; }
+.strategy-dialog-picker select { width: 100%; min-height: 38px; padding: 0 12px; border: 1px solid rgba(255,255,255,.14); border-radius: 10px; outline: 0; background: #1a1a1e; color: var(--app-text); font: inherit; }
+.strategy-dialog-picker select:focus-visible { border-color: rgba(255,255,255,.5); }
+.strategy-dialog-status { min-height: 16px; margin: -2px 0 0; color: var(--app-muted); font-size: 11px; line-height: 1.45; }
+.strategy-dialog-status:empty { display: none; }
+.strategy-dialog-download { border-color: #ecebf0 !important; background: #ecebf0; color: #111114 !important; font-weight: 600 !important; }
+.strategy-dialog-actions .strategy-dialog-download { color: #111114 !important; }
+.strategy-dialog-download:disabled { cursor: default; opacity: .62; transform: none !important; }
 .strategy-dialog-actions button:hover, .strategy-dialog-actions a:hover { transform: translateY(-1px); }
 @keyframes strategy-library-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes strategy-dialog-in { from { opacity: 0; transform: translateY(6px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }

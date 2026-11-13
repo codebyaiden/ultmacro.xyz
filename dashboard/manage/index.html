@@ -11,11 +11,15 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
+  <link rel="stylesheet" href="/styles/dashboard-product.css?v=5">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
-  <script src="/src/dashboard-app.js?v=5" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=5" defer></script>
+  <script src="/src/dashboard-app.js?v=6" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
+  <script src="/src/dashboard-switcher.js?v=3" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=5">
 </head>
 <body class="dashboard-app-page">
   <a class="dashboard-app-skip" href="#main">Skip to content</a>
@@ -41,7 +45,7 @@
       <header class="dashboard-app-heading" id="manage">
         <h1>Manage</h1>
         <div class="heading-actions">
-          <span class="connection-indicator" data-connection-tag data-state="checking"><i></i><span data-connection-label>Checking</span></span>
+          <span class="connection-indicator" data-connection-tag data-state="not-connected"><i></i><span data-connection-label>Disconnected</span></span>
           <button class="dashboard-refresh" type="button" data-refresh aria-label="Refresh connection"><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/refresh_connection.svg" alt=""></button>
         </div>
       </header>
@@ -84,7 +88,7 @@
 
       <section class="device-panel" id="devices" aria-labelledby="devices-title">
         <div class="device-panel-heading"><div class="section-title"><span class="section-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><h2 id="devices-title">Devices</h2></div><a class="add-device-link" href="/dashboard/"><img src="/assets/dashboard-icons/flat/SVG_Source/General_Controls/add_device.svg" alt="">Add device</a></div>
-        <div class="device-row"><span class="device-row-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/desktop_pc.svg')" aria-hidden="true"></span><div class="device-copy"><strong data-device-row-name>Windows PC</strong><span data-device-row-version></span></div><span class="device-online-state" data-device-status>Connected</span><button class="device-disconnect" type="button" data-device-disconnect hidden>Disconnect</button></div>
+        <div class="device-row"><span class="device-row-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Devices_And_Connections/desktop_pc.svg')" aria-hidden="true"></span><div class="device-copy"><strong data-device-row-name>Windows PC</strong><span data-device-row-version></span></div><span class="device-online-state" data-device-status data-state="not-connected">Disconnected</span><button class="device-disconnect" type="button" data-device-disconnect hidden>Disconnect</button></div>
       </section>
 
       <section class="notifications-summary" id="notifications" aria-labelledby="notifications-title">

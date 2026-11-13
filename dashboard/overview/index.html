@@ -10,13 +10,18 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
+  <link rel="stylesheet" href="/styles/dashboard-product.css?v=5">
   <link rel="stylesheet" href="/styles/dashboard-overview.css?v=7">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=5" defer></script>
   <script src="/src/dashboard-state.js?v=1" defer></script>
-  <script src="/src/dashboard-overview.js?v=6" defer></script>
+  <script src="/src/dashboard-remote.js?v=3" defer></script>
+  <script src="/src/dashboard-overview.js?v=8" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
+  <script src="/src/dashboard-switcher.js?v=3" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=5">
 </head>
 <body class="dashboard-app-page dashboard-overview-page">
   <a class="dashboard-app-skip" href="#main">Skip to content</a>
@@ -42,9 +47,10 @@
       <header class="overview-welcome">
         <div>
           <h1 data-overview-greeting>Good evening!</h1>
-          <p data-overview-state>Waiting for macro data.</p>
+          <p data-overview-state>Connect the macro to see its status.</p>
         </div>
         <div class="overview-welcome-actions">
+          <a class="overview-connect-button" data-overview-connect href="/dashboard/">Connect a PC</a>
           <button class="overview-edit-button" type="button" data-open-overview-editor>Edit layout</button>
         </div>
       </header>
@@ -53,41 +59,43 @@
         <article class="overview-metric overview-metric-state" data-overview-widget="macro">
           <span class="overview-metric-label">Macro</span>
           <strong data-overview-macro>—</strong>
-          <span class="overview-metric-note" data-overview-macro-detail>No live data</span>
+          <span class="overview-metric-note" data-overview-macro-detail>Connect a PC to see the current state.</span>
+          <div class="overview-macro-controls" aria-label="Macro controls">
+            <button type="button" data-remote-command="start"><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/start.svg" alt=""><span>Start</span></button>
+            <button type="button" data-remote-command="pause"><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/pause.svg" alt=""><span>Pause</span></button>
+            <button type="button" data-remote-command="stop"><img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/stop.svg" alt=""><span>Stop</span></button>
+          </div>
+          <p class="overview-macro-feedback" data-remote-command-status role="status" aria-live="polite"></p>
         </article>
         <article class="overview-metric" data-overview-widget="runtime">
-          <span class="overview-metric-label">Run time</span>
-          <strong>—</strong>
-          <span class="overview-metric-note">Run time</span>
+          <span class="overview-metric-label">Strategy</span>
+          <strong data-overview-strategy>—</strong>
+          <span class="overview-metric-note" data-overview-strategy-detail>Current selection</span>
         </article>
         <a class="overview-metric overview-metric-resource" data-overview-widget="coins" href="/dashboard/earnings/">
           <span class="overview-metric-label">Coins</span>
           <span class="overview-metric-value"><img src="/assets/community-impact/coins.png" alt="" width="30" height="30"><strong>—</strong></span>
-          <span class="overview-metric-note">Coins earned <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-note">This week <span aria-hidden="true">↗</span></span>
         </a>
         <a class="overview-metric overview-metric-resource" data-overview-widget="gems" href="/dashboard/earnings/">
           <span class="overview-metric-label">Gems</span>
           <span class="overview-metric-value"><img src="/assets/community-impact/gems.png" alt="" width="30" height="30"><strong>—</strong></span>
-          <span class="overview-metric-note">Gems earned <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-note">This week <span aria-hidden="true">↗</span></span>
         </a>
         <a class="overview-metric overview-metric-resource" data-overview-widget="towerXp" href="/dashboard/earnings/">
           <span class="overview-metric-label">Tower XP</span>
           <span class="overview-metric-value"><img src="/assets/community-impact/tower-xp-dashboard.png" alt="" width="30" height="30"><strong>—</strong></span>
-          <span class="overview-metric-note">Tower XP earned <span aria-hidden="true">↗</span></span>
+          <span class="overview-metric-note">This week <span aria-hidden="true">↗</span></span>
         </a>
       </section>
 
       <section class="overview-lower-grid" aria-label="Run overview">
         <article class="overview-panel overview-chart-panel" data-overview-widget="chart">
           <div class="overview-panel-heading">
-            <div><h2>Run time</h2><p data-chart-summary>No run data yet</p></div>
-            <div class="overview-range" role="group" aria-label="Run time range">
-              <button type="button" data-range="7d" disabled>7 days</button>
-              <button type="button" data-range="30d" disabled>30 days</button>
-            </div>
+            <div><h2>Coins this week</h2></div>
           </div>
-          <div class="overview-chart" aria-label="Run time chart">
-            <p class="overview-data-empty">No run data yet.</p>
+          <div class="overview-chart" aria-label="Coins earned each day this week">
+            <p class="overview-data-empty" data-overview-earnings-empty>No coins synced this week.</p>
           </div>
           <a class="overview-panel-link" href="/dashboard/earnings/">View earnings <span aria-hidden="true">↗</span></a>
         </article>
@@ -95,7 +103,7 @@
         <article class="overview-panel overview-activity-panel" data-overview-widget="activity">
           <div class="overview-panel-heading"><div><h2>Recent activity</h2></div><a class="overview-text-link" href="/dashboard/activity/">All activity <span aria-hidden="true">↗</span></a></div>
           <ol class="overview-activity-list">
-            <li class="overview-data-empty">No activity yet.</li>
+            <li class="overview-data-empty" data-overview-activity-empty>No activity synced yet.</li>
           </ol>
         </article>
       </section>
@@ -118,11 +126,11 @@
         <h3 id="overview-widget-title">Widget size</h3>
         <div class="overview-widget-list">
           <div class="overview-widget-row" data-editor-widget="macro"><span>Macro state</span><div class="overview-size-control" role="group" aria-label="Macro state size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
-          <div class="overview-widget-row" data-editor-widget="runtime"><span>Run time</span><div class="overview-size-control" role="group" aria-label="Run time size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="runtime"><span>Strategy</span><div class="overview-size-control" role="group" aria-label="Strategy size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
           <div class="overview-widget-row" data-editor-widget="coins"><span>Coins</span><div class="overview-size-control" role="group" aria-label="Coins size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
           <div class="overview-widget-row" data-editor-widget="gems"><span>Gems</span><div class="overview-size-control" role="group" aria-label="Gems size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
           <div class="overview-widget-row" data-editor-widget="towerXp"><span>Tower XP</span><div class="overview-size-control" role="group" aria-label="Tower XP size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
-          <div class="overview-widget-row" data-editor-widget="chart"><span>Run time chart</span><div class="overview-size-control" role="group" aria-label="Run time chart size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
+          <div class="overview-widget-row" data-editor-widget="chart"><span>Weekly earnings chart</span><div class="overview-size-control" role="group" aria-label="Weekly earnings chart size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
           <div class="overview-widget-row" data-editor-widget="activity"><span>Recent activity</span><div class="overview-size-control" role="group" aria-label="Recent activity size"><button type="button" data-size="small">Small</button><button type="button" data-size="standard">Standard</button><button type="button" data-size="large">Large</button></div></div>
         </div>
       </section>

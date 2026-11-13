@@ -12,12 +12,12 @@
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
   <link rel="stylesheet" href="/styles/dashboard-product.css?v=5">
   <link rel="stylesheet" href="/styles/dashboard-strategies.css?v=4">
-  <link rel="stylesheet" href="/styles/dashboard-strategy-library.css?v=1">
+  <link rel="stylesheet" href="/styles/dashboard-strategy-library.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
   <script src="/src/dashboard-tutorial.js?v=5" defer></script>
   <script src="/src/dashboard-state.js?v=1" defer></script>
   <script src="/src/dashboard-strategies.js?v=5" defer></script>
-  <script src="/src/dashboard-strategy-library.js?v=1" defer></script>
+  <script src="/src/dashboard-strategy-library.js?v=2" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
   <script src="/src/dashboard-switcher.js?v=3" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
@@ -75,9 +75,12 @@
       <p class="strategy-dialog-byline" data-dialog-byline></p>
       <p class="strategy-dialog-description" data-dialog-description></p>
       <p class="strategy-unverified-note">Not reviewed by the Ultimate Macro team. It may be outdated or behave differently than described.</p>
+      <label class="strategy-dialog-picker" data-dialog-file-wrap hidden>Strategy file<select data-dialog-file></select></label>
+      <label class="strategy-dialog-picker" data-dialog-device-wrap hidden>Install on<select data-dialog-device></select></label>
+      <p class="strategy-dialog-status" data-dialog-status role="status" aria-live="polite"></p>
       <div class="strategy-dialog-actions">
         <button type="button" class="strategy-dialog-cancel" data-dialog-cancel>Cancel</button>
-        <a class="strategy-dialog-download" data-dialog-download href="#">Download anyway</a>
+        <button type="button" class="strategy-dialog-download" data-dialog-install>Add to macro</button>
       </div>
     </form>
   </dialog>

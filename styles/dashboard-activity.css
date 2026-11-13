@@ -22,12 +22,12 @@
 .filter-panel-top { display: flex; min-height: 37px; align-items: center; justify-content: space-between; padding: 0 8px 8px; border-bottom: 1px solid rgba(255,255,255,.08); }
 .exclude-toggle, .filter-option { display: flex; align-items: center; gap: 9px; min-height: 34px; color: #dbdbe0; font-size: 12px; cursor: pointer; }
 .exclude-toggle input, .filter-option input { display: grid; width: 15px; height: 15px; flex: 0 0 15px; place-content: center; margin: 0; appearance: none; border: 1px solid #5b5b63; border-radius: 4px; background: #18181c; cursor: pointer; transition: border-color .16s ease,background-color .16s ease,transform .16s ease; }
-.exclude-toggle input::before, .filter-option input::before { width: 4px; height: 8px; border: solid #111114; border-width: 0 1.8px 1.8px 0; content: ""; transform: translateY(-1px) rotate(45deg) scale(.45); opacity: 0; transition: transform .16s cubic-bezier(.2,.75,.25,1.25),opacity .12s ease; }
+.exclude-toggle input::before, .filter-option input::before { width: 4px; height: 8px; border: solid #111114; border-width: 0 1.8px 1.8px 0; content: ""; transform: translateY(-1px) rotate(45deg) scale(.45); opacity: 0; transition: transform .16s cubic-bezier(.2,.7,.2,1),opacity .12s ease; }
 .exclude-toggle input:checked, .filter-option input:checked { border-color: #f0f0f2; background: #f0f0f2; }
 .exclude-toggle input:checked::before, .filter-option input:checked::before { opacity: 1; transform: translateY(-1px) rotate(45deg) scale(1); }
 .exclude-toggle input:indeterminate, .filter-option input:indeterminate { border-color: #c8c8ce; background: #c8c8ce; }
 .exclude-toggle input:indeterminate::before, .filter-option input:indeterminate::before { width: 7px; height: 0; border: 0; border-top: 2px solid #111114; transform: none; opacity: 1; }
-.exclude-toggle input:hover, .filter-option input:hover { border-color: #f0f0f2; transform: scale(1.06); }
+.exclude-toggle input:hover, .filter-option input:hover { border-color: #f0f0f2; transform: scale(1.03); }
 .exclude-toggle input:focus-visible, .filter-option input:focus-visible { outline: 2px solid #c6adef; outline-offset: 3px; }
 .filter-clear { padding: 5px 8px; border: 0; border-radius: 7px; background: transparent; color: #a2a2ab; font-size: 11px; cursor: pointer; }
 .filter-clear:hover { background: rgba(255,255,255,.06); color: #fff; }
@@ -45,7 +45,7 @@
 .filter-option:hover { background: rgba(255,255,255,.045); color: #f3f3f5; }
 .filter-option[data-partial] span::after { content: " ·"; color: #a78bdd; }
 .activity-list-top { display: flex; justify-content: flex-end; min-height: 24px; margin: 0 2px 6px; color: #777780; font-size: 10px; }
-.activity-list { display: grid; min-height: 0; flex: 1 1 auto; gap: 7px; overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0 3px 0 0; list-style: none; scrollbar-color: rgba(255,255,255,.19) transparent; scrollbar-width: thin; }
+.activity-list { display: grid; min-height: 0; flex: 1 1 auto; align-content: start; gap: 9px; overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0 3px 0 0; list-style: none; scrollbar-color: rgba(255,255,255,.19) transparent; scrollbar-width: thin; }
 .activity-list::-webkit-scrollbar { width: 8px; }
 .activity-list::-webkit-scrollbar-track { background: transparent; }
 .activity-list::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: rgba(255,255,255,.19); background-clip: padding-box; transition: background-color .18s ease; }
@@ -61,6 +61,32 @@
 .activity-event-copy strong { overflow: hidden; color: #f0f0f2; font-size: 12px; font-weight: 540; text-overflow: ellipsis; white-space: nowrap; }
 .activity-event-copy > span { overflow: hidden; color: #888891; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .activity-row time { color: #85858e; font-size: 10px; white-space: nowrap; }
+.activity-run-item[hidden] { display: none; }
+.activity-run-group { overflow: hidden; border: 1px solid color-mix(in srgb, var(--run-color) 21%, transparent); border-radius: 13px; background: linear-gradient(105deg,color-mix(in srgb, var(--run-color) 4%, #101013),#101013 44%); transition: border-color .2s ease,background-color .2s ease; }
+.activity-run-group:hover,.activity-run-group[open] { border-color: color-mix(in srgb, var(--run-color) 34%, transparent); }
+.activity-run-summary { display: flex; min-height: 68px; align-items: center; gap: 13px; padding: 10px 15px; cursor: pointer; list-style: none; transition: background-color .18s ease; }
+.activity-run-summary::-webkit-details-marker { display: none; }
+.activity-run-summary:hover { background: rgba(255,255,255,.025); }
+.activity-run-summary:focus-visible { outline: 2px solid #c6adef; outline-offset: -3px; }
+.activity-run-icon { width: 25px; height: 25px; flex: 0 0 auto; object-fit: contain; }
+.activity-run-copy { display: grid; min-width: 0; flex: 1; gap: 3px; }
+.activity-run-copy strong { overflow: hidden; color: #f0f0f2; font-size: 13px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.activity-run-copy > span { color: #8e8c96; font-size: 10px; }
+.activity-run-outcome { padding: 4px 8px; border: 1px solid rgba(223,202,128,.22); border-radius: 999px; color: #dfca80; font-size: 10px; }
+.activity-run-outcome.is-loss { border-color: rgba(226,162,162,.22); color: #e2a2a2; }
+.activity-run-summary time { flex: 0 0 auto; color: #85858e; font-size: 10px; white-space: nowrap; }
+.activity-run-summary::after { width: 7px; height: 7px; flex: 0 0 auto; border-right: 1.5px solid #85838d; border-bottom: 1.5px solid #85838d; content: ""; transform: translateY(-2px) rotate(45deg); transition: transform .2s ease,border-color .2s ease; }
+.activity-run-group[open] > .activity-run-summary::after { border-color: #d8d3e0; transform: translateY(2px) rotate(225deg); }
+.activity-run-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s cubic-bezier(.2,.7,.2,1); }
+.activity-run-group[open] .activity-run-body { grid-template-rows: 1fr; }
+.activity-run-events { min-height: 0; overflow: hidden; display: grid; margin: 0; padding: 0 14px 8px 18px; list-style: none; }
+.dashboard-activity-page .activity-run-events .activity-row { min-height: 50px; grid-template-columns: 34px minmax(0,1fr) auto; gap: 12px; padding: 7px 9px; border: 0; border-top: 1px solid rgba(255,255,255,.055); border-radius: 0; background: transparent; backdrop-filter: none; transform: none; }
+.dashboard-activity-page .activity-run-events .activity-row:hover { background: rgba(255,255,255,.025); transform: none; }
+.dashboard-activity-page .activity-run-events .activity-row[hidden] { display: none; }
+.activity-run-events .activity-event-icon img { width: 23px; height: 23px; }
+.activity-run-events .activity-event-copy strong { font-size: 11px; }
+.activity-run-events .activity-event-copy > span { font-size: 10px; }
+.activity-run-events .activity-row time { font-size: 9px; }
 .activity-empty { padding: 44px 16px; border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; color: #a2a2ab; text-align: center; font-size: 12px; }
 .activity-empty[hidden] { display: none; }
 .dashboard-activity-page .dashboard-feedback { margin-top: 10px!important; }
@@ -74,6 +100,13 @@
   .activity-event-copy strong { font-size: 11px; }
   .activity-event-copy > span { font-size: 10px; }
   .activity-row time { font-size: 9px; }
+  .activity-run-summary { min-height: 62px; gap: 9px; padding: 9px 11px; }
+  .activity-run-icon { width: 22px; height: 22px; }
+  .activity-run-copy strong { font-size: 12px; }
+  .activity-run-summary time { font-size: 9px; }
+  .activity-run-outcome { padding: 3px 6px; font-size: 9px; }
+  .activity-run-events { padding-inline: 8px; }
+  .activity-run-events .activity-row { grid-template-columns: 30px minmax(0,1fr) auto; gap: 8px; padding-inline: 5px; }
 }
 @media (max-width: 920px) {
   .dashboard-activity-page .dashboard-app-shell { height: calc(100dvh - 84px); grid-template-rows: auto minmax(0,1fr); gap: 12px; padding: 20px 0 12px; }
@@ -89,5 +122,5 @@
   .activity-event-icon.roblox-icon img { width: 26px; height: 26px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .activity-filter-panel, .filter-options, .filter-options-inner, .filter-group-toggle img, .activity-row, .activity-list::-webkit-scrollbar-thumb { transition: none!important; }
+  .activity-filter-panel, .filter-options, .filter-options-inner, .filter-group-toggle img, .activity-row, .activity-run-group, .activity-run-summary, .activity-run-summary::after, .activity-run-body, .activity-list::-webkit-scrollbar-thumb { transition: none!important; }
 }

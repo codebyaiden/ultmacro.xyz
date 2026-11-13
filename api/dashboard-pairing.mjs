@@ -229,12 +229,14 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
 
 function normalizeMacroSnapshot(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots', 'availableStrategies'];
+  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots', 'availableStrategies', 'capabilities'];
   if (Object.keys(value).some(key => !allowed.includes(key)) ||
       !['stopped', 'running', 'paused'].includes(value.runState) ||
       ![1, 2].includes(value.activeSlot) || typeof value.rotationEnabled !== 'boolean' ||
       !Array.isArray(value.strategySlots) || value.strategySlots.length > 2 ||
       (value.availableStrategies !== undefined && (!Array.isArray(value.availableStrategies) || value.availableStrategies.length > 200)) ||
+      (value.capabilities !== undefined && (!Array.isArray(value.capabilities) || value.capabilities.length > 16 ||
+        value.capabilities.some(item => item !== 'strategy_library_install'))) ||
       (value.activeStrategy !== null && (typeof value.activeStrategy !== 'string' || value.activeStrategy.length > 80)) ||
       (value.map !== '' && (typeof value.map !== 'string' || value.map.length > 64)) ||
       (value.mode !== '' && (typeof value.mode !== 'string' || value.mode.length > 32))) return null;
@@ -269,7 +271,8 @@ function normalizeMacroSnapshot(value) {
     map: value.map.trim(),
     mode: value.mode.trim(),
     strategySlots: slots,
-    availableStrategies
+    availableStrategies,
+    capabilities: value.capabilities || []
   };
 }
 
@@ -313,7 +316,7 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
-const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit']);
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit', 'install_library_strategy']);
 
 async function requestRemoteCommand(ownerHash, deviceId, command, payload = null) {
   if (!REMOTE_COMMANDS.has(command)) return { error: 'invalid' };
@@ -324,6 +327,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     const device = localDevices.get(deviceId);
     if (!device || device.ownerHash !== ownerHash || device.revokedAt) return { error: 'device' };
     if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
+    if (command === 'install_library_strategy' && !device.snapshot.capabilities?.includes('strategy_library_install')) return { error: 'capability' };
     const state = device.snapshot.runState;
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
     const payloadFileId = payload?.strategyId;
@@ -360,7 +364,8 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
           or d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId'))))
         or ($3 = 'read_strategy_2' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
         or ($3 = 'stage_strategy_edit' and (($4::jsonb->>'slot') is not null and d.state_snapshot->'strategySlots' @> jsonb_build_array(jsonb_build_object('slot', ($4::jsonb->>'slot')::int))
-          or ($4::jsonb->>'strategyId') is not null and d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId')))))
+          or ($4::jsonb->>'strategyId') is not null and d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId'))))
+        or ($3 = 'install_library_strategy' and d.state_snapshot->'capabilities' @> '["strategy_library_install"]'::jsonb))
       and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
     returning id, command, status, expires_at`, [ownerHash, deviceId, command, payload ? JSON.stringify(payload) : null]); }
   catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
@@ -368,6 +373,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   const device = await sql().query(`select id, last_seen_at, state_snapshot from dashboard_devices where id = $1 and owner_hash = $2 and revoked_at is null`, [deviceId, ownerHash]);
   if (!device.rows[0]) return { error: 'device' };
   if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
+  if (command === 'install_library_strategy' && !device.rows[0].state_snapshot.capabilities?.includes('strategy_library_install')) return { error: 'capability' };
   const state = device.rows[0].state_snapshot.runState;
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
   const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payload?.strategyId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
@@ -1369,11 +1375,21 @@ export default async function dashboardPairing(request) {
             ? { strategyId: value.strategyId, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize }
             : { slot: value.slot, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize };
         }
+      } else if (body.command === 'install_library_strategy') {
+        const value = body.payload;
+        if (!value || Object.keys(value).some(key => !['fileName', 'strategyText'].includes(key)) ||
+            typeof value.fileName !== 'string' || value.fileName.length > 180 ||
+            !/^[^\\/:<>"|?*\0-\x1f]+\.strat$/i.test(value.fileName) ||
+            typeof value.strategyText !== 'string' || Buffer.byteLength(value.strategyText, 'utf8') > MAX_STRATEGY_BYTES)
+          return json({ error: 'That strategy file is invalid or too large.' }, 400);
+        const parsed = parseStrategy(value.strategyText);
+        if (!parsed.ok) return json({ error: parsed.errors[0] || 'This strategy could not be validated.' }, 422);
+        payload = { fileName: value.fileName, strategyText: value.strategyText };
       } else if (body.payload !== undefined) return json({ error: 'This action does not accept strategy data.' }, 400);
       const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command, payload);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
-      const status = { device: 404, offline: 409, state: 409, strategy: 409, pending: 409, invalid: 400 }[issued.error] || 409;
-      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'Stop the macro before changing its strategy.', strategy: 'That strategy is no longer configured on the PC.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
+      const status = { device: 404, offline: 409, state: 409, strategy: 409, capability: 409, pending: 409, invalid: 400 }[issued.error] || 409;
+      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'Stop the macro before changing its strategy.', strategy: 'That strategy is no longer configured on the PC.', capability: 'Update Ultimate Macro to add strategies from the Library.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
       return json({ error: message }, status, { 'cache-control': 'no-store' });
     }
 
