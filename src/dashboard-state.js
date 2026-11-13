@@ -42,6 +42,7 @@
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') refresh();
   });
-  window.setInterval(refresh, 20000);
+  const hasHealthReadings = document.body.classList.contains('dashboard-health-page');
+  window.setInterval(refresh, hasHealthReadings ? 10000 : 20000);
   refresh();
 })();

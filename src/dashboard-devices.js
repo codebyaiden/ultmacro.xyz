@@ -26,6 +26,12 @@ import QRCode from 'qrcode';
   const confirmRemove = page.querySelector('[data-confirm-remove]');
   const cancelRemove = page.querySelector('[data-cancel-remove]');
   const closeRemove = page.querySelector('[data-close-remove]');
+  const healthUpdated = page.querySelector('[data-health-updated]');
+  const healthEmpty = page.querySelector('[data-health-empty]');
+  const healthProcesses = page.querySelector('[data-health-processes]');
+  const healthProcessList = page.querySelector('[data-health-process-list]');
+  const cooldownWrap = page.querySelector('[data-health-cooldown-wrap]');
+  const cooldownButton = page.querySelector('[data-health-cooldown]');
   let pairingUrl = '';
   let expiresAt = 0;
   let expiryTimer = 0;
@@ -99,6 +105,121 @@ import QRCode from 'qrcode';
     }
   }
 
+  const formatBytes = value => {
+    if (!Number.isFinite(value) || value < 0) return '—';
+    const units = ['B', 'KB', 'GB'];
+    let amount = value, unit = 0;
+    while (amount >= 1024 && unit < units.length - 1) { amount /= 1024; unit++; }
+    return `${amount >= 10 || unit === 0 ? Math.round(amount) : amount.toFixed(1)} ${units[unit]}`;
+  };
+
+  function renderHealth(state) {
+    const device = window.UMDashboardState?.activeDesktop(state);
+    const snapshot = device?.state === 'connected' ? device.snapshot : null;
+    const health = snapshot?.health;
+    const supportsSafeStop = snapshot?.capabilities?.includes('safe_match_stop') === true;
+    cooldownWrap.hidden = !supportsSafeStop;
+    if (supportsSafeStop) {
+      const waiting = snapshot.stopAfterMatch === true;
+      cooldownButton.textContent = waiting ? 'Cancel cooldown' : 'Stop after this match';
+      cooldownButton.dataset.command = waiting ? 'cancel_stop_after_match' : 'stop_after_match';
+      cooldownButton.disabled = !waiting && snapshot.runState !== 'running';
+    }
+    const metrics = page.querySelector('[data-health-metrics]');
+    const set = (selector, value) => { const node = page.querySelector(selector); if (node) node.textContent = value; };
+    if (!health) {
+      metrics?.setAttribute('hidden', '');
+      healthProcesses.hidden = true;
+      healthEmpty.hidden = false;
+      healthUpdated.textContent = '';
+      set('[data-health-cpu]', '—'); set('[data-health-memory]', '—'); set('[data-health-gpu]', '—'); set('[data-health-temperature]', '—');
+      healthEmpty.textContent = device?.state === 'connected'
+        ? 'Health readings are unavailable in this desktop build.'
+        : 'Connect a Windows PC to see its health readings.';
+      return;
+    }
+    metrics?.removeAttribute('hidden');
+    healthEmpty.hidden = true;
+    const memoryPercent = health.memoryTotalBytes > 0 ? Math.round(health.memoryUsedBytes / health.memoryTotalBytes * 100) : null;
+    set('[data-health-cpu]', Number.isFinite(health.cpuPercent) ? `${Math.round(health.cpuPercent)}%` : 'Unavailable');
+    set('[data-health-memory]', memoryPercent === null ? 'Unavailable' : `${formatBytes(health.memoryUsedBytes)} / ${formatBytes(health.memoryTotalBytes)} · ${memoryPercent}%`);
+    set('[data-health-gpu]', Number.isFinite(health.gpuPercent) ? `${Math.round(health.gpuPercent)}%` : 'Unavailable');
+    const temperatures = Array.isArray(health.temperatures) ? health.temperatures : [];
+    set('[data-health-temperature]', temperatures.length ? temperatures.map(item => `${item.label}: ${item.celsius}°C`).join(' · ') : 'Unavailable');
+    const sampledAt = Date.parse(health.sampledAt);
+    healthUpdated.textContent = Number.isFinite(sampledAt) ? `Updated ${new Date(sampledAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : '';
+    const processes = Array.isArray(health.processes) ? health.processes : [];
+    healthProcessList.replaceChildren();
+    healthProcesses.hidden = !processes.length;
+    for (const process of processes) {
+      const row = document.createElement('div');
+      row.className = 'devices-health-process';
+      const copy = document.createElement('div');
+      copy.className = 'devices-health-process-copy';
+      const title = document.createElement('strong');
+      title.textContent = process.name;
+      const detail = document.createElement('span');
+      detail.textContent = `${Math.round(process.cpuPercent)}% CPU · ${formatBytes(process.memoryBytes)}`;
+      copy.append(title, detail);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'devices-health-close';
+      close.textContent = 'Close app';
+      close.disabled = !snapshot.capabilities?.includes('process_close') || !process.startedAt;
+      close.setAttribute('aria-label', `Ask ${process.name} to close`);
+      close.addEventListener('click', () => void closeSelectedProcess(device, process, close));
+      row.append(copy, close);
+      healthProcessList.append(row);
+    }
+  }
+
+  async function requestCooldown() {
+    const device = window.UMDashboardState?.activeDesktop();
+    const command = cooldownButton.dataset.command;
+    if (!device || !command || cooldownButton.disabled) return;
+    cooldownButton.disabled = true;
+    if (feedback) { feedback.textContent = ''; delete feedback.dataset.error; }
+    try {
+      await post('session/bootstrap');
+      const response = await fetch('/api/dashboard/v1/remote/commands', {
+        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ deviceId: device.id, command })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not change cooldown mode.');
+      if (feedback) feedback.textContent = command === 'stop_after_match'
+        ? 'Cooldown requested. The current match can finish safely.'
+        : 'Cooldown cancelled.';
+      window.setTimeout(() => window.UMDashboardState?.refresh(), 900);
+    } catch (error) {
+      if (feedback) { feedback.textContent = error.message || 'Could not change cooldown mode.'; feedback.dataset.error = 'true'; }
+      cooldownButton.disabled = false;
+    }
+  }
+
+  async function closeSelectedProcess(device, process, button) {
+    if (!device || !window.confirm(`Ask ${process.name} to close? The app may show its own prompt if there is unsaved work.`)) return;
+    button.disabled = true;
+    if (feedback) feedback.textContent = '';
+    try {
+      await post('session/bootstrap');
+      const response = await fetch('/api/dashboard/v1/remote/commands', {
+        method: 'POST', credentials: 'same-origin', cache: 'no-store',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ deviceId: device.id, command: 'close_selected_process', payload: { pid: process.pid, name: process.name, startedAt: process.startedAt } })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not ask the app to close.');
+      if (feedback) feedback.textContent = `Close request sent to ${process.name}.`;
+      await window.UMDashboardState?.refresh();
+    } catch (error) {
+      if (feedback) { feedback.textContent = error.message || 'Could not ask the app to close.'; feedback.dataset.error = 'true'; }
+    } finally {
+      button.disabled = false;
+    }
+  }
+
   async function loadDevices() {
     list.innerHTML = '<p class="devices-loading">Loading devices…</p>';
     try {
@@ -114,6 +235,10 @@ import QRCode from 'qrcode';
       list.replaceChildren(message);
     }
   }
+
+  // Health readings now live on the dedicated Health page. The Devices page
+  // keeps device pairing and removal only.
+  cooldownButton?.addEventListener('click', () => void requestCooldown());
 
   function openRemoveDialog(device) {
     pendingRemoval = { device };

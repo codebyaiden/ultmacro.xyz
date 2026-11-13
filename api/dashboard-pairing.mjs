@@ -230,17 +230,21 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
 
 function normalizeMacroSnapshot(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'map', 'mode', 'strategySlots', 'availableStrategies', 'capabilities'];
+  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'stopAfterMatch', 'cooldown', 'health', 'map', 'mode', 'strategySlots', 'availableStrategies', 'capabilities'];
   if (Object.keys(value).some(key => !allowed.includes(key)) ||
       !['stopped', 'running', 'paused'].includes(value.runState) ||
       ![1, 2].includes(value.activeSlot) || typeof value.rotationEnabled !== 'boolean' ||
+      (value.stopAfterMatch !== undefined && typeof value.stopAfterMatch !== 'boolean') ||
       !Array.isArray(value.strategySlots) || value.strategySlots.length > 2 ||
       (value.availableStrategies !== undefined && (!Array.isArray(value.availableStrategies) || value.availableStrategies.length > 200)) ||
       (value.capabilities !== undefined && (!Array.isArray(value.capabilities) || value.capabilities.length > 16 ||
-        value.capabilities.some(item => item !== 'strategy_library_install'))) ||
+        value.capabilities.some(item => !['strategy_library_install', 'safe_match_stop', 'device_health_v1', 'process_close', 'cooldown_mode_v1'].includes(item)))) ||
       (value.activeStrategy !== null && (typeof value.activeStrategy !== 'string' || value.activeStrategy.length > 80)) ||
       (value.map !== '' && (typeof value.map !== 'string' || value.map.length > 64)) ||
       (value.mode !== '' && (typeof value.mode !== 'string' || value.mode.length > 32))) return null;
+
+  const cooldown = normalizeCooldown(value.cooldown);
+  if (!cooldown) return null;
 
   const slots = [];
   const seen = new Set();
@@ -269,11 +273,75 @@ function normalizeMacroSnapshot(value) {
     activeStrategy: value.activeStrategy?.trim() || null,
     activeSlot: value.activeSlot,
     rotationEnabled: value.rotationEnabled,
+    stopAfterMatch: value.stopAfterMatch === true,
+    cooldown,
     map: value.map.trim(),
     mode: value.mode.trim(),
     strategySlots: slots,
     availableStrategies,
+    health: normalizeHealth(value.health),
     capabilities: value.capabilities || []
+  };
+}
+
+function normalizeCooldown(value) {
+  if (value === undefined || value === null) return { phase: 'idle', mode: 'idle', resumeAutomatically: false, remainingSeconds: null, targetC: null, currentC: null };
+  const allowed = ['phase', 'mode', 'resumeAutomatically', 'remainingSeconds', 'targetC', 'currentC'];
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => !allowed.includes(key)) ||
+      !['idle', 'waiting_for_match', 'cooling', 'ready'].includes(value.phase) ||
+      !['idle', 'minutes', 'temperature'].includes(value.mode) || typeof value.resumeAutomatically !== 'boolean' ||
+      !(value.remainingSeconds === null || (Number.isSafeInteger(value.remainingSeconds) && value.remainingSeconds >= 0 && value.remainingSeconds <= 14400)) ||
+      !(value.targetC === null || (typeof value.targetC === 'number' && Number.isFinite(value.targetC) && value.targetC >= 45 && value.targetC <= 80)) ||
+      !(value.currentC === null || (typeof value.currentC === 'number' && Number.isFinite(value.currentC) && value.currentC >= 0 && value.currentC <= 130))) return null;
+  return { phase: value.phase, mode: value.mode, resumeAutomatically: value.resumeAutomatically,
+    remainingSeconds: value.remainingSeconds, targetC: value.targetC, currentC: value.currentC };
+}
+
+function normalizeHealth(value) {
+  if (value === undefined || value === null) return null;
+  const finitePercent = n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100;
+  const sampledTime = typeof value?.sampledAt === 'string' ? Date.parse(value.sampledAt) : NaN;
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      Object.keys(value).some(key => !['sampledAt', 'cpuPercent', 'memoryUsedBytes', 'memoryTotalBytes', 'gpuPercent', 'temperatures', 'processes'].includes(key)) ||
+      typeof value.sampledAt !== 'string' || !Number.isFinite(sampledTime) || sampledTime > Date.now() + 10000 || Date.now() - sampledTime > 90000 ||
+      !(value.cpuPercent === null || finitePercent(value.cpuPercent)) ||
+      !((value.memoryUsedBytes === null && value.memoryTotalBytes === null) ||
+        (Number.isSafeInteger(value.memoryUsedBytes) && value.memoryUsedBytes >= 0 &&
+          Number.isSafeInteger(value.memoryTotalBytes) && value.memoryTotalBytes > 0 && value.memoryUsedBytes <= value.memoryTotalBytes)) ||
+      !(value.gpuPercent === null || finitePercent(value.gpuPercent)) ||
+      !Array.isArray(value.temperatures) || value.temperatures.length > 4 ||
+      !Array.isArray(value.processes) || value.processes.length > 8) return null;
+
+  const temperatures = [];
+  for (const item of value.temperatures) {
+    if (!item || typeof item !== 'object' || Array.isArray(item) ||
+        Object.keys(item).some(key => !['label', 'celsius', 'source'].includes(key)) ||
+        typeof item.label !== 'string' || item.label.length > 40 ||
+        typeof item.source !== 'string' || !['LibreHardwareMonitor'].includes(item.source) ||
+        typeof item.celsius !== 'number' || !Number.isFinite(item.celsius) || item.celsius < 0 || item.celsius > 130) return null;
+    temperatures.push({ label: item.label, celsius: item.celsius, source: item.source });
+  }
+
+  const processes = [];
+  const pids = new Set();
+  for (const item of value.processes) {
+    if (!item || typeof item !== 'object' || Array.isArray(item) ||
+        Object.keys(item).some(key => !['pid', 'name', 'cpuPercent', 'memoryBytes', 'startedAt'].includes(key)) ||
+        !Number.isSafeInteger(item.pid) || item.pid <= 4 || pids.has(item.pid) ||
+        typeof item.name !== 'string' || !/^[a-z0-9_. -]{1,80}$/i.test(item.name) ||
+        !finitePercent(item.cpuPercent) || !Number.isSafeInteger(item.memoryBytes) || item.memoryBytes < 0 ||
+        typeof item.startedAt !== 'string' || !/^\d{14}$/.test(item.startedAt)) return null;
+    pids.add(item.pid);
+    processes.push({ pid: item.pid, name: item.name, cpuPercent: item.cpuPercent, memoryBytes: item.memoryBytes, startedAt: item.startedAt });
+  }
+  return {
+    sampledAt: value.sampledAt,
+    cpuPercent: value.cpuPercent,
+    memoryUsedBytes: value.memoryUsedBytes,
+    memoryTotalBytes: value.memoryTotalBytes,
+    gpuPercent: value.gpuPercent,
+    temperatures,
+    processes
   };
 }
 
@@ -317,10 +385,33 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
-const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit', 'install_library_strategy']);
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'stop_after_match', 'cancel_stop_after_match', 'start_cooldown', 'cancel_cooldown', 'close_selected_process', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit', 'install_library_strategy']);
+
+function validCooldownRequest(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload) || typeof payload.resumeAutomatically !== 'boolean') return false;
+  if (payload.mode === 'minutes') return Object.keys(payload).length === 3 && Number.isSafeInteger(payload.minutes) && payload.minutes >= 5 && payload.minutes <= 240;
+  if (payload.mode === 'temperature') return Object.keys(payload).length === 3 && typeof payload.targetC === 'number' && Number.isFinite(payload.targetC) && payload.targetC >= 45 && payload.targetC <= 80;
+  return false;
+}
+
+function validProcessTarget(payload) {
+  return payload && typeof payload === 'object' && !Array.isArray(payload) &&
+    Object.keys(payload).length === 3 && ['pid', 'name', 'startedAt'].every(key => Object.hasOwn(payload, key)) &&
+    Number.isSafeInteger(payload.pid) && payload.pid > 4 &&
+    typeof payload.name === 'string' && /^[a-z0-9_. -]{1,80}$/i.test(payload.name) &&
+    typeof payload.startedAt === 'string' && /^\d{14}$/.test(payload.startedAt);
+}
+
+function hasProcessTarget(snapshot, payload) {
+  return validProcessTarget(payload) && snapshot?.health?.processes?.some(item =>
+    item.pid === payload.pid && item.name === payload.name && item.startedAt === payload.startedAt);
+}
 
 async function requestRemoteCommand(ownerHash, deviceId, command, payload = null) {
   if (!REMOTE_COMMANDS.has(command)) return { error: 'invalid' };
+  if (command === 'close_selected_process' && !validProcessTarget(payload)) return { error: 'invalid' };
+  if (command === 'start_cooldown' && !validCooldownRequest(payload)) return { error: 'invalid' };
+  if (command === 'cancel_cooldown' && payload !== null) return { error: 'invalid' };
   if (localStore()) {
     for (const item of localRemoteCommands.values()) {
       if (item.expiresAt <= Date.now()) { item.payload = null; item.resultData = null; if (['pending', 'delivered'].includes(item.status)) item.status = 'expired'; }
@@ -329,6 +420,10 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     if (!device || device.ownerHash !== ownerHash || device.revokedAt) return { error: 'device' };
     if (!device.lastSeenAt || Date.now() - device.lastSeenAt > HEARTBEAT_FRESH_MS || !device.snapshot) return { error: 'offline' };
     if (command === 'install_library_strategy' && !device.snapshot.capabilities?.includes('strategy_library_install')) return { error: 'capability' };
+    if (['stop_after_match', 'cancel_stop_after_match'].includes(command) && !device.snapshot.capabilities?.includes('safe_match_stop')) return { error: 'capability' };
+    if (command === 'close_selected_process' && !device.snapshot.capabilities?.includes('process_close')) return { error: 'capability' };
+    if (['start_cooldown', 'cancel_cooldown'].includes(command) && !device.snapshot.capabilities?.includes('cooldown_mode_v1')) return { error: 'capability' };
+    if (command === 'close_selected_process' && !hasProcessTarget(device.snapshot, payload)) return { error: 'process' };
     const state = device.snapshot.runState;
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
     const payloadFileId = payload?.strategyId;
@@ -339,7 +434,13 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     if (payloadFileId && !device.snapshot.availableStrategies?.some((file) => file.id === payloadFileId)) return { error: 'strategy' };
     if (command === 'start' && !device.snapshot.strategySlots?.length) return { error: 'strategy' };
     if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') ||
-        (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
+        (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped') ||
+        (command === 'stop_after_match' && (state !== 'running' || device.snapshot.stopAfterMatch)) ||
+        (command === 'cancel_stop_after_match' && !device.snapshot.stopAfterMatch) ||
+        (command === 'start_cooldown' && !['stopped', 'running'].includes(state)) ||
+        (command === 'start_cooldown' && device.snapshot.cooldown?.phase && !['idle', 'ready'].includes(device.snapshot.cooldown.phase)) ||
+        (command === 'start_cooldown' && payload.mode === 'temperature' && !device.snapshot.health?.temperatures?.some(item => /cpu package|cpu core/i.test(item.label))) ||
+        (command === 'cancel_cooldown' && !['waiting_for_match', 'cooling', 'ready'].includes(device.snapshot.cooldown?.phase))) return { error: 'state' };
     if ([...localRemoteCommands.values()].some(item => item.deviceId === deviceId && ['pending', 'delivered'].includes(item.status) && item.expiresAt > Date.now())) return { error: 'pending' };
     const item = { id: randomUUID(), ownerHash, deviceId, command, payload, status: 'pending', requestedAt: Date.now(), expiresAt: Date.now() + 30000 };
     localRemoteCommands.set(item.id, item);
@@ -359,6 +460,22 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
         or ($3 = 'pause' and d.state_snapshot->>'runState' = 'running')
         or ($3 = 'resume' and d.state_snapshot->>'runState' = 'paused')
         or ($3 = 'stop' and d.state_snapshot->>'runState' in ('running','paused'))
+        or ($3 = 'stop_after_match' and d.state_snapshot->>'runState' = 'running'
+          and d.state_snapshot->'capabilities' @> '["safe_match_stop"]'::jsonb
+          and coalesce((d.state_snapshot->>'stopAfterMatch')::boolean, false) = false)
+        or ($3 = 'cancel_stop_after_match' and coalesce((d.state_snapshot->>'stopAfterMatch')::boolean, false) = true
+          and d.state_snapshot->'capabilities' @> '["safe_match_stop"]'::jsonb)
+        or ($3 = 'start_cooldown' and d.state_snapshot->'capabilities' @> '["cooldown_mode_v1"]'::jsonb
+          and d.state_snapshot->>'runState' in ('running','stopped')
+          and coalesce(d.state_snapshot->'cooldown'->>'phase','idle') in ('idle','ready')
+          and (($4::jsonb->>'mode') <> 'temperature' or exists (
+            select 1 from jsonb_array_elements(coalesce(d.state_snapshot->'health'->'temperatures','[]'::jsonb)) t
+            where t->>'label' ~* 'CPU Package|CPU Core')))
+        or ($3 = 'cancel_cooldown' and d.state_snapshot->'capabilities' @> '["cooldown_mode_v1"]'::jsonb
+          and d.state_snapshot->'cooldown'->>'phase' in ('waiting_for_match','cooling','ready'))
+        or ($3 = 'close_selected_process' and d.state_snapshot->'capabilities' @> '["process_close"]'::jsonb
+          and d.state_snapshot->'health'->'processes' @> jsonb_build_array(jsonb_build_object(
+            'pid', ($4::jsonb->>'pid')::int, 'name', $4::jsonb->>'name', 'startedAt', $4::jsonb->>'startedAt')))
         or ($3 = 'select_strategy_1' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
         or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
         or ($3 = 'read_strategy_1' and (($4::jsonb is null and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
@@ -375,6 +492,10 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   if (!device.rows[0]) return { error: 'device' };
   if (!device.rows[0].last_seen_at || Date.now() - new Date(device.rows[0].last_seen_at).getTime() > HEARTBEAT_FRESH_MS || !device.rows[0].state_snapshot) return { error: 'offline' };
   if (command === 'install_library_strategy' && !device.rows[0].state_snapshot.capabilities?.includes('strategy_library_install')) return { error: 'capability' };
+  if (['stop_after_match', 'cancel_stop_after_match'].includes(command) && !device.rows[0].state_snapshot.capabilities?.includes('safe_match_stop')) return { error: 'capability' };
+  if (command === 'close_selected_process' && !device.rows[0].state_snapshot.capabilities?.includes('process_close')) return { error: 'capability' };
+  if (['start_cooldown', 'cancel_cooldown'].includes(command) && !device.rows[0].state_snapshot.capabilities?.includes('cooldown_mode_v1')) return { error: 'capability' };
+  if (command === 'close_selected_process' && !hasProcessTarget(device.rows[0].state_snapshot, payload)) return { error: 'process' };
   const state = device.rows[0].state_snapshot.runState;
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
   const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payload?.strategyId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
@@ -383,7 +504,11 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   if (requiredSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === requiredSlot)) return { error: 'strategy' };
   if (requiredFileId && !device.rows[0].state_snapshot.availableStrategies?.some((file) => file.id === requiredFileId)) return { error: 'strategy' };
   if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
-  if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped')) return { error: 'state' };
+  const waitingForMatchEnd = Boolean(device.rows[0].state_snapshot.stopAfterMatch);
+  const cooldown = device.rows[0].state_snapshot.cooldown || { phase: 'idle' };
+  if ((command === 'start' && state !== 'stopped') || (command === 'pause' && state !== 'running') || (command === 'resume' && state !== 'paused') || (command === 'stop' && state === 'stopped') || (command === 'stop_after_match' && (state !== 'running' || waitingForMatchEnd)) || (command === 'cancel_stop_after_match' && !waitingForMatchEnd) ||
+      (command === 'start_cooldown' && (!['running', 'stopped'].includes(state) || !['idle', 'ready'].includes(cooldown.phase) || (payload.mode === 'temperature' && !device.rows[0].state_snapshot.health?.temperatures?.some(item => /cpu package|cpu core/i.test(item.label))))) ||
+      (command === 'cancel_cooldown' && !['waiting_for_match', 'cooling', 'ready'].includes(cooldown.phase))) return { error: 'state' };
   return { error: 'pending' };
 }
 
@@ -1413,11 +1538,18 @@ export default async function dashboardPairing(request) {
         const parsed = parseStrategy(value.strategyText);
         if (!parsed.ok) return json({ error: parsed.errors[0] || 'This strategy could not be validated.' }, 422);
         payload = { fileName: value.fileName, strategyText: value.strategyText };
+      } else if (body.command === 'start_cooldown') {
+        if (!validCooldownRequest(body.payload)) return json({ error: 'Choose a cooldown between 5 and 240 minutes, or a CPU target between 45°C and 80°C.' }, 400);
+        payload = { ...body.payload };
+      } else if (body.command === 'close_selected_process') {
+        if (!validProcessTarget(body.payload))
+          return json({ error: 'Choose a current process from the health list.' }, 400);
+        payload = { pid: body.payload.pid, name: body.payload.name, startedAt: body.payload.startedAt };
       } else if (body.payload !== undefined) return json({ error: 'This action does not accept strategy data.' }, 400);
       const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command, payload);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
-      const status = { device: 404, offline: 409, state: 409, strategy: 409, capability: 409, pending: 409, invalid: 400 }[issued.error] || 409;
-      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'Stop the macro before changing its strategy.', strategy: 'That strategy is no longer configured on the PC.', capability: 'Update Ultimate Macro to add strategies from the Library.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
+      const status = { device: 404, offline: 409, state: 409, strategy: 409, capability: 409, process: 409, pending: 409, invalid: 400 }[issued.error] || 409;
+      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'That action is not available in the PC’s current state.', strategy: 'That strategy is no longer configured on the PC.', capability: 'Update Ultimate Macro to use that action.', process: 'That app is no longer in the current health list. Refresh and try again.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
       return json({ error: message }, status, { 'cache-control': 'no-store' });
     }
 

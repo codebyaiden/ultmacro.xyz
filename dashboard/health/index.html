@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Health — Dashboard</title>
+  <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
+  <link rel="stylesheet" href="/styles/dashboard-product.css?v=6">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=5">
+  <link rel="stylesheet" href="/styles/dashboard-health.css?v=1">
+  <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=6" defer></script>
+  <script src="/src/dashboard-state.js?v=2" defer></script>
+  <script src="/src/dashboard-health.js?v=1" defer></script>
+  <script src="/src/dashboard-preferences.js?v=4" defer></script>
+  <script src="/src/dashboard-switcher.js?v=3" defer></script>
+  <link rel="manifest" href="/dashboard/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
+</head>
+<body class="dashboard-app-page dashboard-health-page">
+  <a class="dashboard-app-skip" href="#main">Skip to content</a>
+  <header class="dashboard-app-fallback"><a href="/">Ultimate Macro</a></header>
+  <main id="main" class="dashboard-app-shell">
+    <aside class="dashboard-sidebar" aria-label="Dashboard sections">
+      <nav class="dashboard-section-nav">
+        <a href="/dashboard/overview/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/manage.svg')" aria-hidden="true"></span><span>Overview</span></a>
+        <a href="/dashboard/manage/"><span class="nav-icon manage-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/manage-controls.svg')" aria-hidden="true"></span><span>Manage</span></a>
+        <a href="/dashboard/activity/"><span class="nav-icon activity-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/activity.svg')" aria-hidden="true"></span><span>Activity</span></a>
+        <a href="/dashboard/remote/"><span class="nav-icon remote-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/remote.svg')" aria-hidden="true"></span><span>Remote</span></a>
+        <a href="/dashboard/earnings/"><span class="nav-icon earnings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/earnings.svg')" aria-hidden="true"></span><span>Earnings</span></a>
+        <a href="/dashboard/strategies/"><span class="nav-icon strategies-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/strategies.svg')" aria-hidden="true"></span><span>Strategies</span></a>
+        <a href="/dashboard/health/" aria-current="page"><span class="nav-icon health-nav-icon" aria-hidden="true">⌁</span><span>Health</span></a>
+        <a href="/dashboard/devices/"><span class="nav-icon devices-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/devices.svg')" aria-hidden="true"></span><span>Devices</span></a>
+        <a href="/dashboard/notifications/"><span class="nav-icon notification-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/notifications.svg')" aria-hidden="true"></span><span>Notifications</span></a>
+      </nav>
+      <div class="dashboard-sidebar-bottom"><a href="/dashboard/settings/"><span class="nav-icon settings-icon icon-mask" style="--icon-url:url('/assets/dashboard-icons/flat/SVG_Source/Main_Navigation/settings.svg')" aria-hidden="true"></span><span>Settings</span></a></div>
+    </aside>
+    <div class="dashboard-app-content health-content">
+      <header class="health-heading"><h1>Health</h1><label class="health-unit-picker">Temperature <select data-health-unit aria-label="Temperature unit"><option value="C">°C</option><option value="F">°F</option></select></label></header>
+      <section class="health-gauge-grid" aria-label="Live PC readings" data-health-gauge-grid>
+        <article class="health-gauge-card" data-health-gauge="cpu"><span class="health-gauge-label">CPU</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="cpu" cx="60" cy="60" r="49"></circle></svg><strong data-reading="cpu">—</strong></div><span class="health-gauge-detail" data-health-detail="cpu">Waiting for PC</span></article>
+        <article class="health-gauge-card" data-health-gauge="memory"><span class="health-gauge-label">Memory</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="memory" cx="60" cy="60" r="49"></circle></svg><strong data-reading="memory">—</strong></div><span class="health-gauge-detail" data-health-detail="memory">Waiting for PC</span></article>
+        <article class="health-gauge-card" data-health-gauge="gpu"><span class="health-gauge-label">GPU</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="gpu" cx="60" cy="60" r="49"></circle></svg><strong data-reading="gpu">—</strong></div><span class="health-gauge-detail" data-health-detail="gpu">Waiting for PC</span></article>
+        <article class="health-gauge-card health-temperature-card" data-health-gauge="temperature"><span class="health-gauge-label">CPU temperature</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="temperature" cx="60" cy="60" r="49"></circle></svg><strong data-reading="temperature">—</strong></div><span class="health-gauge-detail" data-health-detail="temperature">Waiting for PC</span></article>
+      </section>
+      <section class="health-cooldown" aria-labelledby="cooldown-title">
+        <div class="health-section-heading"><h2 id="cooldown-title">Cooldown</h2><span data-cooldown-state>—</span></div>
+        <p class="health-cooldown-summary" data-cooldown-summary>—</p>
+        <form class="health-cooldown-form" data-cooldown-form>
+          <label>Cool down until<select name="mode" data-cooldown-mode><option value="minutes">Time has passed</option><option value="temperature">CPU temperature is safe</option></select></label>
+          <label data-cooldown-minutes-wrap>Minutes<select name="minutes"><option>5</option><option selected>15</option><option>30</option><option>60</option><option>90</option><option>120</option></select></label>
+          <label data-cooldown-temp-wrap hidden>Temperature<select name="targetC"><option value="55">55°C</option><option value="60" selected>60°C</option><option value="65">65°C</option><option value="70">70°C</option><option value="75">75°C</option></select></label>
+          <label class="health-resume-choice"><input type="checkbox" name="resumeAutomatically" checked><span>Resume the macro when cooldown ends</span></label>
+          <div class="health-cooldown-actions"><button class="health-cooldown-start" type="submit" data-cooldown-start disabled>Start cooldown</button><button class="health-cooldown-cancel" type="button" data-cooldown-cancel hidden>Cancel</button></div>
+        </form>
+        <p class="health-feedback" data-health-feedback role="status" aria-live="polite"></p>
+      </section>
+      <section class="health-processes" aria-labelledby="process-title" data-health-processes hidden><h2 id="process-title">Resource-heavy apps</h2><div data-health-process-list></div></section>
+      <p class="health-empty" data-health-empty>Connect a Windows PC to see live readings.</p>
+    </div>
+  </main>
+</body>
+</html>

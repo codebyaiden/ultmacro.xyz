@@ -1,0 +1,80 @@
+.dashboard-health-page .health-content { width:min(100%,1080px); padding:0 4px 26px; }
+.health-heading,.health-section-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.health-heading { margin:2px 0 18px; }
+.health-heading h1 { color:#f3f3f5; font-size:clamp(25px,3vw,33px); font-weight:560; letter-spacing:-.055em; }
+.health-unit-picker { display:flex; align-items:center; gap:8px; color:#9c9aa4; font-size:11px; }
+.health-unit-picker select,.health-cooldown-form select { min-height:34px; padding:0 12px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:#131316; color:#f0eff2; font:inherit; }
+.health-gauge-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.health-gauge-card { position:relative; display:grid; min-width:0; min-height:220px; align-content:center; justify-items:center; gap:9px; overflow:hidden; border:1px solid rgba(255,255,255,.1); border-radius:17px; background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.012) 62%),#101013; }
+.health-gauge-label { color:#aaa8b1; font-size:12px; }
+.health-dial { position:relative; display:grid; width:128px; aspect-ratio:1; place-items:center; }
+.health-dial svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; transform:rotate(-90deg); }
+.health-dial circle { fill:none; stroke-width:7; }
+.dial-track { stroke:rgba(255,255,255,.09); }
+.dial-value { --dial-color:#b6a0dc; stroke:var(--dial-color); stroke-linecap:round; stroke-dasharray:307.9; stroke-dashoffset:307.9; filter:drop-shadow(0 0 5px color-mix(in srgb,var(--dial-color),transparent 75%)); transition:stroke-dashoffset .85s cubic-bezier(.22,.75,.25,1),stroke .35s ease,filter .35s ease; }
+.health-dial strong { color:#f5f4f7; font-size:26px; font-weight:570; font-variant-numeric:tabular-nums; letter-spacing:-.045em; }
+.health-gauge-detail { min-height:15px; color:#777680; font-size:10px; text-align:center; }
+.health-temperature-card { --temp-color:#9d8ac7; }
+.health-temperature-card[data-level="warm"] { --temp-color:#d2a45f; }
+.health-temperature-card[data-level="hot"] { --temp-color:#e47766; }
+.health-temperature-card[data-level="cool"] { --temp-color:#76aeca; }
+.health-temperature-card .dial-value { stroke:var(--temp-color); }
+.health-temperature-card[data-level="hot"]::before,.health-temperature-card[data-level="cool"]::before { position:absolute; z-index:0; inset:12% 16%; border-radius:50%; background:var(--temp-color); content:""; opacity:.055; filter:blur(28px); pointer-events:none; }
+.health-temperature-card[data-level="hot"]::before { animation:health-heat 3.8s ease-in-out infinite alternate; }
+@keyframes health-heat { from { transform:translateY(5px) scale(.94); opacity:.035; } to { transform:translateY(-3px) scale(1.06); opacity:.075; } }
+.health-cooldown,.health-processes { margin-top:14px; padding:19px 20px; border:1px solid rgba(255,255,255,.1); border-radius:16px; background:#101013; }
+.health-section-heading h2,.health-processes h2 { color:#f0eff3; font-size:14px; font-weight:560; letter-spacing:-.025em; }
+.health-section-heading > span { color:#aaa8b1; font-size:11px; font-variant-numeric:tabular-nums; }
+.health-cooldown-summary { min-height:18px; margin:8px 0 15px; color:#8d8b95; font-size:11px; }
+.health-cooldown-form { display:grid; grid-template-columns:minmax(150px,1fr) minmax(120px,.55fr) minmax(200px,1.2fr) auto; align-items:end; gap:11px; }
+.health-cooldown-form > label:not(.health-resume-choice) { display:grid; gap:7px; color:#aaa8b1; font-size:10px; }
+.health-cooldown-form select { width:100%; border-radius:10px; }
+.health-resume-choice { display:flex; min-height:35px; align-items:center; gap:8px; color:#aaa8b1; font-size:10px; }
+.health-resume-choice input { width:15px; height:15px; accent-color:#b6a0dc; }
+.health-cooldown-actions { display:flex; gap:8px; }
+.health-cooldown-actions button { min-height:35px; padding:0 14px; border:1px solid rgba(255,255,255,.12); border-radius:999px; font:inherit; font-size:10px; transition:background .16s ease,transform .16s ease,border-color .16s ease; }
+.health-cooldown-start { background:#eeedf1; color:#17161a; }
+.health-cooldown-start:hover:not(:disabled) { transform:translateY(-1px); background:#fff; }
+.health-cooldown-start:disabled { opacity:.45; cursor:not-allowed; }
+.health-cooldown-cancel { background:rgba(255,255,255,.045); color:#dddbe2; }
+.health-cooldown-cancel:hover { background:rgba(255,255,255,.09); }
+.health-feedback,.health-empty { min-height:0; margin-top:10px; color:#aaa8b1; font-size:11px; }
+.health-feedback:empty { display:none; }
+.health-processes > div { margin-top:10px; }
+.health-processes [data-health-process-list] { display:grid; gap:0; }
+.health-processes .devices-health-process { display:flex; min-height:58px; align-items:center; justify-content:space-between; gap:14px; padding:10px 2px; border-top:1px solid rgba(255,255,255,.075); }
+.health-processes .devices-health-process-copy { display:grid; min-width:0; gap:4px; }
+.health-processes .devices-health-process-copy strong { overflow:hidden; color:#e8e7eb; font-size:12px; font-weight:540; text-overflow:ellipsis; white-space:nowrap; }
+.health-processes .devices-health-process-copy span { color:#8e8c96; font-size:10px; }
+.health-processes .devices-health-close { min-height:32px; padding:0 12px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.04); color:#dedde2; font:inherit; font-size:10px; transition:background .16s ease,border-color .16s ease; }
+.health-processes .devices-health-close:hover:not(:disabled) { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.09); }
+.health-processes .devices-health-close:disabled { opacity:.42; cursor:not-allowed; }
+.health-empty { padding:24px 0; text-align:center; }
+.health-mini-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
+.overview-health { margin-top:14px; padding:15px 18px 13px; border:1px solid rgba(255,255,255,.1); border-radius:15px; background:#101013; }
+.overview-health-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.overview-health-head h2 { color:#f0eff3; font-size:13px; font-weight:550; }
+.overview-health-head a { color:#aaa8b1; font-size:10px; }
+.overview-health-head a:hover { color:#fff; }
+.overview-health .health-gauge-grid { gap:8px; }
+.overview-health .health-gauge-card { min-height:126px; gap:3px; border-radius:12px; }
+.overview-health .health-gauge-label { font-size:10px; }
+.overview-health .health-dial { width:72px; }
+.overview-health .health-dial circle { stroke-width:8; }
+.overview-health .health-dial strong { font-size:17px; }
+.overview-health .health-gauge-detail { min-height:10px; font-size:9px; }
+.health-mini { position:relative; display:grid; min-width:0; min-height:48px; grid-template-columns:1fr auto; align-content:center; gap:4px 9px; padding:4px 14px; }
+.health-mini + .health-mini { border-left:1px solid rgba(255,255,255,.08); }
+.health-mini > span { color:#8d8b95; font-size:10px; }
+.health-mini > strong { grid-row:span 2; align-self:center; color:#eae9ed; font-size:18px; font-weight:540; font-variant-numeric:tabular-nums; }
+.health-mini > i { display:block; height:3px; overflow:hidden; border-radius:9px; background:rgba(255,255,255,.07); }
+.health-mini > i b { display:block; width:0; height:100%; border-radius:inherit; background:#a997cd; transition:width .85s cubic-bezier(.22,.75,.25,1); }
+.health-mini[data-level="warm"] > i b { background:#d2a45f; }
+.health-mini[data-level="hot"] > i b { background:#e47766; }
+.health-mini[data-level="cool"] > i b { background:#76aeca; }
+.health-mini[data-unavailable="true"] > i { visibility:hidden; }
+.health-mini[data-unavailable="true"] > strong { color:#888690; font-size:14px; }
+.dashboard-health-page :focus-visible { outline:2px solid #c5a7f2; outline-offset:3px; }
+@media(max-width:900px) { .health-gauge-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .health-cooldown-form { grid-template-columns:repeat(2,minmax(0,1fr)); } .health-resume-choice { grid-column:1; } }
+@media(max-width:620px) { .dashboard-health-page .health-content { padding:0 0 12px; } .health-gauge-grid { gap:8px; } .health-gauge-card { min-height:183px; border-radius:14px; } .health-dial { width:108px; } .health-dial strong { font-size:22px; } .health-cooldown { padding:15px 13px; } .health-cooldown-form { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px 8px; } .health-resume-choice { grid-column:1/-1; } .health-cooldown-actions { grid-column:1/-1; } .health-cooldown-actions button { flex:1; } .health-mini-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .health-mini { padding:7px 8px; } .health-mini:nth-child(3) { border-left:0; } .health-mini:nth-child(n+3) { border-top:1px solid rgba(255,255,255,.08); } }
+@media(prefers-reduced-motion:reduce) { .dial-value,.health-mini > i b,.health-cooldown-actions button { transition:none; } .health-temperature-card[data-level="hot"]::before { animation:none; } }
