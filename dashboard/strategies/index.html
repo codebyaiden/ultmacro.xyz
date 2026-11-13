@@ -10,13 +10,19 @@
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=6">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=13">
+  <link rel="stylesheet" href="/styles/dashboard-product.css?v=5">
   <link rel="stylesheet" href="/styles/dashboard-strategies.css?v=4">
+  <link rel="stylesheet" href="/styles/dashboard-strategy-library.css?v=1">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261107" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=5" defer></script>
   <script src="/src/dashboard-state.js?v=1" defer></script>
   <script src="/src/dashboard-strategies.js?v=5" defer></script>
+  <script src="/src/dashboard-strategy-library.js?v=1" defer></script>
   <script src="/src/dashboard-preferences.js?v=4" defer></script>
+  <script src="/src/dashboard-switcher.js?v=3" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=5">
 </head>
 <body class="dashboard-app-page">
   <a class="dashboard-app-skip" href="#main">Skip to content</a>
@@ -39,11 +45,41 @@
     </aside>
     <div class="dashboard-app-content dashboard-strategies-content">
       <header class="dashboard-app-heading"><h1>Strategies</h1></header>
+      <nav class="strategy-view-tabs" aria-label="Strategy sections">
+        <button type="button" data-strategy-view="yours" aria-selected="true">Your Strategies</button>
+        <button type="button" data-strategy-view="library" aria-selected="false">Library</button>
+      </nav>
       <p class="strategy-feedback" data-strategy-feedback role="status" aria-live="polite"></p>
       <div class="strategy-device-list" data-strategy-device-list aria-live="polite">
         <p class="strategy-empty-state">Waiting for macro data.</p>
       </div>
+      <section class="strategy-public-library" data-strategy-library hidden aria-label="Strategy Library">
+        <div class="strategy-library-toolbar">
+          <label class="strategy-library-search"><span class="strategy-sr-only">Search the Library</span><input type="search" data-library-search placeholder="Search strategies" autocomplete="off"></label>
+          <div class="strategy-library-filters" role="group" aria-label="Filter strategies">
+            <button type="button" data-library-sort="recent" aria-pressed="true">All</button>
+            <button type="button" data-library-sort="popular" aria-pressed="false">Popular</button>
+            <button type="button" data-library-sort="featured" aria-pressed="false">Featured</button>
+          </div>
+        </div>
+        <p class="strategy-library-feedback" data-library-feedback role="status" aria-live="polite"></p>
+        <div class="strategy-library-grid" data-library-grid></div>
+      </section>
     </div>
   </main>
+  <dialog class="strategy-unverified-dialog" data-library-dialog>
+    <form method="dialog" class="strategy-unverified-card">
+      <button class="strategy-dialog-close" value="cancel" aria-label="Close">×</button>
+      <div class="strategy-dialog-preview" data-dialog-preview hidden></div>
+      <h2 data-dialog-title></h2>
+      <p class="strategy-dialog-byline" data-dialog-byline></p>
+      <p class="strategy-dialog-description" data-dialog-description></p>
+      <p class="strategy-unverified-note">Not reviewed by the Ultimate Macro team. It may be outdated or behave differently than described.</p>
+      <div class="strategy-dialog-actions">
+        <button type="button" class="strategy-dialog-cancel" data-dialog-cancel>Cancel</button>
+        <a class="strategy-dialog-download" data-dialog-download href="#">Download anyway</a>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>
