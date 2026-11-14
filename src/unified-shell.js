@@ -23,6 +23,30 @@
     if (text !== undefined) node.textContent = text;
     return node;
   };
+  if (/^\/dashboard(?:\/|$)/.test(pathname)) {
+    document.body.classList.add('um-unified-page','um-dashboard-site-page');
+    // The dashboard app has its own sidebar brand. Keep a compact brand on
+    // the pairing entry page, which has no dashboard sidebar.
+    if (/^\/dashboard\/?$/.test(pathname)) {
+      const header = el('header','um-site-header dashboard-site-header');
+      const inner = el('div','um-header-inner');
+      const brand = el('a','um-brand dashboard-site-brand');
+      brand.href = '/dashboard/overview/';
+      brand.setAttribute('aria-label','Ultimate Macro dashboard');
+      const image = el('img');
+      image.src = '/assets/ultimate-macro-mascot.png';
+      image.alt = '';
+      image.width = 30;
+      image.height = 30;
+      const text = el('span','');
+      text.append('Ultimate ',el('b','', 'Macro'));
+      brand.append(image,text);
+      inner.append(brand);
+      header.append(inner);
+      document.body.insertBefore(header,legacyHeader);
+    }
+    return;
+  }
   const makeLink = ({ id,label,href }) => {
     const a = el('a','',label);
     a.href = href;

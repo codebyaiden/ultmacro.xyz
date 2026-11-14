@@ -58,33 +58,10 @@
     };
 
     const activeItem = sectionNav.querySelector('a[aria-current="page"]');
-    const previousHrefKey = 'um-dashboard-previous-section-v1';
-    const saveCurrentSection = () => {
-      const current = sectionNav.querySelector('a[aria-current="page"]');
-      if (!current) return;
-      try { sessionStorage.setItem(previousHrefKey, current.getAttribute('href') || ''); } catch { }
-    };
-    let previousHref = '';
-    try { previousHref = sessionStorage.getItem(previousHrefKey) || ''; } catch { }
-    const previousItem = [...sectionNav.querySelectorAll('a')].find(link => link.getAttribute('href') === previousHref);
-    // Save on click as well as pagehide so this works with both regular and
-    // history-driven route transitions.
-    sectionNav.addEventListener('click', event => {
-      if (event.target.closest('a[href]')) saveCurrentSection();
-    });
-    window.addEventListener('pagehide', saveCurrentSection, { once: true });
-
     window.addEventListener('resize', () => centerItem(sectionNav.querySelector('a[aria-current="page"]'), 'auto'), { passive: true });
     if (window.matchMedia('(max-width: 920px)').matches) {
-      centerItem(previousItem || activeItem, 'auto');
-      requestAnimationFrame(() => {
-        mobileNav.dataset.ready = 'true';
-        requestAnimationFrame(() => {
-          if (previousItem && activeItem && previousItem !== activeItem) centerItem(activeItem, 'smooth');
-          else centerItem(activeItem, 'auto');
-          try { sessionStorage.removeItem(previousHrefKey); } catch { }
-        });
-      });
+      centerItem(activeItem, 'auto');
+      mobileNav.dataset.ready = 'true';
     } else {
       mobileNav.dataset.ready = 'true';
     }

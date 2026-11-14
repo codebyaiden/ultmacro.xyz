@@ -3,6 +3,13 @@
   const nav = sidebar?.querySelector('.dashboard-section-nav');
   if (!sidebar || !nav) return;
 
+  const brand = document.createElement('a');
+  brand.className = 'dashboard-sidebar-brand';
+  brand.href = '/dashboard/overview/';
+  brand.setAttribute('aria-label', 'Ultimate Macro dashboard overview');
+  brand.innerHTML = '<img src="/assets/ultimate-macro-mascot.png" alt=""><span>Ultimate <b>Macro</b></span>';
+  nav.before(brand);
+
   const routes = [
     ['Overview', '/dashboard/overview/', 'Main_Navigation/manage.svg'],
     ['Manage', '/dashboard/manage/', '/assets/dashboard-icons/manage-controls.svg'],
@@ -10,6 +17,7 @@
     ['Remote', '/dashboard/remote/', 'Main_Navigation/remote.svg'],
     ['Earnings', '/dashboard/earnings/', 'Main_Navigation/earnings.svg'],
     ['Strategies', '/dashboard/strategies/', 'Main_Navigation/strategies.svg'],
+    ['Health', '/dashboard/health/', '/assets/dashboard-icons/health.svg'],
     ['Devices', '/dashboard/devices/', 'Main_Navigation/devices.svg'],
     ['Notifications', '/dashboard/notifications/', 'Main_Navigation/notifications.svg'],
     ['Settings', '/dashboard/settings/', 'Main_Navigation/settings.svg']
@@ -45,6 +53,21 @@
     link.innerHTML = `<img src="${iconSrc}" alt=""><span>${name}</span><kbd>↵</kbd>`;
     options.append(link);
     return link;
+  });
+  const prefetched = new Set();
+  function prefetchPage(link) {
+    const target = new URL(link.href, location.href);
+    if (target.origin !== location.origin || !target.pathname.startsWith('/dashboard/') || target.pathname === location.pathname || prefetched.has(target.pathname)) return;
+    prefetched.add(target.pathname);
+    const hint = document.createElement('link');
+    hint.rel = 'prefetch';
+    hint.href = target.href;
+    document.head.append(hint);
+  }
+  [...nav.querySelectorAll('a[href^="/dashboard/"]'), ...items].forEach(link => {
+    link.addEventListener('pointerenter', () => prefetchPage(link), { once: true, passive: true });
+    link.addEventListener('focus', () => prefetchPage(link), { once: true });
+    link.addEventListener('touchstart', () => prefetchPage(link), { once: true, passive: true });
   });
   const empty = document.createElement('p');
   empty.className = 'dashboard-command-empty';

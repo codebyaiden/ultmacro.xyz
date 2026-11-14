@@ -75,6 +75,14 @@ body.um-unified-page > main .guide-hero .btn{border-radius:8px}
 .um-wiki-browse:hover,.um-wiki-browse[aria-expanded="true"]{background:#285071;border-color:#6b99c7}
 .um-header-actions button{touch-action:manipulation}
 body.um-unified-page .wiki-header{display:none!important}
+/* Dashboard routes use a compact identity instead of the public-site menu. */
+.um-dashboard-site-page .um-site-header{top:6px;width:min(1280px,calc(100% - 72px));height:40px;margin:6px auto 0;background:rgba(9,9,12,.66);border-color:rgba(255,255,255,.065);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px)}
+.um-dashboard-site-page .um-site-header.is-scrolled{top:4px}
+.um-dashboard-site-page .um-header-inner{display:flex;height:40px;justify-content:flex-start;padding-inline:10px}
+.um-dashboard-site-page .dashboard-site-brand{display:inline-flex;align-items:center;gap:8px;color:#f1eff4!important;font-size:12px;font-weight:560}
+.um-dashboard-site-page .dashboard-site-brand img{width:27px;height:27px;border-radius:8px;object-fit:cover}
+@media(max-width:980px){.um-dashboard-site-page .um-site-header{top:5px;width:calc(100% - 42px);height:38px;margin:5px auto 0}.um-dashboard-site-page .um-site-header.is-scrolled{top:4px}.um-dashboard-site-page .um-header-inner{height:38px}}
+@media(max-width:600px){.um-dashboard-site-page .um-site-header{top:4px;width:calc(100% - 30px);height:36px;margin:4px auto 0}.um-dashboard-site-page .um-site-header.is-scrolled{top:4px}.um-dashboard-site-page .um-header-inner{height:36px;padding-inline:4px}}
 @media(max-width:1110px){
   .um-header-inner{grid-template-columns:minmax(0,1fr) auto}
   .um-primary{display:none}

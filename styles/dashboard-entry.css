@@ -38,7 +38,7 @@
 .legacy-dashboard-header { display: none; }
 .dashboard-skip { position: fixed; z-index: 160; top: 8px; left: 8px; padding: 10px 14px; border-radius: 8px; background: #f3f3f5; color: #111114 !important; transform: translateY(-150%); }
 .dashboard-skip:focus { transform: none; }
-.dashboard-entry-page main { position: relative; isolation: isolate; height: calc(100dvh - 84px); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(255,255,255,.19) transparent; scrollbar-width: thin; }
+.dashboard-entry-page main { position: relative; isolation: isolate; height: calc(100dvh - 56px); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(255,255,255,.19) transparent; scrollbar-width: thin; }
 .dashboard-entry-page main::-webkit-scrollbar { width: 8px; }
 .dashboard-entry-page main::-webkit-scrollbar-track { background: transparent; }
 .dashboard-entry-page main::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: rgba(255,255,255,.19); background-clip: padding-box; }
