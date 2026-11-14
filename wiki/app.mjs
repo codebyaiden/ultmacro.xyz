@@ -538,6 +538,10 @@ function render() {
     fail.append(node('h1','','Page not found'),node('p','','That guide does not exist. Try searching the wiki.'));
     const l=link('← Back to wiki','./');l.dataset.home='true';fail.append(l);view.append(fail);
   }else home();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.href = article && docs.has(article)
+    ? new URL(articleURL(article), location.href).href
+    : new URL('./', location.href).href;
   nav();
 }
 function tokens(s){
