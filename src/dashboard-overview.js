@@ -192,33 +192,53 @@
   const editor = document.querySelector('[data-overview-editor]');
   const openEditor = document.querySelector('[data-open-overview-editor]');
   const sizeKeys = ['macro', 'runtime', 'coins', 'gems', 'towerXp', 'chart', 'activity'];
+  const metricKeys = ['macro', 'runtime', 'coins', 'gems', 'towerXp'];
+  const panelKeys = ['chart', 'activity'];
   const balanced = Object.fromEntries(sizeKeys.map((key) => [key, 'standard']));
+  balanced.order = [...sizeKeys];
   const presets = {
     balanced,
-    compact: Object.fromEntries(sizeKeys.map((key) => [key, 'small'])),
+    compact: { ...Object.fromEntries(sizeKeys.map((key) => [key, 'small'])), order: [...sizeKeys] },
     wide: { ...balanced, chart: 'large', activity: 'large' }
   };
   const storageKey = 'um-overview-layout-v1';
   let savedLayout = readLayout();
-  let draft = { ...savedLayout };
+  let draft = { ...savedLayout, hidden: [...savedLayout.hidden], order: [...savedLayout.order] };
 
   function readLayout() {
     try {
       const parsed = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      return Object.fromEntries(sizeKeys.map((key) => [key, ['small', 'standard', 'large'].includes(parsed[key]) ? parsed[key] : 'standard']));
+      const order = Array.isArray(parsed.order) ? parsed.order.filter((key, index) => sizeKeys.includes(key) && parsed.order.indexOf(key) === index) : [];
+      sizeKeys.forEach(key => { if (!order.includes(key)) order.push(key); });
+      return {
+        ...Object.fromEntries(sizeKeys.map((key) => [key, ['small', 'standard', 'large'].includes(parsed[key]) ? parsed[key] : 'standard'])),
+        hidden: Array.isArray(parsed.hidden) ? parsed.hidden.filter(key => sizeKeys.includes(key)) : [],
+        order
+      };
     } catch {
-      return { ...balanced };
+      return { ...balanced, hidden: [], order: [...sizeKeys] };
     }
   }
 
   function matchingPreset(layout) {
-    return Object.keys(presets).find((name) => sizeKeys.every((key) => presets[name][key] === layout[key]));
+    if (layout.hidden.length) return undefined;
+    return Object.keys(presets).find((name) => sizeKeys.every((key) => presets[name][key] === layout[key]) && presets[name].order.every((key, index) => layout.order[index] === key));
   }
 
   function applyLayout(layout) {
     sizeKeys.forEach((key) => {
-      document.querySelector(`[data-overview-widget="${key}"]`)?.setAttribute('data-size', layout[key]);
+      const widget = document.querySelector(`[data-overview-widget="${key}"]`);
+      widget?.setAttribute('data-size', layout[key]);
+      if (widget) widget.hidden = layout.hidden.includes(key);
     });
+    for (const groupKeys of [metricKeys, panelKeys]) {
+      const container = document.querySelector(groupKeys === metricKeys ? '.overview-metrics' : '.overview-lower-grid');
+      if (!container) continue;
+      for (const key of layout.order.filter(item => groupKeys.includes(item))) {
+        const widget = container.querySelector(`[data-overview-widget="${key}"]`);
+        if (widget) container.append(widget);
+      }
+    }
   }
 
   function renderEditor() {
@@ -227,6 +247,19 @@
       row?.querySelectorAll('[data-size]').forEach((button) => {
         button.setAttribute('aria-pressed', String(button.dataset.size === draft[key]));
       });
+      const visible = row?.querySelector('[data-visible]');
+      if (visible) visible.checked = !draft.hidden.includes(key);
+      const group = metricKeys.includes(key) ? metricKeys : panelKeys;
+      const position = draft.order.filter(item => group.includes(item)).indexOf(key);
+      row?.querySelectorAll('[data-move]').forEach(button => {
+        const nextPosition = position + Number(button.dataset.move);
+        button.disabled = nextPosition < 0 || nextPosition >= group.length;
+      });
+    });
+    const widgetList = editor?.querySelector('.overview-widget-list');
+    if (widgetList) draft.order.forEach(key => {
+      const row = widgetList.querySelector(`[data-editor-widget="${key}"]`);
+      if (row) widgetList.append(row);
     });
     const selectedPreset = matchingPreset(draft);
     editor?.querySelectorAll('[data-layout-preset]').forEach((button) => {
@@ -243,7 +276,7 @@
     applyLayout(savedLayout);
     renderEditor();
     openEditor.addEventListener('click', () => {
-      draft = { ...savedLayout };
+      draft = { ...savedLayout, hidden: [...savedLayout.hidden], order: [...savedLayout.order] };
       renderEditor();
       editor.showModal();
       requestAnimationFrame(() => editor.querySelector('[data-close-overview-editor]')?.focus());
@@ -252,13 +285,13 @@
     editor.querySelector('[data-close-overview-editor]')?.addEventListener('click', closeEditor);
     editor.querySelector('[data-cancel-overview-editor]')?.addEventListener('click', closeEditor);
     editor.querySelector('[data-reset-overview-layout]')?.addEventListener('click', () => {
-      draft = { ...balanced };
+      draft = { ...balanced, hidden: [], order: [...sizeKeys] };
       renderEditor();
     });
 
     editor.querySelectorAll('[data-layout-preset]').forEach((button) => {
       button.addEventListener('click', () => {
-        draft = { ...presets[button.dataset.layoutPreset] };
+        draft = { ...presets[button.dataset.layoutPreset], hidden: [], order: [...presets[button.dataset.layoutPreset].order] };
         renderEditor();
       });
     });
@@ -272,8 +305,40 @@
       });
     });
 
+    editor.querySelectorAll('.overview-widget-row [data-move]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.closest('[data-editor-widget]')?.dataset.editorWidget;
+        const group = metricKeys.includes(key) ? metricKeys : panelKeys;
+        const from = draft.order.indexOf(key);
+        const to = from + Number(button.dataset.move);
+        const neighbor = draft.order[to];
+        if (!group.includes(key) || !group.includes(neighbor)) return;
+        [draft.order[from], draft.order[to]] = [draft.order[to], draft.order[from]];
+        renderEditor();
+      });
+    });
+
+    editor.querySelectorAll('.overview-widget-row [data-visible]').forEach((control) => {
+      control.addEventListener('change', () => {
+        const key = control.closest('[data-editor-widget]')?.dataset.editorWidget;
+        if (!sizeKeys.includes(key)) return;
+        const hidden = new Set(draft.hidden);
+        if (control.checked) hidden.delete(key);
+        else hidden.add(key);
+        if (hidden.size === sizeKeys.length) {
+          control.checked = true;
+          editor.querySelector('[data-layout-status]').textContent = 'Keep at least one panel visible.';
+          hidden.delete(key);
+        } else {
+          editor.querySelector('[data-layout-status]').textContent = '';
+        }
+        draft.hidden = [...hidden];
+        renderEditor();
+      });
+    });
+
     editor.querySelector('[data-save-overview-layout]')?.addEventListener('click', () => {
-      savedLayout = { ...draft };
+      savedLayout = { ...draft, hidden: [...draft.hidden], order: [...draft.order] };
       try { localStorage.setItem(storageKey, JSON.stringify(savedLayout)); } catch { }
       applyLayout(savedLayout);
       renderEditor();

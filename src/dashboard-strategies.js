@@ -6,6 +6,17 @@
   let currentState = { devices: [], unavailable: false };
   let busy = false;
   const editors = new Map();
+  const pinStorageKey = 'um.dashboard.strategy-pins.v1';
+  function readPins() {
+    try {
+      const value = JSON.parse(localStorage.getItem(pinStorageKey) || '[]');
+      return new Set(Array.isArray(value) ? value.filter(id => typeof id === 'string') : []);
+    } catch { return new Set(); }
+  }
+  const pinnedStrategies = readPins();
+  function savePins() {
+    try { localStorage.setItem(pinStorageKey, JSON.stringify([...pinnedStrategies])); } catch { }
+  }
 
   const appendText = (parent, tag, className, text) => {
     const element = document.createElement(tag);
@@ -133,13 +144,32 @@
         appendText(card, 'h3', 'strategy-library-heading', 'Saved strategies');
         const fileList = document.createElement('ol');
         fileList.className = 'strategy-slot-list strategy-library-list';
-        for (const file of [...files].sort((a, b) => b.modified.localeCompare(a.modified))) {
+        for (const file of [...files].sort((a, b) => {
+          const aPinned = pinnedStrategies.has(`${device.id}:file:${a.id}`);
+          const bPinned = pinnedStrategies.has(`${device.id}:file:${b.id}`);
+          return Number(bPinned) - Number(aPinned) || String(b.modified || '').localeCompare(String(a.modified || ''));
+        })) {
           const key = `${device.id}:file:${file.id}`;
           const row = document.createElement('li');
           appendText(row, 'span', 'strategy-slot-label', 'File');
           appendText(row, 'strong', 'strategy-slot-name', file.name);
           const actions = document.createElement('div');
           actions.className = 'strategy-slot-actions';
+          const pin = document.createElement('button');
+          pin.type = 'button';
+          pin.className = 'strategy-edit-button strategy-pin-button';
+          pin.textContent = pinnedStrategies.has(key) ? 'Pinned' : 'Pin';
+          pin.dataset.strategyPin = file.id;
+          pin.dataset.deviceId = device.id;
+          pin.setAttribute('aria-pressed', String(pinnedStrategies.has(key)));
+          const replace = document.createElement('button');
+          replace.type = 'button';
+          replace.className = 'strategy-select-button';
+          replace.textContent = 'Replace current';
+          replace.dataset.strategyReplace = file.id;
+          replace.dataset.deviceId = device.id;
+          replace.dataset.strategyName = file.name;
+          replace.disabled = busy || device.state !== 'connected';
           const edit = document.createElement('button');
           edit.type = 'button';
           edit.className = 'strategy-edit-button';
@@ -147,7 +177,7 @@
           edit.dataset.strategyFileEdit = file.id;
           edit.dataset.deviceId = device.id;
           edit.disabled = busy || device.state !== 'connected';
-          actions.append(edit);
+          actions.append(pin, replace, edit);
           row.append(actions);
           fileList.append(row);
 
@@ -274,6 +304,67 @@
     throw new Error('The PC hasn’t replied yet. Keep Ultimate Macro open and try again.');
   }
 
+  async function replaceStrategy(deviceId, strategyId, strategyName, applyWhen) {
+    if (busy) return;
+    busy = true;
+    update(currentState);
+    showFeedback(applyWhen === 'next_restart' ? 'Saving the strategy for the next restart…' : 'Switching strategy for the next run…');
+    try {
+      await command(deviceId, 'select_strategy_1', { strategyId, applyWhen });
+      showFeedback(applyWhen === 'next_restart'
+        ? `${strategyName} will be selected after Ultimate Macro restarts.`
+        : `${strategyName} is selected for the next run.`);
+    } catch (error) {
+      showFeedback(error.message || 'Could not replace the current strategy.', true);
+    } finally {
+      busy = false;
+      update(currentState);
+    }
+  }
+
+  function openReplaceMenu(deviceId, strategyId, strategyName) {
+    const device = currentState.devices.find(item => item.id === deviceId);
+    if (!device || device.state !== 'connected') return;
+    const dialog = document.createElement('dialog');
+    dialog.className = 'strategy-replace-dialog';
+    const content = document.createElement('section');
+    content.className = 'strategy-replace-panel';
+    appendText(content, 'h2', '', 'Replace current strategy?');
+    appendText(content, 'p', '', `Choose when ${strategyName} should take over.`);
+    const actions = document.createElement('div');
+    actions.className = 'strategy-replace-options';
+    const nextRun = document.createElement('button');
+    nextRun.type = 'button';
+    nextRun.className = 'strategy-select-button';
+    nextRun.textContent = 'Next run';
+    nextRun.disabled = device.snapshot?.runState !== 'stopped';
+    nextRun.addEventListener('click', () => {
+      dialog.close();
+      dialog.remove();
+      replaceStrategy(deviceId, strategyId, strategyName, 'next_run');
+    });
+    const afterRestart = document.createElement('button');
+    afterRestart.type = 'button';
+    afterRestart.className = 'strategy-edit-button';
+    afterRestart.textContent = 'After restart';
+    afterRestart.addEventListener('click', () => {
+      dialog.close();
+      dialog.remove();
+      replaceStrategy(deviceId, strategyId, strategyName, 'next_restart');
+    });
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'strategy-edit-button';
+    cancel.textContent = 'Cancel';
+    cancel.addEventListener('click', () => { dialog.close(); dialog.remove(); });
+    actions.append(nextRun, afterRestart, cancel);
+    content.append(actions);
+    dialog.append(content);
+    dialog.addEventListener('cancel', () => dialog.remove(), { once: true });
+    document.body.append(dialog);
+    dialog.showModal();
+  }
+
   async function loadCode(deviceId, slot, strategyId = null) {
     const device = currentState.devices.find(item => item.id === deviceId);
     if (busy || device?.state !== 'connected') return;
@@ -325,6 +416,20 @@
   }
 
   list.addEventListener('click', event => {
+    const pin = event.target.closest('[data-strategy-pin]');
+    if (pin) {
+      const key = `${pin.dataset.deviceId}:file:${pin.dataset.strategyPin}`;
+      if (pinnedStrategies.has(key)) pinnedStrategies.delete(key);
+      else pinnedStrategies.add(key);
+      savePins();
+      update(currentState);
+      return;
+    }
+    const replace = event.target.closest('[data-strategy-replace]');
+    if (replace) {
+      openReplaceMenu(replace.dataset.deviceId, replace.dataset.strategyReplace, replace.dataset.strategyName);
+      return;
+    }
     const button = event.target.closest('[data-strategy-slot]');
     if (button) selectStrategy(button.dataset.deviceId, button.dataset.strategySlot);
     const edit = event.target.closest('[data-strategy-edit]');

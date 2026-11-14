@@ -17,6 +17,14 @@
 .strategy-library-list::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(255,255,255,.2); }
 .strategy-slot-list li { display: grid; min-height: 50px; grid-template-columns: 62px minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,.07); }
 .strategy-slot-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.strategy-replace-dialog { width: min(420px, calc(100vw - 32px)); padding: 0; border: 1px solid rgba(255,255,255,.14); border-radius: 20px; color: #f4f2f8; background: #141318; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+.strategy-replace-dialog::backdrop { background: rgba(4,4,7,.72); backdrop-filter: blur(8px); }
+.strategy-replace-panel { padding: 24px; }
+.strategy-replace-panel h2 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
+.strategy-replace-panel p { margin: 9px 0 22px; color: #a9a6b1; line-height: 1.5; }
+.strategy-replace-options { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.strategy-replace-options button { min-height: 40px; padding: 0 15px; border-radius: 999px; }
+.strategy-replace-options button:disabled { opacity: .42; cursor: not-allowed; }
 .strategy-slot-label { color: var(--app-quiet); font-size: 11px; }
 .strategy-slot-name { overflow: hidden; color: #e8e7eb; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .strategy-slot-active { color: #bdbbc4; font-size: 10px; }
@@ -27,6 +35,7 @@
 .strategy-select-button:focus-visible { outline: 2px solid #b49be7; outline-offset: 3px; }
 .strategy-edit-button { min-height: 32px; padding: 0 13px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; background: transparent; color: #e8e7eb; font: inherit; font-size: 11px; cursor: pointer; transition: background-color .16s ease, border-color .16s ease; }
 .strategy-edit-button:hover:not(:disabled) { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.28); }
+.strategy-pin-button[aria-pressed="true"] { border-color: rgba(191,169,229,.42); background: rgba(177,151,222,.12); color: #e5d9f7; }
 .strategy-edit-button:disabled { opacity: .42; cursor: not-allowed; }
 .strategy-edit-button:focus-visible { outline: 2px solid #b49be7; outline-offset: 3px; }
 .strategy-editor-row { min-height: 0 !important; grid-template-columns: minmax(0,1fr) !important; padding: 0 0 14px; }

@@ -32,6 +32,15 @@
       let allowed = false;
       if (online) {
         if (base === 'start') allowed = stateSnapshot.runState === 'stopped' && stateSnapshot.strategySlots?.length > 0;
+        if (base === 'stop_after_match' || base === 'cancel_stop_after_match') {
+          const supported = stateSnapshot.capabilities?.includes('safe_match_stop');
+          const requested = Boolean(stateSnapshot.stopAfterMatch);
+          action = requested ? 'cancel_stop_after_match' : 'stop_after_match';
+          allowed = supported && (requested || stateSnapshot.runState === 'running');
+          button.hidden = !supported;
+          const label = button.querySelector('[data-safe-stop-label]');
+          if (label) label.textContent = requested ? 'Cancel stop after match' : 'Stop after this match';
+        }
         if (base === 'pause') {
           action = stateSnapshot.runState === 'paused' ? 'resume' : 'pause';
           allowed = ['running', 'paused'].includes(stateSnapshot.runState);
@@ -64,7 +73,7 @@
       showFeedback('Open Ultimate Macro on the PC first.', true);
       return;
     }
-    if (command === 'stop' && !window.confirm('Stop the macro on this PC?')) return;
+    if (command === 'stop' && !window.confirm('Stop the macro on this PC now?')) return;
     busy = true;
     update({ devices: [activeDevice], unavailable: false });
     showFeedback('Sending to the PC…');

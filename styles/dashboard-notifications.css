@@ -16,6 +16,9 @@
 .push-actions button[data-enable-push]:hover { background: #fff; }
 .push-actions button:disabled { cursor: wait; opacity: .55; }
 .notification-preferences { margin-top: 25px; border-top: 1px solid var(--app-line); }
+.notification-category { padding-top: 9px; }
+.notification-category > h2 { padding: 13px 0 2px; color: #e9e8ec; font-size: 13px; font-weight: 560; letter-spacing: -.02em; }
+.notification-category + .notification-category { margin-top: 10px; border-top: 1px solid var(--app-line); }
 .notification-scope { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 0; border-bottom:1px solid var(--app-line); color:var(--app-muted); font-size:12px; }
 .notification-scope-actions { display:flex; align-items:center; gap:12px; }
 .notification-scope [role="group"] { display:flex; gap:4px; padding:3px; border:1px solid rgba(255,255,255,.085); border-radius:999px; background:rgba(255,255,255,.025); }
@@ -25,7 +28,7 @@
 .notification-scope .notification-reset-device { border:0; background:transparent; color:var(--app-muted); text-decoration:underline; text-underline-offset:3px; }
 .notification-group { display: grid; grid-template-columns: minmax(0,1fr) minmax(330px,390px); align-items: center; gap: 28px; min-height: 100px; padding: 20px 2px; border-bottom: 1px solid var(--app-line); }
 .notification-group-copy { display: grid; gap: 5px; min-width: 0; }
-.notification-group-copy h2 { font-size: 14px; font-weight: 550; letter-spacing: -.02em; }
+.notification-group-copy h2,.notification-group-copy h3 { font-size: 14px; font-weight: 550; letter-spacing: -.02em; }
 .notification-group-copy p { color: var(--app-muted); font-size: 12px; line-height: 1.45; }
 .notification-choice { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 3px; padding: 3px; border: 1px solid rgba(255,255,255,.085); border-radius: 12px; background: rgba(255,255,255,.025); }
 .notification-choice button { min-height: 34px; padding: 0 8px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--app-muted); font-size: 11px!important; white-space: nowrap; cursor: pointer; transition: color .16s ease,background .16s ease,border-color .16s ease,transform .16s ease; }

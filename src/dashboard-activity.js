@@ -26,7 +26,7 @@
     'run.paused': ['run_paused', 'Run paused', 'run_paused', '#c3b5de'],
     'run.resumed': ['run_resumed', 'Run resumed', 'run_resumed', '#b4d7c1'],
     'run.stopped': ['run_stopped', 'Run stopped', 'run_stopped', '#c7c7cd'],
-    'mode.selected': ['mode_selected', 'Mode selected', 'mode_selected', '#b8c9dc'],
+    'mode.selected': ['mode_selected', 'Mode selected', 'target_mode_changed', '#b8c9dc'],
     'game.joined': ['joined_roblox', 'Joined Roblox', 'brand/roblox-blue.png', '#4f7cff'],
     'match.started': ['match_started', 'Match started', 'match_started', '#b4d7c1'],
     'boss.appeared': ['boss_appeared', 'Boss appeared', 'boss_appeared', '#e6b98b'],
@@ -250,19 +250,35 @@
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Could not load activity.');
       const grouped = new Map();
-      for (const event of data.events || []) {
+      const chronological = [...(Array.isArray(data.events) ? data.events : [])]
+        .filter(event => event && typeof event.occurredAt === 'string' && Number.isFinite(Date.parse(event.occurredAt)))
+        .sort((a, b) => Date.parse(a.occurredAt) - Date.parse(b.occurredAt) || (a.sequence || 0) - (b.sequence || 0));
+      let inferredRun = null;
+      for (const event of chronological) {
         const row = createRow(event);
         if (!row) continue;
-        const runId = event.runId || event.eventId;
+        const endsRun = ['run.stopped', 'match.victory', 'match.loss'].includes(event.type);
+        let runId = event.runId;
+        if (!runId) {
+          if (event.type === 'run.started' || (event.type === 'match.started' && !inferredRun)) {
+            runId = `inferred-${event.eventId || event.occurredAt}`;
+            inferredRun = { id: runId };
+          } else if (inferredRun) {
+            runId = inferredRun.id;
+          } else {
+            runId = `event-${event.eventId || `${event.type}-${event.occurredAt}`}`;
+          }
+        }
         if (!grouped.has(runId)) grouped.set(runId, []);
         grouped.get(runId).push({ event, row });
+        if (!event.runId && endsRun) inferredRun = null;
       }
 
       const openRunIds = new Set([...list.querySelectorAll('.activity-run-group[open]')].map(group => group.dataset.runId));
-      if (!list.querySelector('.activity-run-group') && grouped.size) openRunIds.add(grouped.keys().next().value);
       const orderedGroups = [...grouped.entries()]
         .map(([runId, entries]) => [runId, entries.sort((a, b) => Date.parse(a.event.occurredAt) - Date.parse(b.event.occurredAt) || a.event.sequence - b.event.sequence)])
         .sort((a, b) => Date.parse(b[1][b[1].length - 1].event.occurredAt) - Date.parse(a[1][a[1].length - 1].event.occurredAt));
+      if (!list.querySelector('.activity-run-group') && orderedGroups.length) openRunIds.add(orderedGroups[0][0]);
       const fragment = document.createDocumentFragment();
       for (const [runId, entries] of orderedGroups) fragment.append(createRunGroup(runId, entries, openRunIds));
       const scrollTop = list.scrollTop;

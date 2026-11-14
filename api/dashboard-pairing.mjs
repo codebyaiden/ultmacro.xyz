@@ -428,7 +428,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
     const payloadFileId = payload?.strategyId;
     const payloadSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payloadFileId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
-    if (selectedSlot && state !== 'stopped') return { error: 'state' };
+    if (selectedSlot && state !== 'stopped' && payload?.applyWhen !== 'next_restart') return { error: 'state' };
     if (selectedSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === selectedSlot)) return { error: 'strategy' };
     if (payloadSlot && !device.snapshot.strategySlots?.some((slot) => slot.slot === payloadSlot)) return { error: 'strategy' };
     if (payloadFileId && !device.snapshot.availableStrategies?.some((file) => file.id === payloadFileId)) return { error: 'strategy' };
@@ -476,7 +476,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
         or ($3 = 'close_selected_process' and d.state_snapshot->'capabilities' @> '["process_close"]'::jsonb
           and d.state_snapshot->'health'->'processes' @> jsonb_build_array(jsonb_build_object(
             'pid', ($4::jsonb->>'pid')::int, 'name', $4::jsonb->>'name', 'startedAt', $4::jsonb->>'startedAt')))
-        or ($3 = 'select_strategy_1' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
+        or ($3 = 'select_strategy_1' and ((($4::jsonb is null or $4::jsonb->>'applyWhen' = 'next_run') and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb and ($4::jsonb is null or d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId')))) or ($4::jsonb->>'applyWhen' = 'next_restart' and d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId')))))
         or ($3 = 'select_strategy_2' and d.state_snapshot->>'runState' = 'stopped' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
         or ($3 = 'read_strategy_1' and (($4::jsonb is null and d.state_snapshot->'strategySlots' @> '[{"slot":1}]'::jsonb)
           or d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId'))))
@@ -500,7 +500,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
   const requiredSlot = command === 'read_strategy_2' ? 2 : command === 'read_strategy_1' && !payload?.strategyId ? 1 : command === 'stage_strategy_edit' ? payload?.slot : 0;
   const requiredFileId = payload?.strategyId;
-  if (selectedSlot && state !== 'stopped') return { error: 'state' };
+  if (selectedSlot && state !== 'stopped' && payload?.applyWhen !== 'next_restart') return { error: 'state' };
   if (requiredSlot && !device.rows[0].state_snapshot.strategySlots?.some((slot) => slot.slot === requiredSlot)) return { error: 'strategy' };
   if (requiredFileId && !device.rows[0].state_snapshot.availableStrategies?.some((file) => file.id === requiredFileId)) return { error: 'strategy' };
   if (command === 'start' && !device.rows[0].state_snapshot.strategySlots?.length) return { error: 'strategy' };
@@ -1528,7 +1528,14 @@ export default async function dashboardPairing(request) {
             ? { strategyId: value.strategyId, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize }
             : { slot: value.slot, strategyText: value.strategyText, baseModified: value.baseModified, baseSize: value.baseSize };
         }
-      } else if (body.command === 'install_library_strategy') {
+      } else if (body.command === 'select_strategy_1' && body.payload !== undefined) {
+        const value = body.payload;
+        if (!value || Object.keys(value).some(key => !['strategyId', 'applyWhen'].includes(key)) ||
+            typeof value.strategyId !== 'string' || value.strategyId.length > 180 ||
+            !/^[^\\/:\0-\x1f]+\.strat$/i.test(value.strategyId) ||
+            !['next_run', 'next_restart'].includes(value.applyWhen))
+          return json({ error: 'Choose a saved strategy and when to switch it.' }, 400);
+        payload = { strategyId: value.strategyId, applyWhen: value.applyWhen };      } else if (body.command === 'install_library_strategy') {
         const value = body.payload;
         if (!value || Object.keys(value).some(key => !['fileName', 'strategyText'].includes(key)) ||
             typeof value.fileName !== 'string' || value.fileName.length > 180 ||
