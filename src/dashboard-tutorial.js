@@ -56,6 +56,7 @@
     pendingTarget = null;
     save();
     if (dialog.open) dialog.close();
+    window.dispatchEvent(new Event('dashboard:tour-closed'));
   }
 
   function positionCard(rect, viewportWidth, viewportHeight) {

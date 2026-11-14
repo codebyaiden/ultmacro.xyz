@@ -11,16 +11,17 @@
   <link rel="stylesheet" href="/styles/unified-shell.css?v=8">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=14">
   <link rel="stylesheet" href="/styles/dashboard-product.css?v=6">
-  <link rel="stylesheet" href="/styles/dashboard-remote.css?v=7">
+  <link rel="stylesheet" href="/styles/dashboard-remote.css?v=11">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261113b" defer></script>
-  <script src="/src/dashboard-tutorial.js?v=6" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=7" defer></script>
   <script src="/src/dashboard-state.js?v=2" defer></script>
-  <script src="/src/dashboard-remote.js?v=3" defer></script>
-  <script src="/src/dashboard-preferences.js?v=5" defer></script>
+  <script src="/src/dashboard-remote.js?v=5" defer></script>
+  <script src="/src/dashboard-preferences.js?v=11" defer></script>
   <script src="/src/dashboard-switcher.js?v=6" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
-  <link rel="stylesheet" href="/styles/dashboard-room.css?v=8">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=16">
+
 </head>
 <body class="dashboard-app-page dashboard-remote-page">
   <a class="dashboard-app-skip" href="#main">Skip to content</a>
@@ -51,7 +52,12 @@
         </a>
       </header>
 
-      <section class="remote-controls" aria-label="Macro remote controls">
+      <div class="remote-workspace">
+        <section class="remote-control-panel remote-controls" aria-label="Macro remote controls">
+          <div class="remote-panel-intro">
+            <h2>Run controls</h2>
+            <p>Control Ultimate Macro on your connected PC.</p>
+          </div>
           <div class="remote-control-actions" aria-label="Run controls">
             <button class="remote-start" type="button" data-remote-command="start" disabled>
               <img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/start.svg" alt="">
@@ -65,16 +71,37 @@
               <img src="/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/stop.svg" alt="">
               <span>Stop</span>
             </button>
+            <button class="remote-secondary remote-safe-stop" type="button" data-remote-command="stop_after_match" hidden disabled>
+              <span class="remote-safe-stop-icon" aria-hidden="true">◷</span>
+              <span data-safe-stop-label>Stop after this match</span>
+            </button>
             <p class="remote-command-status" data-remote-command-status role="status" aria-live="polite"></p>
           </div>
-      </section>
+          <div class="remote-control-footnote"><span class="remote-live-dot" aria-hidden="true"></span><span>Commands need the desktop companion online.</span></div>
+        </section>
 
-      <section class="remote-run-readout" aria-label="Current run">
+        <section class="remote-run-readout" aria-label="Current run">
           <div class="remote-readout-heading">
             <h2>Current run</h2>
             <a href="/dashboard/activity/">Activity</a>
           </div>
-          <p class="remote-run-empty" data-current-run>No live macro data.</p>
+          <p class="remote-run-empty" data-current-run>Connect a PC to see its live run details.</p>
+          <dl class="remote-run-details" data-run-details aria-label="Run details">
+            <div><dt>State</dt><dd data-run-state>—</dd></div>
+            <div><dt>Strategy</dt><dd data-run-strategy>—</dd></div>
+            <div><dt>Map</dt><dd data-run-map>—</dd></div>
+            <div><dt>Mode</dt><dd data-run-mode>—</dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <section class="remote-next-steps" aria-labelledby="remote-next-title">
+        <div class="remote-section-heading"><h2 id="remote-next-title">Quick access</h2></div>
+        <div class="remote-link-grid">
+          <a href="/dashboard/strategies/"><span><strong>Strategies</strong><small>Choose or update a run setup</small></span><span class="remote-link-arrow" aria-hidden="true">↗</span></a>
+          <a href="/dashboard/health/"><span><strong>Device health</strong><small>Review your PC’s latest readings</small></span><span class="remote-link-arrow" aria-hidden="true">↗</span></a>
+          <a href="/dashboard/devices/"><span><strong>Connected devices</strong><small>Manage PC access</small></span><span class="remote-link-arrow" aria-hidden="true">↗</span></a>
+        </div>
       </section>
 
     </div>

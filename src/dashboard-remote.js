@@ -3,6 +3,12 @@
   const deviceName = document.querySelector('[data-remote-device-name]');
   const deviceState = document.querySelector('[data-remote-device-state]');
   const currentRun = document.querySelector('[data-current-run]');
+  const runFields = {
+    state: document.querySelector('[data-run-state]'),
+    strategy: document.querySelector('[data-run-strategy]'),
+    map: document.querySelector('[data-run-map]'),
+    mode: document.querySelector('[data-run-mode]')
+  };
   const feedback = document.querySelector('[data-remote-command-status]');
   let stateSnapshot = null;
   let activeDevice = null;
@@ -17,12 +23,14 @@
     const online = activeDevice?.state === 'connected' && Boolean(stateSnapshot);
     if (deviceName) deviceName.textContent = activeDevice?.name || 'Windows PC';
     if (deviceState) deviceState.textContent = online ? ({ running: 'Running', paused: 'Paused', stopped: 'Stopped' }[stateSnapshot.runState] || '') : '';
+    const runStateLabel = online ? ({ running: 'Running', paused: 'Paused', stopped: 'Stopped' }[stateSnapshot.runState] || 'Connected') : '';
+    if (runFields.state) runFields.state.textContent = online ? runStateLabel : '—';
+    if (runFields.strategy) runFields.strategy.textContent = online ? stateSnapshot.activeStrategy || 'No strategy selected' : '—';
+    if (runFields.map) runFields.map.textContent = online ? stateSnapshot.map || 'Not detected' : '—';
+    if (runFields.mode) runFields.mode.textContent = online ? stateSnapshot.mode || 'Not detected' : '—';
     if (currentRun) {
-      if (!online) currentRun.textContent = state.unavailable ? 'Macro data is unavailable.' : 'No live macro data.';
-      else {
-        const details = [stateSnapshot.activeStrategy, stateSnapshot.map, stateSnapshot.mode].filter(Boolean);
-        currentRun.textContent = [({ running: 'Running', paused: 'Paused', stopped: 'Stopped' }[stateSnapshot.runState] || ''), ...details].filter(Boolean).join(' · ');
-      }
+      currentRun.textContent = online ? '' : (state.unavailable ? 'Macro data is unavailable.' : 'Connect a PC to see its live run details.');
+      currentRun.hidden = online;
     }
 
     for (const button of buttons) {
@@ -50,6 +58,9 @@
             : '/assets/dashboard-icons/flat/SVG_Source/Remote_Controls/pause.svg';
         }
         if (base === 'stop') allowed = ['running', 'paused'].includes(stateSnapshot.runState);
+      }
+      if (base === 'stop_after_match' || base === 'cancel_stop_after_match') {
+        button.hidden = !(online && stateSnapshot.capabilities?.includes('safe_match_stop'));
       }
       button.dataset.remoteCommand = action;
       button.disabled = !allowed || busy;

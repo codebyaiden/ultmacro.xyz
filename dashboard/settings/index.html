@@ -9,17 +9,18 @@
   <title>Settings — Dashboard</title>
   <link rel="icon" href="/assets/ultimate-logo.png" type="image/png">
   <link rel="stylesheet" href="/styles/unified-shell.css?v=8">
-  <link rel="stylesheet" href="/styles/dashboard-app.css?v=14">
+  <link rel="stylesheet" href="/styles/dashboard-app.css?v=15">
   <link rel="stylesheet" href="/styles/dashboard-product.css?v=6">
-  <link rel="stylesheet" href="/styles/dashboard-settings.css?v=2">
+  <link rel="stylesheet" href="/styles/dashboard-settings.css?v=5">
   <script src="/src/unified-shell.js?v=dashboard-nav-20261113b" defer></script>
-  <script src="/src/dashboard-tutorial.js?v=6" defer></script>
-  <script src="/src/dashboard-preferences.js?v=5" defer></script>
+  <script src="/src/dashboard-tutorial.js?v=7" defer></script>
+  <script src="/src/dashboard-preferences.js?v=11" defer></script>
   <script src="/src/dashboard-switcher.js?v=6" defer></script>
-  <script src="/src/dashboard-settings.js?v=6" defer></script>
+  <script src="/src/dashboard-settings.js?v=10" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
   <link rel="apple-touch-icon" href="/assets/pwa/dashboard-192.png?v=site-icon-20261107">
-  <link rel="stylesheet" href="/styles/dashboard-room.css?v=8">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=16">
+
 </head>
 <body class="dashboard-app-page dashboard-settings-page">
   <a class="dashboard-app-skip" href="#main">Skip to content</a>
@@ -53,24 +54,94 @@
             </div>
           </div>
           <div class="settings-row">
-            <div class="settings-row-copy"><h3>Accent</h3></div>
-            <div class="settings-segmented" role="group" aria-label="Dashboard accent" data-setting="accent">
-              <button type="button" data-value="violet" aria-pressed="true"><i class="settings-swatch settings-swatch-violet" aria-hidden="true"></i>Violet</button>
-              <button type="button" data-value="neutral" aria-pressed="false"><i class="settings-swatch settings-swatch-neutral" aria-hidden="true"></i>Neutral</button>
+            <div class="settings-row-copy"><h3>Background</h3><p>Choose a scene or use your own image.</p></div>
+            <button class="background-selector" type="button" data-open-backgrounds aria-haspopup="dialog" aria-controls="background-gallery">
+              <span class="background-selector-preview" data-background-preview aria-hidden="true"></span>
+              <span data-background-name>Dead Ahead</span><span aria-hidden="true">⌄</span>
+            </button>
+          </div>
+          <div class="settings-row settings-row-slider">
+            <div class="settings-row-copy"><h3>Background dimming</h3><p>Keeps text readable over bright scenes.</p></div>
+            <label class="settings-range"><input type="range" min="20" max="85" step="1" data-background-dim aria-label="Background dimming"><output data-background-dim-value></output></label>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><h3>Accent color</h3><p>Pick colors from your background or set one yourself.</p></div>
+            <div class="settings-control-stack">
+              <div class="settings-segmented" role="group" aria-label="Accent color mode" data-setting="accentMode">
+                <button type="button" data-value="auto" aria-pressed="true">Automatic</button>
+                <button type="button" data-value="custom" aria-pressed="false">Custom</button>
+              </div>
+              <div class="settings-color-control" data-accent-control hidden>
+                <div class="settings-color-presets" data-color-presets="accent" role="group" aria-label="Accent color presets"></div>
+                <details class="settings-custom-color" data-custom-picker="accent">
+                  <summary><span class="settings-current-swatch" data-color-current="accent"></span><span>Custom color</span><span class="settings-color-code" data-color-code="accent">#B9A3DB</span></summary>
+                  <div class="settings-picker-panel">
+                    <div class="settings-color-field" data-color-field="accent" role="slider" aria-label="Accent shade" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><span></span></div>
+                    <label class="settings-hue-row"><span>Hue</span><input type="range" min="0" max="359" step="1" data-color-hue="accent" aria-label="Accent hue"></label>
+                    <label class="settings-hex-row"><span>Hex</span><input type="text" maxlength="7" spellcheck="false" autocomplete="off" data-color-hex="accent" aria-label="Accent hex color"></label>
+                  </div>
+                </details>
+              </div>
             </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><h3>Sidebar icons</h3><p>Choose a fixed color or match the background.</p></div>
+            <div class="settings-control-stack">
+              <div class="settings-segmented" role="group" aria-label="Sidebar icon color mode" data-setting="iconMode">
+                <button type="button" data-value="auto" aria-pressed="true">Automatic</button>
+                <button type="button" data-value="custom" aria-pressed="false">Custom</button>
+              </div>
+              <div class="settings-color-control" data-icon-control hidden>
+                <div class="settings-color-presets" data-color-presets="icon" role="group" aria-label="Sidebar icon color presets"></div>
+                <details class="settings-custom-color" data-custom-picker="icon">
+                  <summary><span class="settings-current-swatch" data-color-current="icon"></span><span>Custom color</span><span class="settings-color-code" data-color-code="icon">#E9E7EE</span></summary>
+                  <div class="settings-picker-panel">
+                    <div class="settings-color-field" data-color-field="icon" role="slider" aria-label="Sidebar icon shade" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0"><span></span></div>
+                    <label class="settings-hue-row"><span>Hue</span><input type="range" min="0" max="359" step="1" data-color-hue="icon" aria-label="Sidebar icon hue"></label>
+                    <label class="settings-hex-row"><span>Hex</span><input type="text" maxlength="7" spellcheck="false" autocomplete="off" data-color-hex="icon" aria-label="Sidebar icon hex color"></label>
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-copy"><h3>Sidebar icon size</h3></div>
+            <div class="settings-segmented" role="group" aria-label="Sidebar icon size" data-setting="iconSize">
+              <button type="button" data-value="small" aria-pressed="false">Small</button>
+              <button type="button" data-value="medium" aria-pressed="true">Medium</button>
+              <button type="button" data-value="large" aria-pressed="false">Large</button>
+            </div>
+          </div>
+          <div class="settings-row settings-pinned-row">
+            <div class="settings-row-copy"><h3>Sidebar</h3><p>Reorder pages in their section or pin shortcuts above Overview.</p></div>
+            <button class="settings-action-button settings-action-secondary" type="button" data-edit-sidebar><span aria-hidden="true">☷</span><span>Edit sidebar</span></button>
+          </div>
+          <div class="settings-row settings-reset-row">
+            <div class="settings-row-copy"><h3>Reset appearance</h3><p>Restore the default background, colors, spacing, and sidebar.</p></div>
+            <button class="settings-action-button settings-action-secondary" type="button" data-reset-customization><span aria-hidden="true">↺</span><span>Reset to defaults</span></button>
           </div>
         </section>
         <section class="settings-section" id="dashboard-tour" aria-labelledby="dashboard-tour-title">
           <div class="settings-section-heading"><h2 id="dashboard-tour-title">Dashboard tour</h2></div>
           <div class="settings-row">
             <div class="settings-row-copy"><h3>Take the tour again</h3></div>
-            <button class="overview-edit-button" type="button" data-start-dashboard-tour>Start tour</button>
+            <button class="settings-action-button settings-action-primary" type="button" data-start-dashboard-tour><span aria-hidden="true">▶</span><span>Start tour</span></button>
           </div>
         </section>
       </div>
       <p class="settings-save-status" data-settings-status role="status" aria-live="polite"></p>
     </div>
   </main>
+  <dialog class="background-gallery-dialog" id="background-gallery" aria-labelledby="background-gallery-title" data-background-dialog>
+    <div class="background-gallery-head"><div><h2 id="background-gallery-title">Choose a background</h2><p>Scenes stay on this device. Your custom image is stored only in this browser.</p></div><button type="button" class="background-gallery-close" data-close-backgrounds aria-label="Close background picker">×</button></div>
+    <div class="background-gallery-grid" data-background-gallery></div>
+    <div class="background-gallery-actions">
+      <label class="background-upload-button">Upload image<input type="file" accept="image/jpeg,image/png,image/webp" data-background-upload></label>
+      <button class="settings-text-button" type="button" data-remove-background hidden>Remove uploaded image</button>
+      <span class="background-upload-note">JPG, PNG, or WebP · up to 8 MB</span>
+    </div>
+    <p class="background-gallery-status" data-background-status role="status" aria-live="polite"></p>
+  </dialog>
 </body>
 </html>
 

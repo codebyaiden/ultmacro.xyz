@@ -7,6 +7,7 @@
 }
 
 .dashboard-entry-page {
+  color-scheme: dark;
   --dashboard-bg: #09090b;
   --dashboard-surface: #101013;
   --dashboard-raised: #151519;
@@ -38,11 +39,21 @@
 .legacy-dashboard-header { display: none; }
 .dashboard-skip { position: fixed; z-index: 160; top: 8px; left: 8px; padding: 10px 14px; border-radius: 8px; background: #f3f3f5; color: #111114 !important; transform: translateY(-150%); }
 .dashboard-skip:focus { transform: none; }
-.dashboard-entry-page main { position: relative; isolation: isolate; height: calc(100dvh - 56px); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(255,255,255,.19) transparent; scrollbar-width: thin; }
+.dashboard-entry-page main { position: relative; isolation: isolate; height: calc(100dvh - 56px); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: rgba(203,190,221,.28) rgba(255,255,255,.025); scrollbar-width: thin; }
 .dashboard-entry-page main::-webkit-scrollbar { width: 8px; }
-.dashboard-entry-page main::-webkit-scrollbar-track { background: transparent; }
-.dashboard-entry-page main::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: rgba(255,255,255,.19); background-clip: padding-box; }
-.dashboard-entry-page main::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,.34); }
+.dashboard-entry-page main::-webkit-scrollbar-track { border-radius:999px; background:rgba(255,255,255,.025); }
+.dashboard-entry-page main::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: rgba(203,190,221,.28); background-clip: padding-box; }
+.dashboard-entry-page main::-webkit-scrollbar-thumb:hover { background-color: rgba(220,208,238,.48); }
+.dashboard-entry-page *,
+.dashboard-entry-page { scrollbar-color:rgba(203,190,221,.28) rgba(255,255,255,.025); scrollbar-width:thin; }
+.dashboard-entry-page *::-webkit-scrollbar,
+.dashboard-entry-page::-webkit-scrollbar { width:8px; height:8px; }
+.dashboard-entry-page *::-webkit-scrollbar-track,
+.dashboard-entry-page::-webkit-scrollbar-track { border-radius:999px; background:rgba(255,255,255,.025); }
+.dashboard-entry-page *::-webkit-scrollbar-thumb,
+.dashboard-entry-page::-webkit-scrollbar-thumb { border:2px solid transparent; border-radius:999px; background:rgba(203,190,221,.28); background-clip:padding-box; }
+.dashboard-entry-page *::-webkit-scrollbar-thumb:hover,
+.dashboard-entry-page::-webkit-scrollbar-thumb:hover { background-color:rgba(220,208,238,.48); }
 .dashboard-entry-page main::before { position: absolute; z-index: -1; top: 4%; right: 0; width: 100%; height: 600px; background: radial-gradient(ellipse at 80% 46%,rgba(123,91,159,.12),rgba(63,54,78,.055) 42%,transparent 72%); content: ""; pointer-events: none; }
 .dashboard-connect { display: grid; grid-template-columns: minmax(0,.94fr) minmax(420px,1.06fr); gap: clamp(48px,8vw,116px); align-items: center; width: min(100% - 64px,1160px); min-height: min(670px,calc(100svh - 96px)); margin: 0 auto; padding: 56px 0 42px; }
 .dashboard-connect-copy { max-width: 500px; }
