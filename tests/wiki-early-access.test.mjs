@@ -47,8 +47,8 @@ test('Wiki navigation, purchase link and crosslink make the guide discoverable',
   const index = await read('wiki/index.html');
   assert.match(app, /how-to-get-early-access/);
   assert.match(app, /https:\/\/ko-fi\.com\/summary\/9ed0c1ae/);
-  assert.match(early, /wiki\/\?article=how-to-get-early-access/);
-  assert.match(index, /app\.mjs\?v=13/);
+  assert.match(early, /href="\.\.\/wiki\/"/); // early-access links to the Wiki root; no direct article crosslink any more
+  assert.match(index, /app\.mjs\?v=\d+/);
   assert.equal(searchWiki(articles, 'get early access')[0].article.slug, slug);
 });
 

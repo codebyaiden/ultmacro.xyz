@@ -9,7 +9,7 @@ test('shared navigation exposes Wiki guides at the exact sidebar collapse breakp
   const js = await read('src/unified-shell.js');
   const css = await read('styles/unified-shell.css');
   new vm.Script(js);
-  assert.match(js, /um-wiki-browse/);
+  assert.match(js, /wiki-browse-action/);
   assert.match(js, /document\.getElementById\('nav-toggle'\)\?\.click\(\)/);
   assert.match(js, /attributeFilter:\['aria-expanded'\]/);
   assert.match(js, /min-width:1111px/);
@@ -23,7 +23,7 @@ test('shared menu supports animated dismissal without losing focus or keyboard a
   const js = await read('src/unified-shell.js');
   const css = await read('styles/unified-shell.css');
   assert.match(js, /window\.clearTimeout\(closeTimer\)/);
-  assert.match(js, /if \(menuOpen\) setOpen\(false\)/);
+  assert.match(js, /if\(e\.matches\)setOpen\(false\)/);
   assert.match(js, /document\.getElementById\('search-trigger'\)\?\.click\(\)/);
   assert.match(js, /mobile\.inert = !open/);
   assert.match(js, /mobile\.setAttribute\('aria-hidden',String\(!open\)\)/);

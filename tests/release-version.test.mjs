@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, mkdtemp, cp, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdtemp, cp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -15,13 +15,9 @@ const releases = JSON.parse(JSON.stringify(context.window.UM_RELEASES.releases))
 const latest = require('../src/releases-data.js').pickLatestPublished(releases);
 const chip = html => html.match(/<a\b[^>]*data-latest-release\b[^>]*>[\s\S]*?<\/a>/)?.[0];
 
-test('published homepage announces the same stable version as downloads without JS', async () => {
-  const html = await read('index.html');
-  const link = chip(html);
-  assert.ok(link, 'release link must be in the HTML, not injected by JavaScript');
-  assert.ok(link.includes(`href="/download/${latest.tag}/"`));
-  assert.ok(link.includes(`>${latest.tag}</b>`));
-  assert.ok((await read('download/index.html')).includes(`>${latest.tag}</h1>`));
+test('published download pages announce the same stable version without JS', async () => {
+  assert.ok((await read('download/index.html')).includes(`href="/download/${latest.tag}/"`));
+  assert.match(await read(`download/${latest.tag}/index.html`), new RegExp(`<h1 id="download-title">${latest.tag.replace(/\./g, '\\.')}`));
   assert.ok((await read('download/latest/index.html')).includes(`url=/download/${latest.tag}/`));
 });
 
@@ -29,7 +25,8 @@ test('release sync updates homepage text and destination together and is idempot
   const dir = await mkdtemp(path.join(tmpdir(), 'um-release-version-'));
   try {
     await cp(new URL('src/', root), path.join(dir, 'src'), { recursive: true });
-    await cp(new URL('index.html', root), path.join(dir, 'index.html'));
+    // The redesigned homepage no longer carries a release chip, so exercise the chip rewriter on a fixture page.
+    await writeFile(path.join(dir, 'index.html'), '<a class="chip" data-latest-release href="/download/v1.0.0/"><b data-latest-version class="is-loading">v1.0.0</b></a>');
     const generator = require(path.join(dir, 'src/version-page.cjs'));
     const future = { ...releases[0], tag: 'v9.0.0', published: '2030-01-01T00:00:00Z' };
     const beta = { ...future, tag: 'v10.0.0-beta', prerelease: true, published: '2031-01-01T00:00:00Z' };

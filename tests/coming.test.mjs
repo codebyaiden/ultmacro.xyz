@@ -4,27 +4,12 @@ import { readFile } from 'node:fs/promises';
 
 const read = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 
-test('homepage roadmap shows only the four major features and no interactive demos', async () => {
+test('homepage links to the full roadmap and keeps roadmap styling available', async () => {
   const home = await read('index.html');
   const css = await read('styles/coming.css');
-  assert.match(home, /id="coming"/);
-  assert.match(home, /What's Coming|What’s Coming/);
-  assert.match(home, /id="home-coming-major">MAJOR/);
-  assert.match(home, /href="coming\/"/);
+  assert.match(home, /href="\/coming\/"/);
   assert.match(home, /href="styles\/coming\.css\?v=2"/);
-
-  const section = home.match(/<section class="coming-preview"[\s\S]*?<\/section>/)?.[0];
-  assert.ok(section, 'roadmap section exists');
-  const features = [...section.matchAll(/data-roadmap-feature="([^"]+)"/g)].map(x => x[1]);
-  assert.deepEqual(features, ['ai', 'macos', 'record', 'goals']);
-  for (const term of ['AI Assistant Integration', 'macOS Support', 'Smart Recording System', 'AI-Powered Goals']) {
-    assert.ok(section.includes(term), term);
-  }
-  assert.match(section, /AI provider you choose/);
-  assert.match(section, /supported runs around a goal/);
-  assert.match(section, /roadmap-icon-ai/);
-  assert.doesNotMatch(section, /<table|<button|data-coming-spotlight|coming-spotlight|roadmap-icon-update|roadmap-icon-cloud|aria-pressed/);
-  assert.doesNotMatch(home, /src\/coming\.js|data-coming-spotlight/);
+  assert.doesNotMatch(home, /<section class="coming-preview"|src\/coming\.js|data-coming-spotlight/);
   assert.match(css, /roadmap-item/);
   assert.match(css, /roadmap-icon-ai/);
   assert.match(css, /@media\(max-width:720px\)/);
@@ -60,6 +45,6 @@ test('features page has no duplicate roadmap and the full page remains indexed',
   const page = await read('features/index.html');
   const sitemap = await read('sitemap.xml');
   assert.doesNotMatch(page, /class="future-section"/);
-  assert.match(page, /href="\.\.\/coming\/"/);
+  assert.match(page, /href="(?:\.\.|)\/coming\/"/);
   assert.match(sitemap, /https:\/\/ultmacro\.xyz\/coming\//);
 });

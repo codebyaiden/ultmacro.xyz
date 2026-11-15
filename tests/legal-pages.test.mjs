@@ -45,7 +45,7 @@ test('privacy removes retired desktop banners but retains active-service and ret
   assert.match(page, /current 1\.4 desktop tester does not display or request desktop banner advertisements/);
   assert.doesNotMatch(page, /Optional desktop banner|desktop-advertising|Continue with ads|Continue without ads|app-banner\/privacy/);
   assert.match(page, /Web requests disclose network information such as IP address/);
-  assert.match(page, /Selected public pages load Adcash AutoTag advertising/);
+  assert.match(page, /Selected public pages(?: and dashboard app pages)? load Adcash AutoTag advertising/);
   assert.match(page, /Turning sharing off stops future reports, but does not automatically erase prior aggregates or ledger records/);
   assert.match(page, /There is no universal automatic deletion period/);
   // Preserve the newer origin/main disclosure; never replace this page with an older checkout.

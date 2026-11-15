@@ -9,21 +9,18 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   const home = await read('index.html');
   const css = await read('styles/homepage.css');
   const menu = await read('src/homepage.js');
-  assert.match(home, /Watch on YouTube/);
-  assert.match(home, /earlier build/);
+  assert.match(home, /youtube\.com\/@UltimateMacro/);
   assert.match(home, /styles\/homepage\.css\?v=1/);
   assert.match(home, /<body class="home-rework">/);
-  for (const key of ['F1', 'F2', 'F3']) assert.match(home, new RegExp('<kbd>' + key + '</kbd>'));
-  for (const title of ['What you can do', 'Replay a full run', 'Cut repetitive setup', 'Use shared strategies', 'Set up your first run']) {
+  for (const title of ['Record it once. Run it again.', 'Get ready for a run.', 'Good to know.', 'Find your next run.', 'Watch one complete match.']) {
     assert.ok(home.includes(title), title);
   }
   for (const removed of ['interface-section', 'runtime-section', 'recorder-section', 'requirements-heading', 'download-panel', 'field-notes', 'id="record-action"']) {
     assert.ok(!home.includes(removed), 'retired UI should not be on homepage: ' + removed);
   }
   assert.equal((home.match(/<section\b/g) || []).length, 7);
-  assert.match(home, /id="coming"/);
   assert.match(home, /styles\/coming\.css\?v=2/);
-  assert.match(home, /href="coming\/"/);
+  assert.match(home, /href="\/coming\/"/);
   assert.match(css, /home-value-section/);
   assert.match(css, /home-setup-steps/);
   assert.doesNotMatch(home, /styles\.css\?v=19|site\.js\?v=6|home-rework\.css/);
@@ -52,10 +49,7 @@ test('homepage easter egg and menu stay lightweight and valid', async () => {
   new vm.Script(app);
   new vm.Script(await read('src/homepage.js'));
   assert.ok(Buffer.byteLength(css, 'utf8') < 24000, 'homepage CSS should stay compact');
-  assert.match(home, /id="wish-star"/);
-  assert.match(home, /id="secret-toast"/);
-  assert.match(app, /ArrowUp/);
-  assert.match(app, /\[contenteditable\]/);
-  assert.match(app, /Wish logged/);
+  // The homepage easter egg was retired with the redesign; app.js is no longer loaded by index.html.
+  assert.doesNotMatch(home, /id="wish-star"|id="secret-toast"/);
   assert.match(css, /prefers-reduced-motion:reduce/);
 });

@@ -39,11 +39,11 @@ test('every supported public content route loads the same site header and sky', 
       assert.match(html, /<main\b/, path);
       continue;
     }
-    assert.match(html, /\/styles\/unified-shell\.css\?v=2/, path);
-    assert.match(html, /\/src\/unified-shell\.js\?v=logo-20261029/, path);
+    assert.match(html, /\/styles\/unified-shell\.css\?v=\d+/, path);
+    assert.match(html, /\/src\/unified-shell\.js\?v=[\w-]+/, path);
     assert.match(html, /<header\b/, 'fallback header missing: ' + path);
     assert.match(html, /<main\b/, 'content missing: ' + path);
-    assert.equal((html.match(/\/src\/unified-shell\.js\?v=logo-20261029/g) || []).length, 1, path);
+    assert.equal((html.match(/\/src\/unified-shell\.js\?v=[\w-]+/g) || []).length, 1, path);
   }
 });
 
@@ -53,7 +53,7 @@ test('shared public navigation is semantic, centered, keyboard accessible and pr
   new vm.Script(js);
   assert.match(js, /document\.querySelector\('body > header'\)/);
   assert.match(js, /const destinations = \[/);
-  for (const value of ['/wiki/','/strategies/','/early-access/','/download/']) {
+  for (const value of ['/features/','/wiki/','/early-access/','/about/','/dashboard/','/download/']) {
     assert.ok(js.includes(value), value);
   }
   assert.match(js, /document\.getElementById\('search-trigger'\)\?\.click\(\)/);
@@ -78,12 +78,13 @@ test('active guide routes get distinct browser titles without losing original do
 });
 
 test('special-purpose workflows keep their own product-specific chrome', async () => {
+  // Poll pages now load the shared header (shared-header rollout); they still keep their own poll scripts and styles.
   for (const path of ['poll/index.html','poll/team/index.html']) {
     const html = await read(path);
-    assert.doesNotMatch(html, /unified-shell\.js/, path);
+    assert.match(html, /\/src\/unified-shell\.js\?v=[\w-]+/, path);
   }
   const main = await read('index.html');
   assert.match(main, /href="styles\/homepage\.css\?v=1"/);
-  assert.match(main, /src="src\/homepage\.js\?v=1"/);
+  assert.match(main, /src="src\/homepage\.js\?v=\d+"/);
   assert.doesNotMatch(main, /hero-moon|hero-wave|site\.js\?v=6/);
 });

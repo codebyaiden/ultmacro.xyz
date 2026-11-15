@@ -9,7 +9,7 @@ const disk = path => fileURLToPath(new URL('../wiki/api/' + path, import.meta.ur
 
 test('Wiki API developer page prioritizes direct Ask and platform setup', async () => {
   const html = await read('wiki/api/index.html');
-  assert.match(html, /<h1 id="title">Give your bot/);
+  assert.match(html, /<h1 id="title">Use the Wiki API from your app/);
   assert.match(html, /POST<\/span><code>\/api\/wiki\/v1\/ask/);
   assert.match(html, /id="platform-tabs"[^>]*role="tablist"|role="tablist"[^>]*id="platform-tabs"/);
   assert.match(html, /role="tabpanel" aria-labelledby="tab-javascript"/);

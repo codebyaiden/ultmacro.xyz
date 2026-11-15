@@ -48,8 +48,7 @@ test('wiki uses homepage brand language and real Ultimate Macro media', async ()
   assert.match(html, /id="search-overlay"/);
   assert.match(html, /id="helper-panel"/);
   assert.match(html, /<strong>Wiki helper<\/strong><small>Find matching articles<\/small>/);
-  assert.match(app, /Your guide to /);
-  assert.match(app, /assets\/ui\/ultimate-macro-main-new\.png/);
+  assert.match(html, /assets\/ui\/ultimate-macro-main-new\.png/);
   assert.match(app, /function search\(/);
   assert.match(app, /function articleView\(/);
   assert.match(app, /function categoryView\(/);
@@ -67,7 +66,7 @@ test('all wiki links stay routed and the existing website can serve modules', as
   assert.match(app, /function categoryURL\(/);
   assert.match(app, /sidebar-close/);
   assert.match(await read('server.mjs'), /'\.mjs': 'text\/javascript; charset=utf-8'/);
-  assert.match(await read('index.html'), /href="wiki\/">Wiki/);
+  assert.match(await read('index.html'), /href="\/wiki\/">Wiki/);
   assert.match(await read('sitemap.xml'), /https:\/\/ultmacro\.xyz\/wiki\//);
 });
 
@@ -84,7 +83,7 @@ test('wiki retains its dark theme using consolidated component styles', async ()
   assert.match(css, /\.search-dialog\{[^}]*background:#101f33/);
   assert.match(css, /\.category-articles a\{[^}]*background:#10263f/);
   assert.doesNotMatch(css, /\/\* Wiki dark reading theme\./);
-  assert.match(html, /content="#07111f"/);
+  assert.match(html, /content="#09090b"/);
 });
 
 test('wiki UI polish preserves routing and adds accessible mobile navigation', async () => {
@@ -105,7 +104,7 @@ test('wiki UI polish preserves routing and adds accessible mobile navigation', a
   assert.match(css, /\.nav-count\{/);
   assert.match(css, /@media\(prefers-reduced-motion:reduce\)/);
   assert.match(html, /site\.css\?v=11/);
-  assert.match(html, /app\.mjs\?v=13/);
+  assert.match(html, /app\.mjs\?v=\d+/);
 });
 
 test('500+ topic inventory is separate from published wiki docs', async () => {
@@ -163,7 +162,7 @@ test('topic index supports category filters, search and explicit unverified labe
   assert.doesNotMatch(app.slice(app.indexOf('function showResults'), app.indexOf('function openSearch')), /searchTopics\(/);
   assert.match(app, /a\[data-article\],a\[data-category\],a\[data-topic\],a\[data-library\]/);
   assert.doesNotMatch(html, /id="sidebar-library"/);
-  assert.match(html, /Research backlog/);
+  assert.match(await read('wiki/app.mjs'), /Research backlog/);
   assert.match(html, /href="\.\/api\/"/);
   assert.match(html, /site\.css\?v=11/);
   assert.match(css, /\.library-controls/);

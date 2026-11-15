@@ -7,7 +7,10 @@ const request = (path = '/assets/adcash-library', method = 'GET') => new Request
 
 test('routing is restricted to exactly the ad-library path', async () => {
   const routes = JSON.parse(await readFile(new URL('../_routes.json', import.meta.url)));
-  assert.deepEqual(routes.include, ['/assets/adcash-library']);
+  // Functions now also serve dashboard API proxying and short links, so the include is broad and static files are excluded instead.
+  assert.deepEqual(routes.include, ['/*']);
+  assert.ok(!routes.exclude.includes('/assets/adcash-library'), 'ad library path must stay routed to Functions');
+  assert.ok(!routes.exclude.some(p => p === '/api' || p.startsWith('/api/')), 'API routes must stay routed to Functions');
   assert.equal((await onRequest({ request: request('/api/auth') })).status, 404);
   assert.equal((await onRequest({ request: request('/assets/adcash-library?url=https://example.com') })).status, 404);
   assert.equal((await onRequest({ request: request(undefined, 'POST') })).status, 405);
