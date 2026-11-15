@@ -1,6 +1,6 @@
 // One approved Adcash AutoTag. No other networks, click wrappers, or fallback ads.
 (async () => {
-  const excluded = /^\/(?:$|index\.html$|(?:api|internal|poll|p|moderatorapplication|terms|privacy|memberships|strategies|report|download|dashboard)(?:\/|$))/;
+  const excluded = /^\/(?:api|internal|poll|p|moderatorapplication|terms|privacy|memberships|strategies|report|download|dashboard)(?:\/|$)/;
   if (window.__umAdvertisingRequested || excluded.test(location.pathname) || window.top !== window.self) return;
   window.__umAdvertisingRequested = true;
   let config;
