@@ -18,7 +18,7 @@
     "wiki:deployment-check": "node scripts/check-wiki-deployment.mjs"
   },
   "dependencies": {
-    "pg": "^8.16.3",
+    "pg": "^8.23.1",
     "qrcode": "^1.5.4",
     "web-push": "^4.0.0"
   },
