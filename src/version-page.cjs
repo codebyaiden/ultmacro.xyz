@@ -31,12 +31,12 @@ function documentPage({ tag, latest, content, release }) {
   <meta property="og:url" content="${esc(url)}">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:image" content="${SITE}/assets/ui/ultimate-macro-main-new.png">
-  <meta property="og:image:alt" content="Ultimate Macro strategy selection screen">
+  <meta property="og:image" content="${SITE}/assets/ui/ultimate-macro-1.4.1.5-preview.png">
+  <meta property="og:image:alt" content="Ultimate Macro 1.4.1.5 interface with two-strategy cycling">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
-  <meta name="twitter:image" content="${SITE}/assets/ui/ultimate-macro-main-new.png">
+  <meta name="twitter:image" content="${SITE}/assets/ui/ultimate-macro-1.4.1.5-preview.png">
   <link rel="icon" href="/assets/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,6 +94,58 @@ function latestPage(latestTag) {
 </head><body><p><a href="${esc(target)}">Continue to ${esc(latestTag)}</a></p></body></html>
 `;
 }
+// Keep the current, hand-designed index shell. Previously a release sync
+// regenerated the obsolete full-page template over it (including its CSS,
+// header, accessibility handlers and advertising cache version).
+function refreshDesignedIndex(source, releases, latest) {
+  const replace = (pattern, content) => {
+    if (!pattern.test(source)) throw new Error('Download index anchor changed: ' + pattern);
+    source = source.replace(pattern, content);
+  };
+  const title = `Download ${latest.tag} | Ultimate Macro`;
+  const description = `Download Ultimate Macro ${latest.tag} for Windows, see what changed, and browse previous releases.`;
+  const preview = `${SITE}/assets/ui/ultimate-macro-1.4.1.5-preview.png`;
+  replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title>`);
+  for (const [name, value] of [['description', description], ['og:title', title], ['og:description', description],
+    ['twitter:title', title], ['twitter:description', description], ['og:image', preview], ['twitter:image', preview],
+    ['og:image:alt', 'Ultimate Macro 1.4.1.5 interface with two-strategy cycling']]) {
+    replace(new RegExp(`(<meta (?:name|property)="${name}" content=")[^"]*(")`), (_, open, close) => open + esc(value) + close);
+  }
+  const schema = documentPage({ latest, release: latest, content: '' }).match(/<script type="application\/ld\+json">[^]*?<\/script>/)[0];
+  replace(/<script type="application\/ld\+json">[^]*?<\/script>/, () => schema);
+  replace(/(<a class="index-download-button"[^>]*href=")[^"]*(")/, (_, open, close) => open + esc(latest.asset.url) + close);
+  replace(/(<a class="index-download-button"[^>]*aria-label=")[^"]*(")/, (_, open, close) => open + esc(`Download ${latest.tag} for Windows`) + close);
+  replace(/(<span data-download-label>)[^<]*(<\/span>)/, (_, open, close) => open + esc('Download ' + latest.tag) + close);
+  const date = value => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  // Remove only the checksum block owned by this generator before re-inserting.
+  source = source.replace(/\s*<details class="checksum-disclosure" data-latest-checksum>[^]*?<\/details>/, '');
+  const digest = latest.asset.digest || '';
+  const checksum = /^sha256:[a-f0-9]{64}$/i.test(digest)
+    ? `\n      <details class="checksum-disclosure" data-latest-checksum><summary>SHA-256</summary><code data-checksum>${esc(digest.slice(7))}</code></details>` : '';
+  replace(/<p class="index-release-meta">[^]*?<\/p>/, () => `<p class="index-release-meta"><span>${Math.round(latest.asset.size / 1024 / 1024)} MB</span><span aria-hidden="true">·</span><time datetime="${esc(latest.published)}">${esc(date(latest.published))}</time></p>` + checksum);
+  replace(/(<h2 id="highlights-title">)[^<]*(<\/h2>)/, (_, open, close) => open + esc(`What’s new in ${latest.tag}?`) + close);
+  const bullets = [];
+  let current = -1;
+  for (const line of view.cleanNotes(latest).split('\n')) {
+    const item = /^\s*[-*+]\s+(.+)/.exec(line);
+    if (item) { current = bullets.length; bullets.push(item[1]); }
+    else if (line.trim() && current >= 0) bullets[current] += ' ' + line.trim();
+    else current = -1;
+  }
+  const inline = text => esc(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
+  const highlights = bullets.slice(0, 4).map(item => '        <li>' + inline(item) + '</li>').join('\n');
+  replace(/(<section class="index-highlights"[^]*?<ul>)[^]*?(<\/ul>)/, (_, open, close) => open + '\n' + highlights + '\n      ' + close);
+  replace(/(<a class="index-notes-link" href=")[^"]*(")/, (_, open, close) => open + esc(view.versionUrl(latest.tag)) + close);
+  const history = releases.filter(release => !release.prerelease).map(release => {
+    const hotfix = /^v?\d+\.\d+\.\d+[a-z]$/i.test(release.tag);
+    const unstable = ['v1.3.5', 'v1.3.4'].includes(release.tag);
+    const state = release.tag === latest.tag ? 'LATEST' : hotfix ? 'HOTFIX' : unstable ? 'NOT STABLE' : 'STABLE';
+    const kind = hotfix ? 'hotfix' : unstable ? 'unstable' : 'stable';
+    return `          <li><a href="${esc(view.versionUrl(release.tag))}"><span class="version-tag">${esc(release.tag)}</span><span class="version-status status-${kind}">${state}</span><time datetime="${esc(release.published)}">${esc(date(release.published))}</time><span class="version-open" aria-hidden="true">↗</span></a></li>`;
+  }).join('\n');
+  replace(/(<ul class="version-picker-menu">)[^]*?(<\/ul>)/, (_, open, close) => open + '\n' + history + '\n        ' + close);
+  return source;
+}
 async function writeVersionPages(releases) {
   const downloadDir = path.join(ROOT, 'download');
   const latest = contract.pickLatestPublished(releases);
@@ -108,7 +160,13 @@ async function writeVersionPages(releases) {
     written.push(release.tag);
   }
   if (latest) {
-    await fs.writeFile(path.join(downloadDir, 'index.html'), documentPage({ latest, release: latest, content: view.renderMain(releases, latest, available) }));
+    const indexPath = path.join(downloadDir, 'index.html');
+    let existingIndex = '';
+    try { existingIndex = await fs.readFile(indexPath, 'utf8'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    const index = latest.asset && existingIndex.includes('class="download-page download-index"')
+      ? refreshDesignedIndex(existingIndex, releases, latest)
+      : documentPage({ latest, release: latest, content: view.renderMain(releases, latest, available) });
+    await fs.writeFile(indexPath, index);
     await fs.mkdir(path.join(downloadDir, 'latest'), { recursive: true });
     await fs.writeFile(path.join(downloadDir, 'latest/index.html'), latestPage(latest.tag));
     const redirectFile = path.join(ROOT, '_redirects');
