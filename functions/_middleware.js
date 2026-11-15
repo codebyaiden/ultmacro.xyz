@@ -24,6 +24,7 @@ export async function onRequest(context) {
     return Response.redirect(new URL('/dashboard/', url), 302);
   }
 
+  // Root _routes.json keeps static pages/assets out of Functions; API and short-link routes remain active.
   if (pathname === '/api/dashboard/v1' || pathname.startsWith('/api/dashboard/v1/')) {
     if (pathname === '/api/dashboard/v1/browser-links/claim') {
       if (request.method !== 'POST') return new Response('Method not allowed.', { status: 405, headers: { allow: 'POST' } });

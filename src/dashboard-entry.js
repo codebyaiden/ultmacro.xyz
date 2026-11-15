@@ -10,6 +10,15 @@
   const message = document.querySelector('#connection-message');
   if (!codeOutput || !codeStatus || !newCodeButton || !connectionState) return;
 
+  async function readJson(response) {
+    const contentType = (response.headers.get('content-type') || '').toLowerCase();
+    if (!contentType.includes('json')) {
+      throw new Error(`The pairing service returned an unexpected response (HTTP ${response.status}). Try again shortly.`);
+    }
+    try { return await response.json(); }
+    catch { throw new Error('The pairing service returned invalid data. Try again shortly.'); }
+  }
+
   let expiresAt = 0;
   let countdownTimer = 0;
   let statusTimer = 0;
@@ -44,7 +53,7 @@
         body: '{}',
         cache: 'no-store'
       });
-      const data = await response.json();
+      const data = await readJson(response);
       if (!response.ok || !/^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/.test(data.code || '') || !data.expiresAt) {
         throw new Error(data.error || 'Could not generate a code.');
       }
@@ -73,7 +82,7 @@
     try {
       const response = await fetch('/api/dashboard/v1/pairing-status', { credentials: 'same-origin', cache: 'no-store' });
       if (!response.ok) return;
-      const data = await response.json();
+      const data = await readJson(response);
       if (data.state === currentState || data.state === 'none' || data.state === 'pending') return;
       currentState = data.state;
       if (data.state === 'connecting') {
@@ -135,7 +144,7 @@
   (async () => {
     try {
       const response = await fetch('/api/dashboard/v1/pairing-status', { credentials: 'same-origin', cache: 'no-store' });
-      const existing = response.ok ? await response.json() : { state: 'none' };
+      const existing = response.ok ? await readJson(response) : { state: 'none' };
       if (['connecting', 'connected', 'offline', 'revoked'].includes(existing.state)) {
         statusTimer = window.setInterval(checkStatus, 2500);
         await checkStatus();

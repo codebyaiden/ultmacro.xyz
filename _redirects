@@ -12,6 +12,12 @@
 /aboutus/ /about/ 301
 /aboutus/index.html /about/ 301
 
+# These legacy dashboard URLs are static redirects now; dashboard APIs still use Pages Functions.
+/dashboard /dashboard/ 308
+/dashboard/access /dashboard/ 302
+/dashboard/access/ /dashboard/ 302
+/dashboard/access/login /dashboard/ 303
+
 # BEGIN DOWNLOAD REDIRECTS
 /download /download/ 301
 /download/index.html /download/ 301
