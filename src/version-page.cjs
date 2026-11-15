@@ -7,12 +7,12 @@ const SITE = 'https://ultmacro.xyz';
 const ROOT = path.join(__dirname, '..');
 const SAFE_TAG = /^[A-Za-z0-9][A-Za-z0-9._-]{0,60}$/;
 const esc = value => String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-const NAV = [['/#features', 'Features'], ['/#requirements', 'Requirements'], ['/guide/', 'Guide'], ['/strategies/', 'Strategy Network'], ['/early-access/', 'Early Access'], ['/download/', 'Download'], ['/#faq', 'FAQ']];
+const NAV = [['/#features', 'Features'], ['/#requirements', 'Requirements'], ['/guide/', 'Guide'], ['/strategies/', 'Strategy Network'], ['/early-access/', 'Early Access'], ['/about/', 'About Us'], ['/dashboard/', 'Dashboard'], ['/download/', 'Download'], ['/#faq', 'FAQ']];
 
 function documentPage({ tag, latest, content, release }) {
   const url = SITE + (tag ? view.versionUrl(tag) : '/download/');
-  const title = tag ? `Ultimate Macro ${tag} — ${release.asset ? 'download & changelog' : 'release notes'}` : 'Download Ultimate Macro';
-  const description = tag ? (release.asset ? `Download Ultimate Macro ${tag} for Windows. Release notes and SHA-256 checksum.` : `Read the Ultimate Macro ${tag} release notes and view the source release on GitHub.`) : 'Download Ultimate Macro for Windows. Latest release, changelog, and older versions.';
+  const title = tag ? `Ultimate Macro ${tag} — ${release.asset ? 'download & changelog' : 'release notes'}` : release.asset ? `Download ${release.tag} | Ultimate Macro` : `Ultimate Macro ${release.tag} release notes`;
+  const description = tag ? (release.asset ? `Download Ultimate Macro ${tag} for Windows. Release notes and SHA-256 checksum.` : `Read the Ultimate Macro ${tag} release notes and view the source release on GitHub.`) : release.asset ? `Download Ultimate Macro ${release.tag} for Windows, see what changed, and browse previous releases.` : `Read the Ultimate Macro ${release.tag} release notes and view the source release on GitHub.`;
   const nav = NAV.map(([href, label]) => `<a href="${href}"${label === 'Download' ? ' aria-current="page"' : ''}>${label}</a>`).join('');
   const schema = release ? JSON.stringify({ '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: 'Ultimate Macro', softwareVersion: release.tag.replace(/^v/, ''), applicationCategory: 'UtilitiesApplication', operatingSystem: 'Windows 10, Windows 11', datePublished: release.published, downloadUrl: release.asset?.url, fileSize: release.asset ? String(release.asset.size) : undefined, url, offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }).replace(/</g, '\\u003c') : '';
   return `<!doctype html>
@@ -31,9 +31,12 @@ function documentPage({ tag, latest, content, release }) {
   <meta property="og:url" content="${esc(url)}">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:image" content="${SITE}/assets/icon.png">
-  <meta property="og:image:alt" content="Ultimate Macro logo">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="${SITE}/assets/ui/ultimate-macro-main-new.png">
+  <meta property="og:image:alt" content="Ultimate Macro strategy selection screen">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(title)}">
+  <meta name="twitter:description" content="${esc(description)}">
+  <meta name="twitter:image" content="${SITE}/assets/ui/ultimate-macro-main-new.png">
   <link rel="icon" href="/assets/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +46,7 @@ function documentPage({ tag, latest, content, release }) {
   <link rel="stylesheet" href="/styles/unified-shell.css?v=8">
   ${schema ? `<script type="application/ld+json">${schema}</script>` : ''}
   <script src="/src/download.js?v=${ASSET_VERSION}" defer></script>
-  <script src="/src/unified-shell.js?v=shared-header-20261108-a" defer></script>
+  <script src="/src/unified-shell.js?v=shared-header-20261115-dashboard" defer></script>
 </head>
 <body class="download-page">
   <div class="download-atmosphere" aria-hidden="true"><div class="ambient-light ambient-primary"></div><div class="ambient-light ambient-secondary"></div><div class="ambient-grid"></div></div>

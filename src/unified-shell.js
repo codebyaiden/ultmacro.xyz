@@ -16,6 +16,7 @@
     { id:'wiki',label:'Wiki',href:'/wiki/' },
     { id:'early',label:'Early Access',href:'/early-access/' },
     { id:'about',label:'About Us',href:'/about/' },
+    { id:'dashboard',label:'Dashboard',href:'/dashboard/' },
   ];
   const el = (tag, cls, text) => {
     const node = document.createElement(tag);
