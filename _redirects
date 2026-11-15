@@ -15,9 +15,9 @@
 # BEGIN DOWNLOAD REDIRECTS
 /download /download/ 301
 /download/index.html /download/ 301
-/download/latest /download/v1.4.1/ 302
-/download/latest/ /download/v1.4.1/ 302
-/download/latest/index.html /download/v1.4.1/ 302
+/download/latest /download/v1.4.1.3/ 302
+/download/latest/ /download/v1.4.1.3/ 302
+/download/latest/index.html /download/v1.4.1.3/ 302
 /download/v1.3.3 /download/v1.3.3/ 301
 /download/v1.3.3/index.html /download/v1.3.3/ 301
 /download/v1.3.4 /download/v1.3.4/ 301
@@ -42,4 +42,6 @@
 /download/v1.4.0.40/index.html /download/v1.4.0.40/ 301
 /download/v1.4.1 /download/v1.4.1/ 301
 /download/v1.4.1/index.html /download/v1.4.1/ 301
+/download/v1.4.1.3 /download/v1.4.1.3/ 301
+/download/v1.4.1.3/index.html /download/v1.4.1.3/ 301
 # END DOWNLOAD REDIRECTS
