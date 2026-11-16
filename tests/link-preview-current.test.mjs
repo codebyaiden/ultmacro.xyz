@@ -27,7 +27,10 @@ test('homepage and generated download previews use the current immutable UI imag
     }
   }
   assert(readFileSync(join(root, 'src/version-page.cjs'), 'utf8').includes(name));
-  assert(readFileSync(join(root, 'download/latest/index.html'), 'utf8').includes('/download/v1.4.1.5/'));
+  const releaseContext = { window: {} };
+  vm.runInNewContext(readFileSync(join(root, 'data/releases.js'), 'utf8'), releaseContext);
+  const latestTag = releaseContext.window.UM_RELEASES.releases[0].tag;
+  assert(readFileSync(join(root, 'download/latest/index.html'), 'utf8').includes('/download/' + latestTag + '/'));
 });
 
 test('release sync preserves the designed download index and is idempotent', async () => {

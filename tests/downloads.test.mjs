@@ -89,6 +89,16 @@ test('ambiguous ZIP assets never silently pick one download', () => {
   assert.equal(contract.selectAsset(release), null);
 });
 
+test('bare version ZIP names are accepted only when they match the release tag', () => {
+  const make = (tag, name) => ({
+    tag_name: tag, draft: false,
+    html_url: `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/tag/${tag}`,
+    assets: [{ name, browser_download_url: `https://github.com/UltimateMacro/Ultimate-Macro-New-Era/releases/download/${tag}/${name}`, state: 'uploaded', size: 100, digest: 'sha256:' + 'a'.repeat(64), download_count: 0 }]
+  });
+  assert.equal(contract.selectAsset(make('v1.4.2', 'v1.4.2.zip')).name, 'v1.4.2.zip');
+  assert.equal(contract.selectAsset(make('v1.4.2', 'v1.4.1.zip')), null);
+});
+
 test('v1.3.6 dotted ZIP appears on the download page with its Auto Equip caveat', () => {
   const name = 'Ultimate.Macro.v1.3.6.zip';
   const release = contract.normalizeRelease({

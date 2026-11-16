@@ -8,7 +8,7 @@ var UMContract = (function () {
 
 	var TAG = /^v?([0-9]+(?:\.[0-9]+){1,3}[a-z]?)(-[0-9a-z.]+)?$/i;
 	var DIGEST = /^sha256:[0-9a-f]{64}$/i;
-	var ZIP = /^(?:TDS_Macro|Ultimate-Macro)(?:[_-][\w.-]+)?\.zip$|^(?:TDS|Ultimate)\.Macro\.v[\w.-]+\.zip$/i;
+	var ZIP = /^(?:TDS_Macro|Ultimate-Macro)(?:[_-][\w.-]+)?\.zip$|^(?:TDS|Ultimate)\.Macro\.v[\w.-]+\.zip$|^v[0-9]+(?:\.[0-9]+){1,3}[a-z]?\.zip$/i;
 
 	function isRecord(v) {
 		return typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -29,6 +29,8 @@ var UMContract = (function () {
 		if (candidates.length !== 1) return null;
 
 		var asset = candidates[0];
+		var bareVersion = asset.name.match(/^v([0-9]+(?:\.[0-9]+){1,3}[a-z]?)\.zip$/i);
+		if (bareVersion && bareVersion[1].toLowerCase() !== tag.replace(/^v/i, '').toLowerCase()) return null;
 		var expected = RELEASE_BASE + '/releases/download/' + tag + '/' + asset.name;
 		if (asset.browser_download_url !== expected) return null;
 		if (typeof asset.digest !== 'string' || !DIGEST.test(asset.digest)) return null;
