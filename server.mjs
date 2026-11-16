@@ -94,6 +94,9 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
   let requestPath;
   try { requestPath = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); } catch { return send(res, 400, 'bad path\n'); }
   requestPath = requestPath.replaceAll('\\', '/').replace(/^\/+/, '/');
+  const staticAdLibrary = requestPath === '/assets/adcash-library';
+  if (staticAdLibrary && !['GET', 'HEAD'].includes(req.method))
+    return send(res, 405, 'method not allowed\n', { allow: 'GET, HEAD' });
   // The static root is a source checkout, not a sanitized build directory.
   // Never serve hidden files (including .env/.git), dependencies or server code.
   if (requestPath.split('/').some(part => part.startsWith('.')) ||
@@ -120,7 +123,7 @@ async function serveStatic(req, res, body = Buffer.alloc(0)) {
     const body = await readFile(target);
     const ext = path.extname(target).toLowerCase();
     const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.md': 'text/markdown; charset=utf-8', '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.strat': 'text/plain; charset=utf-8' };
-    return send(res, 200, req.method === 'HEAD' ? null : body, { 'content-type': types[ext] || 'application/octet-stream', 'cache-control': requestPath === '/data/advertising.json' || ext === '.html' ? 'no-cache' : 'public, max-age=3600' });
+    return send(res, 200, req.method === 'HEAD' ? null : body, { 'content-type': staticAdLibrary ? 'application/javascript; charset=utf-8' : types[ext] || 'application/octet-stream', 'cache-control': staticAdLibrary ? 'no-store' : requestPath === '/data/advertising.json' || ext === '.html' ? 'no-cache' : 'public, max-age=3600', ...(staticAdLibrary ? { 'cross-origin-resource-policy': 'same-origin' } : {}) });
   } catch (caught) { return send(res, caught.code === 'ENOENT' ? 404 : 500, 'not found\n'); }
 }
 

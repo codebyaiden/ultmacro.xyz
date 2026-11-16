@@ -1,3 +1,5 @@
+// Compatibility handler for older deployments. Current _routes.json serves the
+// pinned /assets/adcash-library static asset without invoking this Function.
 // Pages removes the final .js extension: route = /assets/adcash-library.
 // Only this fixed, public VPS file is exposed. Never forward visitor headers.
 const UPSTREAM = 'https://api-origin.ultmacro.xyz/assets/adcash-library.js';

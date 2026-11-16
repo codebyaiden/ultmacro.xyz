@@ -5,11 +5,12 @@ const source = await readFile(new URL('../functions/assets/adcash-library.js', i
 const { onRequest } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 const request = (path = '/assets/adcash-library', method = 'GET') => new Request(`https://ultmacro.xyz${path}`, { method, headers: { Cookie: 'private=never-forward', Authorization: 'never-forward' } });
 
-test('routing is restricted to exactly the ad-library path', async () => {
+test('ad library is static while dashboard API and short links remain routed', async () => {
   const routes = JSON.parse(await readFile(new URL('../_routes.json', import.meta.url)));
   // Functions now also serve dashboard API proxying and short links, so the include is broad and static files are excluded instead.
   assert.deepEqual(routes.include, ['/*']);
-  assert.ok(!routes.exclude.includes('/assets/adcash-library'), 'ad library path must stay routed to Functions');
+  assert.ok(routes.exclude.includes('/assets/adcash-library'), 'ad library must not depend on a Functions invocation');
+  assert.ok(routes.include.length + routes.exclude.length <= 100, 'stay within Pages routing limits');
   assert.ok(!routes.exclude.some(p => p === '/api' || p.startsWith('/api/')), 'API routes must stay routed to Functions');
   assert.equal((await onRequest({ request: request('/api/auth') })).status, 404);
   assert.equal((await onRequest({ request: request('/assets/adcash-library?url=https://example.com') })).status, 404);

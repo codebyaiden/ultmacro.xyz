@@ -40,7 +40,7 @@ test('disabled, malformed or changed-provider config cannot load ads',async()=>{
  for(const fetcher of [async()=>{throw Error('offline')},async()=>({ok:false}),async()=>({ok:true,json:async()=>{throw Error('invalid')}})]){const e=environment();e.context.fetch=fetcher;await vm.runInContext(code,e.context);assert.equal(e.appended.length,0);}
 });
 test('sensitive workflows and frames never load popunders',async()=>{
- for(const path of ['/internal/qa-logs/','/poll/team/','/api/auth','/poll/','/moderatorapplication/','/privacy/','/terms/','/memberships/','/strategies/','/report/','/p/test/','/dashboard/','/dashboard/activity/']){const e=environment(path);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0,path);}
+ for(const path of ['/internal/qa-logs/','/poll/team/','/api/auth','/poll/','/moderatorapplication/','/privacy/','/terms/','/memberships/','/strategies/','/report/','/p/test/','/download/','/download/v1.4.1.5/','/dashboard/','/dashboard/activity/']){const e=environment(path);await vm.runInContext(code,e.context);assert.equal(e.appended.length,0,path);}
  const frame=environment();frame.context.window.top={};frame.context.window.self={};await vm.runInContext(code,frame.context);assert.equal(frame.appended.length,0);
 });
 
