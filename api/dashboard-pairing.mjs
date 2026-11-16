@@ -230,7 +230,7 @@ async function heartbeat(deviceToken, appVersion, snapshot = null) {
 
 function normalizeMacroSnapshot(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'stopAfterMatch', 'cooldown', 'health', 'map', 'mode', 'strategySlots', 'availableStrategies', 'capabilities'];
+  const allowed = ['runState', 'activeStrategy', 'activeSlot', 'rotationEnabled', 'stopAfterMatch', 'cooldown', 'health', 'farmingGoal', 'map', 'mode', 'strategySlots', 'availableStrategies', 'capabilities'];
   if (Object.keys(value).some(key => !allowed.includes(key)) ||
       !['stopped', 'running', 'paused'].includes(value.runState) ||
       ![1, 2].includes(value.activeSlot) || typeof value.rotationEnabled !== 'boolean' ||
@@ -238,13 +238,15 @@ function normalizeMacroSnapshot(value) {
       !Array.isArray(value.strategySlots) || value.strategySlots.length > 2 ||
       (value.availableStrategies !== undefined && (!Array.isArray(value.availableStrategies) || value.availableStrategies.length > 200)) ||
       (value.capabilities !== undefined && (!Array.isArray(value.capabilities) || value.capabilities.length > 16 ||
-        value.capabilities.some(item => !['strategy_library_install', 'safe_match_stop', 'device_health_v1', 'process_close', 'cooldown_mode_v1'].includes(item)))) ||
+        value.capabilities.some(item => !['strategy_library_install', 'safe_match_stop', 'device_health_v1', 'process_close', 'cooldown_mode_v1', 'farming_goal_v1'].includes(item)))) ||
       (value.activeStrategy !== null && (typeof value.activeStrategy !== 'string' || value.activeStrategy.length > 80)) ||
       (value.map !== '' && (typeof value.map !== 'string' || value.map.length > 64)) ||
       (value.mode !== '' && (typeof value.mode !== 'string' || value.mode.length > 32))) return null;
 
   const cooldown = normalizeCooldown(value.cooldown);
   if (!cooldown) return null;
+  const farmingGoal = value.farmingGoal === undefined ? null : normalizeFarmingGoal(value.farmingGoal);
+  if (value.farmingGoal !== undefined && !farmingGoal) return null;
 
   const slots = [];
   const seen = new Set();
@@ -275,6 +277,7 @@ function normalizeMacroSnapshot(value) {
     rotationEnabled: value.rotationEnabled,
     stopAfterMatch: value.stopAfterMatch === true,
     cooldown,
+    farmingGoal,
     map: value.map.trim(),
     mode: value.mode.trim(),
     strategySlots: slots,
@@ -282,6 +285,16 @@ function normalizeMacroSnapshot(value) {
     health: normalizeHealth(value.health),
     capabilities: value.capabilities || []
   };
+}
+
+function normalizeFarmingGoal(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      Object.keys(value).some(key => !['enabled', 'currency', 'target', 'earned', 'reached'].includes(key)) ||
+      typeof value.enabled !== 'boolean' || !['Coins', 'Gems'].includes(value.currency) ||
+      !Number.isSafeInteger(value.target) || value.target < 1 || value.target > 1_000_000_000 ||
+      !Number.isSafeInteger(value.earned) || value.earned < 0 ||
+      typeof value.reached !== 'boolean' || (value.reached && !value.enabled)) return null;
+  return { enabled: value.enabled, currency: value.currency, target: value.target, earned: value.earned, reached: value.reached };
 }
 
 function normalizeCooldown(value) {
@@ -385,7 +398,32 @@ async function disconnectDevice(deviceToken) {
   return Boolean(result.rows[0]);
 }
 
-const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'stop_after_match', 'cancel_stop_after_match', 'start_cooldown', 'cancel_cooldown', 'close_selected_process', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit', 'install_library_strategy']);
+const REMOTE_COMMANDS = new Set(['start', 'pause', 'resume', 'stop', 'stop_after_match', 'cancel_stop_after_match', 'start_cooldown', 'cancel_cooldown', 'close_selected_process', 'select_strategy_1', 'select_strategy_2', 'read_strategy_1', 'read_strategy_2', 'stage_strategy_edit', 'install_library_strategy', 'set_farming_goal', 'remove_farming_goal']);
+
+function validFarmingGoalRequest(payload) {
+  return payload && typeof payload === 'object' && !Array.isArray(payload) &&
+    Object.keys(payload).length === 2 && Object.keys(payload).every(key => ['currency', 'target'].includes(key)) &&
+    ['Coins', 'Gems'].includes(payload.currency) && Number.isSafeInteger(payload.target) &&
+    payload.target >= 1 && payload.target <= 1_000_000_000;
+}
+
+function validRemoteCommandResultData(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  if (keys.every(key => ['enabled', 'currency', 'target', 'earned', 'reached'].includes(key))) {
+    return keys.length === 5 && typeof value.enabled === 'boolean' && ['Coins', 'Gems'].includes(value.currency) &&
+      Number.isSafeInteger(value.target) && value.target >= 1 && value.target <= 1_000_000_000 &&
+      Number.isSafeInteger(value.earned) && value.earned >= 0 && typeof value.reached === 'boolean' &&
+      (!value.reached || value.enabled);
+  }
+  return !keys.some(key => !['slot', 'strategyId', 'name', 'strategyText', 'modified', 'size'].includes(key)) &&
+    ((! [1, 2].includes(value.slot)) === (typeof value.strategyId !== 'string')) &&
+    (value.strategyId === undefined || (typeof value.name === 'string' && value.name.length <= 80 &&
+      value.strategyId.length <= 180 && /^[^\\/:\0-\x1f]+\.strat$/i.test(value.strategyId))) &&
+    typeof value.strategyText === 'string' && Buffer.byteLength(value.strategyText, 'utf8') <= MAX_STRATEGY_BYTES &&
+    typeof value.modified === 'string' && /^\d{14}$/.test(value.modified) &&
+    Number.isSafeInteger(value.size) && value.size >= 0 && value.size <= MAX_STRATEGY_BYTES;
+}
 
 function validCooldownRequest(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload) || typeof payload.resumeAutomatically !== 'boolean') return false;
@@ -412,6 +450,8 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   if (command === 'close_selected_process' && !validProcessTarget(payload)) return { error: 'invalid' };
   if (command === 'start_cooldown' && !validCooldownRequest(payload)) return { error: 'invalid' };
   if (command === 'cancel_cooldown' && payload !== null) return { error: 'invalid' };
+  if (command === 'set_farming_goal' && !validFarmingGoalRequest(payload)) return { error: 'invalid' };
+  if (command === 'remove_farming_goal' && payload !== null) return { error: 'invalid' };
   if (localStore()) {
     for (const item of localRemoteCommands.values()) {
       if (item.expiresAt <= Date.now()) { item.payload = null; item.resultData = null; if (['pending', 'delivered'].includes(item.status)) item.status = 'expired'; }
@@ -423,6 +463,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
     if (['stop_after_match', 'cancel_stop_after_match'].includes(command) && !device.snapshot.capabilities?.includes('safe_match_stop')) return { error: 'capability' };
     if (command === 'close_selected_process' && !device.snapshot.capabilities?.includes('process_close')) return { error: 'capability' };
     if (['start_cooldown', 'cancel_cooldown'].includes(command) && !device.snapshot.capabilities?.includes('cooldown_mode_v1')) return { error: 'capability' };
+    if (['set_farming_goal', 'remove_farming_goal'].includes(command) && !device.snapshot.capabilities?.includes('farming_goal_v1')) return { error: 'capability' };
     if (command === 'close_selected_process' && !hasProcessTarget(device.snapshot, payload)) return { error: 'process' };
     const state = device.snapshot.runState;
     const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
@@ -483,10 +524,15 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
         or ($3 = 'read_strategy_2' and d.state_snapshot->'strategySlots' @> '[{"slot":2}]'::jsonb)
         or ($3 = 'stage_strategy_edit' and (($4::jsonb->>'slot') is not null and d.state_snapshot->'strategySlots' @> jsonb_build_array(jsonb_build_object('slot', ($4::jsonb->>'slot')::int))
           or ($4::jsonb->>'strategyId') is not null and d.state_snapshot->'availableStrategies' @> jsonb_build_array(jsonb_build_object('id', $4::jsonb->>'strategyId'))))
-        or ($3 = 'install_library_strategy' and d.state_snapshot->'capabilities' @> '["strategy_library_install"]'::jsonb))
+        or ($3 = 'install_library_strategy' and d.state_snapshot->'capabilities' @> '["strategy_library_install"]'::jsonb)
+        or ($3 in ('set_farming_goal','remove_farming_goal') and d.state_snapshot->'capabilities' @> '["farming_goal_v1"]'::jsonb))
       and not exists (select 1 from dashboard_remote_commands c where c.device_id = d.id and c.status in ('pending','delivered') and c.expires_at > now())
     returning id, command, status, expires_at`, [ownerHash, deviceId, command, payload ? JSON.stringify(payload) : null]); }
-  catch (error) { if (error?.code !== '23505') throw error; result = { rows: [] }; }
+  catch (error) {
+    if (error?.code === '23505') result = { rows: [] };
+    else if (error?.code === '23514' && ['set_farming_goal', 'remove_farming_goal'].includes(command)) return { error: 'migration' };
+    else throw error;
+  }
   if (result.rows[0]) return { command: result.rows[0] };
   const device = await sql().query(`select id, last_seen_at, state_snapshot from dashboard_devices where id = $1 and owner_hash = $2 and revoked_at is null`, [deviceId, ownerHash]);
   if (!device.rows[0]) return { error: 'device' };
@@ -495,6 +541,7 @@ async function requestRemoteCommand(ownerHash, deviceId, command, payload = null
   if (['stop_after_match', 'cancel_stop_after_match'].includes(command) && !device.rows[0].state_snapshot.capabilities?.includes('safe_match_stop')) return { error: 'capability' };
   if (command === 'close_selected_process' && !device.rows[0].state_snapshot.capabilities?.includes('process_close')) return { error: 'capability' };
   if (['start_cooldown', 'cancel_cooldown'].includes(command) && !device.rows[0].state_snapshot.capabilities?.includes('cooldown_mode_v1')) return { error: 'capability' };
+  if (['set_farming_goal', 'remove_farming_goal'].includes(command) && !device.rows[0].state_snapshot.capabilities?.includes('farming_goal_v1')) return { error: 'capability' };
   if (command === 'close_selected_process' && !hasProcessTarget(device.rows[0].state_snapshot, payload)) return { error: 'process' };
   const state = device.rows[0].state_snapshot.runState;
   const selectedSlot = command === 'select_strategy_2' ? 2 : command === 'select_strategy_1' ? 1 : 0;
@@ -608,16 +655,26 @@ function normalizeActivityEvent(value) {
       !['confirmed', 'observed'].includes(value.confidence) || !value.data || typeof value.data !== 'object' || Array.isArray(value.data)) return null;
 
   const dataKeys = Object.keys(value.data);
-  if (dataKeys.some(key => !['action', 'detail', 'rewardType', 'map', 'mode', 'coins', 'gems', 'towerXp', 'durationSeconds'].includes(key)) ||
+  const numericDataKeys = ['coins', 'gems', 'towerXp', 'durationSeconds', 'spinTickets', 'spinWheelTickets',
+    'timescaleTickets', 'spinTicketsTotal', 'spinWheelTicketsTotal', 'timescaleTicketsTotal', 'timescaleTicketsUsed',
+    'farmingGoalEnabled', 'farmingGoalTarget', 'farmingGoalEarned', 'farmingGoalReached'];
+  const spinTickets = value.data.spinTickets ?? value.data.spinWheelTickets;
+  const spinTicketsTotal = value.data.spinTicketsTotal ?? value.data.spinWheelTicketsTotal;
+  const numericValue = (key, amount) => Number.isSafeInteger(amount) && amount >= 0 &&
+    amount <= (key === 'durationSeconds' ? 86400 : 9_000_000_000_000);
+  if (dataKeys.some(key => !['action', 'detail', 'rewardType', 'map', 'mode', 'farmingGoalCurrency', ...numericDataKeys].includes(key)) ||
       (value.data.action !== undefined && !ACTIVITY_ACTIONS.has(value.data.action)) ||
       (value.data.rewardType !== undefined && value.data.rewardType !== 'playtime') ||
       (value.data.detail !== undefined && (typeof value.data.detail !== 'string' || value.data.detail.length > 64 || /[\r\n\0]/.test(value.data.detail))) ||
       ['map', 'mode'].some(key => value.data[key] !== undefined && (typeof value.data[key] !== 'string' || value.data[key].length > 64 || /[\r\n\0]/.test(value.data[key]))) ||
-      ['coins', 'gems', 'towerXp', 'durationSeconds'].some(key => value.data[key] !== undefined &&
-        (!Number.isSafeInteger(value.data[key]) || value.data[key] < 0 || value.data[key] > (key === 'durationSeconds' ? 86400 : 1000000000)))) return null;
+      (value.data.farmingGoalCurrency !== undefined && !['Coins', 'Gems'].includes(value.data.farmingGoalCurrency)) ||
+      (value.data.spinTickets !== undefined && value.data.spinWheelTickets !== undefined && value.data.spinTickets !== value.data.spinWheelTickets) ||
+      (value.data.spinTicketsTotal !== undefined && value.data.spinWheelTicketsTotal !== undefined && value.data.spinTicketsTotal !== value.data.spinWheelTicketsTotal) ||
+      numericDataKeys.some(key => value.data[key] !== undefined && !numericValue(key, value.data[key])) ||
+      ['farmingGoalEnabled', 'farmingGoalReached'].some(key => value.data[key] !== undefined && value.data[key] > 1)) return null;
   if (value.type.startsWith('strategy.action.') && !value.data.action) return null;
   if (value.type === 'reward.claimed' && value.data.rewardType !== 'playtime') return null;
-  if (['coins', 'gems', 'towerXp', 'durationSeconds'].some(key => value.data[key] !== undefined) &&
+  if ([...numericDataKeys, 'farmingGoalCurrency'].some(key => value.data[key] !== undefined) &&
       !['match.victory', 'match.loss'].includes(value.type)) return null;
 
   return {
@@ -630,8 +687,12 @@ function normalizeActivityEvent(value) {
       ...(value.data.rewardType ? { rewardType: value.data.rewardType } : {}),
       ...(value.data.map ? { map: value.data.map.trim() } : {}),
       ...(value.data.mode ? { mode: value.data.mode.trim() } : {}),
-      ...Object.fromEntries(['coins', 'gems', 'towerXp', 'durationSeconds']
-        .filter(key => value.data[key] !== undefined).map(key => [key, value.data[key]]))
+      ...Object.fromEntries(['coins', 'gems', 'towerXp', 'durationSeconds', 'timescaleTickets', 'timescaleTicketsTotal',
+        'timescaleTicketsUsed', 'farmingGoalEnabled', 'farmingGoalTarget', 'farmingGoalEarned', 'farmingGoalReached']
+        .filter(key => value.data[key] !== undefined).map(key => [key, value.data[key]])),
+      ...(spinTickets !== undefined ? { spinTickets } : {}),
+      ...(spinTicketsTotal !== undefined ? { spinTicketsTotal } : {}),
+      ...(value.data.farmingGoalCurrency ? { farmingGoalCurrency: value.data.farmingGoalCurrency } : {})
     }
   };
 }
@@ -722,62 +783,119 @@ function earningsBucketStart(value, range) {
   return date;
 }
 
-function earningsResponse(range, rangeInfo, bucketRows, recentRows, now = Date.now()) {
+const EARNINGS_METRICS = ['coins', 'gems', 'towerXp', 'spinTickets', 'timescaleTickets'];
+
+function safeEarning(value) {
+  if (value === undefined || value === null || value === '') return null;
+  const amount = Number(value);
+  return Number.isSafeInteger(amount) && amount >= 0 ? amount : null;
+}
+
+function latestRunEarnings(row) {
+  if (!row) return null;
+  const data = row.data || {};
+  const hasGoal = ['farmingGoalEnabled', 'farmingGoalCurrency', 'farmingGoalTarget', 'farmingGoalEarned', 'farmingGoalReached']
+    .some(key => data[key] !== undefined);
+  return {
+    spinTickets: safeEarning(data.spinTicketsTotal ?? data.spinWheelTicketsTotal),
+    timescaleTickets: safeEarning(data.timescaleTicketsTotal),
+    timescaleTicketsUsed: safeEarning(data.timescaleTicketsUsed),
+    farmingGoal: hasGoal ? {
+      enabled: data.farmingGoalEnabled === 1,
+      currency: ['Coins', 'Gems'].includes(data.farmingGoalCurrency) ? data.farmingGoalCurrency : null,
+      target: safeEarning(data.farmingGoalTarget),
+      earned: safeEarning(data.farmingGoalEarned),
+      reached: data.farmingGoalReached === 1
+    } : null
+  };
+}
+
+function earningsResponse(range, rangeInfo, bucketRows, recentRows, latestRunRow = null, now = Date.now()) {
   const currentBucket = Math.floor(now / rangeInfo.step) * rangeInfo.step;
   const firstBucket = currentBucket - (rangeInfo.count - 1) * rangeInfo.step;
-  const totals = { coins: 0, gems: 0, towerXp: 0 };
+  const totals = Object.fromEntries(EARNINGS_METRICS.map(key => [key, 0]));
   const valuesByBucket = new Map();
   for (const row of bucketRows) {
     const at = earningsBucketStart(row.bucket, range).getTime();
-    const values = {
-      coins: Number(row.coins) || 0,
-      gems: Number(row.gems) || 0,
-      towerXp: Number(row.towerXp ?? row.tower_xp) || 0
-    };
+    const values = Object.fromEntries(EARNINGS_METRICS.map(key => [key, Number(row[key === 'towerXp' ? 'towerXp' : key]) || 0]));
     valuesByBucket.set(at, values);
-    totals.coins += values.coins;
-    totals.gems += values.gems;
-    totals.towerXp += values.towerXp;
+    for (const key of EARNINGS_METRICS) totals[key] += values[key];
   }
+  const ticketTotals = { spinTickets: totals.spinTickets, timescaleTickets: totals.timescaleTickets };
+  delete totals.spinTickets;
+  delete totals.timescaleTickets;
   const buckets = Array.from({ length: rangeInfo.count }, (_, index) => {
     const start = firstBucket + index * rangeInfo.step;
-    return { start: new Date(start).toISOString(), ...(valuesByBucket.get(start) || { coins: 0, gems: 0, towerXp: 0 }) };
+    return { start: new Date(start).toISOString(), ...(valuesByBucket.get(start) || Object.fromEntries(EARNINGS_METRICS.map(key => [key, 0]))) };
   });
   const latest = recentRows.map(row => ({
     eventId: row.eventId ?? row.event_id,
     type: row.type ?? row.event_type,
     occurredAt: new Date(row.occurredAt ?? row.occurred_at).toISOString(),
     map: row.data?.map || null,
-    coins: Number.isSafeInteger(row.data?.coins) ? row.data.coins : null,
-    gems: Number.isSafeInteger(row.data?.gems) ? row.data.gems : null,
-    towerXp: Number.isSafeInteger(row.data?.towerXp) ? row.data.towerXp : null
+    mode: row.data?.mode || null,
+    durationSeconds: safeEarning(row.data?.durationSeconds),
+    coins: safeEarning(row.data?.coins),
+    gems: safeEarning(row.data?.gems),
+    towerXp: safeEarning(row.data?.towerXp),
+    spinTickets: safeEarning(row.data?.spinTickets ?? row.data?.spinWheelTickets),
+    timescaleTickets: safeEarning(row.data?.timescaleTickets)
   }));
-  return { range, totals, buckets, latest };
+  return { range, totals, ticketTotals, buckets, latest, latestRun: latestRunEarnings(latestRunRow) };
+}
+
+function nerdStatsFrom(matches) {
+  let wins = 0, losses = 0, coins = 0, gems = 0, towerXp = 0, totalSeconds = 0, timedMatches = 0;
+  for (const event of matches) {
+    const type = event.type ?? event.event_type;
+    const data = event.data || {};
+    if (type === 'match.victory') wins++;
+    else if (type === 'match.loss') losses++;
+    coins += safeEarning(data.coins) || 0;
+    gems += safeEarning(data.gems) || 0;
+    towerXp += safeEarning(data.towerXp) || 0;
+    const duration = safeEarning(data.durationSeconds);
+    if (duration !== null) { totalSeconds += duration; timedMatches++; }
+  }
+  const totalMatches = wins + losses;
+  const hours = totalSeconds / 3600;
+  return {
+    totalMatches, wins, losses,
+    winRate: totalMatches ? Math.round(wins / totalMatches * 1000) / 10 : null,
+    winLossRatio: losses ? Math.round(wins / losses * 100) / 100 : null,
+    coinsPerHour: hours ? Math.round(coins / hours) : null,
+    gemsPerHour: hours ? Math.round(gems / hours) : null,
+    xpPerHour: hours ? Math.round(towerXp / hours) : null,
+    averageDurationSeconds: timedMatches ? Math.round(totalSeconds / timedMatches) : null
+  };
 }
 
 async function listEarnings(ownerHash, range) {
   const rangeInfo = EARNINGS_RANGES[range];
   const cutoff = Date.now() - rangeInfo.ms;
   if (localStore()) {
-    const events = [...localActivityEvents.values()].filter(event => event.ownerHash === ownerHash &&
-      ['match.victory', 'match.loss'].includes(event.type) && Date.parse(event.occurredAt) >= cutoff);
+    const allEvents = [...localActivityEvents.values()].filter(event => event.ownerHash === ownerHash &&
+      ['match.victory', 'match.loss'].includes(event.type));
+    const events = allEvents.filter(event => Date.parse(event.occurredAt) >= cutoff);
+    const nerdEvents = allEvents.filter(event => Date.now() - Date.parse(event.occurredAt) <= 30 * 86400000);
     const grouped = new Map();
     for (const event of events) {
       const key = earningsBucketStart(event.occurredAt, range).toISOString();
-      const row = grouped.get(key) || { bucket: key, coins: 0, gems: 0, towerXp: 0 };
-      row.coins += event.data.coins || 0;
-      row.gems += event.data.gems || 0;
-      row.towerXp += event.data.towerXp || 0;
+      const row = grouped.get(key) || { bucket: key, ...Object.fromEntries(EARNINGS_METRICS.map(metric => [metric, 0])) };
+      for (const metric of EARNINGS_METRICS) row[metric] += safeEarning(event.data?.[metric] ?? (metric === 'spinTickets' ? event.data?.spinWheelTickets : null)) || 0;
       grouped.set(key, row);
     }
     events.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt) || b.sequence - a.sequence);
-    return earningsResponse(range, rangeInfo, [...grouped.values()], events.slice(0, 20));
+    allEvents.sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt) || b.sequence - a.sequence);
+    return { ...earningsResponse(range, rangeInfo, [...grouped.values()], events.slice(0, 20), allEvents[0] || null), nerdStats: nerdStatsFrom(nerdEvents) };
   }
 
   const buckets = await sql().query(`select ${rangeInfo.sql} as bucket,
       coalesce(sum((data->>'coins')::bigint), 0) as coins,
       coalesce(sum((data->>'gems')::bigint), 0) as gems,
-      coalesce(sum((data->>'towerXp')::bigint), 0) as "towerXp"
+      coalesce(sum((data->>'towerXp')::bigint), 0) as "towerXp",
+      coalesce(sum(coalesce((data->>'spinTickets')::bigint, (data->>'spinWheelTickets')::bigint)), 0) as "spinTickets",
+      coalesce(sum((data->>'timescaleTickets')::bigint), 0) as "timescaleTickets"
     from dashboard_activity_events
     where owner_hash = $1 and event_type in ('match.victory', 'match.loss') and occurred_at >= $2
     group by 1 order by 1`, [ownerHash, new Date(cutoff)]);
@@ -785,7 +903,36 @@ async function listEarnings(ownerHash, range) {
     from dashboard_activity_events
     where owner_hash = $1 and event_type in ('match.victory', 'match.loss') and occurred_at >= $2
     order by occurred_at desc, sequence desc limit 20`, [ownerHash, new Date(cutoff)]);
-  return earningsResponse(range, rangeInfo, buckets.rows, recent.rows);
+  const latestRun = await sql().query(`select data from dashboard_activity_events
+    where owner_hash = $1 and event_type in ('match.victory', 'match.loss') and occurred_at > now() - interval '30 days'
+    order by occurred_at desc, sequence desc limit 1`, [ownerHash]);
+  const nerd = await sql().query(`select
+      count(*) filter (where event_type in ('match.victory','match.loss'))::bigint as "totalMatches",
+      count(*) filter (where event_type = 'match.victory')::bigint as wins,
+      count(*) filter (where event_type = 'match.loss')::bigint as losses,
+      coalesce(sum((data->>'coins')::bigint),0)::bigint as coins,
+      coalesce(sum((data->>'gems')::bigint),0)::bigint as gems,
+      coalesce(sum((data->>'towerXp')::bigint),0)::bigint as "towerXp",
+      coalesce(sum((data->>'durationSeconds')::bigint),0)::bigint as "totalSeconds",
+      count(*) filter (where data ? 'durationSeconds')::bigint as "timedMatches"
+    from dashboard_activity_events
+    where owner_hash = $1 and event_type in ('match.victory','match.loss') and occurred_at > now() - interval '30 days'`, [ownerHash]);
+  const row = nerd.rows[0] || {};
+  const totalMatches = Number(row.totalMatches) || 0;
+  const wins = Number(row.wins) || 0;
+  const losses = Number(row.losses) || 0;
+  const totalSeconds = Number(row.totalSeconds) || 0;
+  const hours = totalSeconds / 3600;
+  const stats = {
+    totalMatches, wins, losses,
+    winRate: totalMatches ? Math.round(wins / totalMatches * 1000) / 10 : null,
+    winLossRatio: losses ? Math.round(wins / losses * 100) / 100 : null,
+    coinsPerHour: hours ? Math.round((Number(row.coins) || 0) / hours) : null,
+    gemsPerHour: hours ? Math.round((Number(row.gems) || 0) / hours) : null,
+    xpPerHour: hours ? Math.round((Number(row.towerXp) || 0) / hours) : null,
+    averageDurationSeconds: Number(row.timedMatches) ? Math.round(totalSeconds / Number(row.timedMatches)) : null
+  };
+  return { ...earningsResponse(range, rangeInfo, buckets.rows, recent.rows, latestRun.rows[0] || null), nerdStats: stats };
 }
 
 async function ownerFrom(request) {
@@ -1552,11 +1699,16 @@ export default async function dashboardPairing(request) {
         if (!validProcessTarget(body.payload))
           return json({ error: 'Choose a current process from the health list.' }, 400);
         payload = { pid: body.payload.pid, name: body.payload.name, startedAt: body.payload.startedAt };
+      } else if (body.command === 'set_farming_goal') {
+        if (!validFarmingGoalRequest(body.payload)) return json({ error: 'Choose Coins or Gems and a target from 1 to 1,000,000,000.' }, 400);
+        payload = { currency: body.payload.currency, target: body.payload.target };
+      } else if (body.command === 'remove_farming_goal') {
+        if (body.payload !== undefined && body.payload !== null) return json({ error: 'Removing a goal does not need extra details.' }, 400);
       } else if (body.payload !== undefined) return json({ error: 'This action does not accept strategy data.' }, 400);
       const issued = await requestRemoteCommand(owner.hash, body.deviceId, body.command, payload);
       if (issued.command) return json({ ok: true, id: issued.command.id, expiresAt: issued.command.expires_at || new Date(issued.command.expiresAt).toISOString() }, 202, { 'cache-control': 'no-store' });
-      const status = { device: 404, offline: 409, state: 409, strategy: 409, capability: 409, process: 409, pending: 409, invalid: 400 }[issued.error] || 409;
-      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'That action is not available in the PC’s current state.', strategy: 'That strategy is no longer configured on the PC.', capability: 'Update Ultimate Macro to use that action.', process: 'That app is no longer in the current health list. Refresh and try again.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.' }[issued.error] || 'Could not queue that action.';
+      const status = { device: 404, offline: 409, state: 409, strategy: 409, capability: 409, process: 409, pending: 409, invalid: 400, migration: 503 }[issued.error] || 409;
+      const message = { device: 'That PC is not linked to this account.', offline: 'That PC is offline. Open Ultimate Macro and try again.', state: 'That action is not available in the PC’s current state.', strategy: 'That strategy is no longer configured on the PC.', capability: 'Update Ultimate Macro to use that action.', process: 'That app is no longer in the current health list. Refresh and try again.', pending: 'An action is already waiting for the PC.', invalid: 'That action is not available.', migration: 'Farming goal controls are waiting for a server update. Try again shortly.' }[issued.error] || 'Could not queue that action.';
       return json({ error: message }, status, { 'cache-control': 'no-store' });
     }
 
@@ -1576,14 +1728,7 @@ export default async function dashboardPairing(request) {
       if (!match || !body || Object.keys(body).some(key => !['id', 'status', 'message', 'data'].includes(key)) ||
           typeof body.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(body.id) || !['succeeded', 'failed'].includes(body.status) ||
           (body.message !== undefined && (typeof body.message !== 'string' || body.message.length > 120)) ||
-          (body.data !== undefined && (!body.data || typeof body.data !== 'object' || Array.isArray(body.data) ||
-            Object.keys(body.data).some(key => !['slot', 'strategyId', 'name', 'strategyText', 'modified', 'size'].includes(key)) ||
-            ((! [1, 2].includes(body.data.slot)) === (typeof body.data.strategyId !== 'string')) ||
-            (body.data.strategyId !== undefined && (typeof body.data.name !== 'string' || body.data.name.length > 80 || body.data.strategyId.length > 180 || !/^[^\\/:\0-\x1f]+\.strat$/i.test(body.data.strategyId))) ||
-            typeof body.data.strategyText !== 'string' ||
-            Buffer.byteLength(body.data.strategyText, 'utf8') > MAX_STRATEGY_BYTES ||
-            typeof body.data.modified !== 'string' || !/^\d{14}$/.test(body.data.modified) ||
-            !Number.isSafeInteger(body.data.size) || body.data.size < 0 || body.data.size > MAX_STRATEGY_BYTES)))
+          (body.data !== undefined && !validRemoteCommandResultData(body.data)))
         return json({ error: 'Invalid command result.' }, 400);
       const updated = await completeRemoteCommand(match[1], body.id, body.status, body.message || '', body.data || null);
       return updated ? json({ ok: true }) : json({ error: 'Command is no longer active.' }, 409);

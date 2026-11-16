@@ -194,6 +194,7 @@
     if (applyId !== backgroundApplyId) return;
     prefs.customBackgroundUrl = prefs.background === 'custom' ? url : '';
     root.style.setProperty('--dashboard-wallpaper-image', url ? `url("${url}")` : 'none');
+    root.dataset.wallpaperReady = 'true';
     window.dispatchEvent(new CustomEvent('dashboard:appearance-ready'));
     if (prefs.accentMode === 'auto' || prefs.iconMode === 'auto') {
       const palette = await sampleAccent(url, prefs.background);

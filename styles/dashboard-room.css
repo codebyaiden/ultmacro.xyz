@@ -18,18 +18,20 @@
 .dashboard-app-page::before {
   z-index: -2;
   background-color: #09090c;
-  background-image: var(--dashboard-wallpaper-image, url('/assets/strategy-maps/dead-ahead.webp'));
+  background-image: var(--dashboard-wallpaper-image, none);
   background-position: 58% 42%;
   background-size: cover;
   background-repeat: no-repeat;
   filter: none;
-  opacity: var(--dashboard-wallpaper-opacity, .42);
+  opacity: 0;
+  transition: opacity .24s ease;
   transform: none;
 }
 .dashboard-app-page::after {
   z-index: -1;
   background: linear-gradient(90deg,rgba(7,7,10,.78),rgba(7,7,10,.63) 46%,rgba(7,7,10,.76)),linear-gradient(0deg,rgba(7,7,10,.72),rgba(7,7,10,.12) 70%);
 }
+.dashboard-app-page[data-wallpaper-ready="true"]::before { opacity: var(--dashboard-wallpaper-opacity, .42); }
 .dashboard-app-page[data-background="none"]::before { opacity: 0; }
 .dashboard-app-page .um-site-header {
   background: rgba(9,9,12,.66);
@@ -236,10 +238,10 @@
 .dashboard-activity-page .activity-list-top { color: #a09ca8; }
 .dashboard-remote-page .dashboard-app-content { display:block; width:100%; max-width:none; padding:0 2px 22px; }
 .dashboard-remote-page .remote-heading { margin-bottom:20px; }
-.dashboard-remote-page::after { background:linear-gradient(90deg,rgba(7,7,10,.88),rgba(7,7,10,.81) 46%,rgba(7,7,10,.88)),linear-gradient(0deg,rgba(7,7,10,.84),rgba(7,7,10,.36) 70%); }
+.dashboard-remote-page::after { background:linear-gradient(90deg,rgba(7,7,10,.48),rgba(7,7,10,.35) 46%,rgba(7,7,10,.49)),linear-gradient(0deg,rgba(7,7,10,.44),rgba(7,7,10,.07) 70%); }
 .dashboard-remote-page .remote-workspace { display:grid; grid-template-columns:minmax(330px,.78fr) minmax(0,1.22fr); align-items:stretch; gap:18px; }
 .dashboard-remote-page .remote-workspace > .remote-control-panel,
-.dashboard-remote-page .remote-workspace > .remote-run-readout { grid-column:auto; grid-row:auto; min-width:0; min-height:282px; margin:0; padding:22px; border:1px solid var(--room-line); border-radius:12px; background:rgba(15,15,18,.94); box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-remote-page .remote-workspace > .remote-run-readout { grid-column:auto; grid-row:auto; min-width:0; min-height:282px; margin:0; padding:22px; border:1px solid var(--room-line); border-radius:12px; background:rgba(15,15,18,.66); box-shadow:0 14px 44px rgba(0,0,0,.12); -webkit-backdrop-filter:none; backdrop-filter:none; }
 .dashboard-remote-page .remote-controls { display:flex; flex-direction:column; }
 .dashboard-remote-page .remote-panel-intro { margin-bottom:20px; }
 .dashboard-remote-page .remote-panel-kicker { display:none; }
@@ -577,4 +579,14 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard-app-page :is(.dashboard-app-shell,.dashboard-sidebar,.dashboard-section-nav,.dashboard-nav-group,.dashboard-section-panel,.device-row,.notifications-summary,.earnings-event-list li,.settings-row,.remote-run-readout) { transition:none!important; }
   .dashboard-update-dialog,.dashboard-update-footer button { transition:none!important; }
+}
+
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: dashboard-page-out .1s ease-out both; }
+::view-transition-new(root) { animation: dashboard-page-in .16s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes dashboard-page-out { to { opacity: .78; } }
+@keyframes dashboard-page-in { from { opacity: .72; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-app-page::before { transition:none; }
+  ::view-transition-old(root),::view-transition-new(root) { animation:none; }
 }

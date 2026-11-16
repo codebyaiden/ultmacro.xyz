@@ -59,13 +59,21 @@
     const target = new URL(link.href, location.href);
     if (target.origin !== location.origin || !target.pathname.startsWith('/dashboard/') || target.pathname === location.pathname || prefetched.has(target.pathname)) return;
     prefetched.add(target.pathname);
-    const hint = document.createElement('link');
-    hint.rel = 'prefetch';
-    hint.href = target.href;
-    document.head.append(hint);
+    const fallback = () => {
+      const hint = document.createElement('link');
+      hint.rel = 'prefetch';
+      hint.href = target.href;
+      document.head.append(hint);
+    };
+    if (!('serviceWorker' in navigator)) { fallback(); return; }
+    navigator.serviceWorker.ready.then(registration => {
+      if (!registration.active) { fallback(); return; }
+      registration.active.postMessage({ type: 'prefetch-dashboard-page', url: target.pathname });
+    }).catch(fallback);
   }
   [...nav.querySelectorAll('a[href^="/dashboard/"]'), ...items].forEach(link => {
     link.addEventListener('pointerenter', () => prefetchPage(link), { once: true, passive: true });
+    link.addEventListener('pointerdown', () => prefetchPage(link), { once: true, passive: true });
     link.addEventListener('focus', () => prefetchPage(link), { once: true });
     link.addEventListener('touchstart', () => prefetchPage(link), { once: true, passive: true });
   });
