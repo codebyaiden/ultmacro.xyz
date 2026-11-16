@@ -50,6 +50,10 @@
 .health-processes .devices-health-close:hover:not(:disabled) { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.09); }
 .health-processes .devices-health-close:disabled { opacity:.42; cursor:not-allowed; }
 .health-empty { padding:24px 0; text-align:center; }
+.health-temperature-help { max-width:880px; margin:10px 0 14px; padding:12px 14px; border-left:2px solid var(--app-accent,#b9a3db); border-radius:0 10px 10px 0; background:rgba(18,17,22,.72); color:var(--app-muted); font-size:11px; line-height:1.55; }
+.health-temperature-help a { color:#d6c3f2; text-decoration:underline; text-decoration-color:rgba(214,195,242,.4); text-underline-offset:2px; }
+.health-temperature-help a:hover { color:#fff; }
+.health-temperature-help[hidden] { display:none!important; }
 .health-mini-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
 .overview-health { margin-top:14px; padding:15px 18px 13px; border:1px solid rgba(255,255,255,.1); border-radius:15px; background:#101013; }
 .overview-health-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }

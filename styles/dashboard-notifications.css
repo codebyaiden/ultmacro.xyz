@@ -59,3 +59,35 @@
   .notification-choice button { padding-inline: 5px; font-size: 10px!important; }
   .push-status-copy span { font-size: 10px; }
 }
+
+/* One useful alert surface, then a calm preference list with no stacked glass panels. */
+.dashboard-notifications-page .dashboard-app-content { width:min(100%,1040px); margin-inline:auto; }
+.dashboard-notifications-page .notifications-heading { margin-bottom:28px; }
+.dashboard-app-page.dashboard-notifications-page .push-status { gap:18px; padding:20px 22px; border-radius:14px; }
+.dashboard-app-page.dashboard-notifications-page .notification-preferences,
+.dashboard-app-page.dashboard-notifications-page .notification-group { border:0; border-radius:0; background:transparent; background-image:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-app-page.dashboard-notifications-page .notification-preferences { margin-top:28px; border-top:1px solid var(--app-line); }
+.dashboard-app-page.dashboard-notifications-page .notification-preferences:hover,
+.dashboard-app-page.dashboard-notifications-page .notification-group:hover { border-color:var(--app-line); box-shadow:none; }
+.dashboard-notifications-page .notification-scope { min-height:58px; padding:12px 2px; border-bottom:1px solid var(--app-line); }
+.dashboard-notifications-page .notification-scope [role="group"] { padding:3px; border-radius:10px; background:rgba(8,8,11,.38); }
+.dashboard-notifications-page .notification-scope button { border-radius:7px; }
+.dashboard-notifications-page .notification-scope button[aria-pressed="true"] { background:rgba(255,255,255,.12); }
+.dashboard-notifications-page .notification-group { min-height:104px; grid-template-columns:minmax(0,1fr) minmax(320px,360px); gap:36px; padding:22px 2px; border-bottom:1px solid var(--app-line); }
+.dashboard-notifications-page .notification-group-copy { gap:7px; }
+.dashboard-notifications-page .notification-group-copy h2 { font-size:14px; }
+.dashboard-notifications-page .notification-group-copy p { max-width:560px; line-height:1.55; }
+.dashboard-notifications-page .notification-choice { grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; padding:4px; border-radius:10px; background:rgba(8,8,11,.38); }
+.dashboard-notifications-page .notification-choice button { min-height:36px; border-radius:7px; }
+.dashboard-notifications-page .notification-choice button[aria-checked="true"] { border-color:rgba(255,255,255,.1); background:rgba(255,255,255,.12); box-shadow:none; }
+.dashboard-notifications-page .notification-save-status { margin-top:16px!important; }
+@media (max-width:760px) {
+  .dashboard-notifications-page .dashboard-app-content { width:100%; }
+  .dashboard-notifications-page .notification-group { grid-template-columns:minmax(0,1fr); gap:14px; padding-block:19px; }
+  .dashboard-notifications-page .notification-choice { width:min(100%,420px); }
+}
+@media (max-width:520px) {
+  .dashboard-notifications-page .push-status { padding:16px; }
+  .dashboard-notifications-page .notification-scope { align-items:flex-start; }
+  .dashboard-notifications-page .notification-choice { width:100%; }
+}

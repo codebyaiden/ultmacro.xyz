@@ -197,3 +197,25 @@
   .overview-edit-button,.overview-metric-resource,.overview-metric-resource .overview-metric-note span,.overview-range button,.overview-bar-track i,.overview-panel-link span,.overview-text-link span,.overview-preset-list > button,.overview-editor-close,.overview-size-control button,.overview-editor-footer button { transition: none; }
   .overview-editor[open],.overview-editor::backdrop { animation: none; }
 }
+
+/* Let the overview breathe without leaving empty data panels the height of charts. */
+.dashboard-overview-page .overview-content { width:min(100%,1180px); margin-inline:auto; padding-inline:0; }
+.dashboard-app-page.dashboard-overview-page .overview-metrics { border-radius:13px; background:rgba(14,13,18,.56); box-shadow:inset 0 1px rgba(255,255,255,.06); }
+.dashboard-app-page.dashboard-overview-page .overview-metric-resource { border:0; border-radius:0; background:transparent; background-image:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-app-page.dashboard-overview-page .overview-metric-resource:hover { border-color:transparent; background:rgba(255,255,255,.035); box-shadow:none; }
+.dashboard-app-page.dashboard-overview-page .overview-panel { border-radius:13px; }
+.dashboard-overview-page .overview-lower-grid { gap:20px; margin-top:22px; }
+.dashboard-overview-page .overview-chart-panel,
+.dashboard-overview-page .overview-activity-panel { padding:22px 23px 17px; }
+.dashboard-overview-page .overview-chart-panel:has(.overview-data-empty),
+.dashboard-overview-page .overview-activity-panel:has(.overview-data-empty) { min-height:0; align-self:start; }
+.dashboard-overview-page .overview-chart-panel:has(.overview-data-empty) .overview-chart { min-height:64px; flex:0 0 auto; place-items:center start; margin-top:11px; }
+.dashboard-overview-page .overview-chart-panel:has(.overview-data-empty) .overview-data-empty { max-width:100%; text-align:left; }
+.dashboard-overview-page .overview-chart-panel:has(.overview-data-empty) .overview-panel-link { margin-top:12px; }
+.dashboard-overview-page .overview-activity-panel:has(.overview-data-empty) .overview-activity-list { min-height:58px; margin-top:12px; }
+.dashboard-overview-page .overview-activity-panel:has(.overview-data-empty) .overview-activity-list > .overview-data-empty { display:flex; min-height:58px; align-items:center; padding:0; }
+@media (max-width:760px) {
+  .dashboard-overview-page .overview-lower-grid { gap:14px; margin-top:18px; }
+  .dashboard-overview-page .overview-chart-panel,
+  .dashboard-overview-page .overview-activity-panel { padding:18px; }
+}

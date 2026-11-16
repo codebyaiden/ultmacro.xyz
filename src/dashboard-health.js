@@ -5,6 +5,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const unitKey = 'um-health-temperature-unit-v1';
   const unitSelect = document.querySelector('[data-health-unit]');
+  const temperatureHelp = document.querySelector('[data-temperature-help]');
   let unit = 'C';
   try { unit = localStorage.getItem(unitKey) === 'F' ? 'F' : 'C'; } catch {}
   if (unitSelect) unitSelect.value = unit;
@@ -54,7 +55,7 @@
         animateText(reading, c, `°${unit}`);
       } else animateText(reading, value, '%');
     }
-    if (detailNode) detailNode.textContent = available ? detail || '' : 'Unavailable';
+    if (detailNode) detailNode.textContent = available ? detail || '' : key === 'temperature' && detail ? detail : 'Unavailable';
     if (ring) {
       const fraction = available ? Math.max(0, Math.min(1, value / max)) : 0;
       if (ring.tagName.toLowerCase() === 'circle') ring.style.strokeDashoffset = String(307.9 * (1 - fraction));
@@ -79,6 +80,7 @@
     }
     if (!health) {
       setGauge('cpu', NaN, '', '', 100); setGauge('memory', NaN, '', '', 100); setGauge('gpu', NaN, '', '', 100); setGauge('temperature', NaN, '', '', 100);
+      if (temperatureHelp) temperatureHelp.hidden = true;
     } else {
       const memory = health.memoryTotalBytes > 0 ? health.memoryUsedBytes / health.memoryTotalBytes * 100 : NaN;
       const memoryDetail = health.memoryTotalBytes > 0 ? `${formatBytes(health.memoryUsedBytes)} of ${formatBytes(health.memoryTotalBytes)}` : '';
@@ -86,7 +88,12 @@
       setGauge('cpu', health.cpuPercent, '', 'Current load');
       setGauge('memory', memory, '', memoryDetail);
       setGauge('gpu', health.gpuPercent, '', 'Current load');
-      setGauge('temperature', cpuTemp && Number.isFinite(cpuTemp.celsius) ? cpuTemp.celsius : NaN, '', cpuTemp?.label || 'CPU sensor unavailable', 100);
+      const tempStatus = health.temperatureStatus || (cpuTemp ? 'ready' : 'provider_missing');
+      const tempDetail = cpuTemp?.label || (tempStatus === 'provider_missing'
+        ? 'LibreHardwareMonitor not detected'
+        : tempStatus === 'cpu_sensor_unavailable' ? 'No CPU package/core sensor found' : 'CPU sensor unavailable');
+      setGauge('temperature', cpuTemp && Number.isFinite(cpuTemp.celsius) ? cpuTemp.celsius : NaN, '', tempDetail, 100);
+      if (temperatureHelp) temperatureHelp.hidden = !['provider_missing', 'cpu_sensor_unavailable'].includes(tempStatus);
       const sampled = Date.parse(health.sampledAt);
       const timestamp = Number.isFinite(sampled) ? new Date(sampled).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' }) : '';
       document.querySelectorAll('[data-health-sampled]').forEach(node => { node.textContent = timestamp ? `Updated ${timestamp}` : ''; });

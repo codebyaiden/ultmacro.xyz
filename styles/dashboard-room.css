@@ -3,6 +3,9 @@
   --room-bg: #09090c;
   --room-panel: rgba(17,17,21,.82);
   --room-panel-raised: rgba(25,24,29,.91);
+  --room-glass-base: rgba(18,16,24,.27);
+  --room-glass-edge: rgba(240,232,255,.085);
+  --room-glass-glint: rgba(255,255,255,.1);
   --room-line: rgba(255,255,255,.105);
   --room-line-soft: rgba(255,255,255,.065);
   --room-text: #f4f2f7;
@@ -29,7 +32,7 @@
 }
 .dashboard-app-page::after {
   z-index: -1;
-  background: linear-gradient(90deg,rgba(7,7,10,.78),rgba(7,7,10,.63) 46%,rgba(7,7,10,.76)),linear-gradient(0deg,rgba(7,7,10,.72),rgba(7,7,10,.12) 70%);
+  background: linear-gradient(90deg,rgba(7,7,10,.42),rgba(7,7,10,.28) 46%,rgba(7,7,10,.43)),linear-gradient(0deg,rgba(7,7,10,.35),rgba(7,7,10,.05) 70%);
 }
 .dashboard-app-page[data-wallpaper-ready="true"]::before { opacity: var(--dashboard-wallpaper-opacity, .42); }
 .dashboard-app-page[data-background="none"]::before { opacity: 0; }
@@ -238,10 +241,10 @@
 .dashboard-activity-page .activity-list-top { color: #a09ca8; }
 .dashboard-remote-page .dashboard-app-content { display:block; width:100%; max-width:none; padding:0 2px 22px; }
 .dashboard-remote-page .remote-heading { margin-bottom:20px; }
-.dashboard-remote-page::after { background:linear-gradient(90deg,rgba(7,7,10,.48),rgba(7,7,10,.35) 46%,rgba(7,7,10,.49)),linear-gradient(0deg,rgba(7,7,10,.44),rgba(7,7,10,.07) 70%); }
+.dashboard-remote-page::after { background:linear-gradient(90deg,rgba(7,7,10,.28),rgba(7,7,10,.18) 46%,rgba(7,7,10,.29)),linear-gradient(0deg,rgba(7,7,10,.25),rgba(7,7,10,.035) 70%); }
 .dashboard-remote-page .remote-workspace { display:grid; grid-template-columns:minmax(330px,.78fr) minmax(0,1.22fr); align-items:stretch; gap:18px; }
 .dashboard-remote-page .remote-workspace > .remote-control-panel,
-.dashboard-remote-page .remote-workspace > .remote-run-readout { grid-column:auto; grid-row:auto; min-width:0; min-height:282px; margin:0; padding:22px; border:1px solid var(--room-line); border-radius:12px; background:rgba(15,15,18,.66); box-shadow:0 14px 44px rgba(0,0,0,.12); -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-remote-page .remote-workspace > .remote-run-readout { grid-column:auto; grid-row:auto; min-width:0; min-height:282px; margin:0; padding:22px; border:1px solid var(--room-glass-edge); border-radius:15px; background:radial-gradient(130% 120% at 0 0,rgba(255,255,255,.15),transparent 48%),linear-gradient(155deg,rgba(255,255,255,.055),rgba(255,255,255,.008) 58%,rgba(185,163,219,.025)),var(--room-glass-base); box-shadow:inset 0 1px 0 var(--room-glass-glint),inset 0 0 22px rgba(255,255,255,.012),0 18px 46px rgba(0,0,0,.2); -webkit-backdrop-filter:blur(14px) saturate(1.25); backdrop-filter:blur(14px) saturate(1.25); }
 .dashboard-remote-page .remote-controls { display:flex; flex-direction:column; }
 .dashboard-remote-page .remote-panel-intro { margin-bottom:20px; }
 .dashboard-remote-page .remote-panel-kicker { display:none; }
@@ -262,9 +265,9 @@
 .dashboard-remote-page .remote-next-steps .remote-section-heading { padding-bottom:10px; }
 .dashboard-remote-page .remote-next-steps .remote-section-heading h2 { margin:0; font-size:16px; }
 .dashboard-remote-page .remote-link-grid { gap:0; padding-top:0; }
-.dashboard-remote-page .remote-link-grid > a { min-height:70px; grid-template-columns:minmax(0,1fr) 18px; gap:10px; padding:12px 14px; border:0; border-bottom:1px solid var(--room-line-soft); border-radius:0; background:transparent; }
-.dashboard-remote-page .remote-link-grid > a + a { border-left:1px solid var(--room-line-soft); }
-.dashboard-remote-page .remote-link-grid > a:hover { transform:none; background:rgba(255,255,255,.035); }
+.dashboard-remote-page .remote-link-grid > a { min-height:70px; grid-template-columns:minmax(0,1fr) 18px; gap:10px; padding:12px 14px; border:1px solid var(--room-glass-edge); border-radius:13px; background:radial-gradient(120% 140% at 0 0,rgba(255,255,255,.13),transparent 52%),var(--room-glass-base); box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 10px 28px rgba(0,0,0,.15); -webkit-backdrop-filter:blur(11px) saturate(1.2); backdrop-filter:blur(11px) saturate(1.2); }
+.dashboard-remote-page .remote-link-grid > a + a { border-left:1px solid var(--room-glass-edge); }
+.dashboard-remote-page .remote-link-grid > a:hover { transform:translateY(-1px); background:radial-gradient(120% 140% at 0 0,rgba(255,255,255,.12),transparent 52%),rgba(24,21,31,.72); }
 .dashboard-remote-page .remote-link-grid > a > span:first-child { display:grid; min-width:0; gap:4px; }
 .dashboard-remote-page .remote-link-grid strong { font-size:13px; }
 .dashboard-remote-page .remote-link-grid small { font-size:11px; }
@@ -589,4 +592,58 @@
 @media (prefers-reduced-motion: reduce) {
   .dashboard-app-page::before { transition:none; }
   ::view-transition-old(root),::view-transition-new(root) { animation:none; }
+}
+
+/* Shared glass material tuned for the dark game-scene wallpapers. */
+.dashboard-app-page :is(
+  .overview-panel,.overview-metrics,.overview-chart-panel,.overview-activity-panel,.overview-health,.overview-widget-row,.overview-metric-resource,.dashboard-section-panel,
+  .activity-filter-panel,.activity-run-group,.earnings-resource,.earnings-chart-panel,.earnings-goal-panel,
+  .earnings-run-ticket-panel,.earnings-nerd-grid > div,.health-gauge-card,.health-cooldown,.health-processes,
+  .device-row,.devices-list > *,.notification-detail-card,.notification-group,.push-status,
+  .notification-preferences,.strategy-device,.strategy-public-card,.strategy-unverified-card,.strategy-replace-panel,
+  .settings-section,.pairing-panel,.pairing-browser,.dashboard-tour-card
+) {
+  border-color: var(--room-glass-edge);
+  background-color: var(--room-glass-base);
+  background-image: radial-gradient(135% 135% at 0 0,rgba(255,255,255,.07),transparent 46%),
+    linear-gradient(155deg,rgba(255,255,255,.038),rgba(255,255,255,.006) 54%,rgba(185,163,219,.02));
+  box-shadow: inset 0 1px 0 var(--room-glass-glint),inset 0 0 24px rgba(255,255,255,.018),0 18px 46px rgba(0,0,0,.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+.dashboard-app-page :is(.overview-panel,.overview-metrics,.overview-chart-panel,.overview-activity-panel,.overview-health,.overview-widget-row,.overview-metric-resource,
+.dashboard-section-panel,.activity-filter-panel,.activity-run-group,.earnings-resource,.earnings-chart-panel,
+.earnings-goal-panel,.earnings-run-ticket-panel,.health-gauge-card,.health-cooldown,.health-processes,
+.device-row,.devices-list > *,.notification-detail-card,.notification-group,.push-status,.notification-preferences,
+.strategy-device,.strategy-public-card,.strategy-unverified-card,.strategy-replace-panel,.settings-section,
+.pairing-panel,.pairing-browser,.dashboard-tour-card):hover {
+  border-color: rgba(245,238,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12),inset 0 0 26px rgba(255,255,255,.018),0 20px 50px rgba(0,0,0,.23);
+}
+.dashboard-app-page .dashboard-section-panel { padding:18px; border:1px solid var(--room-glass-edge); border-radius:15px; }
+.dashboard-app-page .activity-row { border:1px solid rgba(240,232,255,.08); border-radius:11px; background:rgba(17,16,22,.48); -webkit-backdrop-filter:blur(11px) saturate(1.12); backdrop-filter:blur(11px) saturate(1.12); }
+.dashboard-app-page .activity-row:hover { border-color:rgba(245,238,255,.16); background:rgba(28,24,36,.64); }
+.dashboard-app-page .earnings-resource.is-selected {
+  border-color:color-mix(in srgb,var(--resource-color,#dfb765) 16%,transparent);
+  background:radial-gradient(120% 140% at 0 0,color-mix(in srgb,var(--resource-color,#dfb765) 12%,transparent),transparent 64%),rgba(20,18,26,.6);
+}
+.dashboard-app-page .earnings-event-list > li { border-color:rgba(240,232,255,.1); }
+.dashboard-app-page .earnings-run-ticket-grid > div { border-color:rgba(240,232,255,.08); background:rgba(19,17,24,.42); box-shadow:inset 0 1px 0 rgba(255,255,255,.08); }
+.dashboard-app-page .earnings-nerd-grid > div { border-color:rgba(240,232,255,.08); background:rgba(19,17,24,.42); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .dashboard-app-page :is(.overview-panel,.overview-metrics,.overview-chart-panel,.overview-activity-panel,.overview-health,.overview-widget-row,.overview-metric-resource,
+  .dashboard-section-panel,.activity-filter-panel,.activity-run-group,.earnings-resource,.earnings-chart-panel,
+  .earnings-goal-panel,.earnings-run-ticket-panel,.health-gauge-card,.health-cooldown,.health-processes,
+  .device-row,.devices-list > *,.notification-detail-card,.notification-group,.push-status,
+  .notification-preferences,.strategy-device,.strategy-public-card,.strategy-unverified-card,.strategy-replace-panel,
+  .settings-section,.pairing-panel,.pairing-browser,.dashboard-tour-card) { background-color:rgba(17,16,22,.93); }
+}
+@media (max-width:760px) {
+  .dashboard-app-page :is(.overview-panel,.overview-chart-panel,.overview-activity-panel,.activity-run-group,
+  .earnings-resource,.earnings-chart-panel,.earnings-goal-panel,.earnings-run-ticket-panel,.health-gauge-card,
+  .health-cooldown,.health-processes,.device-row,.notification-detail-card,.notification-group,.push-status,
+  .notification-preferences,.strategy-device,.strategy-public-card,.settings-section) {
+    -webkit-backdrop-filter:blur(12px) saturate(1.14);
+    backdrop-filter:blur(12px) saturate(1.14);
+  }
 }

@@ -10,13 +10,13 @@
   <link rel="stylesheet" href="/styles/unified-shell.css?v=8">
   <link rel="stylesheet" href="/styles/dashboard-app.css?v=14">
   <link rel="stylesheet" href="/styles/dashboard-product.css?v=6">
-  <link rel="stylesheet" href="/styles/dashboard-room.css?v=17">
+  <link rel="stylesheet" href="/styles/dashboard-room.css?v=21">
 
-  <link rel="stylesheet" href="/styles/dashboard-health.css?v=1">
+  <link rel="stylesheet" href="/styles/dashboard-health.css?v=2">
   <script src="/src/unified-shell.js?v=dashboard-pairing-style-20261115" defer></script>
   <script src="/src/dashboard-tutorial.js?v=7" defer></script>
   <script src="/src/dashboard-state.js?v=2" defer></script>
-  <script src="/src/dashboard-health.js?v=1" defer></script>
+  <script src="/src/dashboard-health.js?v=2" defer></script>
   <script src="/src/dashboard-preferences.js?v=12" defer></script>
   <script src="/src/dashboard-switcher.js?v=7" defer></script>
   <link rel="manifest" href="/dashboard/manifest.webmanifest">
@@ -48,6 +48,7 @@
         <article class="health-gauge-card" data-health-gauge="gpu"><span class="health-gauge-label">GPU</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="gpu" cx="60" cy="60" r="49"></circle></svg><strong data-reading="gpu">—</strong></div><span class="health-gauge-detail" data-health-detail="gpu">Waiting for PC</span></article>
         <article class="health-gauge-card health-temperature-card" data-health-gauge="temperature"><span class="health-gauge-label">CPU temperature</span><div class="health-dial" aria-hidden="true"><svg viewBox="0 0 120 120"><circle class="dial-track" cx="60" cy="60" r="49"></circle><circle class="dial-value" data-ring="temperature" cx="60" cy="60" r="49"></circle></svg><strong data-reading="temperature">—</strong></div><span class="health-gauge-detail" data-health-detail="temperature">Waiting for PC</span></article>
       </section>
+      <p class="health-temperature-help" data-temperature-help hidden>For CPU package/core readings, run <a href="https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/releases/latest" target="_blank" rel="noopener noreferrer">LibreHardwareMonitor</a> as administrator and enable Options → Remote Web Server on localhost:8085. Some sensors require administrator access.</p>
       <section class="health-cooldown" aria-labelledby="cooldown-title">
         <div class="health-section-heading"><h2 id="cooldown-title">Cooldown</h2><span data-cooldown-state>—</span></div>
         <p class="health-cooldown-summary" data-cooldown-summary>—</p>

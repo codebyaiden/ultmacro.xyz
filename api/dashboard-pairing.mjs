@@ -315,13 +315,14 @@ function normalizeHealth(value) {
   const finitePercent = n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 100;
   const sampledTime = typeof value?.sampledAt === 'string' ? Date.parse(value.sampledAt) : NaN;
   if (!value || typeof value !== 'object' || Array.isArray(value) ||
-      Object.keys(value).some(key => !['sampledAt', 'cpuPercent', 'memoryUsedBytes', 'memoryTotalBytes', 'gpuPercent', 'temperatures', 'processes'].includes(key)) ||
+      Object.keys(value).some(key => !['sampledAt', 'cpuPercent', 'memoryUsedBytes', 'memoryTotalBytes', 'gpuPercent', 'temperatures', 'temperatureStatus', 'processes'].includes(key)) ||
       typeof value.sampledAt !== 'string' || !Number.isFinite(sampledTime) || sampledTime > Date.now() + 10000 || Date.now() - sampledTime > 90000 ||
       !(value.cpuPercent === null || finitePercent(value.cpuPercent)) ||
       !((value.memoryUsedBytes === null && value.memoryTotalBytes === null) ||
         (Number.isSafeInteger(value.memoryUsedBytes) && value.memoryUsedBytes >= 0 &&
           Number.isSafeInteger(value.memoryTotalBytes) && value.memoryTotalBytes > 0 && value.memoryUsedBytes <= value.memoryTotalBytes)) ||
       !(value.gpuPercent === null || finitePercent(value.gpuPercent)) ||
+      (value.temperatureStatus !== undefined && !['ready', 'provider_missing', 'cpu_sensor_unavailable'].includes(value.temperatureStatus)) ||
       !Array.isArray(value.temperatures) || value.temperatures.length > 4 ||
       !Array.isArray(value.processes) || value.processes.length > 8) return null;
 
@@ -354,6 +355,7 @@ function normalizeHealth(value) {
     memoryTotalBytes: value.memoryTotalBytes,
     gpuPercent: value.gpuPercent,
     temperatures,
+    temperatureStatus: value.temperatureStatus || (temperatures.length ? 'ready' : 'provider_missing'),
     processes
   };
 }
@@ -851,11 +853,14 @@ function nerdStatsFrom(matches) {
     const data = event.data || {};
     if (type === 'match.victory') wins++;
     else if (type === 'match.loss') losses++;
-    coins += safeEarning(data.coins) || 0;
-    gems += safeEarning(data.gems) || 0;
-    towerXp += safeEarning(data.towerXp) || 0;
     const duration = safeEarning(data.durationSeconds);
-    if (duration !== null) { totalSeconds += duration; timedMatches++; }
+    if (duration !== null) {
+      coins += safeEarning(data.coins) || 0;
+      gems += safeEarning(data.gems) || 0;
+      towerXp += safeEarning(data.towerXp) || 0;
+      totalSeconds += duration;
+      timedMatches++;
+    }
   }
   const totalMatches = wins + losses;
   const hours = totalSeconds / 3600;
@@ -910,9 +915,9 @@ async function listEarnings(ownerHash, range) {
       count(*) filter (where event_type in ('match.victory','match.loss'))::bigint as "totalMatches",
       count(*) filter (where event_type = 'match.victory')::bigint as wins,
       count(*) filter (where event_type = 'match.loss')::bigint as losses,
-      coalesce(sum((data->>'coins')::bigint),0)::bigint as coins,
-      coalesce(sum((data->>'gems')::bigint),0)::bigint as gems,
-      coalesce(sum((data->>'towerXp')::bigint),0)::bigint as "towerXp",
+      coalesce(sum((data->>'coins')::bigint) filter (where data ? 'durationSeconds'),0)::bigint as coins,
+      coalesce(sum((data->>'gems')::bigint) filter (where data ? 'durationSeconds'),0)::bigint as gems,
+      coalesce(sum((data->>'towerXp')::bigint) filter (where data ? 'durationSeconds'),0)::bigint as "towerXp",
       coalesce(sum((data->>'durationSeconds')::bigint),0)::bigint as "totalSeconds",
       count(*) filter (where data ? 'durationSeconds')::bigint as "timedMatches"
     from dashboard_activity_events

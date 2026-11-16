@@ -140,8 +140,8 @@
       detail.textContent = totalsFor(event);
       const tickets = document.createElement('div');
       tickets.className = 'earnings-event-tickets';
-      const spin = ticketBadge('/assets/dashboard-icons/spin-wheel-ticket.png', 'Spin', event.spinTickets);
-      const timescale = ticketBadge('/assets/dashboard-icons/timescale-ticket.png', 'Timescale', event.timescaleTickets);
+      const spin = ticketBadge('/assets/dashboard-icons/spin-wheel-ticket.png?v=ticket-art-20261116', 'Spin', event.spinTickets);
+      const timescale = ticketBadge('/assets/dashboard-icons/timescale-ticket.png?v=ticket-art-20261116', 'Timescale', event.timescaleTickets);
       if (spin) tickets.append(spin);
       if (timescale) tickets.append(timescale);
       bottom.append(detail, tickets);
@@ -347,7 +347,9 @@
       loadEarnings();
       window.setTimeout(() => { if (goalDialog.open) goalDialog.close(); }, 500);
     } catch (error) {
-      goalDialogStatus.textContent = error.message || 'Could not update the goal.';
+      const message = error.message || 'Could not update the goal.';
+      goalDialogStatus.textContent = message;
+      goalStatus.textContent = message;
     } finally {
       goalCommandBusy = false;
       goalSave.disabled = false;
@@ -356,6 +358,10 @@
   }
 
   window.UMDashboardState?.subscribe(renderGoal);
+  page.querySelectorAll('[data-resource]').forEach(button => {
+    const resource = resources[button.dataset.resource];
+    if (resource) button.style.setProperty('--resource-color', resource.color);
+  });
   goalOpen?.addEventListener('click', openGoalEditor);
   page.querySelector('[data-goal-close]')?.addEventListener('click', () => goalDialog.close());
   page.querySelector('[data-goal-cancel]')?.addEventListener('click', () => goalDialog.close());

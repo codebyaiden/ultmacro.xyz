@@ -66,6 +66,13 @@ test('remote controls require a fresh PC state, deliver once, and accept an auth
   assert.equal(earnings.response.status, 200);
   assert.deepEqual(earnings.data.totals, { coins: 100000, gems: 25, towerXp: 1000 });
   assert.equal(earnings.data.latest[0].type, 'match.victory');
+  assert.equal(earnings.data.nerdStats.coinsPerHour, Math.round(100000 / (494 / 3600)));
+  const untimedLoss = { ...resultEvent, eventId: 'd'.repeat(32), sequence: 3, type: 'match.loss', occurredAt: new Date(summaryBoundary - 500).toISOString().replace(/\.\d{3}Z$/, 'Z'), data: { map: 'Fallen', coins: 200000, gems: 5, towerXp: 500 } };
+  const untimedUpload = await call('/events', { method: 'POST', token: deviceToken, body: { events: [untimedLoss] } });
+  assert.equal(untimedUpload.response.status, 200);
+  const updatedEarnings = await call('/earnings?range=day');
+  assert.equal(updatedEarnings.data.nerdStats.totalMatches, 2);
+  assert.equal(updatedEarnings.data.nerdStats.coinsPerHour, Math.round(100000 / (494 / 3600)));
   const hourly = await runHourlyEarningsSummary(summaryBoundary + 1000);
   assert.equal(hourly.created, 1);
   assert.equal((await runHourlyEarningsSummary(summaryBoundary + 1000)).created, 0);

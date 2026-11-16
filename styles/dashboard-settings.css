@@ -67,3 +67,40 @@
 @media (prefers-reduced-motion: reduce) {
   .settings-segmented button,.settings-provider-choice button { transition: none; }
 }
+
+/* Keep settings open and readable; reserve surfaces for the controls themselves. */
+.dashboard-settings-page .settings-heading,
+.dashboard-settings-page .settings-sections { width:min(100%,980px); }
+.dashboard-settings-page .settings-heading { margin-bottom:32px; }
+.dashboard-settings-page .settings-section { border:0; border-radius:0; background:transparent; background-image:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-app-page.dashboard-settings-page .settings-section { background-color:transparent; background-image:none; box-shadow:none; -webkit-backdrop-filter:none; backdrop-filter:none; }
+.dashboard-settings-page .settings-section:hover { border-color:transparent; box-shadow:none; }
+.dashboard-settings-page .settings-section + .settings-section { margin-top:40px; }
+.dashboard-settings-page .settings-section-heading { min-height:42px; padding:0 2px 12px; }
+.dashboard-settings-page .settings-section-heading h2 { font-size:17px; }
+.dashboard-settings-page .settings-row { min-height:78px; grid-template-columns:minmax(0,1fr) minmax(280px,380px); gap:32px; padding:18px 2px; }
+.dashboard-settings-page .settings-row-copy { gap:6px; }
+.dashboard-settings-page .settings-row-copy h3 { font-size:13px; }
+.dashboard-settings-page .settings-row-copy p { max-width:420px; }
+.dashboard-settings-page .settings-segmented { width:auto; justify-self:end; border-radius:10px; background:rgba(9,8,12,.32); }
+.dashboard-settings-page .settings-segmented button { min-height:34px; padding-inline:13px; border-radius:7px; }
+.dashboard-settings-page .settings-segmented button[aria-pressed="true"] { border-color:rgba(255,255,255,.1); background:rgba(255,255,255,.12); }
+.dashboard-settings-page .settings-control-stack { gap:11px; }
+.dashboard-settings-page .settings-range { width:min(100%,380px); }
+.dashboard-settings-page .background-selector { width:min(100%,380px); min-height:44px; border-radius:10px; }
+.dashboard-settings-page .settings-action-button { width:min(100%,380px); min-height:42px; border-radius:9px; }
+.dashboard-settings-page .settings-save-status { width:min(100%,980px); }
+.dashboard-app-page.dashboard-settings-page[data-density="compact"] .settings-row { min-height:66px; padding-block:12px; }
+@media (max-width:760px) {
+  .dashboard-settings-page .settings-heading,.dashboard-settings-page .settings-sections,.dashboard-settings-page .settings-save-status { width:100%; }
+  .dashboard-settings-page .settings-row { grid-template-columns:minmax(0,1fr) minmax(250px,42%); gap:20px; }
+}
+@media (max-width:560px) {
+  .dashboard-settings-page .settings-section + .settings-section { margin-top:32px; }
+  .dashboard-settings-page .settings-row { grid-template-columns:minmax(0,1fr); gap:12px; padding-block:17px; }
+  .dashboard-settings-page .settings-segmented { justify-self:start; }
+  .dashboard-settings-page .settings-control-stack { justify-items:start; }
+  .dashboard-settings-page .settings-color-control { justify-items:start; }
+  .dashboard-settings-page .settings-color-presets { justify-content:flex-start; }
+  .dashboard-settings-page .settings-range,.dashboard-settings-page .background-selector,.dashboard-settings-page .settings-action-button { width:100%; }
+}
