@@ -33,17 +33,15 @@ test('homepage has concise, accessible mobile-first sections', async () => {
   assert.match(css, /footer\{display:grid/);
 });
 
-test('guide overview links into setup and detailed routes retain the main-strategy hotkeys', async () => {
+test('guide overview links into its dedicated pages and first-run keeps hotkey instructions', async () => {
   const overview = await read('guide/index.html');
   assert.match(overview, /href="first-run\/"/);
   assert.match(overview, /href="troubleshooting\/"/);
   assert.doesNotMatch(overview, /F2<\/span> pauses or resumes/);
-  for (const name of ['requirements/', 'install/', 'display/', 'first-run/', 'recording/', 'sessions/', 'discord/', 'tools/', 'troubleshooting/', 'safety/']) {
-    const page = await read('guide/' + name + 'index.html');
-    assert.match(page, /F2<\/span> pauses or resumes/);
-    assert.match(page, /F3<\/span> to stop it/);
-    assert.doesNotMatch(page, /F2<\/span> stops the macro/);
-  }
+  const firstRun = await read('guide/first-run/index.html');
+  assert.match(firstRun, /F2<\/span> pauses or resumes/);
+  assert.match(firstRun, /F3<\/span> to stop it/);
+  assert.doesNotMatch(firstRun, /F2<\/span> stops the macro/);
 });
 
 test('homepage easter egg and menu stay lightweight and valid', async () => {

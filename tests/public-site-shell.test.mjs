@@ -68,12 +68,18 @@ test('shared public navigation is semantic, centered, keyboard accessible and pr
   assert.match(css, /body\.um-unified-page > header:not\(\.um-site-header\)/);
 });
 
-test('active guide routes get distinct browser titles without losing original documentation', async () => {
-  for (const section of ['requirements','install','display','first-run','recording','sessions','discord','tools','troubleshooting','safety']) {
+test('guide detail routes show their own article and active section', async () => {
+  const pages = {
+    requirements:'Requirements', install:'Install', display:'Display settings', 'first-run':'Your first run',
+    recording:'Recording a strategy', sessions:'Longer sessions', discord:'Discord &amp; profiles', tools:'Tools',
+    troubleshooting:'Troubleshooting', safety:'Safety &amp; licence'
+  };
+  for (const [section, title] of Object.entries(pages)) {
     const html = await read('guide/' + section + '/index.html');
-    assert.doesNotMatch(html, /<title>Setup guide — Ultimate Macro<\/title>/);
-    assert.match(html, /<h1>Setup guide<\/h1>/);
-    assert.match(html, /data-guide-section="/);
+    assert.match(html, new RegExp(`<title>${title} — Ultimate Macro Guide<\\/title>`));
+    assert.match(html, new RegExp(`<h1>${title}<\\/h1>`));
+    assert.match(html, new RegExp(`href="\\.\\./${section}/" aria-current="page"`));
+    assert.doesNotMatch(html, /data-guide-section="/);
   }
 });
 
