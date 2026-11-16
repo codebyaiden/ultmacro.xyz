@@ -5,7 +5,8 @@
   const pathname = location.pathname;
   const guide = /^\/guide(?:\/|$)/.test(pathname);
   const active = /^\/features(?:\/|$)/.test(pathname) ? 'features'
-    : guide || /^\/wiki(?:\/|$)/.test(pathname) ? 'wiki'
+    : guide ? 'guide'
+    : /^\/wiki(?:\/|$)/.test(pathname) ? 'wiki'
     : /^\/strategies(?:\/|$)/.test(pathname) ? 'strategies'
     : /^\/about(?:\/|$)/.test(pathname) ? 'about'
     : /^\/early-access(?:\/|$)/.test(pathname) ? 'early'
@@ -14,6 +15,7 @@
   const destinations = [
     { id:'features',label:'Features',href:'/features/' },
     { id:'wiki',label:'Wiki',href:'/wiki/' },
+    ...(guide ? [{ id:'guide',label:'Guide',href:'/guide/' }] : []),
     { id:'early',label:'Early Access',href:'/early-access/' },
     { id:'about',label:'About Us',href:'/about/' },
     { id:'dashboard',label:'Dashboard',href:'/dashboard/' },
