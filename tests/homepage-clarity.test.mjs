@@ -39,9 +39,8 @@ test('guide overview links into its dedicated pages and first-run keeps hotkey i
   assert.match(overview, /href="troubleshooting\/"/);
   assert.doesNotMatch(overview, /F2<\/span> pauses or resumes/);
   const firstRun = await read('guide/first-run/index.html');
-  assert.match(firstRun, /F2<\/span> pauses or resumes/);
-  assert.match(firstRun, /F3<\/span> to stop it/);
-  assert.doesNotMatch(firstRun, /F2<\/span> stops the macro/);
+  assert.match(firstRun, /F2<\/span> stops the running strategy/);
+  assert.doesNotMatch(firstRun, /F2<\/span> pauses or resumes|F3<\/span> to stop it/);
 });
 
 test('homepage easter egg and menu stay lightweight and valid', async () => {

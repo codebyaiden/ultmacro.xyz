@@ -1,6 +1,8 @@
-:root { color-scheme: dark; --article-ink:#eef3fa; --article-muted:#a4b2c5; --article-dim:#7f91aa; --article-line:rgba(173,193,222,.16); --article-accent:#c5a9f3; }
+:root { color-scheme: dark; --article-ink:#f3f3f5; --article-muted:#a2a2ab; --article-dim:#777780; --article-line:rgba(255,255,255,.105); --article-accent:#b59be2; }
 html { background:#070a10; scroll-padding-top:92px; }
-body.guide-article-page { display:block; min-height:100vh; margin:0; overflow-x:clip; background:radial-gradient(ellipse 60% 34% at 80% 10%,rgba(82,74,143,.13),transparent 72%),#070a10; color:var(--article-ink); font:15px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif; }
+body.guide-article-page { display:block; min-height:100vh; margin:0; overflow-x:clip; background:radial-gradient(ellipse 64% 42% at 50% -14%,rgba(137,113,171,.095),transparent 75%),#09090b; color:var(--article-ink); font:400 15px/1.6 Geist,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+body.guide-article-page.um-unified-page .um-atmosphere { display:none !important; }
+body.guide-article-page.um-unified-page .um-site-header { background:rgba(9,9,11,.88); border-color:rgba(255,255,255,.09); }
 .guide-article-page a { color:inherit; }
 .guide-article-page :focus-visible { outline:2px solid #c9b2f4; outline-offset:4px; }
 .guide-article-skip { position:absolute; z-index:300; top:8px; left:10px; transform:translateY(-150%); padding:10px 14px; border-radius:8px; background:#edf4ff; color:#081421!important; font-weight:700; }
@@ -54,10 +56,11 @@ body.guide-article-page { display:block; min-height:100vh; margin:0; overflow-x:
 .guide-article-content .proc>li::before { color:#c4a8eb; }
 .guide-article-content .proc h4 { margin:0; font-size:14px; }
 .guide-article-content .proc p { margin-top:.45rem; }
-.guide-article-content .settings-table { max-width:100%; margin-top:1.25rem; border-color:var(--article-line); border-radius:10px; background:rgba(13,22,36,.56); }
+.guide-article-content .settings-table { max-width:100%; margin-top:1.25rem; border-color:var(--article-line); border-radius:10px; background:rgba(255,255,255,.025); }
 .guide-article-content .settings-table .st-head { border-color:var(--article-line); color:#a2b2c8; }
+.guide-article-content .settings-table .st-head { font-family:Geist,"Segoe UI",sans-serif; font-size:11px; font-weight:600; letter-spacing:0; text-transform:none; }
 .guide-article-content .settings-table .st-row { border-color:var(--article-line); color:var(--article-muted); }
-.guide-article-content .notice,.guide-article-content .warning { margin-top:1.2rem; border:1px solid rgba(190,169,229,.22); border-radius:10px; background:rgba(38,31,55,.4); color:#c5cfe0; }
+.guide-article-content .notice,.guide-article-content .warning { margin-top:1.2rem; border:1px solid rgba(181,155,226,.22); border-radius:10px; background:rgba(181,155,226,.07); color:#d7cfdf; }
 .guide-article-content .trouble { max-width:74ch; margin-top:1.2rem; border-color:var(--article-line); }
 .guide-article-content .trouble details { border-color:var(--article-line); }
 .guide-article-content .trouble summary { padding:1rem .25rem; color:#d7deea; }

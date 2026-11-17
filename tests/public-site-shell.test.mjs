@@ -71,7 +71,7 @@ test('shared public navigation is semantic, centered, keyboard accessible and pr
 test('guide detail routes show their own article and active section', async () => {
   const pages = {
     requirements:'Requirements', install:'Install', display:'Display settings', 'first-run':'Your first run',
-    recording:'Recording a strategy', sessions:'Longer sessions', discord:'Discord &amp; profiles', tools:'Tools',
+    recording:'Recording a strategy', sessions:'Longer sessions', discord:'Discord', tools:'Tools',
     troubleshooting:'Troubleshooting', safety:'Safety &amp; licence'
   };
   for (const [section, title] of Object.entries(pages)) {

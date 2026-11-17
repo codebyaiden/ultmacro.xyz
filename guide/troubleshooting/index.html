@@ -6,7 +6,7 @@
   <meta property="og:type" content="article"><meta property="og:site_name" content="Ultimate Macro"><meta property="og:url" content="https://ultmacro.xyz/guide/troubleshooting/"><meta property="og:title" content="Troubleshooting — Ultimate Macro Guide"><meta property="og:description" content="Find what to check when a run does not go as expected."><meta property="og:image" content="https://ultmacro.xyz/assets/ui/ultimate-macro-1.4.1.5-preview.png"><meta property="og:image:alt" content="Ultimate Macro desktop interface">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Troubleshooting — Ultimate Macro Guide"><meta name="twitter:description" content="Find what to check when a run does not go as expected."><meta name="twitter:image" content="https://ultmacro.xyz/assets/ui/ultimate-macro-1.4.1.5-preview.png">
   <link rel="canonical" href="https://ultmacro.xyz/guide/troubleshooting/"><link rel="icon" href="/assets/ultimate-macro-mascot.png" type="image/png">
-  <link rel="stylesheet" href="../../styles/base.css?v=28"><link rel="stylesheet" href="../../styles/guide.css?v=22"><link rel="stylesheet" href="../../styles/guide-home.css?v=1"><link rel="stylesheet" href="../../styles/guide-pages.css?v=1"><link rel="stylesheet" href="/styles/unified-shell.css?v=7">
+  <link rel="stylesheet" href="../../styles/base.css?v=28"><link rel="stylesheet" href="../../styles/guide.css?v=22"><link rel="stylesheet" href="../../styles/guide-home.css?v=2"><link rel="stylesheet" href="../../styles/guide-pages.css?v=2"><link rel="stylesheet" href="/styles/unified-shell.css?v=7">
   <script src="/src/unified-shell.js?v=guide-active-nav-20261116" defer></script>
   <title>Troubleshooting — Ultimate Macro Guide</title>
 </head>
@@ -15,8 +15,8 @@
   <header class="site-head"><div class="wrap"><a class="brand" href="../../" aria-label="Ultimate Macro home"><img class="brand-mark" src="/assets/ultimate-macro-mascot.png" alt="" width="32" height="32"><span class="brand-text">Ultimate <b>Macro</b></span></a><nav class="site-nav" aria-label="Primary navigation"><a href="../../features/">Features</a><a href="../../wiki/">Wiki</a><a href="../" aria-current="page">Guide</a><a href="../../early-access/">Early Access</a><a href="../../about/">About Us</a><a href="../../dashboard/">Dashboard</a><a href="../../download/">Download</a></nav><a class="btn primary sm head-cta" href="../../download/">Download</a><button class="burger" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Toggle navigation"><span></span></button></div></header>
   <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"><a href="../../features/">Features</a><a href="../../wiki/">Wiki</a><a href="../" aria-current="page">Guide</a><a href="../../early-access/">Early Access</a><a href="../../about/">About Us</a><a href="../../dashboard/">Dashboard</a><a href="../../download/">Download</a></nav>
   <div class="guide-page-shell">
-    <aside class="guide-sidebar" aria-label="Guide sections"><a class="guide-sidebar-home" href="../">← Setup guide</a><p class="guide-sidebar-group">Get started</p><nav aria-label="Get started"><a href="../requirements/">Requirements</a><a href="../install/">Install</a><a href="../display/">Display settings</a><a href="../first-run/">Your first run</a></nav><p class="guide-sidebar-group">Use the macro</p><nav aria-label="Use the macro"><a href="../recording/">Recording a strategy</a><a href="../sessions/">Longer sessions</a><a href="../discord/">Discord & profiles</a><a href="../tools/">Tools</a></nav><p class="guide-sidebar-group">Help</p><nav aria-label="Help"><a href="../troubleshooting/" aria-current="page">Troubleshooting</a><a href="../safety/">Safety & licence</a></nav></aside>
-    <details class="guide-mobile-index"><summary>Browse the guide</summary><p class="guide-sidebar-group">Get started</p><nav aria-label="Get started"><a href="../requirements/">Requirements</a><a href="../install/">Install</a><a href="../display/">Display settings</a><a href="../first-run/">Your first run</a></nav><p class="guide-sidebar-group">Use the macro</p><nav aria-label="Use the macro"><a href="../recording/">Recording a strategy</a><a href="../sessions/">Longer sessions</a><a href="../discord/">Discord & profiles</a><a href="../tools/">Tools</a></nav><p class="guide-sidebar-group">Help</p><nav aria-label="Help"><a href="../troubleshooting/" aria-current="page">Troubleshooting</a><a href="../safety/">Safety & licence</a></nav></details>
+    <aside class="guide-sidebar" aria-label="Guide sections"><a class="guide-sidebar-home" href="../">← Setup guide</a><p class="guide-sidebar-group">Get started</p><nav aria-label="Get started"><a href="../requirements/">Requirements</a><a href="../install/">Install</a><a href="../display/">Display settings</a><a href="../first-run/">Your first run</a></nav><p class="guide-sidebar-group">Use the macro</p><nav aria-label="Use the macro"><a href="../recording/">Recording a strategy</a><a href="../sessions/">Longer sessions</a><a href="../discord/">Discord</a><a href="../tools/">Tools</a></nav><p class="guide-sidebar-group">Help</p><nav aria-label="Help"><a href="../troubleshooting/" aria-current="page">Troubleshooting</a><a href="../safety/">Safety & licence</a></nav></aside>
+    <details class="guide-mobile-index"><summary>Browse the guide</summary><p class="guide-sidebar-group">Get started</p><nav aria-label="Get started"><a href="../requirements/">Requirements</a><a href="../install/">Install</a><a href="../display/">Display settings</a><a href="../first-run/">Your first run</a></nav><p class="guide-sidebar-group">Use the macro</p><nav aria-label="Use the macro"><a href="../recording/">Recording a strategy</a><a href="../sessions/">Longer sessions</a><a href="../discord/">Discord</a><a href="../tools/">Tools</a></nav><p class="guide-sidebar-group">Help</p><nav aria-label="Help"><a href="../troubleshooting/" aria-current="page">Troubleshooting</a><a href="../safety/">Safety & licence</a></nav></details>
     <main class="guide-article-main" id="main" tabindex="-1"><p class="guide-breadcrumb"><a href="../">Setup guide</a><span aria-hidden="true">/</span><span>Troubleshooting</span></p><article class="guide-article"><h1>Troubleshooting</h1><p class="guide-article-lede">Find what to check when a run does not go as expected.</p><div class="guide-article-content doc"><p>Work down this list before reporting a bug — most problems are one of these.</p>
 					<div class="trouble">
 						<details>
@@ -31,13 +31,7 @@
 						</details>
 						<details>
 							<summary><code>Main.ahk</code> will not start</summary>
-							<div class="body">
-								<p>Three common causes. You have AutoHotkey 1.1 rather than v2.0; you are running the
-									script from inside the ZIP without extracting it; or a Roblox multi-client tool
-									such as Roblox Account Manager is open, which the macro refuses to run
-									alongside.</p>
-								<p>If it warns about 32-bit AutoHotkey, install the 64-bit build of v2.0.</p>
-							</div>
+							<div class="body"><p>Run <code>Start Ultimate Macro.cmd</code> from the extracted folder; it uses the bundled 64-bit AutoHotkey v2.0.31. If you run <code>Main.ahk</code> directly, use AHK v2.0.31 or newer. Do not run from inside the ZIP.</p></div>
 						</details>
 						<details>
 							<summary>Waves or currency are read wrongly</summary>
@@ -67,10 +61,7 @@
 						</details>
 						<details>
 							<summary>Auto Equip or target changing stopped working</summary>
-							<div class="body">
-								<p>Check whether <strong>Legacy Mode</strong> is on. Neither feature works while it
-									is enabled — that is expected behaviour, not a bug.</p>
-							</div>
+							<div class="body"><p>Check the selected strategy required-tower list and hotbar order. Confirm the required towers are available and <strong>Auto Equip</strong> is enabled on Run. For target changes, check that the strategy includes a target step and the game hotkey is configured in Settings.</p></div>
 						</details>
 						<details>
 							<summary>I need to report a bug</summary>
